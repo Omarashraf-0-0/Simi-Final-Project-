@@ -18,14 +18,6 @@ class _IntroPageState extends State<IntroPage> {
           mainAxisAlignment: MainAxisAlignment.center,
           children: [
             Image.asset('lib/assets/img/El Batal Study Mate Light Mode.png'),
-            const SizedBox(height: 20),
-            Text(
-              'Bashaa Elbalaaaaad',
-              style: TextStyle(
-                fontSize: 34,
-                fontWeight: FontWeight.bold,
-              )
-            ),
           ],
         ),
       ),
