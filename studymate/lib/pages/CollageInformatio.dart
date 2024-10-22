@@ -3,9 +3,21 @@
 import 'package:flutter/material.dart';
 import '../util/TextField.dart';
 import 'RegisterPage.dart';
+import 'package:http/http.dart' as http;
+import 'dart:convert'; // For jsonEncode
 
 class CollageInformation extends StatefulWidget {
-  const CollageInformation({super.key});
+  final String fullName;
+  final String username;
+  final String phoneNumber;
+  final String registrationNumber;
+  const CollageInformation({
+    super.key,
+    required this.fullName,
+    required this.username,
+    required this.phoneNumber,
+    required this.registrationNumber,
+    });
   @override
   State<CollageInformation> createState() => _CollageInformationState();
 }
@@ -16,6 +28,53 @@ class _CollageInformationState extends State<CollageInformation> {
   final MajorController = TextEditingController();
   final EmailController = TextEditingController();
   final PasswordController = TextEditingController();
+  
+ Future<void> registerCollegeInfo() async {
+    // Prepare the URL of your Flask API
+    final String url = 'http://127.0.0.1:5000/api'; // Change if necessary
+
+    // Create a JSON object for the request
+    final Map<String, dynamic> data = {
+      'Query': 'college_registration',
+      'university': UniversityController.text,
+      'college': CollageController.text,
+      'major': MajorController.text,
+      'email': EmailController.text,
+      'password': PasswordController.text,
+      'fullName': widget.fullName,
+      'username': widget.username,
+    };
+
+    // Send a POST request to the Flask API
+    try {
+      final response = await http.post(
+        Uri.parse(url),
+        headers: {'Content-Type': 'application/json'},
+        body: json.encode(data),
+      );
+
+      // Check the response status code
+      if (response.statusCode == 200) {
+        // Successful registration
+        final responseData = json.decode(response.body);
+        ScaffoldMessenger.of(context).showSnackBar(
+          SnackBar(content: Text(responseData['message'])),
+        );
+        // Optionally, navigate to another page or clear the fields
+      } else {
+        // Handle error response
+        final responseData = json.decode(response.body);
+        ScaffoldMessenger.of(context).showSnackBar(
+          SnackBar(content: Text(responseData['message'])),
+        );
+      }
+    } catch (error) {
+      // Handle any errors that occur during the request
+      ScaffoldMessenger.of(context).showSnackBar(
+        SnackBar(content: Text('Failed to register college info: $error')),
+      );
+    }
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -130,6 +189,7 @@ class _CollageInformationState extends State<CollageInformation> {
                       //   context,
                       //   MaterialPageRoute(builder: (context) => RegisterPage()),
                       // );
+                      registerCollegeInfo();
                     },
                     style: ElevatedButton.styleFrom(
                       padding: EdgeInsets.symmetric(horizontal: 110, vertical: 15),

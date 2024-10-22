@@ -118,7 +118,14 @@ class _RegisterPageState extends State<RegisterPage> {
                       // Navigator.pop(context);
                       Navigator.push(
                         context,
-                        MaterialPageRoute(builder: (context) => CollageInformation()),
+                        MaterialPageRoute(
+                            builder: (context) => CollageInformation(
+                            fullName: FullNameController.text,
+                            username: UsernameController.text,
+                            phoneNumber: PhoneController.text,
+                            registrationNumber: RegistrationNumberController.text,
+                          ),
+                        ),
                       );
                     },
                     style: ElevatedButton.styleFrom(
