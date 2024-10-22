@@ -3,6 +3,7 @@
 import 'package:flutter/material.dart';
 import 'package:studymate/pages/LoginPage.dart';
 import '../util/TextField.dart';
+import 'CollageInformatio.dart';
 
 class RegisterPage extends StatefulWidget {
   const RegisterPage({super.key});
@@ -114,9 +115,10 @@ class _RegisterPageState extends State<RegisterPage> {
                   ),
                   ElevatedButton(
                     onPressed: () {
+                      // Navigator.pop(context);
                       Navigator.push(
                         context,
-                        MaterialPageRoute(builder: (context) => RegisterPage()),
+                        MaterialPageRoute(builder: (context) => CollageInformation()),
                       );
                     },
                     style: ElevatedButton.styleFrom(
@@ -129,7 +131,7 @@ class _RegisterPageState extends State<RegisterPage> {
                       ),
                     ),
                     child: Text(
-                      'Register',
+                      'Next',
                       style: TextStyle(
                         color: Colors.white,
                         fontSize: 18,

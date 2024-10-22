@@ -2,14 +2,15 @@
 
 import 'package:flutter/material.dart';
 import '../util/TextField.dart';
+import 'RegisterPage.dart';
 
-class RegisterPage extends StatefulWidget {
-  const RegisterPage({super.key});
+class CollageInformation extends StatefulWidget {
+  const CollageInformation({super.key});
   @override
-  State<RegisterPage> createState() => _RegisterPageState();
+  State<CollageInformation> createState() => _CollageInformationState();
 }
 
-class _RegisterPageState extends State<RegisterPage> {
+class _CollageInformationState extends State<CollageInformation> {
   final FullNameController = TextEditingController();
   final UsernameController = TextEditingController();
   final PhoneController = TextEditingController();
@@ -58,7 +59,7 @@ class _RegisterPageState extends State<RegisterPage> {
                     ),
                   ),
                   Text(
-                    'Personal information',
+                    'Collage information',
                     style: TextStyle(
                       fontSize: 18,
                       fontWeight: FontWeight.bold,  
@@ -72,7 +73,7 @@ class _RegisterPageState extends State<RegisterPage> {
                     width: 385,
                     child: Textfield(
                       controller: FullNameController, 
-                      hintText: 'Full name')
+                      hintText: 'University')
                       ),
                   SizedBox(
                     height: 25,
@@ -85,7 +86,7 @@ class _RegisterPageState extends State<RegisterPage> {
                         width: 180,
                         child: Textfield(
                           controller: UsernameController, 
-                          hintText: 'Username'
+                          hintText: 'Collage'
                           )
                         ),
                         SizedBox(width: 25),
@@ -94,7 +95,7 @@ class _RegisterPageState extends State<RegisterPage> {
                         width: 180,
                         child: Textfield(
                           controller: PhoneController, 
-                          hintText: 'Phone number'
+                          hintText: 'Major'
                           )
                         ),
                     ],
@@ -106,17 +107,26 @@ class _RegisterPageState extends State<RegisterPage> {
                     width: 385,
                     child: Textfield(
                       controller: RegistrationNumberController, 
-                      hintText: 'Registration number')
+                      hintText: 'Email')
+                      ),
+                  SizedBox(
+                    height: 25,
+                  ),
+                  SizedBox(
+                    width: 385,
+                    child: Textfield(
+                      controller: RegistrationNumberController, 
+                      hintText: 'Password')
                       ),
                   SizedBox(
                     height: 50,
                   ),
                   ElevatedButton(
                     onPressed: () {
-                      Navigator.push(
-                        context,
-                        MaterialPageRoute(builder: (context) => RegisterPage()),
-                      );
+                      // Navigator.push(
+                      //   context,
+                      //   MaterialPageRoute(builder: (context) => RegisterPage()),
+                      // );
                     },
                     style: ElevatedButton.styleFrom(
                       padding: EdgeInsets.symmetric(horizontal: 110, vertical: 15),

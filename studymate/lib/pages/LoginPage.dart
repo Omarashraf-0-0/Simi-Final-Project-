@@ -2,6 +2,8 @@
 
 import 'package:flutter/material.dart';
 
+import 'Forget_Pass.dart';
+
 class LoginPage extends StatefulWidget {
   const LoginPage({super.key});
 
@@ -150,13 +152,25 @@ class _LoginPageState extends State<LoginPage> {
                     ],
                   ),
                 ),
-                           SizedBox(width: 90),
-                Text('Forgot Password?',
-                style: TextStyle(
-                  color: const Color.fromARGB(255, 190, 61, 61),
+                SizedBox(width: 90),
+                InkWell(
+                onTap: () {
+                  // Navigate to Forgot Password page
+                  Navigator.push(
+                    context,
+                    MaterialPageRoute(
+                      builder: (context) => ForgetPass(), // Replace with your Forgot Password page widget
+                    ),
+                  );
+                },
+                child: Text(
+                  'Forgot Password?',
+                  style: TextStyle(
+                    color: const Color.fromARGB(255, 190, 61, 61),
+                    decoration: TextDecoration.underline, // Optional: underline for visual indication
+                  ),
                 ),
-                ),
-
+              )
             ],
           ),
           //Login Button
