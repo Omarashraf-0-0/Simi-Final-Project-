@@ -4,6 +4,8 @@ import 'package:flutter/material.dart';
 import 'package:flutter/widgets.dart';
 import 'package:studymate/pages/Forget_Pass.dart';
 import 'package:studymate/pages/LoginPage.dart';
+import 'package:flutter_test/flutter_test.dart';
+
 class IntroPage extends StatefulWidget {
   const IntroPage({super.key});
 
