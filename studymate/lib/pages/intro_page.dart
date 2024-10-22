@@ -2,6 +2,7 @@
 
 import 'package:flutter/material.dart';
 import 'package:flutter/widgets.dart';
+import 'package:studymate/pages/Forget_Pass.dart';
 import 'package:studymate/pages/LoginPage.dart';
 
 class IntroPage extends StatefulWidget {
