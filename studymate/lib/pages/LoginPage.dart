@@ -203,7 +203,9 @@ class _LoginPageState extends State<LoginPage> {
               child: Padding(
                 padding: const EdgeInsets.symmetric(horizontal: 20),
                 child: TextButton(
-                  onPressed: (){},
+                  onPressed: (){
+                    Navigator.pushNamed(context, '/RegisterPage');
+                  },
                   child: Text('Etfadal Ma3anaa',
                   style: TextStyle(
                     color: Colors.white,
