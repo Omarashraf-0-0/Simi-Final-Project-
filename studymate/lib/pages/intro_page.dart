@@ -1,6 +1,8 @@
 // ignore_for_file: prefer_const_constructors
 
 import 'package:flutter/material.dart';
+import 'package:flutter/widgets.dart';
+import 'package:studymate/pages/LoginPage.dart';
 
 class IntroPage extends StatefulWidget {
   const IntroPage({super.key});
@@ -10,9 +12,22 @@ class IntroPage extends StatefulWidget {
 }
 
 class _IntroPageState extends State<IntroPage> {
+    @override
+  void initState() {
+    super.initState();
+    Future.delayed(Duration(seconds: 2), () {
+      Navigator.pushReplacement(
+        context,
+        MaterialPageRoute(builder: (context) => LoginPage()),
+      );
+    });
+  }
+
   @override
   Widget build(BuildContext context) {
+    
     return Scaffold(
+      backgroundColor: Colors.white,
       body: Center(
         child: Column(
           mainAxisAlignment: MainAxisAlignment.center,
@@ -22,5 +37,6 @@ class _IntroPageState extends State<IntroPage> {
         ),
       ),
     );
+    
   }
 }
