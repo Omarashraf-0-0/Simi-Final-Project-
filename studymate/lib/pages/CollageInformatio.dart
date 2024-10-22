@@ -11,10 +11,11 @@ class CollageInformation extends StatefulWidget {
 }
 
 class _CollageInformationState extends State<CollageInformation> {
-  final FullNameController = TextEditingController();
-  final UsernameController = TextEditingController();
-  final PhoneController = TextEditingController();
-  final RegistrationNumberController = TextEditingController();
+  final UniversityController = TextEditingController();
+  final CollageController = TextEditingController();
+  final MajorController = TextEditingController();
+  final EmailController = TextEditingController();
+  final PasswordController = TextEditingController();
 
   @override
   Widget build(BuildContext context) {
@@ -72,7 +73,7 @@ class _CollageInformationState extends State<CollageInformation> {
                     
                     width: 385,
                     child: Textfield(
-                      controller: FullNameController, 
+                      controller: UniversityController, 
                       hintText: 'University')
                       ),
                   SizedBox(
@@ -85,16 +86,16 @@ class _CollageInformationState extends State<CollageInformation> {
                       SizedBox(
                         width: 180,
                         child: Textfield(
-                          controller: UsernameController, 
+                          controller: CollageController, 
                           hintText: 'Collage'
                           )
                         ),
-                        SizedBox(width: 25),
+                        SizedBox(width: 15),
                   
                       SizedBox(
                         width: 180,
                         child: Textfield(
-                          controller: PhoneController, 
+                          controller: MajorController, 
                           hintText: 'Major'
                           )
                         ),
@@ -106,7 +107,7 @@ class _CollageInformationState extends State<CollageInformation> {
                   SizedBox(
                     width: 385,
                     child: Textfield(
-                      controller: RegistrationNumberController, 
+                      controller: EmailController, 
                       hintText: 'Email')
                       ),
                   SizedBox(
@@ -115,8 +116,10 @@ class _CollageInformationState extends State<CollageInformation> {
                   SizedBox(
                     width: 385,
                     child: Textfield(
-                      controller: RegistrationNumberController, 
-                      hintText: 'Password')
+                      controller: PasswordController, 
+                      hintText: 'Password',
+                      obscureText: true,
+                      )
                       ),
                   SizedBox(
                     height: 50,

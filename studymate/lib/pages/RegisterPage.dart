@@ -90,7 +90,7 @@ class _RegisterPageState extends State<RegisterPage> {
                           hintText: 'Username'
                           )
                         ),
-                        SizedBox(width: 25),
+                        SizedBox(width: 15),
                   
                       SizedBox(
                         width: 180,

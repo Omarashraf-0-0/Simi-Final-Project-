@@ -71,14 +71,15 @@ class _ForgetPassState extends State<ForgetPass> {
                  // bt7sal
                   SizedBox(height: 20,),
                  Padding(
-                   padding: const EdgeInsets.all(8),
-                   child: Text('Enter your email address below and we will send you link to reset your password ',
+                   padding: const EdgeInsets.all(20),
+                   child: Text('Enter your email address below  to reset your password ',
                     style: TextStyle(
                       fontSize: 13,
                       fontWeight: FontWeight.bold,
                       color: Colors.black,
                     ),
                    ),
+
                  ),
                 //Username
                 SizedBox(height: 20
