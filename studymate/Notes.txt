@@ -1,0 +1,5 @@
+ngrok http --url=select-roughy-useful.ngrok-free.app 5000
+--> after registering go directly to the login page --> done
+--> make the login data stored local in the device with a specific time to the session
+--> add registrationNumber to the database
+--> replace the age with birth date in the database

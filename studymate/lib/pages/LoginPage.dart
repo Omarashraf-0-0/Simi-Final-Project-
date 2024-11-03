@@ -1,10 +1,12 @@
-// ignore_for_file: prefer_const_constructors, non_constant_identifier_names
+// ignore_for_file: prefer_const_constructors, non_constant_identifier_names, prefer_interpolation_to_compose_strings
 
 import 'package:flutter/material.dart';
 import '../util/TextField.dart';
 import 'Forget_Pass.dart';
 import 'package:http/http.dart' as http;
 import 'dart:convert';
+
+import 'HomePage.dart';
 class LoginPage extends StatefulWidget {
   const LoginPage({super.key});
 
@@ -23,9 +25,16 @@ class _LoginPageState extends State<LoginPage> {
     final username = UsernameController.text;
     final password = PasswordController.text;
     
-    const url = 'https://786d-156-221-190-165.ngrok-free.app/api';  // Replace with your actual Flask server URL
+    const url = 'https://select-roughy-useful.ngrok-free.app/api';  // Replace with your actual Flask server URL
 
     try {
+      // Ensure the username and password are not empty
+      if (username.isEmpty || password.isEmpty) {
+      ScaffoldMessenger.of(context).showSnackBar(
+        SnackBar(content: Text('Username and password cannot be empty')),
+      );
+      return;
+      }
       // Sending login request with username and password as query parameters
       final response = await http.get(
       Uri.parse('$url?Query=login&username=$username&password=$password'),
@@ -41,7 +50,16 @@ class _LoginPageState extends State<LoginPage> {
           ScaffoldMessenger.of(context).showSnackBar(
             SnackBar(content: Text(jsonResponse['message'])),
           );
-          Navigator.pushReplacementNamed(context, '/dashboard');
+          // navigate to the homepage
+          // Inside your login success function
+          Navigator.pushReplacement(
+            context,
+            MaterialPageRoute(builder: (context) => Homepage(
+              name : jsonResponse['name'],
+            )),
+          );
+
+          //Navigator.pushReplacement(context, MaterialPageRoute(builder: (context) => Homepage()));
         } else {
           // Failed login, show error message
           ScaffoldMessenger.of(context).showSnackBar(
@@ -51,15 +69,35 @@ class _LoginPageState extends State<LoginPage> {
       } else {
         // Server error
         ScaffoldMessenger.of(context).showSnackBar(
-          SnackBar(content: Text('Error: ${response.statusCode}')),
+          SnackBar(content: Text(
+            'Error: ${response.statusCode}'
+            'An error occurred while processing the request'
+            '${response.headers}'
+            ,
+            )),
         );
       }
     } catch (error) {
       // Handle network or server unreachable errors
-      ScaffoldMessenger.of(context).showSnackBar(
-        SnackBar(content: Text('Unable to connect to the server. Please try again later.')),
+      showDialog(
+      context: context,
+      builder: (BuildContext context) {
+      return AlertDialog(
+        title: Text('Network Error'),
+        content: SelectableText('Network error: $error'),
+        actions: [
+        TextButton(
+          onPressed: () {
+          Navigator.of(context).pop();
+          },
+          child: Text('OK'),
+        ),
+        ],
       );
+      },
+    );
     }
+    
   }
 
   @override
@@ -85,6 +123,7 @@ class _LoginPageState extends State<LoginPage> {
                 style: TextStyle(
                   fontSize: 40,
                   fontWeight: FontWeight.bold,
+                  fontFamily: 'Poppins',
                   color: Colors.black,
                 ),
               ),
@@ -129,6 +168,7 @@ class _LoginPageState extends State<LoginPage> {
                           'Remember Me',
                           style: TextStyle(
                             color: Colors.black,
+                            fontFamily: 'Poppins',
                           ),
                         ),
                       ],
@@ -150,6 +190,7 @@ class _LoginPageState extends State<LoginPage> {
                       style: TextStyle(
                         color: const Color.fromARGB(255, 190, 61, 61),
                         decoration: TextDecoration.underline,
+                        fontFamily: 'Poppins',
                       ),
                     ),
                   ),
@@ -177,6 +218,7 @@ class _LoginPageState extends State<LoginPage> {
                         style: TextStyle(
                           color: Colors.white,
                           fontSize: 20,
+                          fontFamily: 'Poppins',
                         ),
                       ),
                     ),
@@ -190,6 +232,7 @@ class _LoginPageState extends State<LoginPage> {
                 style: TextStyle(
                   fontSize: 20,
                   fontWeight: FontWeight.bold,
+                  fontFamily: 'Poppins',
                   color: Colors.black,
                 ),
               ),
@@ -212,6 +255,7 @@ class _LoginPageState extends State<LoginPage> {
                         'Etfadal Ma3anaa',
                         style: TextStyle(
                           color: Colors.white,
+                          fontFamily: 'Poppins',
                           fontSize: 15,
                         ),
                       ),

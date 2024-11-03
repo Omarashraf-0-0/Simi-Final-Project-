@@ -2,6 +2,7 @@
 
 import 'package:flutter/material.dart';
 import 'package:studymate/pages/LoginPage.dart';
+import '../Classes/User.dart';
 import '../util/TextField.dart';
 import 'CollageInformatio.dart';
 
@@ -16,7 +17,7 @@ class _RegisterPageState extends State<RegisterPage> {
   final UsernameController = TextEditingController();
   final PhoneController = TextEditingController();
   final RegistrationNumberController = TextEditingController();
-
+  final User user = User();
   @override
   Widget build(BuildContext context) {
     return Scaffold(
@@ -115,15 +116,17 @@ class _RegisterPageState extends State<RegisterPage> {
                   ),
                   ElevatedButton(
                     onPressed: () {
+                      user.fullName = FullNameController.text;
+                      user.username = UsernameController.text;
+                      user.phoneNumber = PhoneController.text;
+                      user.registrationNumber = RegistrationNumberController.text;
+                      user.role = 'student';
                       // Navigator.pop(context);
-                      Navigator.push(
+                      Navigator.pushReplacement(
                         context,
                         MaterialPageRoute(
                             builder: (context) => CollageInformation(
-                            fullName: FullNameController.text,
-                            username: UsernameController.text,
-                            phoneNumber: PhoneController.text,
-                            registrationNumber: RegistrationNumberController.text,
+                              user: user,
                           ),
                         ),
                       );
@@ -162,7 +165,7 @@ class _RegisterPageState extends State<RegisterPage> {
                   ElevatedButton(
                     onPressed: () {
                       // Navigator.pop(context);
-                      Navigator.push(
+                      Navigator.pushReplacement(
                         context,
                         MaterialPageRoute(builder: (context) => LoginPage()),
                       );

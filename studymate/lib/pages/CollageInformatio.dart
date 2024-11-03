@@ -1,22 +1,17 @@
-// ignore_for_file: prefer_const_constructors, prefer_const_literals_to_create_immutables, non_constant_identifier_names
+// ignore_for_file: prefer_const_constructors, prefer_const_literals_to_create_immutables, non_constant_identifier_names, prefer_const_declarations, use_build_context_synchronously
 
 import 'package:flutter/material.dart';
+import 'package:studymate/Classes/User.dart';
+import 'package:studymate/pages/LoginPage.dart';
 import '../util/TextField.dart';
-import 'RegisterPage.dart';
 import 'package:http/http.dart' as http;
 import 'dart:convert'; // For jsonEncode
 
 class CollageInformation extends StatefulWidget {
-  final String fullName;
-  final String username;
-  final String phoneNumber;
-  final String registrationNumber;
+  final user;
   const CollageInformation({
     super.key,
-    required this.fullName,
-    required this.username,
-    required this.phoneNumber,
-    required this.registrationNumber,
+     this.user,
     });
   @override
   State<CollageInformation> createState() => _CollageInformationState();
@@ -31,18 +26,29 @@ class _CollageInformationState extends State<CollageInformation> {
   
  Future<void> registerCollegeInfo() async {
     // Prepare the URL of your Flask API
-    final String url = 'http://127.0.0.1:5000/api'; // Change if necessary
+    final String url = 'https://select-roughy-useful.ngrok-free.app/api'; // Change if necessary
 
     // Create a JSON object for the request
     final Map<String, dynamic> data = {
       'Query': 'college_registration',
-      'university': UniversityController.text,
-      'college': CollageController.text,
-      'major': MajorController.text,
-      'email': EmailController.text,
-      'password': PasswordController.text,
-      'fullName': widget.fullName,
-      'username': widget.username,
+      'username': widget.user.username,
+      'password': widget.user.password,
+      'fullName': widget.user.fullName,
+      'role': widget.user.role,
+      'email': widget.user.email,
+      'phoneNumber': widget.user.phoneNumber,
+      'address': widget.user.address,
+      'gender': widget.user.gender,
+      'college': widget.user.collage,
+      'university': widget.user.university,
+      'major': widget.user.major,
+      'term_level': widget.user.term_level,
+      'pfp': widget.user.pfp,
+      'xp': widget.user.xp,
+      'level': widget.user.level,
+      'title': widget.user.title,
+      'registrationNumber': widget.user.registrationNumber,
+
     };
 
     // Send a POST request to the Flask API
@@ -59,6 +65,11 @@ class _CollageInformationState extends State<CollageInformation> {
         final responseData = json.decode(response.body);
         ScaffoldMessenger.of(context).showSnackBar(
           SnackBar(content: Text(responseData['message'])),
+        );
+        // Navigate to the next screen
+        Navigator.pushReplacement(
+          context,
+          MaterialPageRoute(builder: (context) => LoginPage()),
         );
         // Optionally, navigate to another page or clear the fields
       } else {
@@ -189,6 +200,11 @@ class _CollageInformationState extends State<CollageInformation> {
                       //   context,
                       //   MaterialPageRoute(builder: (context) => RegisterPage()),
                       // );
+                      widget.user.university = UniversityController.text;
+                      widget.user.collage = CollageController.text;
+                      widget.user.major = MajorController.text;
+                      widget.user.email = EmailController.text;
+                      widget.user.password = PasswordController.text;
                       registerCollegeInfo();
                     },
                     style: ElevatedButton.styleFrom(
@@ -224,9 +240,9 @@ class _CollageInformationState extends State<CollageInformation> {
                   ),
                   ElevatedButton(
                     onPressed: () {
-                      Navigator.push(
+                      Navigator.pushReplacement(
                         context,
-                        MaterialPageRoute(builder: (context) => RegisterPage()),
+                        MaterialPageRoute(builder: (context) => LoginPage()),
                       );
                     },
                     style: ElevatedButton.styleFrom(
