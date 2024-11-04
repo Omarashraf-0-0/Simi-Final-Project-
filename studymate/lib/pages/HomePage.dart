@@ -2,13 +2,18 @@
 
 import 'package:flutter/material.dart';
 import 'package:flutter_font_icons/flutter_font_icons.dart';
-// import 'package:google_fonts/google_fonts.dart';
+import 'package:google_fonts/google_fonts.dart';
+import 'package:hive/hive.dart';
+import 'package:hive_flutter/hive_flutter.dart';
+import '../main.dart';
+
+import '../Classes/User.dart';
 
 class Homepage extends StatefulWidget {
-  String? name;
+  User? user;
   Homepage({
     super.key,
-    this.name,
+    this.user,
     });
   
   @override
@@ -16,6 +21,13 @@ class Homepage extends StatefulWidget {
 }
 
 class _HomepageState extends State<Homepage> {
+  Future<void> Logout() async {
+    Box userBox = Hive.box('userBox');
+    await userBox.put('isLoggedIn', false);
+    await userBox.put('loginTime', 0);
+    // navigate to the login page
+    Navigator.pushReplacementNamed(context, '/LoginPage');
+  }
   @override
   Widget build(BuildContext context) {
     return Scaffold(
@@ -110,6 +122,7 @@ class _HomepageState extends State<Homepage> {
               title: Text('Logout'),
               onTap: () {
                 // Handle the Logout tap
+                Logout();
               },
             ),
           ],
@@ -122,7 +135,7 @@ class _HomepageState extends State<Homepage> {
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
             Text(
-              'Hello ${widget.name}!',
+              'Hello ${widget.user?.fullName}!',
               style: TextStyle(
                 fontSize: 36,
                 fontFamily: 'Poppins',
@@ -132,11 +145,9 @@ class _HomepageState extends State<Homepage> {
             ),
             Text(
               'Have a nice day.',
-              style: TextStyle(
-                fontSize: 18,
-                fontFamily: 'Poppins',
-                fontWeight: FontWeight.normal,
-                color: Color.fromRGBO(46, 58, 89, 0.5), // using RGBO where 1.0 represents full opacity
+              style: GoogleFonts.poppins(
+                fontSize: 24,
+                fontWeight: FontWeight.w500,
               ),
               textAlign: TextAlign.left,
             ),

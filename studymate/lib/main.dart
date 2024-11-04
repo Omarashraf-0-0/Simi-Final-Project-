@@ -1,10 +1,16 @@
 // ignore_for_file: prefer_const_constructors
 import 'package:flutter/material.dart';
-// import 'package:google_fonts/google_fonts.dart';
+import 'package:hive/hive.dart';
+import 'package:hive_flutter/hive_flutter.dart';
+import 'package:google_fonts/google_fonts.dart';
+import 'package:studymate/pages/HomePage.dart';
+import 'package:studymate/pages/LoginPage.dart';
 import 'pages/RegisterPage.dart';
 import 'pages/intro_page.dart';
 
-void main() {
+void main () async{
+  await Hive.initFlutter();
+  await Hive.openBox('userBox');
   runApp(const MyApp());
 }
 class MyApp extends StatelessWidget {
@@ -18,7 +24,9 @@ class MyApp extends StatelessWidget {
       
       routes: {
         '/RegisterPage' : (context) => RegisterPage(),
-        
+        '/IntroPage' : (context) => IntroPage(),
+        '/HomePage' : (context) => Homepage(),
+        '/LoginPage' : (context) => LoginPage(),
         }
         ,
     );

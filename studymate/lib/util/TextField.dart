@@ -1,39 +1,97 @@
-// ignore_for_file: prefer_const_constructors
 import 'package:flutter/material.dart';
 
-class Textfield extends StatelessWidget {
+class Textfield extends StatefulWidget {
   final TextEditingController controller;
   final String hintText;
-  final bool obscureText;
-  const Textfield({
-    super.key,
+  bool obscureText;
+  final Widget? prefixIcon;
+  final Widget? suffixIcon;
+  final Color? fillColor;
+  final Color? borderColor;
+  final double borderRadius;
+  final TextInputType? keyboardType;
+  final TextStyle? hintStyle;
+  bool toggleVisability ;
+  final bool isDateField;
+  
+
+  Textfield({
+    Key? key,
     required this.controller,
     required this.hintText,
     this.obscureText = false,
-    });
+    this.prefixIcon,
+    this.suffixIcon,
+    this.fillColor = Colors.grey,
+    this.borderColor = Colors.blue,
+    this.borderRadius = 15.0,
+    this.keyboardType,
+    this.hintStyle,
+    this.toggleVisability = true,
+    this.isDateField = false,
+  }) : super(key: key);
+
+
+
+  @override
+  State<Textfield> createState() => _TextfieldState();
+}
+
+class _TextfieldState extends State<Textfield> {
+
+  Future<void> _selectDate(BuildContext context) async {
+    DateTime? pickedDate = await showDatePicker(
+      context: context,
+      initialDate: DateTime.now(),
+      firstDate: DateTime(1900), // Earliest selectable date
+      lastDate: DateTime.now(), // Latest selectable date (today)
+    );
+
+    if (pickedDate != null) {
+      setState(() {
+        widget.controller.text = "${pickedDate.toLocal()}".split(' ')[0];
+      });
+    }
+  }
 
   @override
   Widget build(BuildContext context) {
     return TextField(
-      controller: controller,
-      obscureText: obscureText,
+      controller: widget.controller,
+      obscureText: !widget.toggleVisability,
+      keyboardType: widget.keyboardType,
       decoration: InputDecoration(
+        labelText: widget.hintText,
+        hintStyle: widget.hintStyle ?? TextStyle(color: Colors.grey),
+        prefixIcon: widget.prefixIcon,
+        suffixIcon: widget.obscureText
+            ? IconButton(
+                icon: Icon(
+                  widget.toggleVisability ? Icons.visibility_off : Icons.visibility,
+                ),
+                onPressed: () {
+                  setState(() {
+                    widget.toggleVisability = !widget.toggleVisability;
+                  });
+                },
+              )
+            : widget.suffixIcon,
+        fillColor: widget.fillColor?.withOpacity(0.2),
+        filled: true,
         border: OutlineInputBorder(
-          borderRadius: BorderRadius.circular(15),
-          borderSide: BorderSide(
-            color: Colors.transparent
-            ),
+          borderRadius: BorderRadius.circular(widget.borderRadius),
+          borderSide: BorderSide(color: widget.borderColor!),
         ),
         focusedBorder: OutlineInputBorder(
-          
-          borderSide: BorderSide(
-            color: Color(0xff1c74bb),
-            ),
+          borderRadius: BorderRadius.circular(widget.borderRadius),
+          borderSide: BorderSide(color: widget.borderColor ?? Color(0xff1c74bb)),
         ),
-        labelText: hintText,
-        fillColor: Colors.grey[200],
-        filled: true,
       ),
+      onTap: widget.isDateField
+          ? () {
+              _selectDate(context); // Show date picker if it's a date field
+            }
+          : null,
     );
   }
 }

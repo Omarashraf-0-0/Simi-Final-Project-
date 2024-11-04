@@ -5,6 +5,7 @@ class User {
    String? username;
    String? password;
    int? id;
+   int? age;
    String? birthDate;
    String? role;
    String? email;
@@ -41,6 +42,7 @@ class User {
      this.level,
      this.title,
      this.birthDate,
+     this.age
   });
 
   

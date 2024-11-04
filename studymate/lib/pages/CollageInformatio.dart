@@ -8,11 +8,11 @@ import 'package:http/http.dart' as http;
 import 'dart:convert'; // For jsonEncode
 
 class CollageInformation extends StatefulWidget {
-  final user;
-  const CollageInformation({
+  User? user;
+  CollageInformation({
     super.key,
-     this.user,
-    });
+    this.user,
+  });
   @override
   State<CollageInformation> createState() => _CollageInformationState();
 }
@@ -23,32 +23,36 @@ class _CollageInformationState extends State<CollageInformation> {
   final MajorController = TextEditingController();
   final EmailController = TextEditingController();
   final PasswordController = TextEditingController();
-  
- Future<void> registerCollegeInfo() async {
+  final ConfirmPasswordController = TextEditingController();
+  final BirthDateController = TextEditingController();
+
+
+  Future<void> registerCollegeInfo() async {
     // Prepare the URL of your Flask API
-    final String url = 'https://select-roughy-useful.ngrok-free.app/api'; // Change if necessary
+    final String url =
+        'https://select-roughy-useful.ngrok-free.app/api'; // Change if necessary
 
     // Create a JSON object for the request
     final Map<String, dynamic> data = {
       'Query': 'college_registration',
-      'username': widget.user.username,
-      'password': widget.user.password,
-      'fullName': widget.user.fullName,
-      'role': widget.user.role,
-      'email': widget.user.email,
-      'phoneNumber': widget.user.phoneNumber,
-      'address': widget.user.address,
-      'gender': widget.user.gender,
-      'college': widget.user.collage,
-      'university': widget.user.university,
-      'major': widget.user.major,
-      'term_level': widget.user.term_level,
-      'pfp': widget.user.pfp,
-      'xp': widget.user.xp,
-      'level': widget.user.level,
-      'title': widget.user.title,
-      'registrationNumber': widget.user.registrationNumber,
-
+      'username': widget.user?.username,
+      'password': widget.user?.password,
+      'fullName': widget.user?.fullName,
+      'role': widget.user?.role,
+      'email': widget.user?.email,
+      'phoneNumber': widget.user?.phoneNumber,
+      'address': widget.user?.address,
+      'gender': widget.user?.gender,
+      'college': widget.user?.collage,
+      'university': widget.user?.university,
+      'major': widget.user?.major,
+      'term_level': 1,
+      'pfp': widget.user?.pfp,
+      'xp': 0,
+      'level': 1,
+      'title': 'newbie',
+      'registrationNumber': widget.user?.registrationNumber,
+      'birthDate': BirthDateController.text,
     };
 
     // Send a POST request to the Flask API
@@ -92,182 +96,204 @@ class _CollageInformationState extends State<CollageInformation> {
     return Scaffold(
       body: Padding(
         padding: const EdgeInsets.symmetric(vertical: 30.0),
-        child: Center(
-          child: Column(
-            mainAxisAlignment: MainAxisAlignment.spaceBetween,
-            crossAxisAlignment: CrossAxisAlignment.center,
-            children: [
-              // add a back button arrow to the left with a circular outlayer
-              Padding(
-                padding: const EdgeInsets.only(left: 20),
-                child: Row(
-                  children: [
-                    Container(
-                      decoration: BoxDecoration(
-                        color: Colors.white,
-                        shape: BoxShape.circle,
+        child: SingleChildScrollView(
+          child: Center(
+            child: Column(
+              mainAxisAlignment: MainAxisAlignment.spaceBetween,
+              crossAxisAlignment: CrossAxisAlignment.center,
+              children: [
+                // add a back button arrow to the left with a circular outlayer
+                Padding(
+                  padding: const EdgeInsets.only(left: 10, bottom: 0),
+                  child: Row(
+                    children: [
+                      Container(
+                        decoration: BoxDecoration(
+                          color: Colors.white,
+                          shape: BoxShape.circle,
+                        ),
+                        child: IconButton(
+                          onPressed: () {
+                            Navigator.pop(context);
+                          },
+                          icon: Icon(
+                            Icons.arrow_back,
+                            color: Colors.black,
+                          ),
+                        ),
                       ),
-                      child: IconButton(
-                        onPressed: () {
-                          Navigator.pop(context);
-                        },
-                        icon: Icon(
-                          Icons.arrow_back,
-                          color: Colors.black,
+                    ],
+                  ),
+                ),
+                Column(
+                  children: [
+                    Text(
+                      'Etfadal Ma3anaa',
+                      style: TextStyle(
+                        fontSize: 42,
+                        fontWeight: FontWeight.bold,
+                      ),
+                    ),
+                    Text('Collage information',
+                        style: TextStyle(
+                          fontSize: 18,
+                          fontWeight: FontWeight.bold,
+                        )),
+                    SizedBox(
+                      height: 25,
+                    ),
+                    SizedBox(
+                        width: 375,
+                        child: Textfield(
+                            controller: EmailController, hintText: 'Email',
+                            keyboardType: TextInputType.emailAddress,
+                            suffixIcon: Icon(Icons.email),
+                            )),
+                    SizedBox(
+                      height: 25,
+                    ),
+                    SizedBox(
+                        width: 375,
+                        child: Textfield(
+                          controller: PasswordController,
+                          hintText: 'Password',
+                          obscureText: true,
+                          toggleVisability: false,
+                        )),
+                        SizedBox(
+                      height: 25,
+                    ),
+                    SizedBox(
+                        width: 375,
+                        child: Textfield(
+                            controller: ConfirmPasswordController,
+                            hintText: 'Confirm Password',
+                            obscureText: true,
+                            toggleVisability: false)),
+                            SizedBox(
+                      height: 25,
+                    ),
+                    SizedBox(
+
+                        width: 375,
+                        child: Textfield(
+                            controller: BirthDateController,
+                            hintText: 'Date of Birth',
+                            isDateField: true,
+                            suffixIcon: Icon(Icons.calendar_today)
+                            )),
+                            SizedBox(
+                      height: 25,
+                    ),
+                    SizedBox(
+                        width: 375,
+                        child: Textfield(
+                            controller: UniversityController,
+                            hintText: 'University',
+                            suffixIcon: Icon(Icons.school),
+                            )),
+                    SizedBox(
+                      height: 25,
+                    ),
+                    Row(
+                      mainAxisAlignment: MainAxisAlignment.center,
+                      children: [
+                        SizedBox(
+                            width: 180,
+                            child: Textfield(
+                                controller: CollageController,
+                                hintText: 'Collage')),
+                        SizedBox(width: 15),
+                        SizedBox(
+                            width: 180,
+                            child: Textfield(
+                                controller: MajorController,
+                                hintText: 'Major')),
+                      ],
+                    ),
+                    
+                    
+                    SizedBox(
+                      height: 30,
+                    ),
+                    ElevatedButton(
+                      onPressed: () {
+                        // Navigator.push(
+                        //   context,
+                        //   MaterialPageRoute(builder: (context) => RegisterPage()),
+                        // );
+                        widget.user?.university = UniversityController.text;
+                        widget.user?.collage = CollageController.text;
+                        widget.user?.major = MajorController.text;
+                        widget.user?.email = EmailController.text;
+                        widget.user?.password = PasswordController.text;
+                        registerCollegeInfo();
+                      },
+                      style: ElevatedButton.styleFrom(
+                        padding:
+                            EdgeInsets.symmetric(horizontal: 110, vertical: 15),
+                        // add color #165D96 to the background
+                        backgroundColor: Color(0xff165D96),
+                        // rounded corners remove
+                        shape: RoundedRectangleBorder(
+                          borderRadius: BorderRadius.circular(15),
+                        ),
+                      ),
+                      child: Text(
+                        'Register',
+                        style: TextStyle(
+                          color: Colors.white,
+                          fontSize: 18,
                         ),
                       ),
                     ),
                   ],
                 ),
-              ),
-              Column(
-                children: [
-                  Text(
-                    'Etfadal Ma3anaa',
-                    style: TextStyle(
-                      fontSize: 42,
-                      fontWeight: FontWeight.bold,  
+                SizedBox(
+                  height: 40,
+                ),
+                Column(
+                  children: [
+                    Text('Already have an account?',
+                        style: TextStyle(
+                          fontSize: 22,
+                          fontWeight: FontWeight.bold,
+                        )),
+                    SizedBox(
+                      height: 5,
                     ),
-                  ),
-                  Text(
-                    'Collage information',
-                    style: TextStyle(
-                      fontSize: 18,
-                      fontWeight: FontWeight.bold,  
-                    )
-                  ),
-                  SizedBox(
-                    height: 25,
-                  ),
-                  SizedBox(
-                    
-                    width: 385,
-                    child: Textfield(
-                      controller: UniversityController, 
-                      hintText: 'University')
-                      ),
-                  SizedBox(
-                    height: 25,
-                  ),
-                  Row(
-                    mainAxisAlignment: MainAxisAlignment.center,
-                    
-                    children: [
-                      SizedBox(
-                        width: 180,
-                        child: Textfield(
-                          controller: CollageController, 
-                          hintText: 'Collage'
-                          )
+                    ElevatedButton(
+                      onPressed: () {
+                        Navigator.pushReplacement(
+                          context,
+                          MaterialPageRoute(builder: (context) => LoginPage()),
+                        );
+                      },
+                      style: ElevatedButton.styleFrom(
+                        padding:
+                            EdgeInsets.symmetric(horizontal: 60, vertical: 5),
+                        // add color #165D96 to the background
+                        backgroundColor: Color(0xff165D96),
+                        // rounded corners remove
+                        shape: RoundedRectangleBorder(
+                          borderRadius: BorderRadius.circular(15),
                         ),
-                        SizedBox(width: 15),
-                  
-                      SizedBox(
-                        width: 180,
-                        child: Textfield(
-                          controller: MajorController, 
-                          hintText: 'Major'
-                          )
+                      ),
+                      child: Text(
+                        'Login',
+                        style: TextStyle(
+                          color: Colors.white,
+                          fontSize: 14,
                         ),
-                    ],
-                  ),
-                  SizedBox(
-                    height: 25,
-                  ),
-                  SizedBox(
-                    width: 385,
-                    child: Textfield(
-                      controller: EmailController, 
-                      hintText: 'Email')
-                      ),
-                  SizedBox(
-                    height: 25,
-                  ),
-                  SizedBox(
-                    width: 385,
-                    child: Textfield(
-                      controller: PasswordController, 
-                      hintText: 'Password',
-                      obscureText: true,
-                      )
-                      ),
-                  SizedBox(
-                    height: 50,
-                  ),
-                  ElevatedButton(
-                    onPressed: () {
-                      // Navigator.push(
-                      //   context,
-                      //   MaterialPageRoute(builder: (context) => RegisterPage()),
-                      // );
-                      widget.user.university = UniversityController.text;
-                      widget.user.collage = CollageController.text;
-                      widget.user.major = MajorController.text;
-                      widget.user.email = EmailController.text;
-                      widget.user.password = PasswordController.text;
-                      registerCollegeInfo();
-                    },
-                    style: ElevatedButton.styleFrom(
-                      padding: EdgeInsets.symmetric(horizontal: 110, vertical: 15),
-                      // add color #165D96 to the background
-                      backgroundColor: Color(0xff165D96),
-                      // rounded corners remove
-                      shape: RoundedRectangleBorder(
-                        borderRadius: BorderRadius.circular(15),
                       ),
                     ),
-                    child: Text(
-                      'Register',
-                      style: TextStyle(
-                        color: Colors.white,
-                        fontSize: 18,
-                      ),
-                    ),
-                  ),
-                ],
-              ),
-              Column(
-                children: [
-                  Text(
-                    'Already have an account?',
-                    style: TextStyle(
-                      fontSize: 22,
-                      fontWeight: FontWeight.bold,  
-                    )
-                  ),
-                  SizedBox(
-                    height: 5,
-                  ),
-                  ElevatedButton(
-                    onPressed: () {
-                      Navigator.pushReplacement(
-                        context,
-                        MaterialPageRoute(builder: (context) => LoginPage()),
-                      );
-                    },
-                    style: ElevatedButton.styleFrom(
-                      padding: EdgeInsets.symmetric(horizontal: 60, vertical: 5),
-                      // add color #165D96 to the background
-                      backgroundColor: Color(0xff165D96),
-                      // rounded corners remove
-                      shape: RoundedRectangleBorder(
-                        borderRadius: BorderRadius.circular(15),
-                      ),
-                    ),
-                    child: Text(
-                      'Login',
-                      style: TextStyle(
-                        color: Colors.white,
-                        fontSize: 14,
-                      ),
-                    ),
-                  ),
-                ],
-              )
-            ],
+                  ],
+                )
+              ],
+            ),
           ),
         ),
       ),
     );
   }
-} 
+}

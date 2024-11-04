@@ -1,6 +1,8 @@
 // ignore_for_file: prefer_const_constructors, non_constant_identifier_names, prefer_interpolation_to_compose_strings
 
 import 'package:flutter/material.dart';
+import 'package:hive/hive.dart';
+import '../Classes/User.dart';
 import '../util/TextField.dart';
 import 'Forget_Pass.dart';
 import 'package:http/http.dart' as http;
@@ -52,10 +54,59 @@ class _LoginPageState extends State<LoginPage> {
           );
           // navigate to the homepage
           // Inside your login success function
+          if (isRememberMeChecked) {
+            // Save the username and password to Hive
+            Hive.box('userBox').put('isLoggedIn', true);
+            Hive.box('userBox').put('loginTime', DateTime.now().millisecondsSinceEpoch);
+            Hive.box('userBox').put('username', jsonResponse['username']);
+            Hive.box('userBox').put('password', jsonResponse['password']);
+            Hive.box('userBox').put('fullName', jsonResponse['name']);
+            Hive.box('userBox').put('role', jsonResponse['role']);
+            Hive.box('userBox').put('mail', jsonResponse['mail']);
+            Hive.box('userBox').put('phone_number', jsonResponse['phone_number']);
+            Hive.box('userBox').put('address', jsonResponse['address']);
+            Hive.box('userBox').put('gender', jsonResponse['gender']);
+            Hive.box('userBox').put('college', jsonResponse['college']);
+            Hive.box('userBox').put('university', jsonResponse['university']);
+            Hive.box('userBox').put('major', jsonResponse['major']);
+            Hive.box('userBox').put('term_level', jsonResponse['term_level']);
+            Hive.box('userBox').put('pfp', jsonResponse['pfp']);
+            Hive.box('userBox').put('xp', jsonResponse['xp']);
+            Hive.box('userBox').put('level', jsonResponse['level']);
+            Hive.box('userBox').put('title', jsonResponse['title']);
+            Hive.box('userBox').put('Registration_Number', jsonResponse['registrationNumber']);
+            Hive.box('userBox').put('birthDate', jsonResponse['birthDate']);
+          } else {
+            // Clear the username and password from Hive
+            Hive.box('userBox').put('isLoggedIn', false);
+
+          }
+          
+          User? user = User(
+            username: jsonResponse['username'],
+            password: jsonResponse['password'],
+            fullName: jsonResponse['name'],
+            role: jsonResponse['role'],
+            email: jsonResponse['mail'],
+            phoneNumber: jsonResponse['phone_number'],
+            address: jsonResponse['address'],
+            gender: jsonResponse['gender'],
+            collage: jsonResponse['collage'],
+            university: jsonResponse['university'],
+            major: jsonResponse['major'],
+            term_level: jsonResponse['term_level'],
+            pfp: jsonResponse['pfp'],
+            xp: jsonResponse['xp'],
+            level: jsonResponse['level'],
+            title: jsonResponse['title'],
+            registrationNumber: jsonResponse['registrationNumber'],
+            birthDate: jsonResponse['birthDate'],
+          );
+          // Navigate to the homepage
           Navigator.pushReplacement(
             context,
             MaterialPageRoute(builder: (context) => Homepage(
-              name : jsonResponse['name'],
+              user: user,
             )),
           );
 
@@ -104,13 +155,13 @@ class _LoginPageState extends State<LoginPage> {
   Widget build(BuildContext context) {
     return Scaffold(
       backgroundColor: Colors.white,
-      body: SafeArea(
+      body: SingleChildScrollView(
         child: Center(
           child: Column(
             mainAxisAlignment: MainAxisAlignment.center,
             children: [
               // Image
-              SizedBox(height: 10),
+              SizedBox(height: 70),
               Image.asset(
                 'lib/assets/img/El_Batal_Study_Mate_Light_Mode-removebg-preview.png',
                 height: 200,
@@ -134,6 +185,7 @@ class _LoginPageState extends State<LoginPage> {
                 child: Textfield(
                   controller: UsernameController,
                   hintText: 'Username',
+                  suffixIcon: Icon(Icons.person_2_outlined , size: 25,),
                 ),
               ),
               // Password
@@ -144,57 +196,62 @@ class _LoginPageState extends State<LoginPage> {
                   controller: PasswordController,
                   hintText: 'Password',
                   obscureText: true,
+                  suffixIcon: Icon(Icons.remove_red_eye,size: 25,),
+                  toggleVisability: false,
                 ),
               ),
               // Remember Me and Forgot Password
               SizedBox(height: 20),
-              Row(
-                mainAxisAlignment: MainAxisAlignment.center,
-                children: [
-                  Padding(
-                    padding: const EdgeInsets.symmetric(horizontal: 20),
-                    child: Row(
-                      children: [
-                        // "Remember Me" checkbox
-                        Checkbox(
-                          value: isRememberMeChecked,
-                          onChanged: (value) {
-                            setState(() {
-                              isRememberMeChecked = value!;
-                            });
-                          },
-                        ),
-                        Text(
-                          'Remember Me',
-                          style: TextStyle(
-                            color: Colors.black,
-                            fontFamily: 'Poppins',
+              Padding(
+                padding: const EdgeInsets.only(right: 25),
+                child: Row(
+                  mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                  children: [
+                    Padding(
+                      padding: const EdgeInsets.symmetric(horizontal: 20),
+                      child: Row(
+                        children: [
+                          // "Remember Me" checkbox
+                          Checkbox(
+                            value: isRememberMeChecked,
+                            onChanged: (value) {
+                              setState(() {
+                                isRememberMeChecked = value!;
+                              });
+                            },
                           ),
-                        ),
-                      ],
-                    ),
-                  ),
-                  SizedBox(width: 60),
-                  InkWell(
-                    onTap: () {
-                      // Navigate to Forgot Password page
-                      Navigator.push(
-                        context,
-                        MaterialPageRoute(
-                          builder: (context) => ForgetPass(),
-                        ),
-                      );
-                    },
-                    child: Text(
-                      'Forgot Password?',
-                      style: TextStyle(
-                        color: const Color.fromARGB(255, 190, 61, 61),
-                        decoration: TextDecoration.underline,
-                        fontFamily: 'Poppins',
+                          Text(
+                            'Remember Me',
+                            style: TextStyle(
+                              color: Colors.black,
+                              fontFamily: 'Poppins',
+                            ),
+                          ),
+                        ],
                       ),
                     ),
-                  ),
-                ],
+                    // SizedBox(width: 60),
+                    InkWell(
+                      onTap: () {
+                        // Navigate to Forgot Password page
+                        Navigator.push(
+                          context,
+                          MaterialPageRoute(
+                            builder: (context) => ForgetPass(),
+                          ),
+                        );
+                      },
+                      child: Text(
+                        'Forgot Password?',
+                        style: TextStyle(
+                          color: const Color.fromARGB(255, 190, 61, 61),
+                          decoration: TextDecoration.underline,
+                          fontFamily: 'Poppins',
+                        ),
+                      ),
+                    ),
+                  ],
+                ),
               ),
               // Login Button
               SizedBox(height: 20),
@@ -205,14 +262,14 @@ class _LoginPageState extends State<LoginPage> {
                     color: const Color.fromRGBO(22, 93, 150, 1),
                     borderRadius: BorderRadius.circular(5),
                   ),
-                  child: Padding(
-                    padding: const EdgeInsets.symmetric(horizontal: 80),
-                    child: TextButton(
-                      onPressed: () {
-                        // Login button action
-                        login();
-                        
-                      },
+                  child: TextButton(
+                    onPressed: () {
+                      // Login button action
+                      login();
+                      
+                    },
+                    child: Padding(
+                      padding: const EdgeInsets.symmetric(horizontal: 80.0),
                       child: Text(
                         'Login',
                         style: TextStyle(
@@ -226,9 +283,9 @@ class _LoginPageState extends State<LoginPage> {
                 ),
               ),
               // Sign up
-              SizedBox(height: 40),
+              SizedBox(height: 60),
               Text(
-                "Don't have any accounts?",
+                "Don't have account?",
                 style: TextStyle(
                   fontSize: 20,
                   fontWeight: FontWeight.bold,
@@ -245,12 +302,12 @@ class _LoginPageState extends State<LoginPage> {
                     color: const Color.fromRGBO(22, 93, 150, 1),
                     borderRadius: BorderRadius.circular(60),
                   ),
-                  child: Padding(
-                    padding: const EdgeInsets.symmetric(horizontal: 20),
-                    child: TextButton(
-                      onPressed: () {
-                        Navigator.pushNamed(context, '/RegisterPage');
-                      },
+                  child: TextButton(
+                    onPressed: () {
+                      Navigator.pushNamed(context, '/RegisterPage');
+                    },
+                    child: Padding(
+                      padding: const EdgeInsets.symmetric(horizontal: 20),
                       child: Text(
                         'Etfadal Ma3anaa',
                         style: TextStyle(
