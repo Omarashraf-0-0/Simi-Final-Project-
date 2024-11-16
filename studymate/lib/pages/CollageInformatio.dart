@@ -30,7 +30,7 @@ class _CollageInformationState extends State<CollageInformation> {
   Future<void> registerCollegeInfo() async {
     // Prepare the URL of your Flask API
     final String url =
-        'https://select-roughy-useful.ngrok-free.app/api'; // Change if necessary
+        'https://alyibrahim.pythonanywhere.com/api'; // Change if necessary
 
     // Create a JSON object for the request
     final Map<String, dynamic> data = {

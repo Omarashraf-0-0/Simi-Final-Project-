@@ -27,7 +27,7 @@ class _LoginPageState extends State<LoginPage> {
     final username = UsernameController.text;
     final password = PasswordController.text;
     
-    const url = 'https://select-roughy-useful.ngrok-free.app/api';  // Replace with your actual Flask server URL
+    const url = 'https://alyibrahim.pythonanywhere.com/api';  // Replace with your actual Flask server URL
 
     try {
       // Ensure the username and password are not empty
@@ -38,9 +38,19 @@ class _LoginPageState extends State<LoginPage> {
       return;
       }
       // Sending login request with username and password as query parameters
-      final response = await http.get(
-      Uri.parse('$url?Query=login&username=$username&password=$password'),
-      );
+      final Map<String, dynamic> requestBody = {
+      'Query': 'login',
+      'username': username,
+      'password': password,
+    };
+
+    // Send the POST request with the JSON body
+    final response = await http.post(
+      Uri.parse(url),
+      headers: {'Content-Type': 'application/json'},
+      body: jsonEncode(requestBody),
+    );
+
 
       
       // Parse the JSON response
@@ -119,14 +129,26 @@ class _LoginPageState extends State<LoginPage> {
         }
       } else {
         // Server error
-        ScaffoldMessenger.of(context).showSnackBar(
-          SnackBar(content: Text(
-            'Error: ${response.statusCode}'
-            'An error occurred while processing the request'
-            '${response.headers}'
-            ,
-            )),
-        );
+        showDialog(
+      context: context,
+      builder: (BuildContext context) {
+      return AlertDialog(
+        title: Text('Network Error'),
+        content: 
+        SelectableText(
+          'Network error: ${response.statusCode} ${response.reasonPhrase}'
+          ),
+        actions: [
+        TextButton(
+          onPressed: () {
+          Navigator.of(context).pop();
+          },
+          child: Text('OK'),
+        ),
+        ],
+      );
+      },
+    );
       }
     } catch (error) {
       // Handle network or server unreachable errors
