@@ -72,7 +72,7 @@ class _LoginPageState extends State<LoginPage> {
             Hive.box('userBox').put('password', jsonResponse['password']);
             Hive.box('userBox').put('fullName', jsonResponse['name']);
             Hive.box('userBox').put('role', jsonResponse['role']);
-            Hive.box('userBox').put('mail', jsonResponse['mail']);
+            Hive.box('userBox').put('email', jsonResponse['email']);
             Hive.box('userBox').put('phone_number', jsonResponse['phone_number']);
             Hive.box('userBox').put('address', jsonResponse['address']);
             Hive.box('userBox').put('gender', jsonResponse['gender']);
@@ -97,7 +97,7 @@ class _LoginPageState extends State<LoginPage> {
             password: jsonResponse['password'],
             fullName: jsonResponse['name'],
             role: jsonResponse['role'],
-            email: jsonResponse['mail'],
+            email: jsonResponse['email'],
             phoneNumber: jsonResponse['phone_number'],
             address: jsonResponse['address'],
             gender: jsonResponse['gender'],
@@ -136,7 +136,7 @@ class _LoginPageState extends State<LoginPage> {
         title: Text('Network Error'),
         content: 
         SelectableText(
-          'Network error: ${response.statusCode} ${response.reasonPhrase}'
+          'Network error: ${response.statusCode} ${response.headers}'
           ),
         actions: [
         TextButton(
