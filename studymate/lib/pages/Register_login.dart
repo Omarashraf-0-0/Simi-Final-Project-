@@ -1,29 +1,28 @@
-// ignore_for_file: prefer_const_constructors, prefer_const_literals_to_create_immutables, non_constant_identifier_names
-
 import 'package:flutter/material.dart';
 import 'package:flutter_font_icons/flutter_font_icons.dart';
 import 'package:studymate/pages/LoginPage.dart';
+import 'package:studymate/pages/RegisterPage.dart';
 import '../Classes/User.dart';
 import '../util/TextField.dart';
 import 'CollageInformatio.dart';
 
-class RegisterPage extends StatefulWidget {
+class RegisterLogin extends StatefulWidget {
     User? user;
-    RegisterPage({super.key,
+    RegisterLogin({super.key,
     this.user,
     });
+
   @override
-  State<RegisterPage> createState() => _RegisterPageState();
+  State<RegisterLogin> createState() => _RegisterLoginState();
 }
 
-class _RegisterPageState extends State<RegisterPage> {
-  final FullNameController = TextEditingController();
+class _RegisterLoginState extends State<RegisterLogin> {
   final UsernameController = TextEditingController();
-  final PhoneController = TextEditingController();
-  final AddressController = TextEditingController();
+  final EmailController = TextEditingController();
+  final PasswordController = TextEditingController();
+  final ConfirmPasswordController = TextEditingController();
   final GenderController = TextEditingController();
-  final BirthDateController = TextEditingController();
-  // final User user = User();
+
   @override
   Widget build(BuildContext context) {
     return Scaffold(
@@ -78,40 +77,40 @@ class _RegisterPageState extends State<RegisterPage> {
                     SizedBox(
                         width: 375,
                         child: Textfield(
-                          controller: FullNameController,
-                          hintText: 'Full name',
-                          suffixIcon: Icon(Icons.person),
-                        )),
-                    SizedBox(
-                      height: 25,
-                    ),
-                    SizedBox(
-                      width: 375,
-                      child: Textfield(
-                          controller: PhoneController,
-                          hintText: 'Phone number',
-                          suffixIcon: Icon(Icons.phone))),
-                    SizedBox(
-                      height: 25,
-                    ),
-                    SizedBox(
-                        width: 375,
-                        child: Textfield(
-                            controller: BirthDateController,
-                            hintText: 'Date of Birth',
-                            isDateField: true,
-                            suffixIcon: Icon(Icons.calendar_today)
+                            controller: EmailController, hintText: 'Email',
+                            keyboardType: TextInputType.emailAddress,
+                            suffixIcon: Icon(Icons.email),
                             )),
-                            SizedBox(
+                    SizedBox(
                       height: 25,
                     ),
                     SizedBox(
                         width: 375,
                         child: Textfield(
-                          controller: AddressController,
-                          hintText: 'Address',
-                          suffixIcon: Icon(Icons.home),
+                          controller: UsernameController,
+                          hintText: 'Username',
                         )),
+                    SizedBox(
+                      height: 25,
+                    ),
+                    SizedBox(
+                        width: 375,
+                        child: Textfield(
+                          controller: PasswordController,
+                          hintText: 'Password',
+                          obscureText: true,
+                          toggleVisability: false,
+                        )),
+                        SizedBox(
+                      height: 25,
+                    ),
+                    SizedBox(
+                        width: 375,
+                        child: Textfield(
+                            controller: ConfirmPasswordController,
+                            hintText: 'Confirm Password',
+                            obscureText: true,
+                            toggleVisability: false)),
                     SizedBox(
                       height: 25,
                     ),
@@ -183,21 +182,19 @@ class _RegisterPageState extends State<RegisterPage> {
                       ),
                     ),
                     SizedBox(
-                      height: 20,
+                      height: 25,
                     ),
                     ElevatedButton(
                       onPressed: () {
-                        widget.user?.fullName = FullNameController.text;
                         widget.user?.username = UsernameController.text;
-                        widget.user?.phoneNumber = PhoneController.text;
+                        widget.user?.email = EmailController.text;
+                        widget.user?.password = PasswordController.text;
                         widget.user?.gender = GenderController.text;
-                        widget.user?.role = 'student';
-                        widget.user?.address = AddressController.text;
                         // Navigator.pop(context);
                         Navigator.pushReplacement(
                           context,
                           MaterialPageRoute(
-                            builder: (context) => CollageInformation(
+                            builder: (context) => RegisterPage(
                               user: widget.user,
                             ),
                           ),

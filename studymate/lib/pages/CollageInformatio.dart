@@ -1,6 +1,7 @@
 // ignore_for_file: prefer_const_constructors, prefer_const_literals_to_create_immutables, non_constant_identifier_names, prefer_const_declarations, use_build_context_synchronously
 
 import 'package:flutter/material.dart';
+import 'package:flutter_font_icons/flutter_font_icons.dart';
 import 'package:studymate/Classes/User.dart';
 import 'package:studymate/pages/LoginPage.dart';
 import '../util/TextField.dart';
@@ -24,7 +25,7 @@ class _CollageInformationState extends State<CollageInformation> {
   final EmailController = TextEditingController();
   final PasswordController = TextEditingController();
   final ConfirmPasswordController = TextEditingController();
-  final BirthDateController = TextEditingController();
+  final RegistrationNumberController = TextEditingController();
   final items = ['AAST', 'AUC', 'GUC', 'MIU', 'MSA'];
   final collage = ['Engineering', 'Business', 'Computing', 'Media', 'Pharmacy'];
   final major = ['Computer Science', 'Business Administration', 'Media', 'Pharmacy', 'Engineering'];
@@ -54,7 +55,7 @@ class _CollageInformationState extends State<CollageInformation> {
       'level': 1,
       'title': 'newbie',
       'registrationNumber': widget.user?.registrationNumber,
-      'birthDate': BirthDateController.text,
+      'birthDate': widget.user?.birthDate,
     };
 
     // Send a POST request to the Flask API
@@ -144,49 +145,11 @@ class _CollageInformationState extends State<CollageInformation> {
                     SizedBox(
                       height: 25,
                     ),
-                    SizedBox(
-                        width: 375,
-                        child: Textfield(
-                            controller: EmailController, hintText: 'Email',
-                            keyboardType: TextInputType.emailAddress,
-                            suffixIcon: Icon(Icons.email),
-                            )),
-                    SizedBox(
-                      height: 25,
-                    ),
-                    SizedBox(
-                        width: 375,
-                        child: Textfield(
-                          controller: PasswordController,
-                          hintText: 'Password',
-                          obscureText: true,
-                          toggleVisability: false,
-                        )),
-                        SizedBox(
-                      height: 25,
-                    ),
-                    SizedBox(
-                        width: 375,
-                        child: Textfield(
-                            controller: ConfirmPasswordController,
-                            hintText: 'Confirm Password',
-                            obscureText: true,
-                            toggleVisability: false)),
+                    
                             SizedBox(
                       height: 25,
                     ),
-                    SizedBox(
-
-                        width: 375,
-                        child: Textfield(
-                            controller: BirthDateController,
-                            hintText: 'Date of Birth',
-                            isDateField: true,
-                            suffixIcon: Icon(Icons.calendar_today)
-                            )),
-                            SizedBox(
-                      height: 25,
-                    ),
+                    
                     SizedBox(
                         width: 375,
                         child: DropdownButton<String>(
@@ -264,7 +227,16 @@ class _CollageInformationState extends State<CollageInformation> {
                                 ),
                       ],
                     ),
-                    
+                    SizedBox(
+                      height: 25,
+                    ),
+                    SizedBox(
+                            width: 350,
+                            child: Textfield(
+                              controller: RegistrationNumberController,
+                              hintText: 'Registration number',
+                              suffixIcon: Icon(FontAwesome.id_card),
+                            )),
                     
                     SizedBox(
                       height: 30,

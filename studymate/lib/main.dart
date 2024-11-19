@@ -5,6 +5,7 @@ import 'package:hive_flutter/hive_flutter.dart';
 import 'package:google_fonts/google_fonts.dart';
 import 'package:studymate/pages/HomePage.dart';
 import 'package:studymate/pages/LoginPage.dart';
+import 'package:studymate/pages/Register_login.dart';
 import 'pages/RegisterPage.dart';
 import 'pages/intro_page.dart';
 
@@ -23,7 +24,7 @@ class MyApp extends StatelessWidget {
       home: const IntroPage(),
       
       routes: {
-        '/RegisterPage' : (context) => RegisterPage(),
+        '/RegisterPage' : (context) => RegisterLogin(),
         '/IntroPage' : (context) => IntroPage(),
         '/HomePage' : (context) => Homepage(),
         '/LoginPage' : (context) => LoginPage(),
