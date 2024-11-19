@@ -7,6 +7,9 @@ import 'package:studymate/pages/LoginPage.dart';
 import '../util/TextField.dart';
 import 'package:http/http.dart' as http;
 import 'dart:convert'; // For jsonEncode
+String? selectedUniversity;
+String? selectedCollage;
+String? selectedMajor;
 
 class CollageInformation extends StatefulWidget {
   User? user;
@@ -19,23 +22,30 @@ class CollageInformation extends StatefulWidget {
 }
 
 class _CollageInformationState extends State<CollageInformation> {
-  final UniversityController = TextEditingController();
-  final CollageController = TextEditingController();
-  final MajorController = TextEditingController();
-  final EmailController = TextEditingController();
-  final PasswordController = TextEditingController();
-  final ConfirmPasswordController = TextEditingController();
+  // State variables for dropdown selections
+  String? selectedUniversity;
+  String? selectedCollage;
+  String? selectedMajor;
+
   final RegistrationNumberController = TextEditingController();
+
+  // Dropdown options
   final items = ['AAST', 'AUC', 'GUC', 'MIU', 'MSA'];
   final collage = ['Engineering', 'Business', 'Computing', 'Media', 'Pharmacy'];
   final major = ['Computer Science', 'Business Administration', 'Media', 'Pharmacy', 'Engineering'];
 
-  Future<void> registerCollegeInfo() async {
-    // Prepare the URL of your Flask API
-    final String url =
-        'https://alyibrahim.pythonanywhere.com/api'; // Change if necessary
+  @override
+  void initState() {
+    super.initState();
+    // Initialize dropdowns with user values if available
+    selectedUniversity = widget.user?.university;
+    selectedCollage = widget.user?.collage;
+    selectedMajor = widget.user?.major;
+  }
 
-    // Create a JSON object for the request
+  Future<void> registerCollegeInfo() async {
+    final String url = 'https://alyibrahim.pythonanywhere.com/api';
+
     final Map<String, dynamic> data = {
       'Query': 'college_registration',
       'username': widget.user?.username,
@@ -46,19 +56,18 @@ class _CollageInformationState extends State<CollageInformation> {
       'phoneNumber': widget.user?.phoneNumber,
       'address': widget.user?.address,
       'gender': widget.user?.gender,
-      'college': widget.user?.collage,
-      'university': widget.user?.university,
-      'major': widget.user?.major,
+      'college': selectedCollage,
+      'university': selectedUniversity,
+      'major': selectedMajor,
       'term_level': 1,
       'pfp': widget.user?.pfp,
       'xp': 0,
       'level': 1,
       'title': 'newbie',
-      'registrationNumber': widget.user?.registrationNumber,
+      'registrationNumber': RegistrationNumberController.text,
       'birthDate': widget.user?.birthDate,
     };
 
-    // Send a POST request to the Flask API
     try {
       final response = await http.post(
         Uri.parse(url),
@@ -66,28 +75,22 @@ class _CollageInformationState extends State<CollageInformation> {
         body: json.encode(data),
       );
 
-      // Check the response status code
       if (response.statusCode == 200) {
-        // Successful registration
         final responseData = json.decode(response.body);
         ScaffoldMessenger.of(context).showSnackBar(
           SnackBar(content: Text(responseData['message'])),
         );
-        // Navigate to the next screen
         Navigator.pushReplacement(
           context,
           MaterialPageRoute(builder: (context) => LoginPage()),
         );
-        // Optionally, navigate to another page or clear the fields
       } else {
-        // Handle error response
         final responseData = json.decode(response.body);
         ScaffoldMessenger.of(context).showSnackBar(
           SnackBar(content: Text(responseData['message'])),
         );
       }
     } catch (error) {
-      // Handle any errors that occur during the request
       ScaffoldMessenger.of(context).showSnackBar(
         SnackBar(content: Text('Failed to register college info: $error')),
       );
@@ -102,12 +105,10 @@ class _CollageInformationState extends State<CollageInformation> {
         child: SingleChildScrollView(
           child: Center(
             child: Column(
-              mainAxisAlignment: MainAxisAlignment.spaceBetween,
-              crossAxisAlignment: CrossAxisAlignment.center,
               children: [
-                // add a back button arrow to the left with a circular outlayer
+                // Back button
                 Padding(
-                  padding: const EdgeInsets.only(left: 10, bottom: 0),
+                  padding: const EdgeInsets.only(left: 10),
                   child: Row(
                     children: [
                       Container(
@@ -116,9 +117,7 @@ class _CollageInformationState extends State<CollageInformation> {
                           shape: BoxShape.circle,
                         ),
                         child: IconButton(
-                          onPressed: () {
-                            Navigator.pop(context);
-                          },
+                          onPressed: () => Navigator.pop(context),
                           icon: Icon(
                             Icons.arrow_back,
                             color: Colors.black,
@@ -137,129 +136,115 @@ class _CollageInformationState extends State<CollageInformation> {
                         fontWeight: FontWeight.bold,
                       ),
                     ),
-                    Text('Collage information',
-                        style: TextStyle(
-                          fontSize: 18,
-                          fontWeight: FontWeight.bold,
-                        )),
-                    SizedBox(
-                      height: 25,
+                    Text(
+                      'College Information',
+                      style: TextStyle(
+                        fontSize: 18,
+                        fontWeight: FontWeight.bold,
+                      ),
                     ),
-                    
-                            SizedBox(
-                      height: 25,
-                    ),
-                    
+                    SizedBox(height: 25),
+                    // University Dropdown
                     SizedBox(
-                        width: 375,
-                        child: DropdownButton<String>(
-                          isExpanded: true,
-                          hint: Text('University'),
-                          value: widget.user?.university,
-                          items: items.map((String value) {
-                            return DropdownMenuItem<String>(
-                              value: value,
-                              child: Text(value),
-                            );
-                          }).toList(),
-                          onChanged: (String? value) {
-                            setState(() {
-                              widget.user?.university = value;
-                            });
-                          },
-                        ),
-                        // child: Textfield(
-                        //     controller: UniversityController,
-                        //     hintText: 'University',
-                        //     suffixIcon: Icon(Icons.school),
-                        //     )
-                            ),
-                    SizedBox(
-                      height: 25,
+                      width: 375,
+                      child: DropdownButton<String>(
+                        isExpanded: true,
+                        hint: Text('University'),
+                        value: selectedUniversity,
+                        items: items.map((String value) {
+                          return DropdownMenuItem<String>(
+                            value: value,
+                            child: Text(value),
+                          );
+                        }).toList(),
+                        onChanged: (String? value) {
+                          setState(() {
+                            selectedUniversity = value;
+                          });
+                        },
+                      ),
                     ),
+                    SizedBox(height: 25),
+                    // Collage and Major Dropdowns
                     Row(
                       mainAxisAlignment: MainAxisAlignment.center,
                       children: [
                         SizedBox(
-                            width: 180,
-                            child: DropdownButton<String>(
-                              isExpanded: true,
-                              hint: Text('Collage'),
-                              value: widget.user?.collage,
-                              items: collage.map((String value) {
-                                return DropdownMenuItem<String>(
-                                  value: value,
-                                  child: Text(value),
-                                );
-                              }).toList(),
-                              onChanged: (String? value) {
-                                setState(() {
-                                  widget.user?.collage = value;
-                                });
-                              },
-                            ),
-                            // child: Textfield(
-                            //     controller: CollageController,
-                            //     hintText: 'Collage')
-                                ),
+                          width: 180,
+                          child: DropdownButton<String>(
+                            isExpanded: true,
+                            hint: Text('Collage'),
+                            value: selectedCollage,
+                            items: collage.map((String value) {
+                              return DropdownMenuItem<String>(
+                                value: value,
+                                child: Text(value),
+                              );
+                            }).toList(),
+                            onChanged: (String? value) {
+                              setState(() {
+                                selectedCollage = value;
+                              });
+                            },
+                          ),
+                        ),
                         SizedBox(width: 15),
                         SizedBox(
-                            width: 180,
-                            child: DropdownButton<String>(
-                              isExpanded: true,
-                              hint: Text('Major'),
-                              value: widget.user?.major,
-                              items: major.map((String value) {
-                                return DropdownMenuItem<String>(
-                                  value: value,
-                                  child: Text(value),
-                                );
-                              }).toList(),
-                              onChanged: (String? value) {
-                                setState(() {
-                                  widget.user?.major = value;
-                                });
-                              },
-                            ),
-                            // child: Textfield(
-                            //     controller: MajorController,
-                            //     hintText: 'Major')
-                                ),
+                          width: 180,
+                          child: DropdownButton<String>(
+                            isExpanded: true,
+                            hint: Text('Major'),
+                            value: selectedMajor,
+                            items: major.map((String value) {
+                              return DropdownMenuItem<String>(
+                                value: value,
+                                child: Text(value),
+                              );
+                            }).toList(),
+                            onChanged: (String? value) {
+                              setState(() {
+                                selectedMajor = value;
+                              });
+                            },
+                          ),
+                        ),
                       ],
                     ),
+                    SizedBox(height: 25),
+                    // Registration Number
                     SizedBox(
-                      height: 25,
+                      width: 350,
+                      child: Textfield(
+                        controller: RegistrationNumberController,
+                        hintText: 'Registration number',
+                        suffixIcon: Icon(FontAwesome.id_card),
+                      ),
                     ),
-                    SizedBox(
-                            width: 350,
-                            child: Textfield(
-                              controller: RegistrationNumberController,
-                              hintText: 'Registration number',
-                              suffixIcon: Icon(FontAwesome.id_card),
-                            )),
-                    
-                    SizedBox(
-                      height: 30,
-                    ),
+                    SizedBox(height: 30),
+                    // Register Button
                     ElevatedButton(
                       onPressed: () {
-                        // Navigator.push(
-                        //   context,
-                        //   MaterialPageRoute(builder: (context) => RegisterPage()),
-                        // );
-                        widget.user?.university = UniversityController.text;
-                        widget.user?.collage = CollageController.text;
-                        widget.user?.major = MajorController.text;
-                        widget.user?.email = EmailController.text;
-                        widget.user?.password = PasswordController.text;
-                        registerCollegeInfo();
+                        if (selectedUniversity == null ||
+                            selectedCollage == null ||
+                            selectedMajor == null ||
+                            RegistrationNumberController.text.isEmpty) {
+                          ScaffoldMessenger.of(context).showSnackBar(
+                            SnackBar(content: Text('Please fill all fields')),
+                          );
+                        }
+                       else if (!RegExp(r'^\d{9}$').hasMatch(RegistrationNumberController.text)) {
+                          ScaffoldMessenger.of(context).showSnackBar(
+                            SnackBar(content: Text('Registration number must be exactly 9 digits')),
+                          );
+                        } 
+                        else
+                        {
+                            registerCollegeInfo();  
+                        }
                       },
                       style: ElevatedButton.styleFrom(
-                        padding:
-                            EdgeInsets.symmetric(horizontal: 110, vertical: 15),
-                        // add color #165D96 to the background
+                        padding: EdgeInsets.symmetric(horizontal: 110, vertical: 15),
                         backgroundColor: Color(0xff165D96),
-                        // rounded corners remove
                         shape: RoundedRectangleBorder(
                           borderRadius: BorderRadius.circular(15),
                         ),
@@ -274,46 +259,6 @@ class _CollageInformationState extends State<CollageInformation> {
                     ),
                   ],
                 ),
-                SizedBox(
-                  height: 40,
-                ),
-                Column(
-                  children: [
-                    Text('Already have an account?',
-                        style: TextStyle(
-                          fontSize: 22,
-                          fontWeight: FontWeight.bold,
-                        )),
-                    SizedBox(
-                      height: 5,
-                    ),
-                    ElevatedButton(
-                      onPressed: () {
-                        Navigator.pushReplacement(
-                          context,
-                          MaterialPageRoute(builder: (context) => LoginPage()),
-                        );
-                      },
-                      style: ElevatedButton.styleFrom(
-                        padding:
-                            EdgeInsets.symmetric(horizontal: 60, vertical: 5),
-                        // add color #165D96 to the background
-                        backgroundColor: Color(0xff165D96),
-                        // rounded corners remove
-                        shape: RoundedRectangleBorder(
-                          borderRadius: BorderRadius.circular(15),
-                        ),
-                      ),
-                      child: Text(
-                        'Login',
-                        style: TextStyle(
-                          color: Colors.white,
-                          fontSize: 14,
-                        ),
-                      ),
-                    ),
-                  ],
-                )
               ],
             ),
           ),

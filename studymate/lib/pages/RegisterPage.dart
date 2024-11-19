@@ -9,8 +9,9 @@ import 'CollageInformatio.dart';
 
 class RegisterPage extends StatefulWidget {
     User? user;
-    RegisterPage({super.key,
-    this.user,
+    RegisterPage({
+      super.key,
+      this.user,
     });
   @override
   State<RegisterPage> createState() => _RegisterPageState();
@@ -21,7 +22,6 @@ class _RegisterPageState extends State<RegisterPage> {
   final UsernameController = TextEditingController();
   final PhoneController = TextEditingController();
   final AddressController = TextEditingController();
-  final GenderController = TextEditingController();
   final BirthDateController = TextEditingController();
   // final User user = User();
   @override
@@ -67,7 +67,7 @@ class _RegisterPageState extends State<RegisterPage> {
                         fontWeight: FontWeight.bold,
                       ),
                     ),
-                    Text('Personal information',
+                    Text('Personal Information',
                         style: TextStyle(
                           fontSize: 18,
                           fontWeight: FontWeight.bold,
@@ -115,93 +115,52 @@ class _RegisterPageState extends State<RegisterPage> {
                     SizedBox(
                       height: 25,
                     ),
-                    Padding(
-                      padding: const EdgeInsets.only(left: 10),
-                      child: Column(
-                        crossAxisAlignment: CrossAxisAlignment.center,
-                        children: [
-                          SizedBox(
-                            width: 375,
-                            child: Text('Gender :',
-                                style: TextStyle(
-                                  fontSize: 22,
-                                  fontWeight: FontWeight.bold,
-                                  textBaseline: TextBaseline.alphabetic,
-                                )),
-                          ),
-                          SizedBox(
-                            height: 10,
-                          ),
-                          Row(
-                            mainAxisAlignment: MainAxisAlignment.start,
-                            children: [
-                              SizedBox(
-                                width: 180,
-                                child: SizedBox(
-                                  width: 180,
-                                  child: Row(
-                                    children: [
-                                      Radio(
-                                        value: 'Male',
-                                        groupValue: GenderController.text,
-                                        onChanged: (value) {
-                                          setState(() {
-                                            GenderController.text =
-                                                value.toString();
-                                          });
-                                        },
-                                      ),
-                                      Text('Male'),
-                                    ],
-                                  ),
-                                ),
-                              ),
-                              SizedBox(
-                                width: 15,
-                              ),
-                              SizedBox(
-                                width: 180,
-                                child: Row(
-                                  children: [
-                                    Radio(
-                                      value: 'Female',
-                                      groupValue: GenderController.text,
-                                      onChanged: (value) {
-                                        setState(() {
-                                          GenderController.text =
-                                              value.toString();
-                                        });
-                                      },
-                                    ),
-                                    Text('Female'),
-                                  ],
-                                ),
-                              ),
-                            ],
-                          ),
-                        ],
-                      ),
-                    ),
-                    SizedBox(
-                      height: 20,
-                    ),
                     ElevatedButton(
                       onPressed: () {
-                        widget.user?.fullName = FullNameController.text;
-                        widget.user?.username = UsernameController.text;
-                        widget.user?.phoneNumber = PhoneController.text;
-                        widget.user?.gender = GenderController.text;
-                        widget.user?.role = 'student';
-                        widget.user?.address = AddressController.text;
-                        // Navigator.pop(context);
-                        Navigator.pushReplacement(
-                          context,
-                          MaterialPageRoute(
-                            builder: (context) => CollageInformation(
-                              user: widget.user,
-                            ),
-                          ),
-                        );
+                        String fullName = FullNameController.text;
+          
+                        String phoneNumber = PhoneController.text;
+                        String address = AddressController.text;
+                        String dateOfBirth = BirthDateController.text; // Assuming you have a DateOfBirthController
+
+                        if (fullName.isEmpty || phoneNumber.isEmpty || address.isEmpty || dateOfBirth.isEmpty) {
+                          ScaffoldMessenger.of(context).showSnackBar(
+                            SnackBar(content: Text('Please fill in all fields.')),
+                          );
+                        } else if (!RegExp(r'^(010|011|012|015)\d{8}$').hasMatch(phoneNumber)) {
+                          ScaffoldMessenger.of(context).showSnackBar(
+                            SnackBar(content: Text('Phone number must be 11 digits and start with 010, 011, 012, or 015.')),
+                          );
+                        } else {
+                          DateTime dob;
+                          try {
+                            dob = DateTime.parse(dateOfBirth);
+                            if (dob.isAfter(DateTime.now())) {
+                              ScaffoldMessenger.of(context).showSnackBar(
+                                SnackBar(content: Text('Date of birth must be in the past.')),
+                              );
+                            } else {
+                              widget.user?.fullName = fullName;
+                              widget.user?.phoneNumber = phoneNumber;
+                              widget.user?.role = 'student';
+                              widget.user?.address = address;
+                              widget.user?.birthDate = dateOfBirth; // Assuming you have a dateOfBirth field in user
+
+                              Navigator.pushReplacement(
+                                context,
+                                MaterialPageRoute(
+                                  builder: (context) => CollageInformation(
+                                    user: widget.user,
+                                  ),
+                                ),
+                              );
+                            }
+                          } catch (e) {
+                            ScaffoldMessenger.of(context).showSnackBar(
+                              SnackBar(content: Text('Invalid date of birth format.')),
+                            );
+                          }
+                        }
                       },
                       style: ElevatedButton.styleFrom(
                         padding:

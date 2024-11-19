@@ -7,9 +7,9 @@ import '../util/TextField.dart';
 import 'CollageInformatio.dart';
 
 class RegisterLogin extends StatefulWidget {
-    User? user;
+    User? user =  User();
     RegisterLogin({super.key,
-    this.user,
+    // this.user,
     });
 
   @override
@@ -66,7 +66,7 @@ class _RegisterLoginState extends State<RegisterLogin> {
                         fontWeight: FontWeight.bold,
                       ),
                     ),
-                    Text('Personal information',
+                    Text('Login Information',
                         style: TextStyle(
                           fontSize: 18,
                           fontWeight: FontWeight.bold,
@@ -186,19 +186,78 @@ class _RegisterLoginState extends State<RegisterLogin> {
                     ),
                     ElevatedButton(
                       onPressed: () {
+                        
+                        
+                        if (UsernameController.text.isEmpty || EmailController.text.isEmpty || PasswordController.text.isEmpty || GenderController.text.isEmpty) {
+                          ScaffoldMessenger.of(context).showSnackBar(
+                            SnackBar(content: Text('Please fill in all fields.')),
+                          );
+
+                        }
+
+                        else if (!RegExp(r'^[a-zA-Z0-9_]+$').hasMatch(UsernameController.text)) {
+                          ScaffoldMessenger.of(context).showSnackBar(
+                            SnackBar(content: Text('Username can only contain letters, numbers, and underscores.')),
+                          );
+                        }
+
+                        else if (!RegExp(r'^[^@]+@[^@]+\.[^@]+').hasMatch(EmailController.text)) {
+                          ScaffoldMessenger.of(context).showSnackBar(
+                            SnackBar(content: Text('Invalid email address.')),
+                          );
+                        }
+
+                        else if (PasswordController.text != ConfirmPasswordController.text) {
+                          ScaffoldMessenger.of(context).showSnackBar(
+                            SnackBar(content: Text('Passwords do not match.')),
+                          );
+                        }
+
+                        else if (PasswordController.text.length < 8 || 
+                            !RegExp(r'[A-Z]').hasMatch(PasswordController.text) || 
+                            !RegExp(r'[a-z]').hasMatch(PasswordController.text) || 
+                            !RegExp(r'\d').hasMatch(PasswordController.text)) {
+                          ScaffoldMessenger.of(context).showSnackBar(
+                            SnackBar(content: Text('Password must be at least 8 characters long and contain at least one uppercase letter, one lowercase letter, and one number.')),
+                          );
+                        }
+
+                        else {
                         widget.user?.username = UsernameController.text;
                         widget.user?.email = EmailController.text;
                         widget.user?.password = PasswordController.text;
                         widget.user?.gender = GenderController.text;
-                        // Navigator.pop(context);
-                        Navigator.pushReplacement(
-                          context,
-                          MaterialPageRoute(
-                            builder: (context) => RegisterPage(
-                              user: widget.user,
-                            ),
-                          ),
+                        showDialog(
+                          context: context,
+                          builder: (BuildContext context) {
+                            return AlertDialog(
+                              title: Text('Registration Successful!'),
+                              content: SelectableText(
+                                'Username: ${widget.user?.username}\nEmail: ${widget.user?.email}\nPassword: ${widget.user?.password}\nGender: ${widget.user?.gender}',
+                              ),
+                              actions: [
+                                TextButton(
+                                  onPressed: () {
+                                    Navigator.of(context).pop(); // Close the dialog
+                                    Navigator.pushReplacement(
+                                      context,
+                                      MaterialPageRoute(
+                                        builder: (context) => RegisterPage(
+                                          user: widget.user,
+                                        ),
+                                      ),
+                                    );
+                                  },
+                                  child: Text('OK'),
+                                ),
+                              ],
+                            );
+                          },
                         );
+                      }
+
+                        // Navigator.pop(context);
+                        
                       },
                       style: ElevatedButton.styleFrom(
                         padding:

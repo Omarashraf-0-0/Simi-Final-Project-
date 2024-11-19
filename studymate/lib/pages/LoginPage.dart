@@ -130,25 +130,25 @@ class _LoginPageState extends State<LoginPage> {
       } else {
         // Server error
         showDialog(
-      context: context,
-      builder: (BuildContext context) {
-      return AlertDialog(
-        title: Text('Network Error'),
-        content: 
-        SelectableText(
-          'Network error: ${response.statusCode} ${response.headers}'
-          ),
-        actions: [
-        TextButton(
-          onPressed: () {
-          Navigator.of(context).pop();
-          },
-          child: Text('OK'),
-        ),
-        ],
+          context: context,
+          builder: (BuildContext context) {
+          return AlertDialog(
+            title: Text('Network Error'),
+            content: 
+            SelectableText(
+              'Network error: ${response.statusCode} ${response.headers}'
+              ),
+            actions: [
+            TextButton(
+              onPressed: () {
+              Navigator.of(context).pop();
+              },
+              child: Text('OK'),
+            ),
+            ],
+          );
+        },
       );
-      },
-    );
       }
     } catch (error) {
       // Handle network or server unreachable errors
