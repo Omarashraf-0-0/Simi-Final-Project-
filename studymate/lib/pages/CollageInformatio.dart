@@ -25,7 +25,9 @@ class _CollageInformationState extends State<CollageInformation> {
   final PasswordController = TextEditingController();
   final ConfirmPasswordController = TextEditingController();
   final BirthDateController = TextEditingController();
-
+  final items = ['AAST', 'AUC', 'GUC', 'MIU', 'MSA'];
+  final collage = ['Engineering', 'Business', 'Computing', 'Media', 'Pharmacy'];
+  final major = ['Computer Science', 'Business Administration', 'Media', 'Pharmacy', 'Engineering'];
 
   Future<void> registerCollegeInfo() async {
     // Prepare the URL of your Flask API
@@ -187,11 +189,28 @@ class _CollageInformationState extends State<CollageInformation> {
                     ),
                     SizedBox(
                         width: 375,
-                        child: Textfield(
-                            controller: UniversityController,
-                            hintText: 'University',
-                            suffixIcon: Icon(Icons.school),
-                            )),
+                        child: DropdownButton<String>(
+                          isExpanded: true,
+                          hint: Text('University'),
+                          value: widget.user?.university,
+                          items: items.map((String value) {
+                            return DropdownMenuItem<String>(
+                              value: value,
+                              child: Text(value),
+                            );
+                          }).toList(),
+                          onChanged: (String? value) {
+                            setState(() {
+                              widget.user?.university = value;
+                            });
+                          },
+                        ),
+                        // child: Textfield(
+                        //     controller: UniversityController,
+                        //     hintText: 'University',
+                        //     suffixIcon: Icon(Icons.school),
+                        //     )
+                            ),
                     SizedBox(
                       height: 25,
                     ),
@@ -200,15 +219,49 @@ class _CollageInformationState extends State<CollageInformation> {
                       children: [
                         SizedBox(
                             width: 180,
-                            child: Textfield(
-                                controller: CollageController,
-                                hintText: 'Collage')),
+                            child: DropdownButton<String>(
+                              isExpanded: true,
+                              hint: Text('Collage'),
+                              value: widget.user?.collage,
+                              items: collage.map((String value) {
+                                return DropdownMenuItem<String>(
+                                  value: value,
+                                  child: Text(value),
+                                );
+                              }).toList(),
+                              onChanged: (String? value) {
+                                setState(() {
+                                  widget.user?.collage = value;
+                                });
+                              },
+                            ),
+                            // child: Textfield(
+                            //     controller: CollageController,
+                            //     hintText: 'Collage')
+                                ),
                         SizedBox(width: 15),
                         SizedBox(
                             width: 180,
-                            child: Textfield(
-                                controller: MajorController,
-                                hintText: 'Major')),
+                            child: DropdownButton<String>(
+                              isExpanded: true,
+                              hint: Text('Major'),
+                              value: widget.user?.major,
+                              items: major.map((String value) {
+                                return DropdownMenuItem<String>(
+                                  value: value,
+                                  child: Text(value),
+                                );
+                              }).toList(),
+                              onChanged: (String? value) {
+                                setState(() {
+                                  widget.user?.major = value;
+                                });
+                              },
+                            ),
+                            // child: Textfield(
+                            //     controller: MajorController,
+                            //     hintText: 'Major')
+                                ),
                       ],
                     ),
                     
