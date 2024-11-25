@@ -18,6 +18,8 @@ dependencies:
   path_provider: any
   google_fonts: any
   google_nav_bar: any
+  
+  lottie: any
 google_fonts: any # Uncomment if you want to use Google Fonts
 
 dev_dependencies:
@@ -30,6 +32,7 @@ flutter:
 
   assets:
     - lib/assets/img/
+    - lib/assets/animations/
 
   fonts:
     - family: Poppins

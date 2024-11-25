@@ -6,8 +6,9 @@ import 'package:google_fonts/google_fonts.dart';
 import 'package:google_nav_bar/google_nav_bar.dart';
 import 'package:hive/hive.dart';
 import 'package:hive_flutter/hive_flutter.dart';
+import 'package:studymate/pages/LoginPage.dart';
+import 'package:studymate/pages/ProfilePage.dart';
 import '../main.dart';
-
 import '../Classes/User.dart';
 
 class Homepage extends StatefulWidget {
@@ -27,7 +28,9 @@ class _HomepageState extends State<Homepage> {
     await userBox.put('isLoggedIn', false);
     await userBox.put('loginTime', 0);
     // navigate to the login page
-    Navigator.pushReplacementNamed(context, '/LoginPage');
+    Navigator.pushReplacement(context, 
+    MaterialPageRoute(builder: (context) => LoginPage())
+    );
   }
 
   // Function to generate card colors
@@ -43,6 +46,20 @@ class _HomepageState extends State<Homepage> {
   Color _getCardColorCourses(int index) {
     final List<Color> colors = [
       Color(0xFF165D96),
+    ];
+    return colors[index % colors.length]; // Cycle through these colors
+  }
+
+  String _getCourseBackground(int index) {
+    final List<String> colors = [
+      'lib/assets/img/bg1.jpg',
+      'lib/assets/img/bg2.jpg',
+      'lib/assets/img/bg3.jpg',
+      'lib/assets/img/bg4.jpg',
+      'lib/assets/img/bg5.jpg',
+      'lib/assets/img/bg6.jpg',
+      'lib/assets/img/bg7.jpg',
+      'lib/assets/img/bg8.jpg',
     ];
     return colors[index % colors.length]; // Cycle through these colors
   }
@@ -99,7 +116,9 @@ class _HomepageState extends State<Homepage> {
                 ElevatedButton(
                   onPressed: () {
                     // navigate to the profile page
-                    Navigator.pushNamed(context, '/ProfilePage');
+                    Navigator.push(context, 
+                    MaterialPageRoute(builder: (context) => Profilepage())
+                    );
                   },
                   style: ElevatedButton.styleFrom(
                     backgroundColor: Color(0xFF165D96),
@@ -125,7 +144,7 @@ class _HomepageState extends State<Homepage> {
             DrawerHeader(
               decoration: BoxDecoration(
                 color: Color(0xFF165D96),
-                ),
+              ),
               child: Row(
                 children: [
                   // app logo
@@ -329,7 +348,6 @@ class _HomepageState extends State<Homepage> {
                 children: [
                   // Add a card for each course
                   SingleChildScrollView(
-                    // padding: const EdgeInsets.only(left: 16.0),
                     scrollDirection: Axis.vertical, // Enable vertical scrolling
                     child: Column(
                       children: List.generate(
@@ -340,63 +358,67 @@ class _HomepageState extends State<Homepage> {
                           ),
                           child: Container(
                             width: 350, // Width of each card
-                            height:
-                                140, // Increased height to make space for the button
+                            height: 140, // Height of each card
                             decoration: BoxDecoration(
-                              color: _getCardColorCourses(
-                                  index), // Assign one of the colors
                               borderRadius:
                                   BorderRadius.circular(15), // Rounded corners
+                              image: DecorationImage(
+                                image: AssetImage(_getCourseBackground(index)),
+                                fit: BoxFit
+                                    .cover, // Make the image cover the entire card
+                              ),
                             ),
-                            child: Padding(
-                              padding: const EdgeInsets.all(
-                                  16.0), // Padding inside the card
-                              child: Column(
-                                mainAxisAlignment: MainAxisAlignment.center,
-                                crossAxisAlignment: CrossAxisAlignment
-                                    .start, // Align to the left
-                                children: [
-                                  Text(
-                                    'Course ${index + 1}',
-                                    style: TextStyle(
-                                      fontSize: 14,
-                                      // fontWeight: FontWeight.bold,
-                                      color: Colors.grey,
-                                    ),
-                                  ),
-                                  Text(
-                                    'Intro to Artificial Intelligence',
-                                    style: TextStyle(
-                                      fontSize: 18,
-                                      color: Colors.white,
-                                      fontWeight: FontWeight.bold,
-                                    ),
-                                  ),
-                                  // SizedBox(
-                                  //     height:
-                                  //         10), // Space between the text and button
-                                  ElevatedButton(
-                                    onPressed: () {
-                                      // Add your start course functionality here
-                                      // print('Start Course ${index + 1}');
-                                    },
-                                    style: ElevatedButton.styleFrom(
-                                      backgroundColor:
-                                          Colors.white, // Button color
-                                      shape: RoundedRectangleBorder(
-                                        borderRadius: BorderRadius.circular(
-                                            15), // Rounded corners
-                                      ),
-                                    ),
-                                    child: Text(
-                                      'Start',
+                            child: Container(
+                              decoration: BoxDecoration(
+                                borderRadius: BorderRadius.circular(15),
+                                color: Colors.black.withOpacity(
+                                    0.5), // Add a semi-transparent overlay for readability
+                              ),
+                              child: Padding(
+                                padding: const EdgeInsets.all(
+                                    16.0), // Padding inside the card
+                                child: Column(
+                                  mainAxisAlignment: MainAxisAlignment.center,
+                                  crossAxisAlignment: CrossAxisAlignment
+                                      .start, // Align to the left
+                                  children: [
+                                    Text(
+                                      'Course ${index + 1}',
                                       style: TextStyle(
-                                        color: Colors.black,
-                                        fontSize: 12,
+                                        fontSize: 14,
+                                        color: Colors.grey,
                                       ),
                                     ),
-                                  ),
-                                ],
+                                    Text(
+                                      'Intro to Artificial Intelligence',
+                                      style: TextStyle(
+                                        fontSize: 18,
+                                        color: Colors.white,
+                                        fontWeight: FontWeight.bold,
+                                      ),
+                                    ),
+                                    ElevatedButton(
+                                      onPressed: () {
+                                        // Add your start course functionality here
+                                      },
+                                      style: ElevatedButton.styleFrom(
+                                        backgroundColor:
+                                            Colors.white, // Button color
+                                        shape: RoundedRectangleBorder(
+                                          borderRadius: BorderRadius.circular(
+                                              15), // Rounded corners
+                                        ),
+                                      ),
+                                      child: Text(
+                                        'Start',
+                                        style: TextStyle(
+                                          color: Colors.black,
+                                          fontSize: 12,
+                                        ),
+                                      ),
+                                    ),
+                                  ],
+                                ),
                               ),
                             ),
                           ),

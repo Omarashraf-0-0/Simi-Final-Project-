@@ -1,8 +1,10 @@
 // ignore_for_file: prefer_const_constructors, non_constant_identifier_names, prefer_interpolation_to_compose_strings
 
 import 'package:flutter/material.dart';
+import 'package:flutter/scheduler.dart';
 import 'package:hive/hive.dart';
 import '../Classes/User.dart';
+import '../Pop-ups/SuccesPopUp.dart';
 import '../util/TextField.dart';
 import 'Forget_Pass.dart';
 import 'package:http/http.dart' as http;
@@ -59,9 +61,9 @@ class _LoginPageState extends State<LoginPage> {
 
         if (jsonResponse['success'] == true) {
           // Successful login, show welcome message and navigate
-          ScaffoldMessenger.of(context).showSnackBar(
-            SnackBar(content: Text(jsonResponse['message'])),
-          );
+          // ScaffoldMessenger.of(context).showSnackBar(
+          //   SnackBar(content: Text(jsonResponse['message'])),
+          // );
           // navigate to the homepage
           // Inside your login success function
           if (isRememberMeChecked) {
@@ -113,13 +115,21 @@ class _LoginPageState extends State<LoginPage> {
             birthDate: jsonResponse['birthDate'],
           );
           // Navigate to the homepage
-          Navigator.pushReplacement(
-            context,
-            MaterialPageRoute(builder: (context) => Homepage(
+          // Navigator.pushReplacement(
+          //   context,
+          //   MaterialPageRoute(builder: (context) => Homepage(
+          //     user: user,
+          //   )),
+          // );
+          Navigator.pushReplacement(context,
+            MaterialPageRoute(builder: (context) => DonePopUp(
               user: user,
-            )),
-          );
-
+              title: 'Woo Hoo!',
+              description: 'Welcome back, ${jsonResponse['name']}!',
+              color : const Color(0xff3BBD5E),
+              textColor : Colors.black,
+              routeName : '/HomePage',
+              )),);
           //Navigator.pushReplacement(context, MaterialPageRoute(builder: (context) => Homepage()));
         } else {
           // Failed login, show error message
