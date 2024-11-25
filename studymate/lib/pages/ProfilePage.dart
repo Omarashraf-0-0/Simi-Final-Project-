@@ -5,6 +5,7 @@ import 'package:flutter_font_icons/flutter_font_icons.dart';
 import 'package:google_fonts/google_fonts.dart';
 import 'package:studymate/pages/ProfileSettings.dart';
 
+
 class Profilepage extends StatefulWidget {
   const Profilepage({super.key});
 
@@ -19,6 +20,7 @@ class _ProfilepageState extends State<Profilepage> {
       appBar: AppBar(
         leading: IconButton(
           icon: Icon(Icons.arrow_back_ios_new_rounded, color: Color(0xFF01D7ED)), 
+
           onPressed: () {
             Navigator.pop(context);
           }
@@ -35,6 +37,7 @@ class _ProfilepageState extends State<Profilepage> {
             icon: Icon(
               Ionicons.settings_outline,
               color: Color(0xFF01D7ED),
+
               size: 25,
 
               ),
@@ -43,6 +46,7 @@ class _ProfilepageState extends State<Profilepage> {
                 context,
                 MaterialPageRoute(builder: (context) => ProfileSettings()),
               );
+
             }
           ),
         ],
@@ -51,6 +55,7 @@ class _ProfilepageState extends State<Profilepage> {
         padding: const EdgeInsets.only(top: 20, left: 16, right: 16),
         child: Column(
           // mainAxisAlignment: MainAxisAlignment.center,
+
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
             Row(
@@ -77,6 +82,16 @@ class _ProfilepageState extends State<Profilepage> {
                     // SizedBox(height: 1),
                     Text(
                       'Mohamed Ahmed',
+                      'Title',
+                      style: TextStyle(
+                        fontSize: 16,
+                        // fontWeight: FontWeight.bold,
+                        fontFamily: GoogleFonts.poppins().fontFamily,
+                      ),
+                    ),
+                    // SizedBox(height: 10),
+                    Text(
+                      'Name',
                       style: TextStyle(
                         fontSize: 24,
                         fontWeight: FontWeight.bold,
@@ -393,6 +408,20 @@ class _ProfilepageState extends State<Profilepage> {
               ),
             ),
             SizedBox(height: 1),
+                    // SizedBox(height: 10),
+                    Text(
+                      'Level',
+                      style: TextStyle(
+                        fontSize: 12,
+                        // fontWeight: FontWeight.bold,
+                        fontFamily: GoogleFonts.poppins().fontFamily,
+                      ),
+                    ),
+                    
+                  ],
+                )
+              ],
+            )
           ],
         ),
       ),

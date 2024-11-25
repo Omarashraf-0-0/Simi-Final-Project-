@@ -6,6 +6,8 @@ import 'package:google_fonts/google_fonts.dart';
 import 'package:studymate/pages/HomePage.dart';
 import 'package:studymate/pages/LoginPage.dart';
 import 'package:studymate/pages/Register_login.dart';
+import 'Pop-ups/SuccesPopUp.dart';
+import 'pages/ProfilePage.dart';
 import 'pages/RegisterPage.dart';
 import 'pages/intro_page.dart';
 
@@ -28,6 +30,7 @@ class MyApp extends StatelessWidget {
         '/IntroPage' : (context) => IntroPage(),
         '/HomePage' : (context) => Homepage(),
         '/LoginPage' : (context) => LoginPage(),
+        '/ProfilePage' : (context) => Profilepage(),
         }
         ,
     );
