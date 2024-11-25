@@ -126,27 +126,6 @@ class _ForgetPassState extends State<ForgetPass> {
                       ),
                     ),
                   ),  
-                        
-                  // Padding(
-                  //   padding: const EdgeInsets.symmetric(horizontal: 25),
-                  //   child: Container(
-                  //     decoration: BoxDecoration(
-                  //     color: Colors.grey[200],
-                  //     borderRadius: BorderRadius.circular(10),
-                  //   ),
-                  //     child: Padding(
-                  //       padding: const EdgeInsets.symmetric(horizontal: 20),
-                  //       child: TextField(
-                  //       decoration: InputDecoration(
-                  //         border: InputBorder.none,
-                  //         hintText: 'Username',
-                  //         icon: Icon(Icons.person),
-                  
-                  //       ),
-                  //       ),
-                  //     ),
-                  //   ),
-                  // ), 
                          //Sign up
                           SizedBox(height: 150),
                    Text("Cant solve the problem ? ",
