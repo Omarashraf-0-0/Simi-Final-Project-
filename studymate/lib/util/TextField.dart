@@ -30,9 +30,6 @@ class Textfield extends StatefulWidget {
     this.toggleVisability = true,
     this.isDateField = false,
   }) : super(key: key);
-
-
-
   @override
   State<Textfield> createState() => _TextfieldState();
 }
