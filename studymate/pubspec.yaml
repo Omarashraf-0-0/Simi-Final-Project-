@@ -1,6 +1,6 @@
 name: studymate
 description: "Study Mate Project"
-publish_to: 'none' # Remove this line if you wish to publish to pub.dev
+publish_to: "none" # Remove this line if you wish to publish to pub.dev
 
 version: 1.0.0+1
 
@@ -10,19 +10,20 @@ environment:
 dependencies:
   flutter:
     sdk: flutter
-  http: any  # Add a specific version for the http package, update as needed
+  http: any # Add a specific version for the http package, update as needed
   cupertino_icons: any
   flutter_font_icons: any
   hive: any
   hive_flutter: any
   path_provider: any
   google_fonts: any
-google_fonts: any  # Uncomment if you want to use Google Fonts
+  google_nav_bar: any
+google_fonts: any # Uncomment if you want to use Google Fonts
 
 dev_dependencies:
   flutter_test:
     sdk: flutter
-  flutter_lints: ^5.0.0  # Update to the latest version
+  flutter_lints: ^5.0.0 # Update to the latest version
 
 flutter:
   uses-material-design: true

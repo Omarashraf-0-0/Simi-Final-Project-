@@ -3,6 +3,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_font_icons/flutter_font_icons.dart';
 import 'package:google_fonts/google_fonts.dart';
+import 'package:google_nav_bar/google_nav_bar.dart';
 import 'package:hive/hive.dart';
 import 'package:hive_flutter/hive_flutter.dart';
 import '../main.dart';
@@ -14,8 +15,8 @@ class Homepage extends StatefulWidget {
   Homepage({
     super.key,
     this.user,
-    });
-  
+  });
+
   @override
   State<Homepage> createState() => _HomepageState();
 }
@@ -28,16 +29,37 @@ class _HomepageState extends State<Homepage> {
     // navigate to the login page
     Navigator.pushReplacementNamed(context, '/LoginPage');
   }
+
+  // Function to generate card colors
+  Color _getCardColor(int index) {
+    final List<Color> colors = [
+      Color(0xFFF6F5FB), // Light Purple
+      Color(0xFFFFF4F4), // Light Pink
+      Color(0xFFF5F9F9), // White or another fallback color
+    ];
+    return colors[index % colors.length]; // Cycle through these colors
+  }
+
+  Color _getCardColorCourses(int index) {
+    final List<Color> colors = [
+      Color(0xFF165D96),
+    ];
+    return colors[index % colors.length]; // Cycle through these colors
+  }
+
   @override
   Widget build(BuildContext context) {
     return Scaffold(
+      backgroundColor: Colors.white,
       appBar: AppBar(
+        backgroundColor: Color(0xFF165D96), // using hex color
         // title: Center(child: Text('Home Page')),
         leading: Builder(builder: (context) {
           return IconButton(
             icon: Icon(
               Icons.menu,
               size: 36,
+              color: Colors.white,
             ),
             onPressed: () {
               // Code to open the drawer or any other action
@@ -54,9 +76,45 @@ class _HomepageState extends State<Homepage> {
         actions: [
           Padding(
             padding: const EdgeInsets.only(right: 16.0),
-            child: CircleAvatar(
-                radius: 18,
-                backgroundImage: AssetImage('lib/assets/img/pfp.jpg')),
+            child: Row(
+              children: [
+                ElevatedButton(
+                  onPressed: () {
+                    // navigate to the notifications page
+                    // Navigator.pushNamed(context, '/NotificationsPage');
+                  },
+                  style: ElevatedButton.styleFrom(
+                    backgroundColor: Color(0xFF165D96),
+                    shape: CircleBorder(),
+                    elevation: 0,
+                    padding: EdgeInsets.all(0),
+                    minimumSize: Size(0, 0),
+                  ),
+                  child: Icon(
+                    Icons.notifications_outlined,
+                    color: Colors.white,
+                    size: 30,
+                  ),
+                ),
+                ElevatedButton(
+                  onPressed: () {
+                    // navigate to the profile page
+                    Navigator.pushNamed(context, '/ProfilePage');
+                  },
+                  style: ElevatedButton.styleFrom(
+                    backgroundColor: Color(0xFF165D96),
+                    shape: CircleBorder(),
+                    elevation: 0,
+                    padding: EdgeInsets.all(0),
+                    minimumSize: Size(0, 0),
+                  ),
+                  child: CircleAvatar(
+                    radius: 18,
+                    backgroundImage: AssetImage('lib/assets/img/pfp.jpg'),
+                  ),
+                ),
+              ],
+            ),
           ),
         ],
       ),
@@ -66,13 +124,15 @@ class _HomepageState extends State<Homepage> {
           children: <Widget>[
             DrawerHeader(
               decoration: BoxDecoration(
-                color: Color.fromRGBO(46, 58, 89, 1.0), // using RGBO where 1.0 represents full opacity
-              ),
+                color: Color(0xFF165D96),
+                ),
               child: Row(
                 children: [
                   // app logo
-                  Image.asset('lib/assets/img/El_Batal_Study_Mate_Light_Mode-removebg-preview.png',
-                      height: 60, width: 60,
+                  Image.asset(
+                      'lib/assets/img/El_Batal_Study_Mate_Light_Mode-removebg-preview.png',
+                      height: 60,
+                      width: 60,
                       color: Colors.white),
                   SizedBox(
                     width: 10,
@@ -103,11 +163,10 @@ class _HomepageState extends State<Homepage> {
               },
             ),
             ListTile(
-              leading: Image.asset('lib/assets/img/ai_icon.png', width: 24) ,
+              leading: Image.asset('lib/assets/img/ai_icon.png', width: 24),
               title: Text('Abo Lyla'),
               onTap: () {
                 // Handle the Abo Lyla tap
-
               },
             ),
             ListTile(
@@ -129,35 +188,444 @@ class _HomepageState extends State<Homepage> {
         ),
       ),
       body: Padding(
-        padding: const EdgeInsets.only(left: 16.0),
-        
-        child: Column(
-          crossAxisAlignment: CrossAxisAlignment.start,
-          children: [
-            Text(
-              'Hello ${widget.user?.fullName}!',
-              style: TextStyle(
-                fontSize: 36,
-                fontFamily: 'Poppins',
-                fontWeight: FontWeight.bold,
+        padding: const EdgeInsets.only(left: 16.0, right: 16.0),
+        child: SingleChildScrollView(
+          child: Column(
+            crossAxisAlignment: CrossAxisAlignment.start,
+            children: [
+              SizedBox(
+                height: 15,
               ),
-              textAlign: TextAlign.left,
-            ),
-            Text(
-              'Have a nice day.',
-              style: GoogleFonts.poppins(
-                fontSize: 24,
-                fontWeight: FontWeight.w500,
+              Row(
+                mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                children: [
+                  Text(
+                    'Today\'s Schedule',
+                    style: TextStyle(
+                      fontSize: 24,
+                      fontFamily: 'Poppins',
+                      // fontWeight: FontWeight.bold,
+                    ),
+                    textAlign: TextAlign.left,
+                  ),
+                  TextButton(
+                    onPressed: () {
+                      // navigate to the schedule page
+                      // Navigator.pushNamed(context, '/SchedulePage');
+                    },
+                    child: Row(
+                      children: [
+                        Text(
+                          'View All',
+                          style: TextStyle(
+                            fontSize: 16,
+                            color: Color(0xFF165D96),
+                          ),
+                        ),
+                        Icon(
+                          Icons.arrow_forward_ios,
+                          color: Color(0xFF165D96),
+                        ),
+                      ],
+                    ),
+                  ),
+                ],
               ),
-              textAlign: TextAlign.left,
+              SizedBox(
+                height: 15,
+              ),
+              Column(
+                children: [
+                  // Add a card for each event
+                  SingleChildScrollView(
+                    scrollDirection:
+                        Axis.horizontal, // Make the Row scrollable horizontally
+                    child: Row(
+                      children: List.generate(
+                        6, // Number of cards
+                        (index) => Padding(
+                          padding: const EdgeInsets.only(
+                              right: 14.0), // Spacing between cards
+                          child: Container(
+                            width:
+                                100, // Width of each card (makes it square if height is the same)
+                            height: 100, // Height of each card
+                            decoration: BoxDecoration(
+                              color: _getCardColor(
+                                  index), // Assign one of the three colors
+                              borderRadius: BorderRadius.circular(
+                                  8), // Optional rounded corners
+                            ),
+                            child: Center(
+                              child: Column(
+                                mainAxisAlignment: MainAxisAlignment.center,
+                                children: [
+                                  Text(
+                                    'Test ${index + 1}',
+                                    style: TextStyle(
+                                      fontSize: 20,
+                                      fontWeight: FontWeight.bold,
+                                    ),
+                                  ),
+                                  Text(
+                                    '10:00 AM',
+                                    style: TextStyle(
+                                      fontSize: 16,
+                                      color: Colors.grey,
+                                    ),
+                                  ),
+                                ],
+                              ),
+                            ),
+                          ),
+                        ),
+                      ),
+                    ),
+                  )
+                ],
+              ),
+              SizedBox(
+                height: 30,
+              ),
+              Row(
+                mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                children: [
+                  Text(
+                    'Recent Courses',
+                    style: TextStyle(
+                      fontSize: 24,
+                      fontFamily: 'Poppins',
+                      // fontWeight: FontWeight.bold,
+                    ),
+                    textAlign: TextAlign.left,
+                  ),
+                  TextButton(
+                    onPressed: () {
+                      // navigate to the schedule page
+                      // Navigator.pushNamed(context, '/CoursesPage');
+                    },
+                    child: Row(
+                      children: [
+                        Text(
+                          'View All',
+                          style: TextStyle(
+                            fontSize: 16,
+                            color: Color(0xFF165D96),
+                          ),
+                        ),
+                        Icon(
+                          Icons.arrow_forward_ios,
+                          color: Color(0xFF165D96),
+                        ),
+                      ],
+                    ),
+                  ),
+                ],
+              ),
+              SizedBox(
+                height: 15,
+              ),
+              Column(
+                children: [
+                  // Add a card for each course
+                  SingleChildScrollView(
+                    // padding: const EdgeInsets.only(left: 16.0),
+                    scrollDirection: Axis.vertical, // Enable vertical scrolling
+                    child: Column(
+                      children: List.generate(
+                        2, // Limit to 2 courses (you can change this number)
+                        (index) => Padding(
+                          padding: const EdgeInsets.only(
+                            bottom: 14.0, // Spacing between cards
+                          ),
+                          child: Container(
+                            width: 350, // Width of each card
+                            height:
+                                140, // Increased height to make space for the button
+                            decoration: BoxDecoration(
+                              color: _getCardColorCourses(
+                                  index), // Assign one of the colors
+                              borderRadius:
+                                  BorderRadius.circular(15), // Rounded corners
+                            ),
+                            child: Padding(
+                              padding: const EdgeInsets.all(
+                                  16.0), // Padding inside the card
+                              child: Column(
+                                mainAxisAlignment: MainAxisAlignment.center,
+                                crossAxisAlignment: CrossAxisAlignment
+                                    .start, // Align to the left
+                                children: [
+                                  Text(
+                                    'Course ${index + 1}',
+                                    style: TextStyle(
+                                      fontSize: 14,
+                                      // fontWeight: FontWeight.bold,
+                                      color: Colors.grey,
+                                    ),
+                                  ),
+                                  Text(
+                                    'Intro to Artificial Intelligence',
+                                    style: TextStyle(
+                                      fontSize: 18,
+                                      color: Colors.white,
+                                      fontWeight: FontWeight.bold,
+                                    ),
+                                  ),
+                                  // SizedBox(
+                                  //     height:
+                                  //         10), // Space between the text and button
+                                  ElevatedButton(
+                                    onPressed: () {
+                                      // Add your start course functionality here
+                                      // print('Start Course ${index + 1}');
+                                    },
+                                    style: ElevatedButton.styleFrom(
+                                      backgroundColor:
+                                          Colors.white, // Button color
+                                      shape: RoundedRectangleBorder(
+                                        borderRadius: BorderRadius.circular(
+                                            15), // Rounded corners
+                                      ),
+                                    ),
+                                    child: Text(
+                                      'Start',
+                                      style: TextStyle(
+                                        color: Colors.black,
+                                        fontSize: 12,
+                                      ),
+                                    ),
+                                  ),
+                                ],
+                              ),
+                            ),
+                          ),
+                        ),
+                      ),
+                    ),
+                  ),
+                ],
+              ),
+              Row(
+                mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                children: [
+                  Text(
+                    'Recent Quizzes',
+                    style: TextStyle(
+                      fontSize: 24,
+                      fontFamily: 'Poppins',
+                      // fontWeight: FontWeight.bold,
+                    ),
+                    textAlign: TextAlign.left,
+                  ),
+                  TextButton(
+                    onPressed: () {
+                      // navigate to the schedule page
+                      // Navigator.pushNamed(context, '/QuizzesPage');
+                    },
+                    child: Row(
+                      children: [
+                        Text(
+                          'View All',
+                          style: TextStyle(
+                            fontSize: 16,
+                            color: Color(0xFF165D96),
+                          ),
+                        ),
+                        Icon(
+                          Icons.arrow_forward_ios,
+                          color: Color(0xFF165D96),
+                        ),
+                      ],
+                    ),
+                  ),
+                ],
+              ),
+              Column(
+                children: [
+                  // Add a card for each course
+                  SingleChildScrollView(
+                    // padding: const EdgeInsets.only(left: 16.0),
+                    scrollDirection: Axis.vertical, // Enable vertical scrolling
+                    child: Column(
+                      children: List.generate(
+                        2, // Limit to 2 courses (you can change this number)
+                        (index) => Padding(
+                          padding: const EdgeInsets.only(
+                            bottom: 14.0, // Spacing between cards
+                          ),
+                          child: Container(
+                            width: 350, // Width of each card
+                            height:
+                                60, // Increased height to make space for the button
+                            decoration: BoxDecoration(
+                              color: _getCardColorCourses(
+                                  index), // Assign one of the colors
+                              borderRadius:
+                                  BorderRadius.circular(15), // Rounded corners
+                            ),
+                            child: Padding(
+                              padding: const EdgeInsets.all(
+                                  16.0), // Padding inside the card
+                              child: Row(
+                                mainAxisAlignment:
+                                    MainAxisAlignment.spaceBetween,
+                                crossAxisAlignment: CrossAxisAlignment
+                                    .start, // Align to the left
+                                children: [
+                                  Row(
+                                    children: [
+                                      Icon(Icons.task_outlined,
+                                          color: Colors.white),
+                                      SizedBox(
+                                        width: 10,
+                                      ),
+                                      Text(
+                                        'Quiz ${index + 1}',
+                                        style: TextStyle(
+                                          fontSize: 18,
+                                          color: Colors.white,
+                                          fontWeight: FontWeight.bold,
+                                        ),
+                                      ),
+                                    ],
+                                  ),
+                                  // SizedBox(
+                                  //     height:
+                                  //         10), // Space between the text and button
+                                  Row(
+                                    children: [
+                                      Text(
+                                        '10 / 10',
+                                        style: TextStyle(
+                                          fontSize: 16,
+                                          // color: Color(0xFF165D96),
+                                          color: Colors.white,
+                                        ),
+                                      ),
+                                      SizedBox(
+                                        width: 10,
+                                      ),
+                                      Icon(
+                                        Icons.arrow_circle_right_outlined,
+                                        // color: Color(0xFF165D96),
+                                        color: Colors.white,
+                                        size: 30,
+                                      ),
+                                    ],
+                                  ),
+                                ],
+                              ),
+                            ),
+                          ),
+                        ),
+                      ),
+                    ),
+                  ),
+                ],
+              ),
+            ],
+          ),
+        ),
+      ),
+      bottomNavigationBar: Container(
+        margin: EdgeInsets.symmetric(
+          horizontal: 20,
+          vertical: 10,
+        ), // Adjust this value to make it float higher
+        decoration: BoxDecoration(
+          color: Color(0xFF165D96),
+          borderRadius: BorderRadius.only(
+            topLeft: Radius.circular(69), // Round the top left corner
+            topRight: Radius.circular(69), // Round the top right corner
+            bottomLeft: Radius.circular(69), // Round the bottom left corner
+            bottomRight: Radius.circular(69), // Round the bottom right corner
+          ),
+          boxShadow: [
+            BoxShadow(
+              color: Colors.black.withOpacity(0.2),
+              blurRadius: 10.0,
+              offset: Offset(0, 4), // Shadow for floating effect
             ),
-            SizedBox(
-              height: 20,
-            ),
-            
           ],
+        ),
+        child: Container(
+          padding: EdgeInsets.symmetric(
+            horizontal: 10,
+            vertical: 10,
+          ),
+          decoration: BoxDecoration(
+            color: Color(0xFF165D96),
+            borderRadius: BorderRadius.circular(69),
+          ),
+          child: GNav(
+            gap: 6,
+            activeColor: Color(0xFF165D96),
+            color: Colors.white,
+            iconSize: 24,
+            padding: EdgeInsets.symmetric(horizontal: 15, vertical: 12),
+            duration: Duration(milliseconds: 500),
+            tabBackgroundColor: Colors.white,
+            onTabChange: (index) {
+              // Handle the tab change
+              // print(index);
+            },
+            tabs: [
+              GButton(icon: Ionicons.ios_home_outline, text: 'Home'),
+              GButton(icon: Ionicons.ios_book_outline, text: 'Courses'),
+              GButton(icon: Ionicons.hardware_chip_outline, text: 'Abo Lyla'),
+              GButton(icon: Ionicons.trophy_outline, text: 'Leaderboard'),
+            ],
+          ),
         ),
       ),
     );
   }
 }
+// Card(
+//                   elevation: 5,
+//                   child: Padding(
+//                     padding: const EdgeInsets.all(8.0),
+//                     child: Column(
+//                       children: [
+//                         Row(
+//                           mainAxisAlignment: MainAxisAlignment.spaceBetween,
+//                           children: [
+//                             Text(
+//                               'Maths',
+//                               style: TextStyle(
+//                                 fontSize: 20,
+//                                 fontWeight: FontWeight.bold,
+//                               ),
+//                             ),
+//                             Text(
+//                               '10:00 AM',
+//                               style: TextStyle(
+//                                 fontSize: 16,
+//                                 color: Colors.grey,
+//                               ),
+//                             ),
+//                           ],
+//                         ),
+//                         SizedBox(
+//                           height: 10,
+//                         ),
+//                         Row(
+//                           children: [
+//                             Icon(
+//                               Icons.location_on,
+//                               color: Colors.blue,
+//                             ),
+//                             Text(
+//                               'Room 101',
+//                               style: TextStyle(
+//                                 fontSize: 16,
+//                                 color: Colors.grey,
+//                               ),
+//                             ),
+//                           ],
+//                         ),
+//                       ],
+//                     ),
+//                   ),
+//                 ),
