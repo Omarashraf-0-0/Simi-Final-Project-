@@ -25,6 +25,8 @@ class Failedpopup extends StatelessWidget {
 }
 
 class CircularWidget extends StatelessWidget {
+  const CircularWidget({super.key});
+
   @override
   Widget build(BuildContext context) {
     return Column(

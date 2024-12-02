@@ -1,10 +1,8 @@
 import 'package:flutter/material.dart';
-import 'package:flutter_font_icons/flutter_font_icons.dart';
 import 'package:studymate/pages/LoginPage.dart';
 import 'package:studymate/pages/RegisterPage.dart';
 import '../Classes/User.dart';
 import '../util/TextField.dart';
-import 'CollageInformatio.dart';
 
 class RegisterLogin extends StatefulWidget {
     User? user =  User();

@@ -1,7 +1,10 @@
 import 'package:flutter/material.dart';
 import 'package:studymate/pages/AboLayla/AboLaylaCourses.dart'; // Update the import path accordingly
 
+
 class AboLayla extends StatelessWidget {
+  const AboLayla({super.key});
+
   @override
   Widget build(BuildContext context) {
     return Scaffold(

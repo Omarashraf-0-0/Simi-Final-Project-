@@ -1,7 +1,6 @@
 // ignore_for_file: prefer_const_constructors, non_constant_identifier_names, prefer_interpolation_to_compose_strings
 
 import 'package:flutter/material.dart';
-import 'package:flutter/scheduler.dart';
 import 'package:hive/hive.dart';
 import '../Classes/User.dart';
 import '../Pop-ups/SuccesPopUp.dart';
@@ -10,7 +9,6 @@ import 'Forget_Pass.dart';
 import 'package:http/http.dart' as http;
 import 'dart:convert';
 
-import 'HomePage.dart';
 class LoginPage extends StatefulWidget {
   const LoginPage({super.key});
 

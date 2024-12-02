@@ -16,7 +16,7 @@ class Textfield extends StatefulWidget {
   
 
   Textfield({
-    Key? key,
+    super.key,
     required this.controller,
     required this.hintText,
     this.obscureText = false,
@@ -29,7 +29,7 @@ class Textfield extends StatefulWidget {
     this.hintStyle,
     this.toggleVisability = true,
     this.isDateField = false,
-  }) : super(key: key);
+  });
 
 
 
