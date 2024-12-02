@@ -10,6 +10,8 @@ import 'package:studymate/pages/LoginPage.dart';
 import 'package:studymate/pages/ProfilePage.dart';
 import '../main.dart';
 import '../Classes/User.dart';
+import 'package:studymate/pages/AboLayla/AboLayla.dart';
+
 
 class Homepage extends StatefulWidget {
   User? user;
@@ -183,8 +185,12 @@ class _HomepageState extends State<Homepage> {
             ),
             ListTile(
               leading: Image.asset('lib/assets/img/ai_icon.png', width: 24),
-              title: Text('Abo Lyla'),
+              title: Text('Abo Layla'),
               onTap: () {
+                Navigator.push(
+                  context,
+                  MaterialPageRoute(builder: (context) => AboLayla()),
+                );
                 // Handle the Abo Lyla tap
               },
             ),

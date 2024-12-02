@@ -18,6 +18,7 @@ dependencies:
   path_provider: any
   google_fonts: any
   google_nav_bar: any
+  dropdown_button2: any
   
   lottie: any
 google_fonts: any # Uncomment if you want to use Google Fonts
