@@ -20,6 +20,7 @@ dependencies:
   google_nav_bar: any
   
   lottie: any
+  intl: ^0.20.1
 google_fonts: any # Uncomment if you want to use Google Fonts
 
 dev_dependencies:
