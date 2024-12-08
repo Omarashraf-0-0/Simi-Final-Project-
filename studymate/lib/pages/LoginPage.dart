@@ -9,6 +9,8 @@ import 'Forget_Pass.dart';
 import 'package:http/http.dart' as http;
 import 'dart:convert';
 
+import 'Register_login.dart';
+
 class LoginPage extends StatefulWidget {
   const LoginPage({super.key});
 
@@ -27,7 +29,7 @@ class _LoginPageState extends State<LoginPage> {
     final username = UsernameController.text;
     final password = PasswordController.text;
     
-    const url = 'https://alyibrahim.pythonanywhere.com/api';  // Replace with your actual Flask server URL
+    const url = 'https://alyibrahim.pythonanywhere.com/login';  // Replace with your actual Flask server URL
 
     try {
       // Ensure the username and password are not empty
@@ -148,7 +150,7 @@ class _LoginPageState extends State<LoginPage> {
             title: Text('Network Error'),
             content: 
             SelectableText(
-              'Network error: ${response.statusCode} ${response.headers}'
+              'Network error: ${response.statusCode} ${response.reasonPhrase}',
               ),
             actions: [
             TextButton(
@@ -338,7 +340,12 @@ class _LoginPageState extends State<LoginPage> {
                   ),
                   child: TextButton(
                     onPressed: () {
-                      Navigator.pushNamed(context, '/RegisterPage');
+                      Navigator.push(context,
+                        MaterialPageRoute(builder: (context) => RegisterLogin(
+                          
+                        )
+                          ),
+                          );
                     },
                     child: Padding(
                       padding: const EdgeInsets.symmetric(horizontal: 20),

@@ -14,6 +14,7 @@ class _AboLaylaChatState extends State<AboLaylaChat> {
     "Hello! How can I help you?",
     "I'm here to assist you.",
     "What do you need help with?",
+    "I'm listening.",
   ];
 
   void _sendMessage() {
@@ -89,7 +90,7 @@ class _AboLaylaChatState extends State<AboLaylaChat> {
                         if (!isUser) ...[
                           CircleAvatar(
                             backgroundImage: AssetImage(
-                                'assets/img/AboLayla.jpg'), // Replace with your bot icon
+                                'lib/assets/img/AboLayla.jpg'), // Replace with your bot icon
                             radius: 16,
                           ),
                           const SizedBox(
@@ -139,7 +140,7 @@ class _AboLaylaChatState extends State<AboLaylaChat> {
                                   12), // Added more space between avatar and message bubble
                           CircleAvatar(
                             backgroundImage: AssetImage(
-                                'assets/img/TheRock.jpg'), // Replace with your user icon
+                                'lib/assets/img/pfp.jpg'), // Replace with your user icon
                             radius: 16,
                           ),
                         ],
