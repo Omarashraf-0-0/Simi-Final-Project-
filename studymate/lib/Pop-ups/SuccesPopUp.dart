@@ -13,7 +13,7 @@ class DonePopUp extends StatefulWidget {
   final Color? textColor;
   final String? icon;
   final String? routeName;
-  User? user;
+  User? user = User();
 
   DonePopUp({super.key, 
     this.title,
@@ -115,7 +115,7 @@ class CircularWidget extends StatelessWidget {
               ) : LoginPage(
               )));
             } else {
-              Navigator.popAndPushNamed(context, routeName, arguments: routeName);
+              Navigator.pushReplacementNamed(context, routeName, arguments: routeName);
             }
           },
           style: ElevatedButton.styleFrom(
