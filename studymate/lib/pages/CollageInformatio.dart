@@ -44,7 +44,7 @@ class _CollageInformationState extends State<CollageInformation> {
   }
 
   Future<void> registerCollegeInfo() async {
-    final String url = 'https://alyibrahim.pythonanywhere.com/api';
+    final String url = 'https://alyibrahim.pythonanywhere.com/register';
 
     final Map<String, dynamic> data = {
       'Query': 'college_registration',

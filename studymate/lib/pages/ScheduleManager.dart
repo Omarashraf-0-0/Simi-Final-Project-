@@ -27,8 +27,9 @@ class _ScheduleViewState extends State<ScheduleView> {
         backgroundColor: Color(0xFF165D96),
         leading: IconButton(
           onPressed: () {
-            Navigator.pushReplacement(
-                context, MaterialPageRoute(builder: (context) => Homepage()));
+            // Navigator.pushReplacement(
+                // context, MaterialPageRoute(builder: (context) => Homepage()));
+                Navigator.pop(context);
           },
           icon: Icon(Icons.arrow_back_ios_outlined,
               color: Colors.white, size: 30),
@@ -47,7 +48,10 @@ class _ScheduleViewState extends State<ScheduleView> {
               color: Colors.white,
               size: 30,
             ),
-            onPressed: () {},
+            onPressed: () {
+              // Add new event
+              print("Add new event");
+            },
           ),
         ],
       ),
