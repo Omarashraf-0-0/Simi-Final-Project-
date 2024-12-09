@@ -3,7 +3,6 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_font_icons/flutter_font_icons.dart';
 import 'package:google_fonts/google_fonts.dart';
-import 'package:studymate/pages/ProfileSettings.dart';
 
 class Profilepage extends StatefulWidget {
   const Profilepage({super.key});
@@ -16,36 +15,22 @@ class _ProfilepageState extends State<Profilepage> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
+      backgroundColor: Colors.white,
       appBar: AppBar(
+        backgroundColor: Color(0xFF165D96),
         leading: IconButton(
-          icon: Icon(Icons.arrow_back_ios_new_rounded, color: Color(0xFF01D7ED)), 
+          icon: Icon(Icons.arrow_back_ios_new_rounded, color: Colors.white), 
           onPressed: () {
             Navigator.pop(context);
           }
         ),
         title: Center(child: Text('Profile Page')),
         titleTextStyle: TextStyle(
-          color: Colors.black,
+          color: Colors.white,
           fontSize: 20,
           fontWeight: FontWeight.bold,
           // backgroundColor: Colors.black,
         ),
-        actions: [
-          IconButton(
-            icon: Icon(
-              Ionicons.settings_outline,
-              color: Color(0xFF01D7ED),
-              size: 25,
-
-              ),
-            onPressed: () {
-              Navigator.push(
-                context,
-                MaterialPageRoute(builder: (context) => ProfileSettings()),
-              );
-            }
-          ),
-        ],
       ),
       body: Padding(
         padding: const EdgeInsets.only(top: 20, left: 16, right: 16),
