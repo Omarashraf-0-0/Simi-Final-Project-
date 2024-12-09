@@ -1,7 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_font_icons/flutter_font_icons.dart';
 import 'package:google_fonts/google_fonts.dart';
-import 'package:studymate/Classes/HomePage.dart';
+import 'package:studymate/pages/HomePage.dart';
 import 'package:studymate/pages/UserSettings.dart'; // Ensure this import is correct and the file exists
 import 'package:studymate/pages/PersonalSettings.dart';
 // import 'package:studymate/Classes/UniversityPage.dart';
