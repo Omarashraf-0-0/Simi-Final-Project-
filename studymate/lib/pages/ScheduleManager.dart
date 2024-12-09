@@ -251,8 +251,7 @@ class _DayViewState extends State<DayView> {
                           ],
                         ),
                         SizedBox(width: 10),
-                        SizedBox(
-                          width: 300,
+                        Expanded(
                           child: Card(
                             shape: RoundedRectangleBorder(
                               borderRadius: BorderRadius.circular(15),
