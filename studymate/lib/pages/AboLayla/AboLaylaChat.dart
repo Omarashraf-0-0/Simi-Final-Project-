@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:google_generative_ai/google_generative_ai.dart';
 
 class AboLaylaChat extends StatefulWidget {
   const AboLaylaChat({super.key});
@@ -10,26 +11,40 @@ class AboLaylaChat extends StatefulWidget {
 class _AboLaylaChatState extends State<AboLaylaChat> {
   final TextEditingController _controller = TextEditingController();
   final List<Map<String, String>> _messages = [];
-  final List<String> _responses = [
-    "Hello! How can I help you?",
-    "I'm here to assist you.",
-    "What do you need help with?",
-    "I'm listening.",
-  ];
+  final model = GenerativeModel(
+    model: 'gemini-1.5-flash',
+    apiKey: "AIzaSyCtRyYUAupQxyE3gjwNcL0YmbA0HqttxSE",
+  );
 
-  void _sendMessage() {
+  void _sendMessage() async {
     if (_controller.text.isEmpty) return;
 
+    final userMessage = _controller.text;
+
     setState(() {
-      // Add user's message
-      _messages.add({"sender": "user", "text": _controller.text});
-      // Add bot response
-      _messages.add({
-        "sender": "bot",
-        "text": _responses[_messages.length % _responses.length]
-      });
+      // Add user's message to the chat
+      _messages.add({"sender": "user", "text": userMessage});
       _controller.clear();
     });
+
+    try {
+      // Fetch Gemini response
+      final content = [Content.text(userMessage)];
+      final response = await model.generateContent(content);
+
+      setState(() {
+        // Add Gemini's response to the chat
+        _messages.add({"sender": "bot", "text": response.text ?? "No response"});
+      });
+    } catch (e) {
+      setState(() {
+        // Add error message if the API fails
+        _messages.add({
+          "sender": "bot",
+          "text": "Oops! Something went wrong. Please try again later."
+        });
+      });
+    }
   }
 
   @override
@@ -40,35 +55,12 @@ class _AboLaylaChatState extends State<AboLaylaChat> {
       ),
       body: Column(
         children: [
-          // Display message when the page is empty
           if (_messages.isEmpty)
             Expanded(
               child: Center(
-                child: Column(
-                  mainAxisAlignment: MainAxisAlignment.center,
-                  crossAxisAlignment: CrossAxisAlignment.center,
-                  children: [
-                    Text(
-                      "What can I help you with?",
-                      style: TextStyle(
-                        fontSize: 28,
-                        fontWeight: FontWeight.bold,
-                      ),
-                    ),
-                    const SizedBox(height: 20),
-                    // Suggested actions as oblong buttons with icons/emoji
-                    Wrap(
-                      alignment: WrapAlignment.center,
-                      spacing: 30,  // Increased spacing for larger gaps between buttons
-                      runSpacing: 20, // Added runSpacing to ensure vertical space
-                      children: [
-                        _buildSuggestedButton("Create a summary", Icons.article),
-                        _buildSuggestedButton("Revise me a topic", Icons.book),
-                        _buildSuggestedButton("Brainstorm", Icons.lightbulb),
-                        _buildSuggestedButton("Make a plan", Icons.calendar_today), // New button added
-                      ],
-                    ),
-                  ],
+                child: Text(
+                  "What can I help you with?",
+                  style: TextStyle(fontSize: 28, fontWeight: FontWeight.bold),
                 ),
               ),
             )
@@ -87,16 +79,13 @@ class _AboLaylaChatState extends State<AboLaylaChat> {
                           ? MainAxisAlignment.end
                           : MainAxisAlignment.start,
                       children: [
-                        if (!isUser) ...[
+                        if (!isUser)
                           CircleAvatar(
                             backgroundImage: AssetImage(
                                 'lib/assets/img/AboLayla.jpg'), // Replace with your bot icon
                             radius: 16,
                           ),
-                          const SizedBox(
-                              width:
-                                  12), // Added more space between avatar and message bubble
-                        ],
+                        const SizedBox(width: 12),
                         Flexible(
                           child: Container(
                             constraints: BoxConstraints(
@@ -104,27 +93,8 @@ class _AboLaylaChatState extends State<AboLaylaChat> {
                                     MediaQuery.of(context).size.width * 0.7),
                             padding: const EdgeInsets.all(12),
                             decoration: BoxDecoration(
-                              gradient: isUser
-                                  ? LinearGradient(
-                                      colors: [
-                                        const Color(0xFF004A61),
-                                        const Color(0xFF165D96)
-                                      ],
-                                      begin: Alignment.topLeft,
-                                      end: Alignment.bottomRight,
-                                    )
-                                  : null,
-                              color: isUser ? null : Colors.grey[300],
-                              borderRadius: BorderRadius.only(
-                                topLeft: const Radius.circular(12),
-                                topRight: const Radius.circular(12),
-                                bottomLeft: isUser
-                                    ? const Radius.circular(12)
-                                    : const Radius.circular(0),
-                                bottomRight: isUser
-                                    ? const Radius.circular(0)
-                                    : const Radius.circular(12),
-                              ),
+                              color: isUser ? Colors.blue : Colors.grey[300],
+                              borderRadius: BorderRadius.circular(12),
                             ),
                             child: Text(
                               message['text']!,
@@ -134,101 +104,33 @@ class _AboLaylaChatState extends State<AboLaylaChat> {
                             ),
                           ),
                         ),
-                        if (isUser) ...[
-                          const SizedBox(
-                              width:
-                                  12), // Added more space between avatar and message bubble
-                          CircleAvatar(
-                            backgroundImage: AssetImage(
-                                'lib/assets/img/pfp.jpg'), // Replace with your user icon
-                            radius: 16,
-                          ),
-                        ],
                       ],
                     ),
                   );
                 },
               ),
             ),
-          // Input Field and Send Button
           Padding(
             padding: const EdgeInsets.all(8.0),
             child: Row(
               children: [
                 Expanded(
-                  child: Container(
-                    decoration: BoxDecoration(
-                      color: const Color.fromARGB(255, 199, 199, 199),
-                      borderRadius: BorderRadius.circular(15),
-                    ),
-                    child: Row(
-                      children: [
-                        Expanded(
-                          child: TextField(
-                            controller: _controller,
-                            maxLines: null, // Allow multiple lines
-                            minLines: 1, // Allow at least one line
-                            decoration: InputDecoration(
-                              hintText: 'Type your message...',
-                              border: InputBorder.none,
-                              contentPadding: const EdgeInsets.symmetric(
-                                  vertical: 12, horizontal: 16),
-                            ),
-                            style: const TextStyle(fontSize: 16),
-                            keyboardType: TextInputType.multiline,
-                          ),
-                        ),
-                        IconButton(
-                          icon: const Icon(Icons.send),
-                          onPressed: _sendMessage,
-                          color: const Color(0xFF004A61),
-                        ),
-                      ],
+                  child: TextField(
+                    controller: _controller,
+                    decoration: InputDecoration(
+                      hintText: 'Type your message...',
+                      border: OutlineInputBorder(
+                        borderRadius: BorderRadius.circular(15),
+                      ),
                     ),
                   ),
                 ),
+                IconButton(
+                  icon: Icon(Icons.send),
+                  onPressed: _sendMessage,
+                  color: Colors.blue,
+                ),
               ],
-            ),
-          ),
-        ],
-      ),
-    );
-  }
-
-  // Method to build suggested buttons
-  Widget _buildSuggestedButton(String text, IconData icon) {
-    return ElevatedButton(
-      onPressed: () {
-        setState(() {
-          _messages.add({
-            'sender': 'user',
-            'text': text,
-          });
-          _messages.add({
-            'sender': 'bot',
-            'text': "Sure! I'll help you with: $text",
-          });
-        });
-      },
-      style: ElevatedButton.styleFrom(
-        padding: EdgeInsets.symmetric(horizontal: 25, vertical: 12),
-        shape: RoundedRectangleBorder(
-          borderRadius: BorderRadius.circular(30),
-        ),
-        backgroundColor:
-            const Color(0xFF165D96), // Use backgroundColor instead of primary
-      ),
-      child: Row(
-        mainAxisSize: MainAxisSize.min,
-        children: [
-          Icon(icon, color: Colors.white), // Icon representing the action
-          SizedBox(width: 10), // Spacing between icon and text
-          Text(
-            text,
-            style: TextStyle(
-              fontSize: 14, // Same font size for all buttons
-              color: Colors.white,
-              fontWeight: FontWeight.normal, // Text not bold
             ),
           ),
         ],
