@@ -1,20 +1,26 @@
 // ignore_for_file: prefer_const_constructors
 
+import 'dart:ffi';
+
 import 'package:flutter/material.dart';
 import 'package:flutter_font_icons/flutter_font_icons.dart';
 import 'package:google_fonts/google_fonts.dart';
 import 'package:studymate/pages/ProfileSettings.dart';
+import '../Classes/User.dart';
 
 class Profilepage extends StatefulWidget {
-  const Profilepage({super.key});
+  User? user;
+   Profilepage({super.key,this.user});
 
   @override
   State<Profilepage> createState() => _ProfilepageState();
 }
 
 class _ProfilepageState extends State<Profilepage> {
+
   @override
   Widget build(BuildContext context) {
+    print("XP : ${widget.user?.xp}");
     return Scaffold(
       appBar: AppBar(
         leading: IconButton(
@@ -66,7 +72,7 @@ class _ProfilepageState extends State<Profilepage> {
                   crossAxisAlignment: CrossAxisAlignment.start,
                   children: [
                     Text(
-                      'Master',
+                      "${widget.user?.title}",
                       style: TextStyle(
                         fontSize: 16,
                         fontWeight: FontWeight.bold,
@@ -76,7 +82,7 @@ class _ProfilepageState extends State<Profilepage> {
                     ),
                     // SizedBox(height: 1),
                     Text(
-                      'Mohamed Ahmed',
+                        "${widget.user?.fullName}",
                       style: TextStyle(
                         fontSize: 24,
                         fontWeight: FontWeight.bold,
@@ -86,7 +92,7 @@ class _ProfilepageState extends State<Profilepage> {
                     ),
                     SizedBox(height: 1),
                     Text(
-                      'Level 5',
+                      "${widget.user?.level}",
                       style: TextStyle(
                         fontSize: 12,
                         fontWeight: FontWeight.bold,
@@ -94,7 +100,18 @@ class _ProfilepageState extends State<Profilepage> {
                         color: Color(0xFFB20000)
                       ),
                     ),
-                    
+                    SizedBox(height: 5,),
+                    SizedBox(
+                        height: 10,
+                        width: MediaQuery.of(context).size.width * 0.3,  // 80% of the screen width
+                        child:
+                        LinearProgressIndicator(
+                          borderRadius: BorderRadius.circular(5),
+                          value: (widget.user?.xp ?? 0)*0.1,
+                          backgroundColor: Color(0xFF01D7ED),  // Background color
+                          color: Color(0xFFB20000),  // Progress color
+                        )
+                    ),
                   ],
                 )
               ],
@@ -225,6 +242,7 @@ class _ProfilepageState extends State<Profilepage> {
               ),
             ),
             SizedBox(height: 5),
+
             Text(
               'Email',
               style: TextStyle(
@@ -236,7 +254,7 @@ class _ProfilepageState extends State<Profilepage> {
             ),
             SizedBox(height: 1),
             Text(
-              'itzm7madx@gmail.com',
+              "${widget.user?.email}",
               style: TextStyle(
                 fontSize: 15,
                 fontWeight: FontWeight.bold,
@@ -256,7 +274,7 @@ class _ProfilepageState extends State<Profilepage> {
             ),
             SizedBox(height: 1),
             Text(
-              '01156762762',
+                "${widget.user?.phoneNumber}",
               style: TextStyle(
                 fontSize: 15,
                 fontWeight: FontWeight.bold,
@@ -276,7 +294,7 @@ class _ProfilepageState extends State<Profilepage> {
             ),
             SizedBox(height: 1),
             Text(
-              '221008808',
+                "${widget.user?.registrationNumber}",
               style: TextStyle(
                 fontSize: 15,
                 fontWeight: FontWeight.bold,
@@ -305,7 +323,7 @@ class _ProfilepageState extends State<Profilepage> {
             ),
             SizedBox(height: 1),
             Text(
-              'AASTMT Aswan',
+                "${widget.user?.university}",
               style: TextStyle(
                 fontSize: 15,
                 fontWeight: FontWeight.bold,
@@ -325,7 +343,7 @@ class _ProfilepageState extends State<Profilepage> {
             ),
             SizedBox(height: 1),
             Text(
-              'Computing and Information Technology',
+                "${widget.user?.collage}",
               style: TextStyle(
                 fontSize: 15,
                 fontWeight: FontWeight.bold,
@@ -345,7 +363,7 @@ class _ProfilepageState extends State<Profilepage> {
             ),
             SizedBox(height: 1),
             Text(
-              'Software Engineering',
+                "${widget.user?.major}",
               style: TextStyle(
                 fontSize: 15,
                 fontWeight: FontWeight.bold,
@@ -355,7 +373,7 @@ class _ProfilepageState extends State<Profilepage> {
             ),
             SizedBox(height: 3),
             Text(
-              'Term Level',
+                'Term Level',
               style: TextStyle(
                 fontSize: 15,
                 fontWeight: FontWeight.bold,
@@ -365,7 +383,7 @@ class _ProfilepageState extends State<Profilepage> {
             ),
             SizedBox(height: 1),
             Text(
-              'Term 5',
+                "${widget.user?.term_level}",
               style: TextStyle(
                 fontSize: 15,
                 fontWeight: FontWeight.bold,
@@ -375,7 +393,7 @@ class _ProfilepageState extends State<Profilepage> {
             ),
             SizedBox(height: 10),
             Text(
-              'Registerd Courses',
+              "${widget.user?.registrationNumber}",
               style: TextStyle(
                 fontSize: 24,
                 fontWeight: FontWeight.bold,

@@ -118,7 +118,7 @@ class _HomepageState extends State<Homepage> {
                   onPressed: () {
                     // navigate to the profile page
                     Navigator.push(context, 
-                    MaterialPageRoute(builder: (context) => Profilepage())
+                    MaterialPageRoute(builder: (context) => Profilepage(user:widget.user))
                     );
                   },
                   style: ElevatedButton.styleFrom(
