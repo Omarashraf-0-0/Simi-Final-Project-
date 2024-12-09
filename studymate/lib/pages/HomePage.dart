@@ -7,6 +7,7 @@ import 'package:hive/hive.dart';
 import 'package:hive_flutter/hive_flutter.dart';
 import 'package:studymate/pages/LoginPage.dart';
 import 'package:studymate/pages/ProfilePage.dart';
+import 'package:studymate/pages/ScheduleManager.dart';
 import '../Classes/User.dart';
 import 'package:studymate/pages/AboLayla/AboLayla.dart';
 
@@ -205,6 +206,16 @@ class _HomepageState extends State<Homepage> {
               onTap: () {
                 // Handle the Logout tap
                 Logout();
+              },
+            ),
+            ListTile(
+              leading: Icon(Icons.schedule),
+              title: Text('Schedule'),
+              onTap: () {
+                // Handle the Close tap
+                Navigator.pushReplacement(context,
+                    MaterialPageRoute(builder: (context) => ScheduleView())
+                  );
               },
             ),
           ],
