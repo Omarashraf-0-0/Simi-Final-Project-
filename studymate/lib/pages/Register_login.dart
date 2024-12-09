@@ -132,24 +132,26 @@ class _RegisterLoginState extends State<RegisterLogin> {
                           Row(
                             mainAxisAlignment: MainAxisAlignment.start,
                             children: [
-                              SizedBox(
-                                width: 180,
+                              Expanded(
                                 child: SizedBox(
                                   width: 180,
-                                  child: Row(
-                                    children: [
-                                      Radio(
-                                        value: 'Male',
-                                        groupValue: GenderController.text,
-                                        onChanged: (value) {
-                                          setState(() {
-                                            GenderController.text =
-                                                value.toString();
-                                          });
-                                        },
-                                      ),
-                                      Text('Male'),
-                                    ],
+                                  child: SizedBox(
+                                    width: 180,
+                                    child: Row(
+                                      children: [
+                                        Radio(
+                                          value: 'Male',
+                                          groupValue: GenderController.text,
+                                          onChanged: (value) {
+                                            setState(() {
+                                              GenderController.text =
+                                                  value.toString();
+                                            });
+                                          },
+                                        ),
+                                        Text('Male'),
+                                      ],
+                                    ),
                                   ),
                                 ),
                               ),

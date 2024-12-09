@@ -10,6 +10,9 @@ import 'package:studymate/pages/ProfilePage.dart';
 import 'package:studymate/pages/ScheduleManager.dart';
 import '../Classes/User.dart';
 import 'package:studymate/pages/AboLayla/AboLayla.dart';
+import 'package:http/http.dart' as http;
+import 'dart:convert';
+import 'package:intl/intl.dart';
 
 
 class Homepage extends StatefulWidget {
@@ -29,9 +32,8 @@ class _HomepageState extends State<Homepage> {
     await userBox.put('isLoggedIn', false);
     await userBox.put('loginTime', 0);
     // navigate to the login page
-    Navigator.pushReplacement(context, 
-    MaterialPageRoute(builder: (context) => LoginPage())
-    );
+    Navigator.pushReplacement(
+        context, MaterialPageRoute(builder: (context) => LoginPage()));
   }
 
   // Function to generate card colors
@@ -64,6 +66,59 @@ class _HomepageState extends State<Homepage> {
     ];
     return colors[index % colors.length]; // Cycle through these colors
   }
+
+  List<dynamic> _events = [];
+  bool _isLoading = true;
+  @override
+  void initState() {
+    super.initState();
+    _fetchTodaysSchedule();
+  }
+
+  Future<void> _fetchTodaysSchedule() async {
+    final today = DateTime.now();
+    final startOfDay = DateTime(today.year, today.month, today.day);
+    final endOfDay = DateTime(today.year, today.month, today.day, 23, 59, 59);
+
+    try {
+      final response = await http.get(Uri.parse(
+        'https://alyibrahim.pythonanywhere.com/schedule?user_id=12&start_date=${startOfDay.toIso8601String().split('T')[0]}&end_date=${endOfDay.toIso8601String().split('T')[0]}',
+      ));
+      if (response.statusCode == 200) {
+        setState(() {
+          _events = json.decode(response.body);
+          _isLoading = false;
+          print(_events);
+        });
+      } else {
+        setState(() {
+          _isLoading = false;
+          _events = [];
+          print('Failed to fetch today\'s schedule with status code ${response.statusCode}');
+          
+        });
+      }
+    } catch (e) {
+      print("Error fetching today's schedule: $e");
+      setState(() {
+        _isLoading = false;
+        _events = [];
+      });
+    }
+  }
+  String _formatTime(String time) {
+  try {
+    // Parse the time string into a DateTime object
+    final parsedTime = DateFormat('HH:mm:ss').parse(time);
+
+    // Format the DateTime object into a 12-hour format
+    return DateFormat('hh:mm a').format(parsedTime);
+  } catch (e) {
+    // Return a fallback value if parsing fails
+    return 'Invalid Time';
+  }
+}
+
 
   @override
   Widget build(BuildContext context) {
@@ -117,9 +172,8 @@ class _HomepageState extends State<Homepage> {
                 ElevatedButton(
                   onPressed: () {
                     // navigate to the profile page
-                    Navigator.push(context, 
-                    MaterialPageRoute(builder: (context) => Profilepage())
-                    );
+                    Navigator.push(context,
+                        MaterialPageRoute(builder: (context) => Profilepage()));
                   },
                   style: ElevatedButton.styleFrom(
                     backgroundColor: Color(0xFF165D96),
@@ -213,9 +267,9 @@ class _HomepageState extends State<Homepage> {
               title: Text('Schedule'),
               onTap: () {
                 // Handle the Close tap
-                Navigator.pushReplacement(context,
-                    MaterialPageRoute(builder: (context) => ScheduleView())
-                  );
+                Navigator.pop(context);
+                Navigator.push(context,
+                    MaterialPageRoute(builder: (context) => ScheduleView()));
               },
             ),
           ],
@@ -246,6 +300,10 @@ class _HomepageState extends State<Homepage> {
                     onPressed: () {
                       // navigate to the schedule page
                       // Navigator.pushNamed(context, '/SchedulePage');
+                      Navigator.push(
+                          context,
+                          MaterialPageRoute(
+                              builder: (context) => ScheduleView()));
                     },
                     child: Row(
                       children: [
@@ -268,56 +326,68 @@ class _HomepageState extends State<Homepage> {
               SizedBox(
                 height: 15,
               ),
-              Column(
-                children: [
-                  // Add a card for each event
-                  SingleChildScrollView(
-                    scrollDirection:
-                        Axis.horizontal, // Make the Row scrollable horizontally
-                    child: Row(
-                      children: List.generate(
-                        6, // Number of cards
-                        (index) => Padding(
-                          padding: const EdgeInsets.only(
-                              right: 14.0), // Spacing between cards
-                          child: Container(
-                            width:
-                                100, // Width of each card (makes it square if height is the same)
-                            height: 100, // Height of each card
-                            decoration: BoxDecoration(
-                              color: _getCardColor(
-                                  index), // Assign one of the three colors
-                              borderRadius: BorderRadius.circular(
-                                  8), // Optional rounded corners
-                            ),
-                            child: Center(
-                              child: Column(
-                                mainAxisAlignment: MainAxisAlignment.center,
-                                children: [
-                                  Text(
-                                    'Test ${index + 1}',
-                                    style: TextStyle(
-                                      fontSize: 20,
-                                      fontWeight: FontWeight.bold,
+              _isLoading
+                  ? Center(
+                      child: CircularProgressIndicator(),
+                    )
+                  : _events.isEmpty
+                      ? Center(
+                          child: Text(
+                            'No tasks for today.',
+                            style: TextStyle(fontSize: 18, color: Color(0xFF165D96)),
+                          ),
+                        )
+                      : Column(
+                          children: [
+                            // Schedule Cards
+                            SingleChildScrollView(
+                              scrollDirection: Axis.horizontal,
+                              child: Row(
+                                children: List.generate(
+                                  _events.length,
+                                  (index) => Padding(
+                                    padding: const EdgeInsets.only(right: 14.0),
+                                    child: Container(
+                                      width: 150,
+                                      height: 100,
+                                      decoration: BoxDecoration(
+                                        color: _getCardColor(index),
+                                        borderRadius: BorderRadius.circular(8),
+                                      ),
+                                      child: Center(
+                                        child: Column(
+                                          mainAxisAlignment:
+                                              MainAxisAlignment.center,
+                                          children: [
+                                            Text(
+                                              _events[index]['Title'] ??
+                                                  'No Title',
+                                              style: TextStyle(
+                                                fontSize: 16,
+                                                fontWeight: FontWeight.bold,
+                                                color: Color(0xFF165D96),
+                                              ),
+                                              textAlign: TextAlign.center,
+                                              overflow: TextOverflow.ellipsis,
+                                            ),
+                                            SizedBox(height: 4),
+                                            Text(
+                                              _formatTime(_events[index]['StartTime'] ?? 'Unknown Time'),
+                                              style: TextStyle(
+                                                fontSize: 14,
+                                                color: Color(0xFF165D96),
+                                              ),
+                                            ),
+                                          ],
+                                        ),
+                                      ),
                                     ),
                                   ),
-                                  Text(
-                                    '10:00 AM',
-                                    style: TextStyle(
-                                      fontSize: 16,
-                                      color: Colors.grey,
-                                    ),
-                                  ),
-                                ],
+                                ),
                               ),
                             ),
-                          ),
+                          ],
                         ),
-                      ),
-                    ),
-                  )
-                ],
-              ),
               SizedBox(
                 height: 30,
               ),
