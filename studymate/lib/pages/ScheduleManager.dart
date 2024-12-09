@@ -1,8 +1,11 @@
+import 'dart:convert';
+
 import 'package:flutter/material.dart';
 import 'package:google_fonts/google_fonts.dart';
 import 'package:intl/intl.dart'; // For formatting date (day name, day number)
-
+import 'package:hive/hive.dart';
 import 'HomePage.dart';
+import 'package:http/http.dart' as http;
 
 class ScheduleView extends StatefulWidget {
   @override
@@ -126,30 +129,69 @@ class _ScheduleViewState extends State<ScheduleView> {
     );
   }
 }
-
-// Example Views
 class DayView extends StatefulWidget {
   @override
   _DayViewState createState() => _DayViewState();
 }
 
 class _DayViewState extends State<DayView> {
-  // Initial date is today
-  DateTime _selectedDate = DateTime.now();
+  DateTime _selectedDate = DateTime.now(); // Initial date is today
+  List<dynamic> _events = []; // List to store fetched events
+  bool _isLoading = true; // Show loading spinner while fetching data
 
-  // Example tasks based on the day
-  final Map<String, List<String>> _tasksByDate = {
-    '2024-12-02': ['Meeting with team', 'Prepare presentation'],
-    '2024-12-03': ['Workout', 'Lunch with client'],
-    '2024-12-04': ['Doctor appointment', 'Team check-in'],
-    // Add more dates and tasks here
-  };
+  // Fetch tasks for the selected day from the backend
+  Future<void> _fetchTasksForSelectedDay() async {
+    String formattedDate = "${_selectedDate.year}-${_selectedDate.month.toString().padLeft(2, '0')}-${_selectedDate.day.toString().padLeft(2, '0')}";
 
-  // Helper to get tasks for the selected day
-  List<String> _getTasksForSelectedDay() {
-    String formattedDate =
-        "${_selectedDate.year}-${_selectedDate.month.toString().padLeft(2, '0')}-${_selectedDate.day.toString().padLeft(2, '0')}";
-    return _tasksByDate[formattedDate] ?? ['No tasks for this day.'];
+    // Assuming user ID is stored in Hive
+    int userId = Hive.box('userBox').get('id');
+    final startOfDay = DateTime(_selectedDate.year, _selectedDate.month, _selectedDate.day, 0, 0, 0);
+    final endOfDay = DateTime(_selectedDate.year, _selectedDate.month, _selectedDate.day, 23, 59, 59);
+    print('https://alyibrahim.pythonanywhere.com/schedule?user_id=$userId&start_date=${startOfDay.toIso8601String().split('T')[0]}&end_date=${endOfDay.toIso8601String().split('T')[0]}');
+    print(userId);
+    print(startOfDay);
+    print(endOfDay);
+
+    try {
+      final response = await http.get(Uri.parse(
+        'https://alyibrahim.pythonanywhere.com/schedule?user_id=$userId&start_date=${startOfDay.toIso8601String().split('T')[0]}&end_date=${endOfDay.toIso8601String().split('T')[0]}',
+      ));
+
+      if (response.statusCode == 200) {
+        setState(() {
+          _events = json.decode(response.body);
+          _isLoading = false;
+        });
+      } else {
+        setState(() {
+          _events = [];
+          _isLoading = false;
+        });
+        print('Failed to fetch schedule: ${response.statusCode}');
+      }
+    } catch (e) {
+      print("Error fetching schedule: $e");
+      setState(() {
+        _events = [];
+        _isLoading = false;
+      });
+    }
+  }
+
+  // Format time from HH:mm:ss to hh:mm AM/PM
+  String _formatTime(String time) {
+    try {
+      final parsedTime = DateFormat("HH:mm:ss").parse(time);
+      return DateFormat("hh:mm a").format(parsedTime);
+    } catch (e) {
+      return "Invalid Time";
+    }
+  }
+
+  @override
+  void initState() {
+    super.initState();
+    _fetchTasksForSelectedDay(); // Fetch tasks on initialization
   }
 
   @override
@@ -158,15 +200,16 @@ class _DayViewState extends State<DayView> {
       padding: const EdgeInsets.only(left: 16, right: 16),
       child: Column(
         children: [
-          // Top Row: Back Arrow, Date, Forward Arrow
+          // Top Row: Date Navigation
           Row(
             mainAxisAlignment: MainAxisAlignment.spaceBetween,
             children: [
               IconButton(
                 onPressed: () {
                   setState(() {
-                    _selectedDate = _selectedDate
-                        .subtract(Duration(days: 1)); // Go to previous day
+                    _selectedDate = _selectedDate.subtract(Duration(days: 1));
+                    _isLoading = true;
+                    _fetchTasksForSelectedDay(); // Fetch tasks for the new date
                   });
                 },
                 icon: Icon(Icons.arrow_back_ios, size: 25, color: Colors.black),
@@ -181,26 +224,16 @@ class _DayViewState extends State<DayView> {
                   );
                   if (pickedDate != null) {
                     setState(() {
-                      _selectedDate = pickedDate; // Update selected date
+                      _selectedDate = pickedDate;
+                      _isLoading = true;
+                      _fetchTasksForSelectedDay(); // Fetch tasks for the selected date
                     });
                   }
                 },
                 child: Row(
                   children: [
                     Text(
-                      _selectedDate.weekday == 1
-                          ? 'Monday'
-                          : _selectedDate.weekday == 2
-                              ? 'Tuesday'
-                              : _selectedDate.weekday == 3
-                                  ? 'Wednesday'
-                                  : _selectedDate.weekday == 4
-                                      ? 'Thursday'
-                                      : _selectedDate.weekday == 5
-                                          ? 'Friday'
-                                          : _selectedDate.weekday == 6
-                                              ? 'Saturday'
-                                              : 'Sunday',
+                      DateFormat('EEEE').format(_selectedDate), // Day name
                       style: TextStyle(
                         fontSize: 24,
                         fontWeight: FontWeight.bold,
@@ -217,12 +250,12 @@ class _DayViewState extends State<DayView> {
               IconButton(
                 onPressed: () {
                   setState(() {
-                    _selectedDate =
-                        _selectedDate.add(Duration(days: 1)); // Go to next day
+                    _selectedDate = _selectedDate.add(Duration(days: 1));
+                    _isLoading = true;
+                    _fetchTasksForSelectedDay(); // Fetch tasks for the new date
                   });
                 },
-                icon: Icon(Icons.arrow_forward_ios,
-                    size: 25, color: Colors.black),
+                icon: Icon(Icons.arrow_forward_ios, size: 25, color: Colors.black),
               ),
             ],
           ),
@@ -230,55 +263,83 @@ class _DayViewState extends State<DayView> {
 
           // Task List View
           Expanded(
-            child: ListView.builder(
-              itemCount: _getTasksForSelectedDay().length,
-              itemBuilder: (context, index) {
-                return Column(
-                  crossAxisAlignment: CrossAxisAlignment.start,
-                  children: [
-                    Row(
-                      children: [
-                        Column(
-                          children: [
-                            Text("12:00 PM"),
-                            SizedBox(width: 8),
-                            Text("|"),
-                            SizedBox(width: 8),
-                            Text(
-                              "1:00 PM",
-                              style: TextStyle(color: Color(0xFF1BC0C4)),
-                            ),
-                          ],
+            child: _isLoading
+                ? Center(child: CircularProgressIndicator())
+                : _events.isEmpty
+                    ? Center(
+                        child: Text(
+                          "No tasks for this day.",
+                          style: TextStyle(fontSize: 18, color: Colors.grey),
                         ),
-                        SizedBox(width: 10),
-                        Expanded(
-                          child: Card(
-                            shape: RoundedRectangleBorder(
-                              borderRadius: BorderRadius.circular(15),
+                      )
+                    : ListView.builder(
+                        itemCount: _events.length,
+                        itemBuilder: (context, index) {
+                          return Padding(
+                            padding: const EdgeInsets.symmetric(vertical: 8.0),
+                            child: Row(
+                              children: [
+                                Column(
+                                  crossAxisAlignment: CrossAxisAlignment.center,
+
+                                  children: [
+                                    Text(
+                                      _formatTime(_events[index]['StartTime']),
+                                      style: TextStyle(
+                                        fontSize: 14,
+                                        fontWeight: FontWeight.bold,
+                                        color: Color(0xFF165D96),
+                                      ),
+                                    ),
+                                    SizedBox(height: 5),
+                                    Container(
+                                      width: 2,
+                                      height: 40,
+                                      color: Colors.grey,
+                                    ),
+                                    SizedBox(height: 8),
+                                    Text(
+                                      _formatTime(_events[index]['EndTime']),
+                                      style: TextStyle(
+                                        fontSize: 14,
+                                        color: Color(0xFF1BC0C4),
+                                      ),
+                                    ),
+                                  ],
+                                ),
+                                SizedBox(width: 10),
+                                Expanded(
+                                  child: Card(
+                                    shape: RoundedRectangleBorder(
+                                      borderRadius: BorderRadius.circular(15),
+                                    ),
+                                    elevation: 5,
+                                    color: Color(0xFF165D96),
+                                    child: ListTile(
+                                      title: Text(
+                                        _events[index]['Title'],
+                                        style: TextStyle(color: Colors.white),
+                                      ),
+                                      subtitle: Text(
+                                        _events[index]['Description'] ?? '',
+                                        style: TextStyle(color: Colors.white70),
+                                      ),
+                                      trailing: IconButton(
+                                        onPressed: () {},
+                                        icon: Icon(
+                                          Icons.arrow_circle_right_outlined,
+                                          color: Colors.white,
+                                          size: 30,
+                                        ),
+                                      ),
+                                    ),
+                                  ),
+                                ),
+                              ],
                             ),
-                            elevation: 5,
-                            color: Color(0xFF165D96),
-                            child: ListTile(
-                              title: Text(_getTasksForSelectedDay()[index],
-                                  style: TextStyle(color: Colors.white)),
-                              subtitle: Text("Details $index",
-                                  style: TextStyle(color: Colors.white)),
-                              trailing: IconButton(
-                                  onPressed: () {},
-                                  icon: Icon(
-                                    Icons.arrow_circle_right_outlined,
-                                    color: Colors.white,
-                                    size: 30,
-                                  )),
-                            ),
-                          ),
-                        ),
-                      ],
-                    ),
-                  ],
-                );
-              },
-            ),
+                          );
+                        },
+                      ),
           ),
         ],
       ),
@@ -288,23 +349,12 @@ class _DayViewState extends State<DayView> {
   // Helper method to get month name from month number
   String _getMonthName(int month) {
     const List<String> monthNames = [
-      'Jan',
-      'Feb',
-      'Mar',
-      'Apr',
-      'May',
-      'Jun',
-      'Jul',
-      'Aug',
-      'Sep',
-      'Oct',
-      'Nov',
-      'Dec'
+      'Jan', 'Feb', 'Mar', 'Apr', 'May', 'Jun',
+      'Jul', 'Aug', 'Sep', 'Oct', 'Nov', 'Dec'
     ];
     return monthNames[month - 1];
   }
 }
-
 class WeekView extends StatefulWidget {
   @override
   State<WeekView> createState() => _WeekViewState();
@@ -313,23 +363,79 @@ class WeekView extends StatefulWidget {
 class _WeekViewState extends State<WeekView> {
   int _selectedDay = 0; // Tracks the selected day index
   DateTime _currentWeekStart = DateTime.now(); // Start of the current week
+  Map<String, List<dynamic>> _tasksByDate = {}; // Tasks grouped by date
+  bool _isLoading = true;
 
-  // Example tasks tied to specific dates
-  final Map<String, List<String>> _tasksByDate = {
-    "2024-12-04": ['Meeting with team', 'Project review'],
-    "2024-12-05": ['Workout', 'Lunch with client', 'Prepare presentation'],
-    "2024-12-06": ['Doctor appointment', 'Team check-in'],
-    "2024-12-07": ['Submit report', 'Client call', 'Dinner with family'],
-    "2024-12-08": ['Yoga class', 'Weekly planning', 'Call supplier'],
-    "2024-12-09": ['Grocery shopping', 'House cleaning'],
-    "2024-12-10": ['Relax', 'Watch a movie'],
-  };
+  String _formatTime(String time) {
+    try {
+      final parsedTime = DateFormat("HH:mm:ss").parse(time);
+      return DateFormat("hh:mm a").format(parsedTime);
+    } catch (e) {
+      return "Invalid Time";
+    }
+  }
+
+  @override
+  void initState() {
+    super.initState();
+    _currentWeekStart = _getStartOfWeek(DateTime.now());
+    _fetchTasksForWeek(); // Fetch tasks when the widget is initialized
+  }
+
+  // Fetch tasks for the entire week from the backend
+  Future<void> _fetchTasksForWeek() async {
+    // Define the start and end of the current week
+    DateTime weekStart = _currentWeekStart;
+    DateTime weekEnd = weekStart.add(Duration(days: 6));
+
+    try {
+      int userId = Hive.box('userBox').get('id');
+      final response = await http.get(Uri.parse(
+        'https://alyibrahim.pythonanywhere.com/schedule?user_id=$userId&start_date=${weekStart.toIso8601String().split('T')[0]}&end_date=${weekEnd.toIso8601String().split('T')[0]}',
+      ));
+
+      if (response.statusCode == 200) {
+        List<dynamic> events = json.decode(response.body);
+
+        // Group tasks by date
+        Map<String, List<dynamic>> groupedTasks = {};
+        for (var event in events) {
+          String dateKey = event['Date'];
+          if (!groupedTasks.containsKey(dateKey)) {
+            groupedTasks[dateKey] = [];
+          }
+          groupedTasks[dateKey]!.add(event);
+        }
+
+        setState(() {
+          _tasksByDate = groupedTasks;
+          _isLoading = false;
+        });
+      } else {
+        setState(() {
+          _tasksByDate = {};
+          _isLoading = false;
+        });
+        print("Failed to fetch tasks: ${response.statusCode}");
+      }
+    } catch (e) {
+      print("Error fetching tasks: $e");
+      setState(() {
+        _tasksByDate = {};
+        _isLoading = false;
+      });
+    }
+  }
+
+  // Helper method to get the start of the week for a given date
+  DateTime _getStartOfWeek(DateTime date) {
+    return date.subtract(Duration(days: date.weekday - 1));
+  }
 
   @override
   Widget build(BuildContext context) {
     // Calculate the start and end of the current week
-    DateTime weekStart = _currentWeekStart
-        .subtract(Duration(days: _currentWeekStart.weekday - 1));
+    DateTime weekStart = _currentWeekStart;
     DateTime weekEnd = weekStart.add(Duration(days: 6));
 
     // Get the selected day's date
@@ -347,8 +453,10 @@ class _WeekViewState extends State<WeekView> {
               IconButton(
                 onPressed: () {
                   setState(() {
-                    _currentWeekStart = _currentWeekStart
-                        .subtract(Duration(days: 7)); // Go to previous week
+                    _currentWeekStart =
+                        _currentWeekStart.subtract(Duration(days: 7));
+                    _isLoading = true;
+                    _fetchTasksForWeek();
                   });
                 },
                 icon: Icon(Icons.arrow_back_ios, size: 25, color: Colors.black),
@@ -363,8 +471,9 @@ class _WeekViewState extends State<WeekView> {
                   );
                   if (pickedDate != null) {
                     setState(() {
-                      _currentWeekStart =
-                          pickedDate; // Update week based on picked date
+                      _currentWeekStart = _getStartOfWeek(pickedDate);
+                      _isLoading = true;
+                      _fetchTasksForWeek();
                     });
                   }
                 },
@@ -389,8 +498,7 @@ class _WeekViewState extends State<WeekView> {
                       style: TextStyle(
                         fontSize: 20,
                         fontWeight: FontWeight.bold,
-                        color: Color(
-                            0xFF1BC0C4), // Apply the color to the end date
+                        color: Color(0xFF1BC0C4),
                       ),
                     ),
                   ],
@@ -399,8 +507,10 @@ class _WeekViewState extends State<WeekView> {
               IconButton(
                 onPressed: () {
                   setState(() {
-                    _currentWeekStart = _currentWeekStart
-                        .add(Duration(days: 7)); // Go to next week
+                    _currentWeekStart =
+                        _currentWeekStart.add(Duration(days: 7));
+                    _isLoading = true;
+                    _fetchTasksForWeek();
                   });
                 },
                 icon: Icon(Icons.arrow_forward_ios,
@@ -455,62 +565,106 @@ class _WeekViewState extends State<WeekView> {
 
           // Task List View
           Expanded(
-            child: ListView.builder(
-              itemCount: _tasksByDate[selectedDateKey]?.length ?? 0,
-              itemBuilder: (context, index) {
-                return Padding(
-                  padding: const EdgeInsets.only(bottom: 10.0),
-                  child: Row(
-                    children: [
-                      Column(
-                        crossAxisAlignment: CrossAxisAlignment.center,
-                        children: [
-                          Text(
-                            "12:00 PM",
-                            style: TextStyle(fontSize: 14),
-                          ),
-                          SizedBox(height: 5),
-                          Container(
-                            width: 2,
-                            height: 40,
-                            color: Colors.grey,
-                          ),
-                          SizedBox(height: 5),
-                          Text(
-                            "1:00 PM",
-                            style: TextStyle(
-                              fontSize: 14,
-                              color: Color(0xFF1BC0C4),
-                            ),
-                          ),
-                        ],
-                      ),
-                      SizedBox(width: 10),
-                      Expanded(
-                        child: Card(
-                          shape: RoundedRectangleBorder(
-                            borderRadius: BorderRadius.circular(15),
-                          ),
-                          elevation: 5,
-                          color: Color(0xFF165D96),
-                          child: ListTile(
-                            title: Text(_tasksByDate[selectedDateKey]![index],
-                                style: TextStyle(color: Colors.white)),
-                            subtitle: Text("Details of task $index",
-                                style: TextStyle(color: Colors.white)),
-                            trailing: Icon(
-                              Icons.arrow_circle_right_outlined,
-                              color: Colors.white,
-                              size: 30,
-                            ),
-                          ),
+            child: _isLoading
+                ? Center(child: CircularProgressIndicator())
+                : _tasksByDate[selectedDateKey]?.isEmpty ?? true
+                    ? Center(
+                        child: Text(
+                          "No tasks for this day.",
+                          style: TextStyle(fontSize: 18, color: Colors.grey),
                         ),
+                      )
+                    : ListView.builder(
+                        itemCount: _tasksByDate[selectedDateKey]?.length ?? 0,
+                        itemBuilder: (context, index) {
+                          var task = _tasksByDate[selectedDateKey]![index];
+                          return Padding(
+                            padding: const EdgeInsets.only(bottom: 10.0),
+                            child: Column(
+                              children: [
+                                Row(
+                                  children: [
+                                    Column(
+                                      crossAxisAlignment: CrossAxisAlignment.center,
+                                      children: [
+                                        Text(
+                                          _formatTime(task['StartTime']),
+                                          style: TextStyle(
+                                            fontSize: 14,
+                                            fontWeight: FontWeight.bold,
+                                            color: Color(0xFF165D96),
+                                          ),
+                                        ),
+                                        SizedBox(height: 5),
+                                        Container(
+                                          width: 2,
+                                          height: 40,
+                                          color: Colors.grey,
+                                        ),
+                                        SizedBox(height: 8),
+                                        Text(
+                                          _formatTime(task['EndTime']),
+                                          style: TextStyle(
+                                            fontSize: 14,
+                                            color: Color(0xFF1BC0C4),
+                                          ),
+                                        ),
+                                      ],
+                                    ),
+                                    SizedBox(width: 10),
+                                    Expanded(
+                                      child: Card(
+                                        shape: RoundedRectangleBorder(
+                                          borderRadius: BorderRadius.circular(15),
+                                        ),
+                                        elevation: 5,
+                                        color: Color(0xFF165D96),
+                                        child: ListTile(
+                                          title: Text(
+                                            task['Title'],
+                                            style: TextStyle(color: Colors.white),
+                                          ),
+                                          subtitle: Text(
+                                            task['Description'] ?? '',
+                                            style: TextStyle(color: Colors.white70),
+                                          ),
+                                          trailing: Icon(
+                                            Icons.arrow_circle_right_outlined,
+                                            color: Colors.white,
+                                            size: 30,
+                                          ),
+                                        ),
+                                      ),
+                                    ),
+                                    ],
+                                ),
+                                // Card(
+                                //   shape: RoundedRectangleBorder(
+                                //     borderRadius: BorderRadius.circular(15),
+                                //   ),
+                                //   elevation: 5,
+                                //   color: Color(0xFF165D96),
+                                //   child: ListTile(
+                                //     title: Text(
+                                //       task['Title'],
+                                //       style: TextStyle(color: Colors.white),
+                                //     ),
+                                //     subtitle: Text(
+                                //       "${task['StartTime']} - ${task['EndTime']}",
+                                //       style: TextStyle(color: Colors.white70),
+                                //     ),
+                                //     trailing: Icon(
+                                //       Icons.arrow_circle_right_outlined,
+                                //       color: Colors.white,
+                                //       size: 30,
+                                //     ),
+                                //   ),
+                                // ),
+                              ],
+                            ),
+                          );
+                        },
                       ),
-                    ],
-                  ),
-                );
-              },
-            ),
           ),
         ],
       ),
@@ -524,31 +678,22 @@ class _WeekViewState extends State<WeekView> {
 
   // Helper method to format a date
   String _formatDate(DateTime date, {String format = 'd MMM'}) {
-    return format == 'd MMM'
-        ? "${date.day} ${_getMonthName(date.month)}"
-        : "${date.weekday == 1 ? 'Mon' : date.weekday == 2 ? 'Tue' : date.weekday == 3 ? 'Wed' : date.weekday == 4 ? 'Thu' : date.weekday == 5 ? 'Fri' : date.weekday == 6 ? 'Sat' : 'Sun'}";
+    if (format == 'd MMM') {
+      return "${date.day} ${_getMonthName(date.month)}";
+    } else {
+      return DateFormat(format).format(date);
+    }
   }
 
   // Helper method to get the name of the month
   String _getMonthName(int month) {
     const List<String> months = [
-      "Jan",
-      "Feb",
-      "Mar",
-      "Apr",
-      "May",
-      "Jun",
-      "Jul",
-      "Aug",
-      "Sep",
-      "Oct",
-      "Nov",
-      "Dec"
+      "Jan", "Feb", "Mar", "Apr", "May", "Jun",
+      "Jul", "Aug", "Sep", "Oct", "Nov", "Dec"
     ];
     return months[month - 1];
   }
 }
-
 class MonthView extends StatefulWidget {
   @override
   _MonthViewState createState() => _MonthViewState();
@@ -556,38 +701,82 @@ class MonthView extends StatefulWidget {
 
 class _MonthViewState extends State<MonthView> {
   DateTime _currentDate = DateTime.now(); // Tracks the selected month and year
-
   final List<String> _months = [
-    "January",
-    "February",
-    "March",
-    "April",
-    "May",
-    "June",
-    "July",
-    "August",
-    "September",
-    "October",
-    "November",
-    "December"
+    "January", "February", "March", "April", "May", "June", "July",
+    "August", "September", "October", "November", "December"
   ];
-
-  final Map<String, List<String>> _tasksByDate = {
-    "2024-12-04": ['Meeting with team', 'Project review'],
-    "2024-12-05": ['Workout', 'Lunch with client', 'Prepare presentation'],
-    "2024-12-06": ['Doctor appointment', 'Team check-in'],
-    "2024-12-07": ['Submit report', 'Client call', 'Dinner with family'],
-    "2024-12-08": ['Yoga class', 'Weekly planning', 'Call supplier'],
-    "2024-12-09": ['Grocery shopping', 'House cleaning'],
-    "2024-12-10": ['Relax', 'Watch a movie'],
-  };
-
   final int _startYear = 2000;
   final int _endYear = 2100;
 
-  // Helper to format a date key for the tasks map
-  String _formatDateKey(DateTime date) {
-    return "${date.year}-${date.month.toString().padLeft(2, '0')}-${date.day.toString().padLeft(2, '0')}";
+  Map<String, List<dynamic>> _tasksByDate = {}; // Fetched tasks grouped by date
+  bool _isLoading = true; // Shows loading spinner while fetching tasks
+
+  @override
+  void initState() {
+    super.initState();
+    _fetchTasksForMonth(); // Fetch tasks for the current month on initialization
+  }
+
+  // Fetch tasks for the selected month
+  Future<void> _fetchTasksForMonth() async {
+    setState(() {
+      _isLoading = true;
+    });
+
+    DateTime monthStart = DateTime(_currentDate.year, _currentDate.month, 1);
+    DateTime monthEnd = DateTime(_currentDate.year, _currentDate.month + 1, 0);
+
+    try {
+      int userId = Hive.box('userBox').get('id');
+      final response = await http.get(Uri.parse(
+        'https://alyibrahim.pythonanywhere.com/schedule?user_id=$userId&start_date=${monthStart.toIso8601String().split('T')[0]}&end_date=${monthEnd.toIso8601String().split('T')[0]}',
+      ));
+
+      if (response.statusCode == 200) {
+        List<dynamic> events = json.decode(response.body);
+        //sort the tasks by date
+        events.sort((a, b) => a['Date'].compareTo(b['Date']));
+        // Group tasks by date
+        Map<String, List<dynamic>> groupedTasks = {};
+        for (var event in events) {
+          String dateKey = event['Date'];
+          if (!groupedTasks.containsKey(dateKey)) {
+            groupedTasks[dateKey] = [];
+          }
+          groupedTasks[dateKey]!.add(event);
+        }
+
+        // sort the tasks by date
+        groupedTasks.forEach((key, value) {
+          value.sort((a, b) => a['StartTime'].compareTo(b['StartTime']));
+        });
+
+        setState(() {
+          _tasksByDate = groupedTasks;
+          _isLoading = false;
+        });
+      } else {
+        setState(() {
+          _tasksByDate = {};
+          _isLoading = false;
+        });
+        print("Failed to fetch tasks: ${response.statusCode}");
+      }
+    } catch (e) {
+      print("Error fetching tasks: $e");
+      setState(() {
+        _tasksByDate = {};
+        _isLoading = false;
+      });
+    }
+  }
+  String _formatTime(String time) {
+    try {
+      final parsedTime = DateFormat("HH:mm:ss").parse(time);
+      return DateFormat("hh:mm a").format(parsedTime);
+    } catch (e) {
+      return "Invalid Time";
+    }
   }
 
   @override
@@ -603,8 +792,8 @@ class _MonthViewState extends State<MonthView> {
               IconButton(
                 onPressed: () {
                   setState(() {
-                    _currentDate =
-                        DateTime(_currentDate.year, _currentDate.month - 1, 1);
+                    _currentDate = DateTime(_currentDate.year, _currentDate.month - 1, 1);
+                    _fetchTasksForMonth();
                   });
                 },
                 icon: Icon(Icons.arrow_back_ios, size: 25, color: Colors.black),
@@ -624,7 +813,7 @@ class _MonthViewState extends State<MonthView> {
                       " ${_currentDate.year}",
                       style: TextStyle(
                         fontSize: 24,
-                        color: Color(0xFF1BC0C4), // Year text color
+                        color: Color(0xFF1BC0C4),
                       ),
                     ),
                   ],
@@ -633,64 +822,70 @@ class _MonthViewState extends State<MonthView> {
               IconButton(
                 onPressed: () {
                   setState(() {
-                    _currentDate =
-                        DateTime(_currentDate.year, _currentDate.month + 1, 1);
+                    _currentDate = DateTime(_currentDate.year, _currentDate.month + 1, 1);
+                    _fetchTasksForMonth();
                   });
                 },
-                icon: Icon(Icons.arrow_forward_ios,
-                    size: 25, color: Colors.black),
+                icon: Icon(Icons.arrow_forward_ios, size: 25, color: Colors.black),
               ),
             ],
           ),
           SizedBox(height: 20),
 
-          // Display tasks for the selected month
+          // Task List View
           Expanded(
-            child: ListView.builder(
-              itemCount: _getTasksForSelectedMonth().length,
+  child: _isLoading
+      ? Center(child: CircularProgressIndicator())
+      : _tasksByDate.isEmpty
+          ? Center(
+              child: Text(
+                "No tasks for this month.",
+                style: TextStyle(fontSize: 18, color: Colors.grey),
+              ),
+            )
+          : ListView.builder(
+              itemCount: _tasksByDate.keys.length,
               itemBuilder: (context, index) {
-                String dateKey =
-                    _getTasksForSelectedMonth().keys.elementAt(index);
+                // Fetch the date key and associated tasks
+                String dateKey = _tasksByDate.keys.elementAt(index);
                 DateTime taskDate = DateTime.parse(dateKey);
-                String dayName =
-                    DateFormat('EEEE').format(taskDate); // Get day name
-                String dayNumber =
-                    DateFormat('d').format(taskDate); // Get day number
+                String dayName = DateFormat('EEEE').format(taskDate); // Day name
+                String dayNumber = DateFormat('d').format(taskDate); // Day number
 
                 return Padding(
                   padding: const EdgeInsets.only(bottom: 10.0),
                   child: Column(
                     crossAxisAlignment: CrossAxisAlignment.start,
                     children: [
+                      // Display the day name and number
                       Row(
                         children: [
                           Text(
-                            dayName, // Day name (e.g., Monday)
+                            dayName, // e.g., Monday
                             style: TextStyle(
-                              fontSize: 28,
-                              // color: Colors.black, // Color for day name
+                              fontSize: 20,
+                              fontWeight: FontWeight.bold,
                             ),
                           ),
                           SizedBox(width: 10),
                           Text(
-                            dayNumber, // Day number (e.g., 1)
+                            dayNumber, // e.g., 4
                             style: TextStyle(
-                              fontSize: 28,
-                              // fontWeight: FontWeight.bold,
-                              color: Color(0xFF1BC0C4), // Day number color
+                              fontSize: 20,
+                              color: Color(0xFF1BC0C4),
                             ),
                           ),
                         ],
                       ),
                       SizedBox(height: 10),
-                      // For each task, we will only create a card for the tasks on this date
+
+                      // Display tasks for the specific date
                       ListView.builder(
-                        shrinkWrap:
-                            true, // This makes the inner listview shrink to fit the content
-                        physics:
-                            NeverScrollableScrollPhysics(), // Disable scrolling for inner list
+                        shrinkWrap: true,
+                        physics: NeverScrollableScrollPhysics(),
                         itemCount: _tasksByDate[dateKey]?.length ?? 0,
-                        itemBuilder: (context, index) {
+                        itemBuilder: (context, taskIndex) {
+                          var task = _tasksByDate[dateKey]![taskIndex];
                           return Padding(
                             padding: const EdgeInsets.only(bottom: 10.0),
                             child: Row(
@@ -698,19 +893,26 @@ class _MonthViewState extends State<MonthView> {
                                 Column(
                                   crossAxisAlignment: CrossAxisAlignment.center,
                                   children: [
+                                    // Start Time
                                     Text(
-                                      "12:00 PM",
-                                      style: TextStyle(fontSize: 14),
+                                      _formatTime(task['StartTime']),
+                                      style: TextStyle(
+                                        fontSize: 14,
+                                        fontWeight: FontWeight.bold,
+                                        color: Color(0xFF165D96),
+                                      ),
                                     ),
                                     SizedBox(height: 5),
+                                    // Vertical Divider
                                     Container(
                                       width: 2,
                                       height: 40,
                                       color: Colors.grey,
                                     ),
-                                    SizedBox(height: 5),
+                                    SizedBox(height: 8),
+                                    // End Time
                                     Text(
-                                      "1:00 PM",
+                                      _formatTime(task['EndTime']),
                                       style: TextStyle(
                                         fontSize: 14,
                                         color: Color(0xFF1BC0C4),
@@ -721,16 +923,20 @@ class _MonthViewState extends State<MonthView> {
                                 SizedBox(width: 10),
                                 Expanded(
                                   child: Card(
-                                    elevation: 5,
-                                    color: Color(0xFF165D96),
                                     shape: RoundedRectangleBorder(
                                       borderRadius: BorderRadius.circular(15),
                                     ),
+                                    elevation: 5,
+                                    color: Color(0xFF165D96),
                                     child: ListTile(
-                                      title:
-                                          Text(_tasksByDate[dateKey]![index], style: TextStyle(color: Colors.white)),
-                                      subtitle: Text("Details of task $index",
-                                          style: TextStyle(color: Colors.white)),
+                                      title: Text(
+                                        task['Title'],
+                                        style: TextStyle(color: Colors.white),
+                                      ),
+                                      subtitle: Text(
+                                        task['Description'] ?? '',
+                                        style: TextStyle(color: Colors.white70),
+                                      ),
                                       trailing: Icon(
                                         Icons.arrow_circle_right_outlined,
                                         color: Colors.white,
@@ -749,22 +955,11 @@ class _MonthViewState extends State<MonthView> {
                 );
               },
             ),
-          ),
+),
+
         ],
       ),
     );
-  }
-
-  // Helper to get tasks for the selected month
-  Map<String, List<String>> _getTasksForSelectedMonth() {
-    Map<String, List<String>> tasksForSelectedMonth = {};
-    _tasksByDate.forEach((dateKey, tasks) {
-      DateTime date = DateTime.parse(dateKey);
-      if (date.month == _currentDate.month && date.year == _currentDate.year) {
-        tasksForSelectedMonth[dateKey] = tasks;
-      }
-    });
-    return tasksForSelectedMonth;
   }
 
   // Helper to show a scrollable month-year picker
@@ -834,7 +1029,7 @@ class _MonthViewState extends State<MonthView> {
                                 style: TextStyle(
                                   fontSize: 18,
                                   fontWeight: FontWeight.bold,
-                                  color: Color(0xFF1BC0C4), // Year text color
+                                  color: Color(0xFF1BC0C4),
                                 ),
                               ),
                             );
@@ -850,6 +1045,7 @@ class _MonthViewState extends State<MonthView> {
                 onPressed: () {
                   setState(() {
                     _currentDate = DateTime(selectedYear, selectedMonth, 1);
+                    _fetchTasksForMonth();
                   });
                   Navigator.of(context).pop();
                 },
