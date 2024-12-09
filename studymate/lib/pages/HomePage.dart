@@ -55,7 +55,6 @@ void navBottom(int index){
   }
 
   // Function to generate card colors
-<<<<<<< Updated upstream
   Color _getCardColor(int index) {
     final List<Color> colors = [
       Color(0xFFF6F5FB), // Light Purple
@@ -139,8 +138,7 @@ void navBottom(int index){
 }
 
 
-=======
->>>>>>> Stashed changes
+
   @override
   Widget build(BuildContext context) {
     return Scaffold(
