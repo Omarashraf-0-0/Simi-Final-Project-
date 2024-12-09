@@ -4,8 +4,11 @@ import 'package:google_fonts/google_fonts.dart';
 import 'package:studymate/pages/HomePage.dart';
 import 'package:studymate/pages/UserSettings.dart'; // Ensure this import is correct and the file exists
 import 'package:studymate/pages/PersonalSettings.dart';
-// import 'package:studymate/Classes/UniversityPage.dart';
-// import 'package:studymate/Classes/CoursesPage.dart';
+import 'package:studymate/pages/Universitysettings.dart'; // Ensure this import is correct and the file exists
+import 'package:studymate/pages/RCoursesSettings.dart'; // Ensure this import is correct and the file exists
+
+// Define the CoursesSettings class if it doesn't exist
+
 
 class Settings extends StatefulWidget {
   @override
@@ -155,8 +158,8 @@ class _SettingsState extends State<Settings> {
                       ),
                       child: TextButton(
                         onPressed: () {
-                          // Navigator.push(context,
-                          //     MaterialPageRoute(builder: (context) => UniversitySettings()));
+                          Navigator.push(context,
+                            MaterialPageRoute(builder: (context) => Universitysettings()));
                         },
                         child: Center(
                           child: Text(
@@ -192,8 +195,8 @@ class _SettingsState extends State<Settings> {
                       ),
                       child: TextButton(
                         onPressed: () {
-                          // Navigator.push(context,
-                          //     MaterialPageRoute(builder: (context) => CoursesSettings()));
+                          Navigator.push(context,
+                              MaterialPageRoute(builder: (context) => Rcoursessettings()));
                         },
                         child: Center(
                           child: Text(
