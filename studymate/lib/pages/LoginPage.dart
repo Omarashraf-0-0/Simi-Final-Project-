@@ -68,7 +68,6 @@ class _LoginPageState extends State<LoginPage> {
             // Save the username and password to Hive
             Hive.box('userBox').put('isLoggedIn', true);
             Hive.box('userBox').put('loginTime', DateTime.now().millisecondsSinceEpoch);
-            Hive.box('userBox').put('id', jsonResponse['id']);
             Hive.box('userBox').put('username', jsonResponse['username']);
             Hive.box('userBox').put('password', jsonResponse['password']);
             Hive.box('userBox').put('fullName', jsonResponse['name']);
@@ -94,7 +93,6 @@ class _LoginPageState extends State<LoginPage> {
           }
           
           User? user = User(
-            id: jsonResponse['id'],
             username: jsonResponse['username'],
             password: jsonResponse['password'],
             fullName: jsonResponse['name'],
@@ -129,9 +127,7 @@ class _LoginPageState extends State<LoginPage> {
               color : const Color(0xff3BBD5E),
               textColor : Colors.black,
               routeName : '/HomePage',
-              )
-              ),
-              );
+              )),);
           //Navigator.pushReplacement(context, MaterialPageRoute(builder: (context) => Homepage()));
         } else {
           // Failed login, show error message
