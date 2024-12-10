@@ -16,11 +16,13 @@ class AboLaylaCoursesState extends State<AboLaylaCourses> {
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
+        backgroundColor: Color(0xFF165D96), // Blue color for the AppBar
         title: Text(
           'Courses and Languages',
           style: TextStyle(
               fontFamily: 'League Spartan',
               fontSize: 25,
+              color: Colors.white, // Text color
               fontWeight: FontWeight.bold),
         ),
         centerTitle: true, // Center the title in the AppBar

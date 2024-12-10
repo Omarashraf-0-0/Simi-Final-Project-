@@ -2,6 +2,7 @@
 
 import 'package:flutter/material.dart';
 import 'package:hive/hive.dart';
+import 'package:studymate/Pop-ups/PopUps_Warning.dart';
 import '../Classes/User.dart';
 import '../Pop-ups/SuccesPopUp.dart';
 import '../util/TextField.dart';
@@ -28,15 +29,19 @@ class _LoginPageState extends State<LoginPage> {
   Future<void> login() async {
     final username = UsernameController.text;
     final password = PasswordController.text;
-    
     const url = 'https://alyibrahim.pythonanywhere.com/login';  // Replace with your actual Flask server URL
 
     try {
       // Ensure the username and password are not empty
       if (username.isEmpty || password.isEmpty) {
-      ScaffoldMessenger.of(context).showSnackBar(
-        SnackBar(content: Text('Username and password cannot be empty')),
-      );
+      // ScaffoldMessenger.of(context).showSnackBar(
+      //   SnackBar(content: Text('Username and password cannot be empty')),
+      // );
+        showWarningPopup(
+          context,
+          'Error',
+          'Username and password cannot be empty',
+        );
       return;
       }
       // Sending login request with username and password as query parameters
@@ -45,15 +50,19 @@ class _LoginPageState extends State<LoginPage> {
       'username': username,
       'password': password,
     };
-
     // Send the POST request with the JSON body
     final response = await http.post(
       Uri.parse(url),
       headers: {'Content-Type': 'application/json'},
+      // body: jsonEncode(requestBody),
       body: jsonEncode(requestBody),
     );
 
 
+<<<<<<< Updated upstream
+=======
+      print(response.body);
+>>>>>>> Stashed changes
       // Parse the JSON response
       if (response.statusCode == 200) {
         final jsonResponse = jsonDecode(response.body);
@@ -137,52 +146,67 @@ class _LoginPageState extends State<LoginPage> {
           //Navigator.pushReplacement(context, MaterialPageRoute(builder: (context) => Homepage()));
         } else {
           // Failed login, show error message
-          ScaffoldMessenger.of(context).showSnackBar(
-            SnackBar(content: Text(jsonResponse['message'])),
+          // ScaffoldMessenger.of(context).showSnackBar(
+          //   SnackBar(content: Text(jsonResponse['message'])),
+          // );
+          showWarningPopup(
+            context,
+            'Error',
+            jsonResponse['message'],
           );
         }
       } else {
         // Server error
-        showDialog(
-          context: context,
-          builder: (BuildContext context) {
-          return AlertDialog(
-            title: Text('Network Error'),
-            content: 
-            SelectableText(
-              'Network error: ${response.statusCode} ${response.reasonPhrase}',
-              ),
-            actions: [
-            TextButton(
-              onPressed: () {
-              Navigator.of(context).pop();
-              },
-              child: Text('OK'),
-            ),
-            ],
-          );
-        },
-      );
+      //   showDialog(
+      //     context: context,
+      //     builder: (BuildContext context) {
+      //     return AlertDialog(
+      //       title: Text('Network Error'),
+      //       content: 
+      //       SelectableText(
+      //         'Network error: ${response.statusCode} ${response.reasonPhrase}',
+      //         ),
+      //       actions: [
+      //       TextButton(
+      //         onPressed: () {
+      //         Navigator.of(context).pop();
+      //         },
+      //         child: Text('OK'),
+      //       ),
+      //       ],
+      //     );
+      //   },
+      // );
+        showWarningPopup(
+          context,
+          'Network Error',
+          '${response.statusCode} ${response.reasonPhrase}',
+        );
       }
     } catch (error) {
       // Handle network or server unreachable errors
-      showDialog(
-      context: context,
-      builder: (BuildContext context) {
-      return AlertDialog(
-        title: Text('Network Error'),
-        content: SelectableText('Network error: $error'),
-        actions: [
-        TextButton(
-          onPressed: () {
-          Navigator.of(context).pop();
-          },
-          child: Text('OK'),
-        ),
-        ],
+    //   showDialog(
+    //   context: context,
+    //   builder: (BuildContext context) {
+    //   return AlertDialog(
+    //     title: Text('Network Error'),
+    //     content: SelectableText('Network error: $error'),
+    //     actions: [
+    //     TextButton(
+    //       onPressed: () {
+    //       Navigator.of(context).pop();
+    //       },
+    //       child: Text('OK'),
+    //     ),
+    //     ],
+    //   );
+    //   },
+    // );
+      showWarningPopup(
+        context,
+        'Network Error',
+        '$error',
       );
-      },
-    );
     }
     
   }

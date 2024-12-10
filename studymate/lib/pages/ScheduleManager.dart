@@ -25,6 +25,7 @@ class _ScheduleViewState extends State<ScheduleView> {
 
   @override
   Widget build(BuildContext context) {
+    print(Hive.box('userBox').get('id'));
     return Scaffold(
       appBar: AppBar(
         backgroundColor: Color(0xFF165D96),
@@ -147,10 +148,10 @@ class _DayViewState extends State<DayView> {
     int userId = Hive.box('userBox').get('id');
     final startOfDay = DateTime(_selectedDate.year, _selectedDate.month, _selectedDate.day, 0, 0, 0);
     final endOfDay = DateTime(_selectedDate.year, _selectedDate.month, _selectedDate.day, 23, 59, 59);
-    print('https://alyibrahim.pythonanywhere.com/schedule?user_id=$userId&start_date=${startOfDay.toIso8601String().split('T')[0]}&end_date=${endOfDay.toIso8601String().split('T')[0]}');
-    print(userId);
-    print(startOfDay);
-    print(endOfDay);
+    // print('https://alyibrahim.pythonanywhere.com/schedule?user_id=$userId&start_date=${startOfDay.toIso8601String().split('T')[0]}&end_date=${endOfDay.toIso8601String().split('T')[0]}');
+    // print(userId);
+    // print(startOfDay);
+    // print(endOfDay);
 
     try {
       final response = await http.get(Uri.parse(

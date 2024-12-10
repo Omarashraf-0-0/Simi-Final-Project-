@@ -32,35 +32,44 @@ class _ProfilepageState extends State<Profilepage> {
     print("XP : ${widget.user?.xp}");
     return Scaffold(
       appBar: AppBar(
+        backgroundColor: Color(0xFF165D96),
         leading: IconButton(
             icon: Icon(Icons.arrow_back_ios_new_rounded, color: Color(0xFF01D7ED)),
             onPressed: () {
               Navigator.pop(context);
             }
         ),
-        title: Center(child: Text('Profile Page')),
+        title: Center(child: Text('Profile Page',
+          style: TextStyle(
+            color: Colors.white,
+            fontSize: 20,
+            fontWeight: FontWeight.bold,
+            // backgroundColor: Colors.black,
+          ),
+        ),
+        ),
         titleTextStyle: TextStyle(
           color: Colors.black,
           fontSize: 20,
           fontWeight: FontWeight.bold,
           // backgroundColor: Colors.black,
         ),
-        actions: [
-          IconButton(
-              icon: Icon(
-                Ionicons.settings_outline,
-                color: Color(0xFF01D7ED),
-                size: 25,
+        // actions: [
+        //   IconButton(
+        //       icon: Icon(
+        //         Ionicons.settings_outline,
+        //         color: Color(0xFF01D7ED),
+        //         size: 25,
 
-              ),
-              onPressed: () {
-                Navigator.push(
-                  context,
-                  MaterialPageRoute(builder: (context) => ProfileSettings()),
-                );
-              }
-          ),
-        ],
+        //       ),
+        //       onPressed: () {
+        //         Navigator.push(
+        //           context,
+        //           MaterialPageRoute(builder: (context) => ProfileSettings()),
+        //         );
+        //       }
+        //   ),
+        // ],
       ),
       body: SingleChildScrollView(
         padding: const EdgeInsets.only(top: 20, left: 16, right: 16),

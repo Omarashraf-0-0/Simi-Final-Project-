@@ -71,7 +71,8 @@ class _AboLaylaChatState extends State<AboLaylaChat> {
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
-        title: const Text('AboLayla Chat'),
+        backgroundColor: const Color(0xFF165D96),
+        title: const Text('AboLayla Chat', style: TextStyle(fontFamily: 'League Spartan', fontSize: 25, fontWeight: FontWeight.bold, color: Colors.white)),
       ),
       body: Stack(
         children: [

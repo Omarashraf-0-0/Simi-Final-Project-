@@ -1,8 +1,10 @@
 // ignore_for_file: prefer_const_constructors, prefer_const_literals_to_create_immutables, non_constant_identifier_names
 
+import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:studymate/pages/LoginPage.dart';
 import '../Classes/User.dart';
+import '../Pop-ups/PopUps_Warning.dart';
 import '../util/TextField.dart';
 import 'CollageInformatio.dart';
 
@@ -123,29 +125,33 @@ class _RegisterPageState extends State<RegisterPage> {
                         String dateOfBirth = BirthDateController.text; // Assuming you have a DateOfBirthController
 
                         if (fullName.isEmpty || phoneNumber.isEmpty || address.isEmpty || dateOfBirth.isEmpty) {
-                          ScaffoldMessenger.of(context).showSnackBar(
-                            SnackBar(content: Text('Please fill in all fields.')),
-                          );
+                          // ScaffoldMessenger.of(context).showSnackBar(
+                          //   SnackBar(content: Text('Please fill in all fields.')),
+                          // );
+                          showWarningPopup(context, 'Please fill in all fields.','', 'OK');
                         } else if (!RegExp(r'^(010|011|012|015)\d{8}$').hasMatch(phoneNumber)) {
-                          ScaffoldMessenger.of(context).showSnackBar(
-                            SnackBar(content: Text('Phone number must be 11 digits and start with 010, 011, 012, or 015.')),
-                          );
+                          // ScaffoldMessenger.of(context).showSnackBar(
+                          //   SnackBar(content: Text('Phone number must be 11 digits and start with 010, 011, 012, or 015.')),
+                          // );
+                          showWarningPopup(context, 'Phone number must be 11 digits and start with 010, 011, 012, or 015.','', 'OK');
                         } else {
                           DateTime dob;
                           try {
                             dob = DateTime.parse(dateOfBirth);
                             if (dob.isAfter(DateTime.now())) {
-                              ScaffoldMessenger.of(context).showSnackBar(
-                                SnackBar(content: Text('Date of birth must be in the past.')),
-                              );
+                              // ScaffoldMessenger.of(context).showSnackBar(
+                              //   SnackBar(content: Text('Date of birth must be in the past.')),
+                              // );
+                              showWarningPopup(context, 'Date of birth must be in the past.', 'OK');
                             } else {
                               widget.user?.fullName = fullName;
                               widget.user?.phoneNumber = phoneNumber;
                               widget.user?.role = 'student';
                               widget.user?.address = address;
                               widget.user?.birthDate = dateOfBirth; // Assuming you have a dateOfBirth field in user
-
-                              Navigator.pushReplacement(
+                              // showWarningPopup(context, 'user info', '${widget.user?.fullName} ${widget.user?.phoneNumber} ${widget.user?.role} ${widget.user?.address} ${widget.user?.birthDate}', 'OK');
+                              
+                              Navigator.push(
                                 context,
                                 MaterialPageRoute(
                                   builder: (context) => CollageInformation(
@@ -155,9 +161,10 @@ class _RegisterPageState extends State<RegisterPage> {
                               );
                             }
                           } catch (e) {
-                            ScaffoldMessenger.of(context).showSnackBar(
-                              SnackBar(content: Text('Invalid date of birth format.')),
-                            );
+                            // ScaffoldMessenger.of(context).showSnackBar(
+                            //   SnackBar(content: Text('Invalid date of birth format.')),
+                            // );
+                            showWarningPopup(context, 'Invalid date of birth format.', 'OK');
                           }
                         }
                       },
@@ -196,7 +203,7 @@ class _RegisterPageState extends State<RegisterPage> {
                     ),
                     ElevatedButton(
                       onPressed: () {
-                        // Navigator.pop(context);
+                        Navigator.pop(context);
                         Navigator.pushReplacement(
                           context,
                           MaterialPageRoute(builder: (context) => LoginPage()),

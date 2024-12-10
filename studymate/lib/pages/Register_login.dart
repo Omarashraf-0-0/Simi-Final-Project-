@@ -2,6 +2,8 @@ import 'package:flutter/material.dart';
 import 'package:studymate/pages/LoginPage.dart';
 import 'package:studymate/pages/RegisterPage.dart';
 import '../Classes/User.dart';
+import '../Pop-ups/PopUps_Success.dart';
+import '../Pop-ups/PopUps_Warning.dart';
 import '../util/TextField.dart';
 
 class RegisterLogin extends StatefulWidget {
@@ -189,37 +191,41 @@ class _RegisterLoginState extends State<RegisterLogin> {
                         
                         
                         if (UsernameController.text.isEmpty || EmailController.text.isEmpty || PasswordController.text.isEmpty || GenderController.text.isEmpty) {
-                          ScaffoldMessenger.of(context).showSnackBar(
-                            SnackBar(content: Text('Please fill in all fields.')),
-                          );
-
+                          // ScaffoldMessenger.of(context).showSnackBar(
+                          //   SnackBar(content: Text('Please fill in all fields.')),
+                          // );
+                          showWarningPopup(context, 'Error', 'Please fill in all fields.', 'OK');
                         }
 
                         else if (!RegExp(r'^[a-zA-Z0-9_]+$').hasMatch(UsernameController.text)) {
-                          ScaffoldMessenger.of(context).showSnackBar(
-                            SnackBar(content: Text('Username can only contain letters, numbers, and underscores.')),
-                          );
+                          // ScaffoldMessenger.of(context).showSnackBar(
+                          //   SnackBar(content: Text('Username can only contain letters, numbers, and underscores.')),
+                          // );
+                          showWarningPopup(context, 'Error', 'Username can only contain letters, numbers, and underscores.', 'OK');
                         }
 
                         else if (!RegExp(r'^[^@]+@[^@]+\.[^@]+').hasMatch(EmailController.text)) {
-                          ScaffoldMessenger.of(context).showSnackBar(
-                            SnackBar(content: Text('Invalid email address.')),
-                          );
+                          // ScaffoldMessenger.of(context).showSnackBar(
+                          //   SnackBar(content: Text('Invalid email address.')),
+                          // );
+                          showWarningPopup(context, 'Error', 'Invalid email address.', 'OK');
                         }
 
                         else if (PasswordController.text != ConfirmPasswordController.text) {
-                          ScaffoldMessenger.of(context).showSnackBar(
-                            SnackBar(content: Text('Passwords do not match.')),
-                          );
+                          // ScaffoldMessenger.of(context).showSnackBar(
+                          //   SnackBar(content: Text('Passwords do not match.')),
+                          // );
+                          showWarningPopup(context, 'Error', 'Passwords do not match.', 'OK');
                         }
 
                         else if (PasswordController.text.length < 8 || 
                             !RegExp(r'[A-Z]').hasMatch(PasswordController.text) || 
                             !RegExp(r'[a-z]').hasMatch(PasswordController.text) || 
                             !RegExp(r'\d').hasMatch(PasswordController.text)) {
-                          ScaffoldMessenger.of(context).showSnackBar(
-                            SnackBar(content: Text('Password must be at least 8 characters long and contain at least one uppercase letter, one lowercase letter, and one number.')),
-                          );
+                          // ScaffoldMessenger.of(context).showSnackBar(
+                          //   SnackBar(content: Text('Password must be at least 8 characters long and contain at least one uppercase letter, one lowercase letter, and one number.')),
+                          // );
+                          showWarningPopup(context, 'Error', 'Password must be at least 8 characters long and contain at least one uppercase letter, one lowercase letter, and one number.', 'OK');
                         }
 
                         else {
@@ -227,33 +233,42 @@ class _RegisterLoginState extends State<RegisterLogin> {
                         widget.user?.email = EmailController.text;
                         widget.user?.password = PasswordController.text;
                         widget.user?.gender = GenderController.text;
-                        showDialog(
-                          context: context,
-                          builder: (BuildContext context) {
-                            return AlertDialog(
-                              title: Text('Registration Successful!'),
-                              content: SelectableText(
-                                'Username: ${widget.user?.username}\nEmail: ${widget.user?.email}\nPassword: ${widget.user?.password}\nGender: ${widget.user?.gender}',
-                              ),
-                              actions: [
-                                TextButton(
-                                  onPressed: () {
-                                    Navigator.of(context).pop(); // Close the dialog
-                                    Navigator.pushReplacement(
-                                      context,
-                                      MaterialPageRoute(
-                                        builder: (context) => RegisterPage(
-                                          user: widget.user,
-                                        ),
-                                      ),
-                                    );
-                                  },
-                                  child: Text('OK'),
+                        // showDialog(
+                        //   context: context,
+                        //   builder: (BuildContext context) {
+                        //     return AlertDialog(
+                        //       title: Text('Registration Successful!'),
+                        //       content: SelectableText(
+                        //         'Username: ${widget.user?.username}\nEmail: ${widget.user?.email}\nPassword: ${widget.user?.password}\nGender: ${widget.user?.gender}',
+                        //       ),
+                        //       actions: [
+                        //         TextButton(
+                        //           onPressed: () {
+                        //             Navigator.of(context).pop(); // Close the dialog
+                        //             Navigator.pushReplacement(
+                        //               context,
+                        //               MaterialPageRoute(
+                        //                 builder: (context) => RegisterPage(
+                        //                   user: widget.user,
+                        //                 ),
+                        //               ),
+                        //             );
+                        //           },
+                        //           child: Text('OK'),
+                        //         ),
+                        //       ],
+                        //     );
+                        //   },
+                        // );
+                        // showSuccessPopup(context, 'Registration Successful!', 'Username: ${widget.user?.username}\nEmail: ${widget.user?.email}\nPassword: ${widget.user?.password}\nGender: ${widget.user?.gender}', 'OK');
+                        Navigator.push(
+                              context,
+                              MaterialPageRoute(
+                                builder: (context) => RegisterPage(
+                                  user: widget.user,
                                 ),
-                              ],
+                              ),
                             );
-                          },
-                        );
                       }
 
                         // Navigator.pop(context);

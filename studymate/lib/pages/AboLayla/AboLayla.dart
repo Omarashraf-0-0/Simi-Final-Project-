@@ -9,9 +9,12 @@ class AboLayla extends StatelessWidget {
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
+        backgroundColor: Color(0xFF165D96), // Blue color for the AppBar
         title: Text(
           'Abo Layla',
-          style: TextStyle(fontFamily: 'League Spartan', fontSize: 25, fontWeight: FontWeight.bold),
+          style: TextStyle(fontFamily: 'League Spartan', fontSize: 25, fontWeight: FontWeight.bold,
+          color: Colors.white
+          ),
         ),
         centerTitle: true, // Center the title in the AppBar
       ),

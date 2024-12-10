@@ -4,6 +4,9 @@ import 'package:flutter/material.dart';
 import 'package:flutter_font_icons/flutter_font_icons.dart';
 import 'package:studymate/Classes/User.dart';
 import 'package:studymate/pages/LoginPage.dart';
+import '../Pop-ups/PopUps_Failed.dart';
+import '../Pop-ups/PopUps_Success.dart';
+import '../Pop-ups/PopUps_Warning.dart';
 import '../util/TextField.dart';
 import 'package:http/http.dart' as http;
 import 'dart:convert'; // For jsonEncode
@@ -47,7 +50,6 @@ class _CollageInformationState extends State<CollageInformation> {
     final String url = 'https://alyibrahim.pythonanywhere.com/register';
 
     final Map<String, dynamic> data = {
-      'Query': 'college_registration',
       'username': widget.user?.username,
       'password': widget.user?.password,
       'fullName': widget.user?.fullName,
@@ -67,32 +69,56 @@ class _CollageInformationState extends State<CollageInformation> {
       'registrationNumber': RegistrationNumberController.text,
       'birthDate': widget.user?.birthDate,
     };
+    final body = jsonEncode(data);
+    print(body);
 
     try {
       final response = await http.post(
         Uri.parse(url),
         headers: {'Content-Type': 'application/json'},
-        body: json.encode(data),
+        body: jsonEncode(data),
+        // body: json.encode(data),
       );
 
       if (response.statusCode == 200) {
         final responseData = json.decode(response.body);
-        ScaffoldMessenger.of(context).showSnackBar(
-          SnackBar(content: Text(responseData['message'])),
-        );
+        // ScaffoldMessenger.of(context).showSnackBar(
+        //   SnackBar(content: Text(responseData['message'])),
+        // );
+        // showSuccessPopup(
+        //   context,
+        //   'Success',
+        //   responseData['message'],
+        //   'Continue',
+        // );
+        Navigator.pop(context);
+        Navigator.pop(context);
         Navigator.pushReplacement(
           context,
           MaterialPageRoute(builder: (context) => LoginPage()),
         );
       } else {
         final responseData = json.decode(response.body);
-        ScaffoldMessenger.of(context).showSnackBar(
-          SnackBar(content: Text(responseData['message'])),
+        // ScaffoldMessenger.of(context).showSnackBar(
+        //   SnackBar(content: Text(responseData['message'])),
+        // );
+        showFailedPopup(
+          context,
+          'Failed',
+          responseData['message'],
+          'Continue',
         );
       }
     } catch (error) {
-      ScaffoldMessenger.of(context).showSnackBar(
-        SnackBar(content: Text('Failed to register college info: $error')),
+      // ScaffoldMessenger.of(context).showSnackBar(
+      //   SnackBar(content: Text('Failed to register college info: $error')),
+      // );
+      print(error);
+      showFailedPopup(
+        context,
+        'Failed',
+        'Failed to register college info: $error',
+        'Continue',
       );
     }
   }
@@ -228,13 +254,25 @@ class _CollageInformationState extends State<CollageInformation> {
                             selectedCollage == null ||
                             selectedMajor == null ||
                             RegistrationNumberController.text.isEmpty) {
-                          ScaffoldMessenger.of(context).showSnackBar(
-                            SnackBar(content: Text('Please fill all fields')),
+                          // ScaffoldMessenger.of(context).showSnackBar(
+                          //   SnackBar(content: Text('Please fill all fields')),
+                          // );
+                          showWarningPopup(
+                            context,
+                            'Warning',
+                            'Please fill all fields',
+                            'Continue',
                           );
                         }
                        else if (!RegExp(r'^\d{9}$').hasMatch(RegistrationNumberController.text)) {
-                          ScaffoldMessenger.of(context).showSnackBar(
-                            SnackBar(content: Text('Registration number must be exactly 9 digits')),
+                          // ScaffoldMessenger.of(context).showSnackBar(
+                          //   SnackBar(content: Text('Registration number must be exactly 9 digits')),
+                          // );
+                          showWarningPopup(
+                            context,
+                            'Warning',
+                            'Registration number must be exactly 9 digits',
+                            'Continue',
                           );
                         } 
                         else
