@@ -10,6 +10,7 @@ import 'pages/intro_page.dart';
 void main () async{
   await Hive.initFlutter();
   await Hive.openBox('userBox');
+
   runApp(const MyApp());
 }
 class MyApp extends StatelessWidget {

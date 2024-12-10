@@ -7,6 +7,15 @@ import 'package:flutter_font_icons/flutter_font_icons.dart';
 import 'package:google_fonts/google_fonts.dart';
 import 'package:studymate/pages/ProfileSettings.dart';
 import '../Classes/User.dart';
+import 'package:flutter/material.dart';
+import 'package:hive/hive.dart';
+import '../Classes/User.dart';
+import '../Pop-ups/SuccesPopUp.dart';
+import '../util/TextField.dart';
+import 'Forget_Pass.dart';
+import 'package:http/http.dart' as http;
+import 'dart:convert';
+
 
 class Profilepage extends StatefulWidget {
   User? user;
@@ -65,14 +74,14 @@ class _ProfilepageState extends State<Profilepage> {
               children: [
                 CircleAvatar(
                   radius: 60,
-                  backgroundImage: AssetImage('lib/assets/img/pfp.jpg'),
+                  backgroundImage: AssetImage('lib/assets/img/mahdy.jpg'),
                 ),
                 SizedBox(width: 20),
                 Column(
                   crossAxisAlignment: CrossAxisAlignment.start,
                   children: [
                     Text(
-                      "${widget.user?.title}",
+                      Hive.box('userBox').get('title'),
                       style: TextStyle(
                           fontSize: 16,
                           fontWeight: FontWeight.bold,
@@ -82,7 +91,7 @@ class _ProfilepageState extends State<Profilepage> {
                     ),
                     // SizedBox(height: 1),
                     Text(
-                      "${widget.user?.fullName}",
+                        Hive.box('userBox').get('fullName'),
                       style: TextStyle(
                         fontSize: 24,
                         fontWeight: FontWeight.bold,
@@ -92,7 +101,7 @@ class _ProfilepageState extends State<Profilepage> {
                     ),
                     SizedBox(height: 1),
                     Text(
-                      "${widget.user?.level}",
+                      "${Hive.box('userBox').get('level')}",
                       style: TextStyle(
                           fontSize: 12,
                           fontWeight: FontWeight.bold,
@@ -254,7 +263,7 @@ class _ProfilepageState extends State<Profilepage> {
             ),
             SizedBox(height: 1),
             Text(
-              "${widget.user?.email}",
+              "${Hive.box('userBox').get('email')}",
               style: TextStyle(
                   fontSize: 15,
                   fontWeight: FontWeight.bold,
@@ -274,7 +283,7 @@ class _ProfilepageState extends State<Profilepage> {
             ),
             SizedBox(height: 1),
             Text(
-              "${widget.user?.phoneNumber}",
+              "${Hive.box('userBox').get('phone_number')}",
               style: TextStyle(
                   fontSize: 15,
                   fontWeight: FontWeight.bold,
@@ -294,7 +303,7 @@ class _ProfilepageState extends State<Profilepage> {
             ),
             SizedBox(height: 1),
             Text(
-              "${widget.user?.registrationNumber}",
+              "${Hive.box('userBox').get('Registration_Number')}",
               style: TextStyle(
                   fontSize: 15,
                   fontWeight: FontWeight.bold,
@@ -323,7 +332,7 @@ class _ProfilepageState extends State<Profilepage> {
             ),
             SizedBox(height: 1),
             Text(
-              "${widget.user?.university}",
+              "${Hive.box('userBox').get('university')}",
               style: TextStyle(
                   fontSize: 15,
                   fontWeight: FontWeight.bold,
@@ -343,7 +352,7 @@ class _ProfilepageState extends State<Profilepage> {
             ),
             SizedBox(height: 1),
             Text(
-              "${widget.user?.collage}",
+              "${Hive.box('userBox').get('college')}",
               style: TextStyle(
                   fontSize: 15,
                   fontWeight: FontWeight.bold,
@@ -363,7 +372,7 @@ class _ProfilepageState extends State<Profilepage> {
             ),
             SizedBox(height: 1),
             Text(
-              "${widget.user?.major}",
+              "${Hive.box('userBox').get('major')}",
               style: TextStyle(
                   fontSize: 15,
                   fontWeight: FontWeight.bold,
@@ -383,7 +392,7 @@ class _ProfilepageState extends State<Profilepage> {
             ),
             SizedBox(height: 1),
             Text(
-              "${widget.user?.term_level}",
+              "${Hive.box('userBox').get('term_level')}",
               style: TextStyle(
                   fontSize: 15,
                   fontWeight: FontWeight.bold,
@@ -393,7 +402,7 @@ class _ProfilepageState extends State<Profilepage> {
             ),
             SizedBox(height: 10),
             Text(
-              "${widget.user?.registrationNumber}",
+              "Error",
               style: TextStyle(
                 fontSize: 24,
                 fontWeight: FontWeight.bold,

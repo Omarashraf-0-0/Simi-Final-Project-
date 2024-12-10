@@ -54,12 +54,12 @@ class _LoginPageState extends State<LoginPage> {
     );
 
 
-      
       // Parse the JSON response
       if (response.statusCode == 200) {
         final jsonResponse = jsonDecode(response.body);
 
         if (jsonResponse['success'] == true) {
+          print(">>>>>>>>>>>>>>>> ${Hive.box('userBox').get('level')}");
           // Successful login, show welcome message and navigate
           // ScaffoldMessenger.of(context).showSnackBar(
           //   SnackBar(content: Text(jsonResponse['message'])),

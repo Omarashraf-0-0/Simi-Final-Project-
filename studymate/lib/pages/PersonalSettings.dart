@@ -2,7 +2,16 @@ import 'package:flutter/material.dart';
 import 'package:flutter_font_icons/flutter_font_icons.dart';
 import 'package:google_fonts/google_fonts.dart';
 import 'package:studymate/pages/Settings.dart';
-import 'package:studymate/pages/UserSettings.dart'; 
+import 'package:studymate/pages/UserSettings.dart';
+import 'package:hive/hive.dart';
+import '../Classes/User.dart';
+import '../Pop-ups/SuccesPopUp.dart';
+import '../util/TextField.dart';
+import 'Forget_Pass.dart';
+import 'package:http/http.dart' as http;
+import 'dart:convert';
+import '../Pop-ups/PopUps_Success.dart';
+
 
 class PersonalSettings extends StatefulWidget {
   @override
@@ -18,8 +27,38 @@ class _PersonalSettingsState extends State<PersonalSettings> {
   bool _isPasswordVisible = false;
   bool _isConfirmPasswordVisible = false;
 
+
+
+  Future<void> UpdateData() async {
+    const url = 'https://alyibrahim.pythonanywhere.com/login';
+    final Map<String, dynamic> requestBody = {
+      'Query': 'login',
+      'username': 'username',
+      'password': 'password',
+    };
+
+    // Send the POST request with the JSON body
+    final response = await http.post(
+      Uri.parse(url),
+      headers: {'Content-Type': 'application/json'},
+      body: jsonEncode(requestBody),
+    );
+    Hive.box('userBox').put('phone_number', PhoneNumberController.text);
+    Hive.box('userBox').put('address', AddressController.text);
+    Hive.box('userBox').put('fullName', FullNameController.text);
+    Hive.box('userBox').put('birthDate', DateOfBirthController.text);
+    showSuccessPopup(context, 'Done successfully', 'Data update successfully');
+
+  }
+
+
+
   @override
   Widget build(BuildContext context) {
+    FullNameController.text=Hive.box('userBox').get('fullName');
+    PhoneNumberController.text=Hive.box('userBox').get('phone_number');
+    DateOfBirthController.text=Hive.box('userBox').get('birthDate');
+    AddressController.text=Hive.box('userBox').get('address');
     return Scaffold(
       appBar: AppBar(
         backgroundColor: Color(0xFF165D96),
@@ -130,7 +169,7 @@ class _PersonalSettingsState extends State<PersonalSettings> {
                   ),
                   child: TextButton(
                     onPressed: () {
-                      // Save changes action
+                      UpdateData();
                     },
                     child: Padding(
                       padding: const EdgeInsets.symmetric(horizontal: 20.0),
