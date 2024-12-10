@@ -19,7 +19,7 @@ class _AboLaylaChatState extends State<AboLaylaChat> {
     apiKey: "AIzaSyCtRyYUAupQxyE3gjwNcL0YmbA0HqttxSE",
   );
 
-  bool isFirstPrompt = true; // Flag to check if it's the first prompt
+  bool isFirstPrompt = true;
 
   void _sendMessage() async {
     if (_controller.text.isEmpty) return;
@@ -27,38 +27,47 @@ class _AboLaylaChatState extends State<AboLaylaChat> {
     final userMessage = _controller.text;
 
     setState(() {
-      // Add user's message to the chat
       _messages.add({"sender": "user", "text": userMessage});
       _controller.clear();
     });
 
     try {
-      // Modify the message based on whether it's the first prompt
-      String modifiedMessage = userMessage;
+      // Construct the conversation context
+      String conversationContext = _messages
+          .map((msg) =>
+              "${msg['sender'] == 'user' ? 'User' : 'Bot'}: ${msg['text']}")
+          .join("\n");
+
+      String modifiedMessage;
 
       if (isFirstPrompt) {
-        // Special prompt for the first message
-        modifiedMessage =
-            "$userMessage : Answer this question in Egyptian Baladi, and start with (يا امبيسا) you are talking with a college student. if the message I just gave you mentioned the word (تامر) then say that we just made ابو ليله in just 2 hours ago, and tell Dr.Tamer to look at our faces around him and see how they are embarrassed and don’t mention that the message said (تامر). Make it funny, but if the message did not say the word (تامر) then just reply to the message normally in Egyptian Balady. Don’t mention that you skipped, just answer the message";
-        
-        // Set the flag to false after the first prompt
+        if (widget.selectedLanguage == 'مصري') {
+          modifiedMessage =
+              "$conversationContext\nUser: $userMessage\nBot: Answer this question in Egyptian Baladi, and start with (يا امبيسا). You are talking with a college student.";
+        } else {
+          modifiedMessage =
+              "$conversationContext\nUser: $userMessage\nBot: Answer this question in English casually, and start with (Hey there). You're talking with a college student. Make it friendly and supportive.";
+        }
         isFirstPrompt = false;
       } else {
-        // Regular conversation handling for subsequent messages
-        modifiedMessage = "$userMessage: Answer normally in Egyptian Baladi.";
+        if (widget.selectedLanguage == 'مصري') {
+          modifiedMessage =
+              "$conversationContext\nUser: $userMessage\nBot: Reply normally in Egyptian Baladi.";
+        } else {
+          modifiedMessage =
+              "$conversationContext\nUser: $userMessage\nBot: Reply normally in English.";
+        }
       }
 
-      // Fetch Gemini response
       final content = [Content.text(modifiedMessage)];
       final response = await model.generateContent(content);
 
       setState(() {
-        // Add Gemini's response to the chat
-        _messages.add({"sender": "bot", "text": response.text ?? "No response"});
+        _messages
+            .add({"sender": "bot", "text": response.text ?? "No response"});
       });
     } catch (e) {
       setState(() {
-        // Add error message if the API fails
         _messages.add({
           "sender": "bot",
           "text": "Oops! Something went wrong. Please try again later."
@@ -75,13 +84,12 @@ class _AboLaylaChatState extends State<AboLaylaChat> {
       ),
       body: Stack(
         children: [
-          // Background Image with low opacity
           Positioned.fill(
             child: Opacity(
-              opacity: 0.1, // Adjust the opacity here
+              opacity: 0.1,
               child: Image.asset(
                 'lib/assets/img/AboLayla.jpg',
-                // fit: BoxFit.cover, // Make the image cover half of the screen
+                // fit: BoxFit.cover,
               ),
             ),
           ),
@@ -92,8 +100,8 @@ class _AboLaylaChatState extends State<AboLaylaChat> {
                   child: Center(
                     child: Text(
                       widget.selectedLanguage == 'مصري'
-                          ? "إزاي أقدر أساعدك؟"  // Egyptian Arabic
-                          : "Ahh, What can I help you with?", // English
+                          ? "إزاي أقدر أساعدك؟"
+                          : "Hey there!\nWhat can I help you with?",
                       style: TextStyle(
                         fontSize: 28,
                         fontWeight: FontWeight.bold,
@@ -119,8 +127,8 @@ class _AboLaylaChatState extends State<AboLaylaChat> {
                           children: [
                             if (!isUser)
                               CircleAvatar(
-                                backgroundImage: AssetImage(
-                                    'lib/assets/img/AboLayla.jpg'), // Replace with your bot icon
+                                backgroundImage:
+                                    AssetImage('lib/assets/img/AboLayla.jpg'),
                                 radius: 16,
                               ),
                             const SizedBox(width: 12),
@@ -128,16 +136,19 @@ class _AboLaylaChatState extends State<AboLaylaChat> {
                               child: Container(
                                 constraints: BoxConstraints(
                                     maxWidth:
-                                        MediaQuery.of(context).size.width * 0.7),
+                                        MediaQuery.of(context).size.width *
+                                            0.7),
                                 padding: const EdgeInsets.all(12),
                                 decoration: BoxDecoration(
-                                  color: isUser ? Colors.blue : Colors.grey[300],
+                                  color:
+                                      isUser ? Colors.blue : Colors.grey[300],
                                   borderRadius: BorderRadius.circular(12),
                                 ),
                                 child: Text(
                                   message['text']!,
                                   style: TextStyle(
-                                    color: isUser ? Colors.white : Colors.black87,
+                                    color:
+                                        isUser ? Colors.white : Colors.black87,
                                   ),
                                 ),
                               ),
@@ -155,25 +166,22 @@ class _AboLaylaChatState extends State<AboLaylaChat> {
                     Expanded(
                       child: TextField(
                         controller: _controller,
-                        maxLines: 5, // Limit the number of lines
-                        minLines: 1, // Minimum number of lines
+                        maxLines: 5,
+                        minLines: 1,
                         textDirection: widget.selectedLanguage == 'مصري'
                             ? TextDirection.rtl
                             : TextDirection.ltr,
                         style: widget.selectedLanguage == 'مصري'
-                            ? GoogleFonts.cairo(fontSize: 16.0) // Apply Cairo font for Arabic
-                            : null, // Default font for English
+                            ? GoogleFonts.cairo(fontSize: 16.0)
+                            : null,
                         decoration: InputDecoration(
                           hintText: widget.selectedLanguage == 'مصري'
-                              ? 'اكتب رسالتك...' // Arabic hint text
-                              : 'Type your message...', // English hint text
+                              ? 'اكتب رسالتك...'
+                              : 'Type your message...',
                           border: OutlineInputBorder(
                             borderRadius: BorderRadius.circular(15),
                           ),
                         ),
-                        keyboardType: TextInputType.multiline,
-                        maxLength: null, // Allow unlimited characters
-                        scrollPadding: EdgeInsets.all(20.0), // Add some space around the scrollable field
                       ),
                     ),
                     IconButton(
