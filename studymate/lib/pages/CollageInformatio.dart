@@ -82,9 +82,9 @@ class _CollageInformationState extends State<CollageInformation> {
 
       if (response.statusCode == 200) {
         final responseData = json.decode(response.body);
-        // ScaffoldMessenger.of(context).showSnackBar(
-        //   SnackBar(content: Text(responseData['message'])),
-        // );
+        ScaffoldMessenger.of(context).showSnackBar(
+          SnackBar(content: Text(responseData['message'])),
+        );
         // showSuccessPopup(
         //   context,
         //   'Success',

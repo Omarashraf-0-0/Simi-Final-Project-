@@ -66,10 +66,10 @@ class _HomebodyState extends State<Homebody> {
     final today = DateTime.now();
     final startOfDay = DateTime(today.year, today.month, today.day);
     final endOfDay = DateTime(today.year, today.month, today.day, 23, 59, 59);
-
+    int UserID = Hive.box('userBox').get('id');
     try {
       final response = await http.get(Uri.parse(
-        'https://alyibrahim.pythonanywhere.com/schedule?user_id=12&start_date=${startOfDay.toIso8601String().split('T')[0]}&end_date=${endOfDay.toIso8601String().split('T')[0]}',
+        'https://alyibrahim.pythonanywhere.com/schedule?user_id=$UserID&start_date=${startOfDay.toIso8601String().split('T')[0]}&end_date=${endOfDay.toIso8601String().split('T')[0]}',
       ));
       if (response.statusCode == 200) {
         setState(() {

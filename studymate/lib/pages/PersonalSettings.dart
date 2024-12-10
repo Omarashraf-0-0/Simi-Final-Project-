@@ -47,6 +47,7 @@ class _PersonalSettingsState extends State<PersonalSettings> {
     Hive.box('userBox').put('address', AddressController.text);
     Hive.box('userBox').put('fullName', FullNameController.text);
     Hive.box('userBox').put('birthDate', DateOfBirthController.text);
+    print(response.body);
     showSuccessPopup(context, 'Done successfully', 'Data update successfully');
 
   }

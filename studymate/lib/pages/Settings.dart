@@ -178,42 +178,42 @@ class _SettingsState extends State<Settings> {
                 ],
               ),
               SizedBox(height: 20),
-              Row(
-                children: [
-                  CircleAvatar(
-                    radius: 65, // Make the radius the same as the first CircleAvatar
-                    backgroundImage: AssetImage('lib/assets/img/SCourse.png'),
-                    backgroundColor: Colors.transparent,
-                  ),
-                  SizedBox(width: 25),
-                  Expanded(
-                    child: Container(
-                      height: 50, // Set a fixed height for the button
-                      decoration: BoxDecoration(
-                        color: const Color.fromRGBO(22, 93, 150, 1),
-                        borderRadius: BorderRadius.circular(60),
-                      ),
-                      child: TextButton(
-                        onPressed: () {
-                          Navigator.push(context,
-                              MaterialPageRoute(builder: (context) => Rcoursessettings()));
-                        },
-                        child: Center(
-                          child: Text(
-                            'Courses Settings',
-                            style: TextStyle(
-                              color: Colors.white,
-                              fontSize: 20,
-                              fontWeight: FontWeight.bold,
-                              fontFamily: GoogleFonts.leagueSpartan().fontFamily,
-                            ),
-                          ),
-                        ),
-                      ),
-                    ),
-                  ),
-                ],
-              ),
+              // Row(
+              //   children: [
+              //     CircleAvatar(
+              //       radius: 65, // Make the radius the same as the first CircleAvatar
+              //       backgroundImage: AssetImage('lib/assets/img/SCourse.png'),
+              //       backgroundColor: Colors.transparent,
+              //     ),
+              //     SizedBox(width: 25),
+              //     Expanded(
+              //       child: Container(
+              //         height: 50, // Set a fixed height for the button
+              //         decoration: BoxDecoration(
+              //           color: const Color.fromRGBO(22, 93, 150, 1),
+              //           borderRadius: BorderRadius.circular(60),
+              //         ),
+              //         child: TextButton(
+              //           onPressed: () {
+              //             Navigator.push(context,
+              //                 MaterialPageRoute(builder: (context) => Rcoursessettings()));
+              //           },
+              //           child: Center(
+              //             child: Text(
+              //               'Courses Settings',
+              //               style: TextStyle(
+              //                 color: Colors.white,
+              //                 fontSize: 20,
+              //                 fontWeight: FontWeight.bold,
+              //                 fontFamily: GoogleFonts.leagueSpartan().fontFamily,
+              //               ),
+              //             ),
+              //           ),
+              //         ),
+              //       ),
+              //     ),
+              //   ],
+              // ),
             ],
           ),
         ),

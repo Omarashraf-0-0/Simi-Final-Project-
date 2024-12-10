@@ -125,7 +125,7 @@ class _ProfilepageState extends State<Profilepage> {
                         child:
                         LinearProgressIndicator(
                           borderRadius: BorderRadius.circular(5),
-                          value: (widget.user?.xp ?? 0)*0.1,
+                          value: Hive.box('userBox').get('xp')*0.1,
                           backgroundColor: Color(0xFF01D7ED),  // Background color
                           color: Color(0xFFB20000),  // Progress color
                         )

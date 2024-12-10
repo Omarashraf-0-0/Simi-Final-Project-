@@ -52,8 +52,9 @@ class _UserSettingsState extends State<UserSettings> {
     userBox.put('email', EmailController.text);
     if (PasswordController.text.isNotEmpty) {
       userBox.put('password', PasswordController.text);
+  
     }
-
+    showSuccessPopup(context, "Done", "Data updated successfully");
     // Prepare the request body
     final Map<String, dynamic> requestBody = {
       'Query': 'update_user', // Specify the query type
