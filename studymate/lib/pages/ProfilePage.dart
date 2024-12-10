@@ -411,7 +411,7 @@ class _ProfilepageState extends State<Profilepage> {
             ),
             SizedBox(height: 10),
             Text(
-              "Error",
+              "Courses",
               style: TextStyle(
                 fontSize: 24,
                 fontWeight: FontWeight.bold,

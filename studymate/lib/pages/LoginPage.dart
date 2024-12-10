@@ -65,17 +65,13 @@ class _LoginPageState extends State<LoginPage> {
         final jsonResponse = jsonDecode(response.body);
 
         if (jsonResponse['success'] == true) {
-          print(">>>>>>>>>>>>>>>> ${Hive.box('userBox').get('level')}");
+          // print(">>>>>>>>>>>>>>>> ${Hive.box('userBox').get('level')}");
           // Successful login, show welcome message and navigate
           // ScaffoldMessenger.of(context).showSnackBar(
           //   SnackBar(content: Text(jsonResponse['message'])),
           // );
           // navigate to the homepage
           // Inside your login success function
-          if (isRememberMeChecked) {
-            // Save the username and password to Hive
-            Hive.box('userBox').put('isLoggedIn', true);
-            Hive.box('userBox').put('loginTime', DateTime.now().millisecondsSinceEpoch);
             Hive.box('userBox').put('id', jsonResponse['id']);
             Hive.box('userBox').put('username', jsonResponse['username']);
             Hive.box('userBox').put('password', jsonResponse['password']);
@@ -95,6 +91,10 @@ class _LoginPageState extends State<LoginPage> {
             Hive.box('userBox').put('title', jsonResponse['title']);
             Hive.box('userBox').put('Registration_Number', jsonResponse['registrationNumber']);
             Hive.box('userBox').put('birthDate', jsonResponse['birthDate']);
+          if (isRememberMeChecked) {
+            // Save the username and password to Hive
+            Hive.box('userBox').put('isLoggedIn', true);
+            Hive.box('userBox').put('loginTime', DateTime.now().millisecondsSinceEpoch);
           } else {
             // Clear the username and password from Hive
             Hive.box('userBox').put('isLoggedIn', false);
