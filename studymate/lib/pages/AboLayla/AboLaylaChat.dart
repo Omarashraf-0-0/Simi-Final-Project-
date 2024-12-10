@@ -1,8 +1,11 @@
 import 'package:flutter/material.dart';
 import 'package:google_generative_ai/google_generative_ai.dart';
+import 'package:google_fonts/google_fonts.dart';
 
 class AboLaylaChat extends StatefulWidget {
-  const AboLaylaChat({super.key});
+  const AboLaylaChat({super.key, required this.selectedLanguage});
+
+  final String selectedLanguage;
 
   @override
   _AboLaylaChatState createState() => _AboLaylaChatState();
@@ -28,13 +31,21 @@ class _AboLaylaChatState extends State<AboLaylaChat> {
     });
 
     try {
+      // Modify the message based on the selected language
+      String modifiedMessage = userMessage;
+      if (widget.selectedLanguage == 'مصري') {
+        modifiedMessage =
+            "أجب باللهجة المصرية: $userMessage"; // Add Egyptian Arabic instruction
+      }
+
       // Fetch Gemini response
-      final content = [Content.text(userMessage)];
+      final content = [Content.text(modifiedMessage)];
       final response = await model.generateContent(content);
 
       setState(() {
         // Add Gemini's response to the chat
-        _messages.add({"sender": "bot", "text": response.text ?? "No response"});
+        _messages
+            .add({"sender": "bot", "text": response.text ?? "No response"});
       });
     } catch (e) {
       setState(() {
@@ -117,8 +128,17 @@ class _AboLaylaChatState extends State<AboLaylaChat> {
                 Expanded(
                   child: TextField(
                     controller: _controller,
+                    textDirection: widget.selectedLanguage == 'مصري'
+                        ? TextDirection.rtl
+                        : TextDirection.ltr,
+                    style: widget.selectedLanguage == 'مصري'
+                        ? GoogleFonts.cairo(
+                            fontSize: 16.0) // Apply Cairo font for Arabic
+                        : null, // Default font for English
                     decoration: InputDecoration(
-                      hintText: 'Type your message...',
+                      hintText: widget.selectedLanguage == 'مصري'
+                          ? 'اكتب رسالتك...' // Arabic hint text
+                          : 'Type your message...', // English hint text
                       border: OutlineInputBorder(
                         borderRadius: BorderRadius.circular(15),
                       ),
