@@ -1,7 +1,11 @@
 import 'package:flutter/material.dart';
+import 'package:google_generative_ai/google_generative_ai.dart';
+import 'package:google_fonts/google_fonts.dart';
 
 class AboLaylaChat extends StatefulWidget {
-  const AboLaylaChat({super.key});
+  const AboLaylaChat({super.key, required this.selectedLanguage});
+
+  final String selectedLanguage;
 
   @override
   _AboLaylaChatState createState() => _AboLaylaChatState();
@@ -10,26 +14,57 @@ class AboLaylaChat extends StatefulWidget {
 class _AboLaylaChatState extends State<AboLaylaChat> {
   final TextEditingController _controller = TextEditingController();
   final List<Map<String, String>> _messages = [];
-  final List<String> _responses = [
-    "Hello! How can I help you?",
-    "I'm here to assist you.",
-    "What do you need help with?",
-    "I'm listening.",
-  ];
+  final model = GenerativeModel(
+    model: 'gemini-1.5-flash',
+    apiKey: "AIzaSyCtRyYUAupQxyE3gjwNcL0YmbA0HqttxSE",
+  );
 
-  void _sendMessage() {
+  bool isFirstPrompt = true; // Flag to check if it's the first prompt
+
+  void _sendMessage() async {
     if (_controller.text.isEmpty) return;
 
+    final userMessage = _controller.text;
+
     setState(() {
-      // Add user's message
-      _messages.add({"sender": "user", "text": _controller.text});
-      // Add bot response
-      _messages.add({
-        "sender": "bot",
-        "text": _responses[_messages.length % _responses.length]
-      });
+      // Add user's message to the chat
+      _messages.add({"sender": "user", "text": userMessage});
       _controller.clear();
     });
+
+    try {
+      // Modify the message based on whether it's the first prompt
+      String modifiedMessage = userMessage;
+
+      if (isFirstPrompt) {
+        // Special prompt for the first message
+        modifiedMessage =
+            "$userMessage : Answer this question in Egyptian Baladi, and start with (يا امبيسا) you are talking with a college student. if the message I just gave you mentioned the word (تامر) then say that we just made ابو ليله in just 2 hours ago, and tell Dr.Tamer to look at our faces around him and see how they are embarrassed and don’t mention that the message said (تامر). Make it funny, but if the message did not say the word (تامر) then just reply to the message normally in Egyptian Balady. Don’t mention that you skipped, just answer the message";
+        
+        // Set the flag to false after the first prompt
+        isFirstPrompt = false;
+      } else {
+        // Regular conversation handling for subsequent messages
+        modifiedMessage = "$userMessage: Answer normally in Egyptian Baladi.";
+      }
+
+      // Fetch Gemini response
+      final content = [Content.text(modifiedMessage)];
+      final response = await model.generateContent(content);
+
+      setState(() {
+        // Add Gemini's response to the chat
+        _messages.add({"sender": "bot", "text": response.text ?? "No response"});
+      });
+    } catch (e) {
+      setState(() {
+        // Add error message if the API fails
+        _messages.add({
+          "sender": "bot",
+          "text": "Oops! Something went wrong. Please try again later."
+        });
+      });
+    }
   }
 
   @override
@@ -38,198 +73,118 @@ class _AboLaylaChatState extends State<AboLaylaChat> {
       appBar: AppBar(
         title: const Text('AboLayla Chat'),
       ),
-      body: Column(
+      body: Stack(
         children: [
-          // Display message when the page is empty
-          if (_messages.isEmpty)
-            Expanded(
-              child: Center(
-                child: Column(
-                  mainAxisAlignment: MainAxisAlignment.center,
-                  crossAxisAlignment: CrossAxisAlignment.center,
-                  children: [
-                    Text(
-                      "What can I help you with?",
+          // Background Image with low opacity
+          Positioned.fill(
+            child: Opacity(
+              opacity: 0.1, // Adjust the opacity here
+              child: Image.asset(
+                'lib/assets/img/AboLayla.jpg',
+                // fit: BoxFit.cover, // Make the image cover half of the screen
+              ),
+            ),
+          ),
+          Column(
+            children: [
+              if (_messages.isEmpty)
+                Expanded(
+                  child: Center(
+                    child: Text(
+                      widget.selectedLanguage == 'مصري'
+                          ? "إزاي أقدر أساعدك؟"  // Egyptian Arabic
+                          : "Ahh, What can I help you with?", // English
                       style: TextStyle(
                         fontSize: 28,
                         fontWeight: FontWeight.bold,
+                        color: const Color(0xFF165D96),
                       ),
                     ),
-                    const SizedBox(height: 20),
-                    // Suggested actions as oblong buttons with icons/emoji
-                    Wrap(
-                      alignment: WrapAlignment.center,
-                      spacing: 30,  // Increased spacing for larger gaps between buttons
-                      runSpacing: 20, // Added runSpacing to ensure vertical space
-                      children: [
-                        _buildSuggestedButton("Create a summary", Icons.article),
-                        _buildSuggestedButton("Revise me a topic", Icons.book),
-                        _buildSuggestedButton("Brainstorm", Icons.lightbulb),
-                        _buildSuggestedButton("Make a plan", Icons.calendar_today), // New button added
-                      ],
+                  ),
+                )
+              else
+                Expanded(
+                  child: ListView.builder(
+                    itemCount: _messages.length,
+                    itemBuilder: (context, index) {
+                      final message = _messages[index];
+                      final isUser = message['sender'] == 'user';
+                      return Padding(
+                        padding: const EdgeInsets.symmetric(
+                            vertical: 10.0, horizontal: 10.0),
+                        child: Row(
+                          mainAxisAlignment: isUser
+                              ? MainAxisAlignment.end
+                              : MainAxisAlignment.start,
+                          children: [
+                            if (!isUser)
+                              CircleAvatar(
+                                backgroundImage: AssetImage(
+                                    'lib/assets/img/AboLayla.jpg'), // Replace with your bot icon
+                                radius: 16,
+                              ),
+                            const SizedBox(width: 12),
+                            Flexible(
+                              child: Container(
+                                constraints: BoxConstraints(
+                                    maxWidth:
+                                        MediaQuery.of(context).size.width * 0.7),
+                                padding: const EdgeInsets.all(12),
+                                decoration: BoxDecoration(
+                                  color: isUser ? Colors.blue : Colors.grey[300],
+                                  borderRadius: BorderRadius.circular(12),
+                                ),
+                                child: Text(
+                                  message['text']!,
+                                  style: TextStyle(
+                                    color: isUser ? Colors.white : Colors.black87,
+                                  ),
+                                ),
+                              ),
+                            ),
+                          ],
+                        ),
+                      );
+                    },
+                  ),
+                ),
+              Padding(
+                padding: const EdgeInsets.all(8.0),
+                child: Row(
+                  children: [
+                    Expanded(
+                      child: TextField(
+                        controller: _controller,
+                        maxLines: 5, // Limit the number of lines
+                        minLines: 1, // Minimum number of lines
+                        textDirection: widget.selectedLanguage == 'مصري'
+                            ? TextDirection.rtl
+                            : TextDirection.ltr,
+                        style: widget.selectedLanguage == 'مصري'
+                            ? GoogleFonts.cairo(fontSize: 16.0) // Apply Cairo font for Arabic
+                            : null, // Default font for English
+                        decoration: InputDecoration(
+                          hintText: widget.selectedLanguage == 'مصري'
+                              ? 'اكتب رسالتك...' // Arabic hint text
+                              : 'Type your message...', // English hint text
+                          border: OutlineInputBorder(
+                            borderRadius: BorderRadius.circular(15),
+                          ),
+                        ),
+                        keyboardType: TextInputType.multiline,
+                        maxLength: null, // Allow unlimited characters
+                        scrollPadding: EdgeInsets.all(20.0), // Add some space around the scrollable field
+                      ),
+                    ),
+                    IconButton(
+                      icon: Icon(Icons.send),
+                      onPressed: _sendMessage,
+                      color: Colors.blue,
                     ),
                   ],
                 ),
               ),
-            )
-          else
-            Expanded(
-              child: ListView.builder(
-                itemCount: _messages.length,
-                itemBuilder: (context, index) {
-                  final message = _messages[index];
-                  final isUser = message['sender'] == 'user';
-                  return Padding(
-                    padding: const EdgeInsets.symmetric(
-                        vertical: 10.0, horizontal: 10.0),
-                    child: Row(
-                      mainAxisAlignment: isUser
-                          ? MainAxisAlignment.end
-                          : MainAxisAlignment.start,
-                      children: [
-                        if (!isUser) ...[
-                          CircleAvatar(
-                            backgroundImage: AssetImage(
-                                'lib/assets/img/AboLayla.jpg'), // Replace with your bot icon
-                            radius: 16,
-                          ),
-                          const SizedBox(
-                              width:
-                                  12), // Added more space between avatar and message bubble
-                        ],
-                        Flexible(
-                          child: Container(
-                            constraints: BoxConstraints(
-                                maxWidth:
-                                    MediaQuery.of(context).size.width * 0.7),
-                            padding: const EdgeInsets.all(12),
-                            decoration: BoxDecoration(
-                              gradient: isUser
-                                  ? LinearGradient(
-                                      colors: [
-                                        const Color(0xFF004A61),
-                                        const Color(0xFF165D96)
-                                      ],
-                                      begin: Alignment.topLeft,
-                                      end: Alignment.bottomRight,
-                                    )
-                                  : null,
-                              color: isUser ? null : Colors.grey[300],
-                              borderRadius: BorderRadius.only(
-                                topLeft: const Radius.circular(12),
-                                topRight: const Radius.circular(12),
-                                bottomLeft: isUser
-                                    ? const Radius.circular(12)
-                                    : const Radius.circular(0),
-                                bottomRight: isUser
-                                    ? const Radius.circular(0)
-                                    : const Radius.circular(12),
-                              ),
-                            ),
-                            child: Text(
-                              message['text']!,
-                              style: TextStyle(
-                                color: isUser ? Colors.white : Colors.black87,
-                              ),
-                            ),
-                          ),
-                        ),
-                        if (isUser) ...[
-                          const SizedBox(
-                              width:
-                                  12), // Added more space between avatar and message bubble
-                          CircleAvatar(
-                            backgroundImage: AssetImage(
-                                'lib/assets/img/pfp.jpg'), // Replace with your user icon
-                            radius: 16,
-                          ),
-                        ],
-                      ],
-                    ),
-                  );
-                },
-              ),
-            ),
-          // Input Field and Send Button
-          Padding(
-            padding: const EdgeInsets.all(8.0),
-            child: Row(
-              children: [
-                Expanded(
-                  child: Container(
-                    decoration: BoxDecoration(
-                      color: const Color.fromARGB(255, 199, 199, 199),
-                      borderRadius: BorderRadius.circular(15),
-                    ),
-                    child: Row(
-                      children: [
-                        Expanded(
-                          child: TextField(
-                            controller: _controller,
-                            maxLines: null, // Allow multiple lines
-                            minLines: 1, // Allow at least one line
-                            decoration: InputDecoration(
-                              hintText: 'Type your message...',
-                              border: InputBorder.none,
-                              contentPadding: const EdgeInsets.symmetric(
-                                  vertical: 12, horizontal: 16),
-                            ),
-                            style: const TextStyle(fontSize: 16),
-                            keyboardType: TextInputType.multiline,
-                          ),
-                        ),
-                        IconButton(
-                          icon: const Icon(Icons.send),
-                          onPressed: _sendMessage,
-                          color: const Color(0xFF004A61),
-                        ),
-                      ],
-                    ),
-                  ),
-                ),
-              ],
-            ),
-          ),
-        ],
-      ),
-    );
-  }
-
-  // Method to build suggested buttons
-  Widget _buildSuggestedButton(String text, IconData icon) {
-    return ElevatedButton(
-      onPressed: () {
-        setState(() {
-          _messages.add({
-            'sender': 'user',
-            'text': text,
-          });
-          _messages.add({
-            'sender': 'bot',
-            'text': "Sure! I'll help you with: $text",
-          });
-        });
-      },
-      style: ElevatedButton.styleFrom(
-        padding: EdgeInsets.symmetric(horizontal: 25, vertical: 12),
-        shape: RoundedRectangleBorder(
-          borderRadius: BorderRadius.circular(30),
-        ),
-        backgroundColor:
-            const Color(0xFF165D96), // Use backgroundColor instead of primary
-      ),
-      child: Row(
-        mainAxisSize: MainAxisSize.min,
-        children: [
-          Icon(icon, color: Colors.white), // Icon representing the action
-          SizedBox(width: 10), // Spacing between icon and text
-          Text(
-            text,
-            style: TextStyle(
-              fontSize: 14, // Same font size for all buttons
-              color: Colors.white,
-              fontWeight: FontWeight.normal, // Text not bold
-            ),
+            ],
           ),
         ],
       ),

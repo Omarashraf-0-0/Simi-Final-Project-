@@ -63,7 +63,8 @@ class AboLaylaCoursesState extends State<AboLaylaCourses> {
                             size: 16, color: Colors.grey), // Small icon
                       if (selectedCourse != value) SizedBox(width: 10),
                       Text(value,
-                          style: TextStyle(color: Colors.grey)), // Light gray text
+                          style:
+                              TextStyle(color: Colors.grey)), // Light gray text
                     ],
                   ),
                 );
@@ -79,7 +80,8 @@ class AboLaylaCoursesState extends State<AboLaylaCourses> {
               value: selectedLanguage,
               decoration: InputDecoration(
                 labelText: 'Choose Language',
-                prefixIcon: selectedLanguage == null ? Icon(Icons.language) : null,
+                prefixIcon:
+                    selectedLanguage == null ? Icon(Icons.language) : null,
                 border: OutlineInputBorder(
                   borderRadius: BorderRadius.circular(10),
                   borderSide: BorderSide(color: Colors.grey),
@@ -91,7 +93,7 @@ class AboLaylaCoursesState extends State<AboLaylaCourses> {
                 ),
               ),
               icon: Icon(Icons.arrow_drop_down),
-              items: <String>['Field 1', 'Field 2'].map((String value) {
+              items: <String>['English', 'مصري'].map((String value) {
                 return DropdownMenuItem<String>(
                   value: value,
                   child: Row(
@@ -101,7 +103,8 @@ class AboLaylaCoursesState extends State<AboLaylaCourses> {
                             size: 16, color: Colors.grey), // Small icon
                       if (selectedLanguage != value) SizedBox(width: 10),
                       Text(value,
-                          style: TextStyle(color: Colors.grey)), // Light gray text
+                          style:
+                              TextStyle(color: Colors.grey)), // Light gray text
                     ],
                   ),
                 );
@@ -114,11 +117,15 @@ class AboLaylaCoursesState extends State<AboLaylaCourses> {
             ),
             SizedBox(height: 40),
             ElevatedButton(
+              // Inside the 'Next' button onPressed
               onPressed: () {
                 if (selectedCourse != null && selectedLanguage != null) {
                   Navigator.push(
                     context,
-                    MaterialPageRoute(builder: (context) => AboLaylaChat()),
+                    MaterialPageRoute(
+                      builder: (context) =>
+                          AboLaylaChat(selectedLanguage: selectedLanguage!),
+                    ),
                   );
                 } else {
                   ScaffoldMessenger.of(context).showSnackBar(
@@ -128,6 +135,7 @@ class AboLaylaCoursesState extends State<AboLaylaCourses> {
                   );
                 }
               },
+
               style: ElevatedButton.styleFrom(
                 backgroundColor: Color(0xFF165D96), // Button color
                 padding: EdgeInsets.symmetric(
