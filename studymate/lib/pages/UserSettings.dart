@@ -2,7 +2,19 @@ import 'package:flutter/material.dart';
 import 'package:flutter_font_icons/flutter_font_icons.dart';
 import 'package:google_fonts/google_fonts.dart';
 import 'package:studymate/pages/Settings.dart';
-import 'package:studymate/pages/UserSettings.dart'; 
+import 'package:studymate/pages/UserSettings.dart';
+import 'package:flutter/material.dart';
+import 'package:hive/hive.dart';
+import '../Classes/User.dart';
+import '../Pop-ups/SuccesPopUp.dart';
+import '../util/TextField.dart';
+import 'Forget_Pass.dart';
+import 'package:http/http.dart' as http;
+import 'dart:convert';
+import '../Pop-ups/PopUps_Success.dart';
+import '../Pop-ups/PopUps_Failed.dart';
+import '../Pop-ups/PopUps_Warning.dart';
+
 
 class UserSettings extends StatefulWidget {
   @override
@@ -10,6 +22,7 @@ class UserSettings extends StatefulWidget {
 }
 
 class _UserSettingsState extends State<UserSettings> {
+
   final TextEditingController EmailController = TextEditingController();
   final TextEditingController UsernameController = TextEditingController();
   final TextEditingController PasswordController = TextEditingController();
@@ -18,8 +31,73 @@ class _UserSettingsState extends State<UserSettings> {
   bool _isPasswordVisible = false;
   bool _isConfirmPasswordVisible = false;
 
+
+  Future<void> UpdateData() async {
+    const url = 'https://alyibrahim.pythonanywhere.com/update_user';
+
+    // Validate input fields
+    if (UsernameController.text.isEmpty || EmailController.text.isEmpty) {
+      showFailedPopup(context, 'Error', 'Username and email cannot be empty.');
+      return;
+    }
+
+    if (PasswordController.text != ConfirmPasswordController.text) {
+      showFailedPopup(context, 'Error', 'Passwords do not match.');
+      return;
+    }
+
+    // Prepare the request body
+    final Map<String, dynamic> requestBody = {
+      'Query': 'update_user', // Specify the query type
+      'fullname': UsernameController.text,
+      'email': EmailController.text,
+      'password': PasswordController.text.isNotEmpty ? PasswordController.text : null,
+    };
+
+    try {
+      // Send the POST request
+      final response = await http.post(
+        Uri.parse(url),
+        headers: {'Content-Type': 'application/json'},
+        body: jsonEncode(requestBody), // Convert the map to JSON format
+      );
+
+      if (response.statusCode == 200) {
+        print(">>>>>>>>>>>> Done <<<<<<<<<<<<<<<<<");
+        final jsonResponse = jsonDecode(response.body);
+        if (jsonResponse['success'] == true) {
+          // Update Hive with the new data
+          final userBox = Hive.box('userBox');
+          userBox.put('fullName', UsernameController.text);
+          userBox.put('email', EmailController.text);
+          if (PasswordController.text.isNotEmpty) {
+            userBox.put('password', PasswordController.text);
+          }
+
+          // Show success popup
+          showSuccessPopup(context, 'Done successfully', 'Data updated successfully');
+        } else {
+          // Server returned an error
+          showFailedPopup(context, 'Error', jsonResponse['message'] ?? 'Unknown error occurred.');
+        }
+      } else {
+        // HTTP request failed
+        showFailedPopup(context, 'Error', 'Failed to update data. Please try again later.');
+      }
+    } catch (e) {
+      // Handle exceptions (e.g., network failure)
+      showFailedPopup(context, 'Error', 'An error occurred: $e');
+    }
+  }
+
+
+
+
   @override
   Widget build(BuildContext context) {
+    print("The Email : ${Hive.box('userBox').get('id')}");
+    EmailController.text=Hive.box('userBox').get('email', defaultValue: 'Default from Hive');
+    UsernameController.text=Hive.box('userBox').get('fullName', defaultValue: 'Default from Hive');
     return Scaffold(
       appBar: AppBar(
         backgroundColor: Color(0xFF165D96),
@@ -135,7 +213,7 @@ class _UserSettingsState extends State<UserSettings> {
                             keyboardType: TextInputType.emailAddress,
                             )
                   ),
-SizedBox(height: 55),
+            SizedBox(height: 55),
             SizedBox(
               width: 375,
               child: TextField(
@@ -189,6 +267,7 @@ SizedBox(height: 55),
                   ),
                   child: TextButton(
                     onPressed: () {
+                      UpdateData();
                       // Save changes action
                     },
                     child: Padding(
