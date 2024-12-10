@@ -19,7 +19,7 @@ dependencies:
   google_fonts: any
   google_nav_bar: any
   dropdown_button2: any
-  
+  flutter_cached_pdfview: any
   lottie: any
   intl: ^0.20.1
 google_fonts: any # Uncomment if you want to use Google Fonts
