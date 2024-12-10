@@ -59,10 +59,7 @@ class _LoginPageState extends State<LoginPage> {
     );
 
 
-<<<<<<< Updated upstream
-=======
       print(response.body);
->>>>>>> Stashed changes
       // Parse the JSON response
       if (response.statusCode == 200) {
         final jsonResponse = jsonDecode(response.body);
