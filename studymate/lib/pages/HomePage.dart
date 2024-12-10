@@ -13,6 +13,7 @@ import 'package:studymate/pages/Settings.dart';
 import 'package:studymate/pages/ScheduleManager.dart';
 import '../Classes/User.dart';
 import 'package:studymate/pages/AboLayla/AboLayla.dart';
+<<<<<<< Updated upstream
 import 'package:http/http.dart' as http;
 import 'dart:convert';
 import 'package:intl/intl.dart';
@@ -20,6 +21,11 @@ import 'package:intl/intl.dart';
 import '../util/TextField.dart';
 
 
+=======
+import '../Pop-ups/PopUps_Success.dart';
+import '../Pop-ups/PopUps_Failed.dart';
+import '../Pop-ups/PopUps_Warning.dart';
+>>>>>>> Stashed changes
 class Homepage extends StatefulWidget {
   User? user;
   Homepage({
@@ -298,7 +304,355 @@ void navBottom(int index){
           ],
         ),
       ),
+<<<<<<< Updated upstream
       body:pages[idx],
+=======
+      body: Padding(
+        padding: const EdgeInsets.only(left: 16.0, right: 16.0),
+        child: SingleChildScrollView(
+          child: Column(
+            crossAxisAlignment: CrossAxisAlignment.start,
+            children: [
+              SizedBox(
+                height: 15,
+              ),
+              Row(
+                mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                children: [
+                  Text(
+                    'Today\'s Schedule',
+                    style: TextStyle(
+                      fontSize: 24,
+                      fontFamily: 'Poppins',
+                      // fontWeight: FontWeight.bold,
+                    ),
+                    textAlign: TextAlign.left,
+                  ),
+                  TextButton(
+                    onPressed: () {
+                      // navigate to the schedule page
+                      // Navigator.pushNamed(context, '/SchedulePage');
+                    },
+                    child: Row(
+                      children: [
+                        Text(
+                          'View All',
+                          style: TextStyle(
+                            fontSize: 16,
+                            color: Color(0xFF165D96),
+                          ),
+                        ),
+                        Icon(
+                          Icons.arrow_forward_ios,
+                          color: Color(0xFF165D96),
+                        ),
+                      ],
+                    ),
+                  ),
+                ],
+              ),
+              SizedBox(
+                height: 15,
+              ),
+              Column(
+                children: [
+                  // Add a card for each event
+                  SingleChildScrollView(
+                    scrollDirection:
+                        Axis.horizontal, // Make the Row scrollable horizontally
+                    child: Row(
+                      children: List.generate(
+                        6, // Number of cards
+                        (index) => Padding(
+                          padding: const EdgeInsets.only(
+                              right: 14.0), // Spacing between cards
+                          child: Container(
+                            width:
+                                100, // Width of each card (makes it square if height is the same)
+                            height: 100, // Height of each card
+                            decoration: BoxDecoration(
+                              color: _getCardColor(
+                                  index), // Assign one of the three colors
+                              borderRadius: BorderRadius.circular(
+                                  8), // Optional rounded corners
+                            ),
+                            child: Center(
+                              child: Column(
+                                mainAxisAlignment: MainAxisAlignment.center,
+                                children: [
+                                  Text(
+                                    'Test ${index + 1}',
+                                    style: TextStyle(
+                                      fontSize: 20,
+                                      fontWeight: FontWeight.bold,
+                                    ),
+                                  ),
+                                  Text(
+                                    '10:00 AM',
+                                    style: TextStyle(
+                                      fontSize: 16,
+                                      color: Colors.grey,
+                                    ),
+                                  ),
+                                ],
+                              ),
+                            ),
+                          ),
+                        ),
+                      ),
+                    ),
+                  )
+                ],
+              ),
+              SizedBox(
+                height: 30,
+              ),
+              Row(
+                mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                children: [
+                  Text(
+                    'Recent Courses',
+                    style: TextStyle(
+                      fontSize: 24,
+                      fontFamily: 'Poppins',
+                      // fontWeight: FontWeight.bold,
+                    ),
+                    textAlign: TextAlign.left,
+                  ),
+                  TextButton(
+                    onPressed: () {
+                      // navigate to the schedule page
+                      // Navigator.pushNamed(context, '/CoursesPage');
+                    },
+                    child: Row(
+                      children: [
+                        Text(
+                          'View All',
+                          style: TextStyle(
+                            fontSize: 16,
+                            color: Color(0xFF165D96),
+                          ),
+                        ),
+                        Icon(
+                          Icons.arrow_forward_ios,
+                          color: Color(0xFF165D96),
+                        ),
+                      ],
+                    ),
+                  ),
+                ],
+              ),
+              SizedBox(
+                height: 15,
+              ),
+              Column(
+                children: [
+                  // Add a card for each course
+                  SingleChildScrollView(
+                    scrollDirection: Axis.vertical, // Enable vertical scrolling
+                    child: Column(
+                      children: List.generate(
+                        2, // Limit to 2 courses (you can change this number)
+                        (index) => Padding(
+                          padding: const EdgeInsets.only(
+                            bottom: 14.0, // Spacing between cards
+                          ),
+                          child: Container(
+                            width: 350, // Width of each card
+                            height: 140, // Height of each card
+                            decoration: BoxDecoration(
+                              borderRadius:
+                                  BorderRadius.circular(15), // Rounded corners
+                              image: DecorationImage(
+                                image: AssetImage(_getCourseBackground(index)),
+                                fit: BoxFit
+                                    .cover, // Make the image cover the entire card
+                              ),
+                            ),
+                            child: Container(
+                              decoration: BoxDecoration(
+                                borderRadius: BorderRadius.circular(15),
+                                color: Colors.black.withOpacity(
+                                    0.5), // Add a semi-transparent overlay for readability
+                              ),
+                              child: Padding(
+                                padding: const EdgeInsets.all(
+                                    16.0), // Padding inside the card
+                                child: Column(
+                                  mainAxisAlignment: MainAxisAlignment.center,
+                                  crossAxisAlignment: CrossAxisAlignment
+                                      .start, // Align to the left
+                                  children: [
+                                    Text(
+                                      'Course ${index + 1}',
+                                      style: TextStyle(
+                                        fontSize: 14,
+                                        color: Colors.grey,
+                                      ),
+                                    ),
+                                    Text(
+                                      'Intro to Artificial Intelligence',
+                                      style: TextStyle(
+                                        fontSize: 18,
+                                        color: Colors.white,
+                                        fontWeight: FontWeight.bold,
+                                      ),
+                                    ),
+                                    ElevatedButton(
+                                      onPressed: () {
+                                        // showFailedPopup(context, 'title', 'message',"nigga");
+                                        // Add your start course functionality here
+                                      },
+                                      style: ElevatedButton.styleFrom(
+                                        backgroundColor:
+                                            Colors.white, // Button color
+                                        shape: RoundedRectangleBorder(
+                                          borderRadius: BorderRadius.circular(
+                                              15), // Rounded corners
+                                        ),
+                                      ),
+                                      child: Text(
+                                        'Start',
+                                        style: TextStyle(
+                                          color: Colors.black,
+                                          fontSize: 12,
+                                        ),
+                                      ),
+                                    ),
+                                  ],
+                                ),
+                              ),
+                            ),
+                          ),
+                        ),
+                      ),
+                    ),
+                  ),
+                ],
+              ),
+              Row(
+                mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                children: [
+                  Text(
+                    'Recent Quizzes',
+                    style: TextStyle(
+                      fontSize: 24,
+                      fontFamily: 'Poppins',
+                      // fontWeight: FontWeight.bold,
+                    ),
+                    textAlign: TextAlign.left,
+                  ),
+                  TextButton(
+                    onPressed: () {
+                      // navigate to the schedule page
+                      // Navigator.pushNamed(context, '/QuizzesPage');
+                    },
+                    child: Row(
+                      children: [
+                        Text(
+                          'View All',
+                          style: TextStyle(
+                            fontSize: 16,
+                            color: Color(0xFF165D96),
+                          ),
+                        ),
+                        Icon(
+                          Icons.arrow_forward_ios,
+                          color: Color(0xFF165D96),
+                        ),
+                      ],
+                    ),
+                  ),
+                ],
+              ),
+              Column(
+                children: [
+                  // Add a card for each course
+                  SingleChildScrollView(
+                    // padding: const EdgeInsets.only(left: 16.0),
+                    scrollDirection: Axis.vertical, // Enable vertical scrolling
+                    child: Column(
+                      children: List.generate(
+                        2, // Limit to 2 courses (you can change this number)
+                        (index) => Padding(
+                          padding: const EdgeInsets.only(
+                            bottom: 14.0, // Spacing between cards
+                          ),
+                          child: Container(
+                            width: 350, // Width of each card
+                            height:
+                                60, // Increased height to make space for the button
+                            decoration: BoxDecoration(
+                              color: _getCardColorCourses(
+                                  index), // Assign one of the colors
+                              borderRadius:
+                                  BorderRadius.circular(15), // Rounded corners
+                            ),
+                            child: Padding(
+                              padding: const EdgeInsets.all(
+                                  16.0), // Padding inside the card
+                              child: Row(
+                                mainAxisAlignment:
+                                    MainAxisAlignment.spaceBetween,
+                                crossAxisAlignment: CrossAxisAlignment
+                                    .start, // Align to the left
+                                children: [
+                                  Row(
+                                    children: [
+                                      Icon(Icons.task_outlined,
+                                          color: Colors.white),
+                                      SizedBox(
+                                        width: 10,
+                                      ),
+                                      Text(
+                                        'Quiz ${index + 1}',
+                                        style: TextStyle(
+                                          fontSize: 18,
+                                          color: Colors.white,
+                                          fontWeight: FontWeight.bold,
+                                        ),
+                                      ),
+                                    ],
+                                  ),
+                                  // SizedBox(
+                                  //     height:
+                                  //         10), // Space between the text and button
+                                  Row(
+                                    children: [
+                                      Text(
+                                        '10 / 10',
+                                        style: TextStyle(
+                                          fontSize: 16,
+                                          // color: Color(0xFF165D96),
+                                          color: Colors.white,
+                                        ),
+                                      ),
+                                      SizedBox(
+                                        width: 10,
+                                      ),
+                                      Icon(
+                                        Icons.arrow_circle_right_outlined,
+                                        // color: Color(0xFF165D96),
+                                        color: Colors.white,
+                                        size: 30,
+                                      ),
+                                    ],
+                                  ),
+                                ],
+                              ),
+                            ),
+                          ),
+                        ),
+                      ),
+                    ),
+                  ),
+                ],
+              ),
+            ],
+          ),
+        ),
+      ),
+>>>>>>> Stashed changes
       bottomNavigationBar: Container(
         margin: EdgeInsets.symmetric(
           horizontal: 20,
