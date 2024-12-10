@@ -46,6 +46,14 @@ class _UserSettingsState extends State<UserSettings> {
       return;
     }
 
+    // Update Hive with the new data
+    final userBox = Hive.box('userBox');
+    userBox.put('fullName', UsernameController.text);
+    userBox.put('email', EmailController.text);
+    if (PasswordController.text.isNotEmpty) {
+      userBox.put('password', PasswordController.text);
+    }
+
     // Prepare the request body
     final Map<String, dynamic> requestBody = {
       'Query': 'update_user', // Specify the query type
@@ -54,40 +62,34 @@ class _UserSettingsState extends State<UserSettings> {
       'password': PasswordController.text.isNotEmpty ? PasswordController.text : null,
     };
 
-    try {
-      // Send the POST request
-      final response = await http.post(
-        Uri.parse(url),
-        headers: {'Content-Type': 'application/json'},
-        body: jsonEncode(requestBody), // Convert the map to JSON format
-      );
-
-      if (response.statusCode == 200) {
-        print(">>>>>>>>>>>> Done <<<<<<<<<<<<<<<<<");
-        final jsonResponse = jsonDecode(response.body);
-        if (jsonResponse['success'] == true) {
-          // Update Hive with the new data
-          final userBox = Hive.box('userBox');
-          userBox.put('fullName', UsernameController.text);
-          userBox.put('email', EmailController.text);
-          if (PasswordController.text.isNotEmpty) {
-            userBox.put('password', PasswordController.text);
-          }
-
-          // Show success popup
-          showSuccessPopup(context, 'Done successfully', 'Data updated successfully');
-        } else {
-          // Server returned an error
-          showFailedPopup(context, 'Error', jsonResponse['message'] ?? 'Unknown error occurred.');
-        }
-      } else {
-        // HTTP request failed
-        showFailedPopup(context, 'Error', 'Failed to update data. Please try again later.');
-      }
-    } catch (e) {
-      // Handle exceptions (e.g., network failure)
-      showFailedPopup(context, 'Error', 'An error occurred: $e');
-    }
+    // try {
+    //   // Send the POST request
+    //   final response = await http.post(
+    //     Uri.parse(url),
+    //     headers: {'Content-Type': 'application/json'},
+    //     body: jsonEncode(requestBody), // Convert the map to JSON format
+    //   );
+    //
+    //   if (response.statusCode == 200) {
+    //     print(">>>>>>>>>>>> Done <<<<<<<<<<<<<<<<<");
+    //     final jsonResponse = jsonDecode(response.body);
+    //     if (jsonResponse['success'] == true) {
+    //
+    //
+    //       // Show success popup
+    //       showSuccessPopup(context, 'Done successfully', 'Data updated successfully');
+    //     } else {
+    //       // Server returned an error
+    //       showFailedPopup(context, 'Error', jsonResponse['message'] ?? 'Unknown error occurred.');
+    //     }
+    //   } else {
+    //     // HTTP request failed
+    //     showFailedPopup(context, 'Error', 'Failed to update data. Please try again later.');
+    //   }
+    // } catch (e) {
+    //   // Handle exceptions (e.g., network failure)
+    //   showFailedPopup(context, 'Error', 'An error occurred: $e');
+    // }
   }
 
 

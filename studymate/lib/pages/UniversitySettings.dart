@@ -2,7 +2,22 @@ import 'package:flutter/material.dart';
 import 'package:flutter_font_icons/flutter_font_icons.dart';
 import 'package:google_fonts/google_fonts.dart';
 import 'package:studymate/pages/Settings.dart';
-import 'package:studymate/pages/UserSettings.dart'; 
+import 'package:studymate/pages/UserSettings.dart';
+import 'package:flutter/material.dart';
+import 'package:hive/hive.dart';
+import '../Classes/User.dart';
+import '../Pop-ups/SuccesPopUp.dart';
+import '../util/TextField.dart';
+import 'Forget_Pass.dart';
+import 'package:http/http.dart' as http;
+import 'dart:convert';
+import '../Pop-ups/PopUps_Success.dart';
+import '../Pop-ups/PopUps_Failed.dart';
+import '../Pop-ups/PopUps_Warning.dart';
+
+
+
+
 
 class Universitysettings extends StatefulWidget {
   @override
@@ -23,9 +38,14 @@ String? selectedUniversity;
   final List<String> majors = ['Computer Science', 'Business Administration', 'Media', 'Pharmacy', 'Engineering'];
   final List<String> termLevels = ['Prep', '1', '2', '3', '4', '5', '6', '7', '8', '9', '10'];
 
+  bool upDateData(){
+
+    return true;
+  }
 
   @override
   Widget build(BuildContext context) {
+
     return Scaffold(
       appBar: AppBar(
         backgroundColor: Color(0xFF165D96),
