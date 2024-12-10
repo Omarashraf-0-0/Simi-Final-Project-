@@ -271,7 +271,7 @@ class _HomebodyState extends State<Homebody> {
                         scrollDirection: Axis.vertical, // Enable vertical scrolling
                         child: Column(
                           children: List.generate(
-                            2, // Limit to 2 courses (you can change this number)
+                            1, // Limit to 2 courses (you can change this number)
                             (index) => Padding(
                               padding: const EdgeInsets.only(
                                 bottom: 14.0, // Spacing between cards
@@ -310,7 +310,7 @@ class _HomebodyState extends State<Homebody> {
                                           ),
                                         ),
                                         Text(
-                                          'Intro to Artificial Intelligence',
+                                          'SRS',
                                           style: TextStyle(
                                             fontSize: 18,
                                             color: Colors.white,
@@ -319,7 +319,7 @@ class _HomebodyState extends State<Homebody> {
                                         ),
                                         ElevatedButton(
                                           onPressed: () {
-                                            // Add your start course functionality here
+                                              Navigator.pushNamed(context,'/SRS');
                                           },
                                           style: ElevatedButton.styleFrom(
                                             backgroundColor:

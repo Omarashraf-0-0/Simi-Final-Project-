@@ -6,6 +6,7 @@ import 'package:studymate/pages/HomePage.dart';
 import 'package:studymate/pages/LoginPage.dart';
 import 'package:studymate/pages/MaterialCourses.dart';
 import 'package:studymate/pages/Register_login.dart';
+import 'package:studymate/pages/SRS.dart';
 import 'pages/ProfilePage.dart';
 import 'pages/intro_page.dart';
 
@@ -21,7 +22,7 @@ class MyApp extends StatelessWidget {
   Widget build(BuildContext context) {
     return MaterialApp(
       debugShowCheckedModeBanner: false,
-      home:  Materialcourses(),
+      home:  Homepage(),
       
       routes: {
         '/RegisterPage' : (context) => RegisterLogin(),
@@ -31,6 +32,7 @@ class MyApp extends StatelessWidget {
         '/ProfilePage' : (context) => Profilepage(),
         '/CoursesPage' : (context) => Courses(),
         '/Material' : (context) => Materialcourses(),
+        '/SRS' : (context) => SRS(),
         }
         ,
     );
