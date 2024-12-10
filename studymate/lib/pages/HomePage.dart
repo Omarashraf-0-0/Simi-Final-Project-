@@ -179,6 +179,7 @@ void navBottom(int index){
               children: [
                 ElevatedButton(
                   onPressed: () {
+                    showSuccessPopup(context, 'title', 'message');
                     // navigate to the notifications page
                     // Navigator.pushNamed(context, '/NotificationsPage');
                   },

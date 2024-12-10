@@ -9,7 +9,8 @@ void main() {
 void showSuccessPopup(BuildContext context, String title, String message,[String buttonMessage="Continue"]){
   showModalBottomSheet(
     shape: RoundedRectangleBorder(borderRadius: BorderRadius.vertical(
-        top: Radius.circular(30)
+        top: Radius.circular(30),
+        bottom: Radius.circular(30)
     )),
     context: context,
     builder: (BuildContext context) {
