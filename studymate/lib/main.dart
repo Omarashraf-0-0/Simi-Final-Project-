@@ -1,8 +1,10 @@
 // ignore_for_file: prefer_const_constructors
 import 'package:flutter/material.dart';
 import 'package:hive_flutter/hive_flutter.dart';
+import 'package:studymate/pages/Courses.dart';
 import 'package:studymate/pages/HomePage.dart';
 import 'package:studymate/pages/LoginPage.dart';
+import 'package:studymate/pages/MaterialCourses.dart';
 import 'package:studymate/pages/Register_login.dart';
 import 'pages/ProfilePage.dart';
 import 'pages/intro_page.dart';
@@ -27,6 +29,8 @@ class MyApp extends StatelessWidget {
         '/HomePage' : (context) => Homepage(),
         '/LoginPage' : (context) => LoginPage(),
         '/ProfilePage' : (context) => Profilepage(),
+        '/CoursesPage' : (context) => Courses(),
+        // '/Material' : (context) => Materialcourses(),
         }
         ,
     );

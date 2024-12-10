@@ -5,7 +5,7 @@ import 'package:flutter_font_icons/flutter_font_icons.dart';
 import 'package:google_nav_bar/google_nav_bar.dart';
 import 'package:hive/hive.dart';
 import 'package:hive_flutter/hive_flutter.dart';
-import 'package:studymate/pages/AboLayla/Resources.dart';
+import 'package:studymate/pages/Resources.dart';
 import 'package:studymate/pages/LoginPage.dart';
 import 'package:studymate/pages/ProfilePage.dart';
 import 'package:studymate/pages/ScheduleManager.dart';
