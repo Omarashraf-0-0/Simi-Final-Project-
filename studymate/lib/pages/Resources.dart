@@ -12,7 +12,7 @@ class Resources extends StatefulWidget {
   State<Resources> createState() => _ResourcesState();
 }
 class _ResourcesState extends State<Resources> {
-  List<String> Courses = [];
+  List<String> courses = [];
   Future<void> takecources() async {
   
     const url = 'https://alyibrahim.pythonanywhere.com/TakeCourses';  // Replace with your actual Flask server URL
@@ -36,7 +36,7 @@ class _ResourcesState extends State<Resources> {
                 print(jsonResponse);
                 print(Courses);
                 setState(() {
-                                  Courses = jsonResponse['courses'].cast<String>();
+                                  courses = jsonResponse['courses'].cast<String>();
                 });
       }
       else {
@@ -94,7 +94,7 @@ class _ResourcesState extends State<Resources> {
                             scrollDirection: Axis.vertical, // Enable vertical scrolling
                             child: Column(
                               children: List.generate(
-                                Courses.length, // Limit to 2 courses (you can change this number)
+                                courses.length, // Limit to 2 courses (you can change this number)
                                 (index) => Padding(
                                   padding: const EdgeInsets.only(
                                     bottom: 14.0, // Spacing between cards
@@ -127,7 +127,7 @@ class _ResourcesState extends State<Resources> {
                                           children: [
                                           
                                             Text(
-                                              Courses[index],
+                                              courses[index],
                                               style: TextStyle(
                                                 fontSize: 18,
                                                 color: Colors.white,
@@ -175,7 +175,7 @@ class _ResourcesState extends State<Resources> {
                   width: double.infinity, // Make the button take the full width
                   child: ElevatedButton(
                     onPressed: () {
-                          Navigator.pushNamed(context,'/CoursesPage');
+                          Navigator.push(context, MaterialPageRoute(builder: (context) => Courses()));
                     },
                     style: ElevatedButton.styleFrom(
                       backgroundColor: const Color(0xFF165D96), // Button color

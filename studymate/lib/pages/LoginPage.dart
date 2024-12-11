@@ -2,6 +2,7 @@
 
 import 'package:flutter/material.dart';
 import 'package:hive/hive.dart';
+import 'package:studymate/Pop-ups/PopUps_Failed.dart';
 import 'package:studymate/Pop-ups/PopUps_Warning.dart';
 import '../Classes/User.dart';
 import '../Pop-ups/SuccesPopUp.dart';
@@ -174,10 +175,10 @@ class _LoginPageState extends State<LoginPage> {
       //     );
       //   },
       // );
-        showWarningPopup(
+        showFailedPopup(
           context,
-          'Network Error',
-          '${response.statusCode} ${response.reasonPhrase}',
+          'Error',
+          response.reasonPhrase=='UNAUTHORIZED'?'Wrong Username Or Password':'${response.reasonPhrase}',
         );
       }
     } catch (error) {

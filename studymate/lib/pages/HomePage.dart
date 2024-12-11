@@ -5,7 +5,6 @@ import 'package:flutter_font_icons/flutter_font_icons.dart';
 import 'package:google_nav_bar/google_nav_bar.dart';
 import 'package:hive/hive.dart';
 import 'package:hive_flutter/hive_flutter.dart';
-import 'package:studymate/pages/Resources.dart';
 import 'package:studymate/pages/Homebody.dart';
 import 'package:studymate/pages/LoginPage.dart';
 import 'package:studymate/pages/ProfilePage.dart';
@@ -25,6 +24,7 @@ import '../util/TextField.dart';
 import '../Pop-ups/PopUps_Success.dart';
 import '../Pop-ups/PopUps_Failed.dart';
 import '../Pop-ups/PopUps_Warning.dart';
+import 'Resources.dart';
 
 class Homepage extends StatefulWidget {
   User? user;

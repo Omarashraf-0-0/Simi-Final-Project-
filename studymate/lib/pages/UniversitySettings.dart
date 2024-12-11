@@ -26,10 +26,10 @@ class Universitysettings extends StatefulWidget {
 
 class _UniversitysettingsState extends State<Universitysettings> {
 
-String? selectedUniversity;
-  String? selectedCollege;
-  String? selectedMajor;
-  String? selectedTermLevel;
+String? selectedUniversity = Hive.box('userBox').get('university');
+  String? selectedCollege = Hive.box('userBox').get('college');
+  String? selectedMajor = Hive.box('userBox').get('major');
+  String? selectedTermLevel = '${Hive.box('userBox').get('term_level')}';
 
   final TextEditingController RegistrationNumberController = TextEditingController();
 
@@ -39,13 +39,21 @@ String? selectedUniversity;
   final List<String> termLevels = ['Prep', '1', '2', '3', '4', '5', '6', '7', '8', '9', '10'];
 
   bool upDateData(){
-
+    if(selectedUniversity==null||selectedCollege==null||selectedMajor==null||selectedTermLevel==null||RegistrationNumberController.text.isEmpty){
+      showWarningPopup(context, 'Warning', 'Please fill all the fields');
+      return false;
+    }
+    Hive.box('userBox').put('university', selectedUniversity);
+    Hive.box('userBox').put('college', selectedCollege);
+    Hive.box('userBox').put('major', selectedMajor);
+    Hive.box('userBox').put('term_level', selectedTermLevel);
+    Hive.box('userBox').put('Registration_Number', RegistrationNumberController.text);
     return true;
   }
 
   @override
   Widget build(BuildContext context) {
-
+    RegistrationNumberController.text = Hive.box('userBox').get('Registration_Number');
     return Scaffold(
       appBar: AppBar(
         backgroundColor: Color(0xFF165D96),
@@ -209,8 +217,10 @@ String? selectedUniversity;
                   ),
                   child: TextButton(
                     onPressed: () {
+                      if(upDateData()){
+                        showSuccessPopup(context,"Done successfully", 'University Information Updated Successfully');
                       // Save changes action
-                    },
+                    }},
                     child: Padding(
                       padding: const EdgeInsets.symmetric(horizontal: 20.0),
                       child: Text(
