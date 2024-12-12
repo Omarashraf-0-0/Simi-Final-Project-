@@ -3,6 +3,8 @@ import 'package:flutter_font_icons/flutter_font_icons.dart';
 import 'package:google_fonts/google_fonts.dart';
 
 class ProfileSettings extends StatefulWidget {
+  const ProfileSettings({super.key});
+
   @override
   _ProfileSettingsState createState() => _ProfileSettingsState();
 }

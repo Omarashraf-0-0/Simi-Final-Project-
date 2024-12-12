@@ -5,7 +5,6 @@ import 'package:flutter_font_icons/flutter_font_icons.dart';
 import 'package:studymate/Classes/User.dart';
 import 'package:studymate/pages/LoginPage.dart';
 import '../Pop-ups/PopUps_Failed.dart';
-import '../Pop-ups/PopUps_Success.dart';
 import '../Pop-ups/PopUps_Warning.dart';
 import '../util/TextField.dart';
 import 'package:http/http.dart' as http;

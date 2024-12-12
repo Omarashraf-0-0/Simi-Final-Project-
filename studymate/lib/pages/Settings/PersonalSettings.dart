@@ -1,19 +1,21 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_font_icons/flutter_font_icons.dart';
 import 'package:google_fonts/google_fonts.dart';
-import 'package:studymate/pages/Settings.dart';
-import 'package:studymate/pages/UserSettings.dart';
+import 'package:studymate/pages/Settings/Settings.dart';
+import 'package:studymate/pages/Settings/UserSettings.dart';
 import 'package:hive/hive.dart';
-import '../Classes/User.dart';
-import '../Pop-ups/SuccesPopUp.dart';
-import '../util/TextField.dart';
-import 'Forget_Pass.dart';
+import '../../Classes/User.dart';
+import '../../Pop-ups/SuccesPopUp.dart';
+import '../../util/TextField.dart';
+import '../Login & Register/Forget_Pass.dart';
 import 'package:http/http.dart' as http;
 import 'dart:convert';
-import '../Pop-ups/PopUps_Success.dart';
+import '../../Pop-ups/PopUps_Success.dart';
 
 
 class PersonalSettings extends StatefulWidget {
+  const PersonalSettings({super.key});
+
   @override
   _PersonalSettingsState createState() => _PersonalSettingsState();
 }
@@ -24,8 +26,8 @@ class _PersonalSettingsState extends State<PersonalSettings> {
   final TextEditingController DateOfBirthController = TextEditingController();
   final TextEditingController AddressController = TextEditingController();
 
-  bool _isPasswordVisible = false;
-  bool _isConfirmPasswordVisible = false;
+  final bool _isPasswordVisible = false;
+  final bool _isConfirmPasswordVisible = false;
 
 
 

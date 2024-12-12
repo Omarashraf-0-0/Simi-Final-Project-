@@ -2,6 +2,8 @@ import 'package:flutter/material.dart';
 import 'package:google_fonts/google_fonts.dart';
 
 class Rcoursessettings extends StatefulWidget {
+  const Rcoursessettings({super.key});
+
   @override
   _RcoursessettingsState createState() => _RcoursessettingsState();
 }

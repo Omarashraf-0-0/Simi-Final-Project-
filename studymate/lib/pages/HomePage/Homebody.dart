@@ -1,21 +1,12 @@
 import 'dart:convert';
 
 import 'package:flutter/material.dart';
-import 'package:flutter_font_icons/flutter_font_icons.dart';
-import 'package:google_nav_bar/google_nav_bar.dart';
 import 'package:hive/hive.dart';
 import 'package:hive_flutter/hive_flutter.dart';
-// import 'package:studymate/pages/Resources/Resources.dart';
-import 'package:studymate/pages/LoginPage.dart';
-import 'package:studymate/pages/ProfilePage.dart';
 import 'package:studymate/pages/ScheduleManager.dart';
-import '../Classes/User.dart';
-import 'package:studymate/pages/AboLayla/AboLayla.dart';
 import 'package:http/http.dart' as http;
-import 'dart:convert';
 import 'package:intl/intl.dart';
 
-import '../util/TextField.dart';
 class Homebody extends StatefulWidget {
   const Homebody({super.key});
 

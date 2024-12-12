@@ -1,10 +1,9 @@
 import 'package:flutter/material.dart';
 import 'package:studymate/pages/LoginPage.dart';
-import 'package:studymate/pages/RegisterPage.dart';
-import '../Classes/User.dart';
-import '../Pop-ups/PopUps_Success.dart';
-import '../Pop-ups/PopUps_Warning.dart';
-import '../util/TextField.dart';
+import 'package:studymate/pages/Login & Register/RegisterPage.dart';
+import '../../Classes/User.dart';
+import '../../Pop-ups/PopUps_Warning.dart';
+import '../../util/TextField.dart';
 
 class RegisterLogin extends StatefulWidget {
     User? user =  User();

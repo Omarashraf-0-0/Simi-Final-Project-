@@ -1,25 +1,27 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_font_icons/flutter_font_icons.dart';
 import 'package:google_fonts/google_fonts.dart';
-import 'package:studymate/pages/Settings.dart';
-import 'package:studymate/pages/UserSettings.dart';
+import 'package:studymate/pages/Settings/Settings.dart';
+import 'package:studymate/pages/Settings/UserSettings.dart';
 import 'package:flutter/material.dart';
 import 'package:hive/hive.dart';
-import '../Classes/User.dart';
-import '../Pop-ups/SuccesPopUp.dart';
-import '../util/TextField.dart';
-import 'Forget_Pass.dart';
+import '../../Classes/User.dart';
+import '../../Pop-ups/SuccesPopUp.dart';
+import '../../util/TextField.dart';
+import '../Login & Register/Forget_Pass.dart';
 import 'package:http/http.dart' as http;
 import 'dart:convert';
-import '../Pop-ups/PopUps_Success.dart';
-import '../Pop-ups/PopUps_Failed.dart';
-import '../Pop-ups/PopUps_Warning.dart';
+import '../../Pop-ups/PopUps_Success.dart';
+import '../../Pop-ups/PopUps_Failed.dart';
+import '../../Pop-ups/PopUps_Warning.dart';
 
 
 
 
 
 class Universitysettings extends StatefulWidget {
+  const Universitysettings({super.key});
+
   @override
   _UniversitysettingsState createState() => _UniversitysettingsState();
 }

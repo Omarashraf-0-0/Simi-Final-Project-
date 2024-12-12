@@ -3,7 +3,7 @@
 import 'package:flutter/material.dart';
 import 'package:hive/hive.dart';
 import 'package:studymate/Classes/User.dart';
-import 'package:studymate/pages/HomePage.dart';
+import 'package:studymate/pages/HomePage/HomePage.dart';
 import 'package:studymate/pages/LoginPage.dart';
 import 'package:flutter_test/flutter_test.dart';
 

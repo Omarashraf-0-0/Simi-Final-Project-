@@ -2,6 +2,8 @@ import 'package:flutter/material.dart';
 import 'package:flutter_cached_pdfview/flutter_cached_pdfview.dart';
 
 class Materialcourses extends StatefulWidget {
+  const Materialcourses({super.key});
+
   @override
   State<Materialcourses> createState() => _MaterialcoursesState();
 }
@@ -9,6 +11,8 @@ class Materialcourses extends StatefulWidget {
 class _MaterialcoursesState extends State<Materialcourses> {
   @override
   Widget build(BuildContext context) {
+    final args = ModalRoute.of(context)?.settings.arguments as Map<String, dynamic>;
+        final String link = args?['link']; // Get the course ID
     return Scaffold(
       appBar: AppBar(
         title: Text('Material Courses'),
@@ -22,7 +26,7 @@ class _MaterialcoursesState extends State<Materialcourses> {
             return Center(child: Text('Error: ${snapshot.error}'));
           } else {
             return PDF().cachedFromUrl(
-              'https://www.dropbox.com/scl/fi/2gll149sd0368gdafa5zw/Lect-3.pdf?rlkey=1fiaiq706ty1pxjdw8zzt5sz1&st=3zooguvb&dl=1',
+              link,
               placeholder: (progress) => Center(child: Text('$progress %')),
               errorWidget: (error) => Center(child: Text('Error loading PDF')),
             );
@@ -37,7 +41,7 @@ class _MaterialcoursesState extends State<Materialcourses> {
       await Future.delayed(Duration(seconds: 5));
     } catch (e) {
       print('Error loading PDF: $e');
-      throw e;
+      rethrow;
     }
   }
 }
