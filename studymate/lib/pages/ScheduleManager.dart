@@ -4,10 +4,12 @@ import 'package:flutter/material.dart';
 import 'package:google_fonts/google_fonts.dart';
 import 'package:intl/intl.dart'; // For formatting date (day name, day number)
 import 'package:hive/hive.dart';
-import 'HomePage.dart';
+import 'HomePage/HomePage.dart';
 import 'package:http/http.dart' as http;
 
 class ScheduleView extends StatefulWidget {
+  const ScheduleView({super.key});
+
   @override
   _ScheduleViewState createState() => _ScheduleViewState();
 }
@@ -131,6 +133,8 @@ class _ScheduleViewState extends State<ScheduleView> {
   }
 }
 class DayView extends StatefulWidget {
+  const DayView({super.key});
+
   @override
   _DayViewState createState() => _DayViewState();
 }
@@ -357,6 +361,8 @@ class _DayViewState extends State<DayView> {
   }
 }
 class WeekView extends StatefulWidget {
+  const WeekView({super.key});
+
   @override
   State<WeekView> createState() => _WeekViewState();
 }
@@ -696,6 +702,8 @@ class _WeekViewState extends State<WeekView> {
   }
 }
 class MonthView extends StatefulWidget {
+  const MonthView({super.key});
+
   @override
   _MonthViewState createState() => _MonthViewState();
 }
@@ -804,7 +812,7 @@ class _MonthViewState extends State<MonthView> {
                 child: Row(
                   children: [
                     Text(
-                      "${_months[_currentDate.month - 1]}",
+                      _months[_currentDate.month - 1],
                       style: TextStyle(
                         fontSize: 24,
                         fontWeight: FontWeight.bold,
@@ -976,7 +984,7 @@ class _MonthViewState extends State<MonthView> {
         final yearScrollController =
             FixedExtentScrollController(initialItem: selectedYear - _startYear);
 
-        return Container(
+        return SizedBox(
           height: 300,
           child: Column(
             children: [

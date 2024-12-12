@@ -1,12 +1,14 @@
 // ignore_for_file: prefer_const_constructors
 import 'package:flutter/material.dart';
 import 'package:hive_flutter/hive_flutter.dart';
-import 'package:studymate/pages/Courses.dart';
-import 'package:studymate/pages/HomePage.dart';
+import 'package:studymate/pages/Login%20&%20Register/Register_login.dart';
+import 'package:studymate/pages/Resuorces/CourseContent.dart';
+import 'package:studymate/pages/Resuorces/Courses.dart';
+import 'package:studymate/pages/HomePage/HomePage.dart';
 import 'package:studymate/pages/LoginPage.dart';
-import 'package:studymate/pages/MaterialCourses.dart';
-import 'package:studymate/pages/Register_login.dart';
-import 'package:studymate/pages/SRS.dart';
+import 'package:studymate/pages/Resuorces/MaterialCourses.dart';
+import 'package:studymate/pages/Login & Register/Register_login.dart';
+import 'package:studymate/pages/Resuorces/SRS.dart';
 import 'pages/ProfilePage.dart';
 import 'pages/intro_page.dart';
 
@@ -34,6 +36,8 @@ class MyApp extends StatelessWidget {
         '/CoursesPage' : (context) => Courses(),
         '/Material' : (context) => Materialcourses(),
         '/SRS' : (context) => SRS(),
+        '/CourseContent' : (context) => CourseContent(),
+        // '/MaterialCourses' : (context) => MaterialCourses(pdfUrl: '',),
         }
         ,
     );

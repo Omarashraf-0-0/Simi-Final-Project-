@@ -7,11 +7,11 @@ import 'package:studymate/Pop-ups/PopUps_Warning.dart';
 import '../Classes/User.dart';
 import '../Pop-ups/SuccesPopUp.dart';
 import '../util/TextField.dart';
-import 'Forget_Pass.dart';
+import 'Login & Register/Forget_Pass.dart';
 import 'package:http/http.dart' as http;
 import 'dart:convert';
 
-import 'Register_login.dart';
+import 'Login & Register/Register_login.dart';
 
 class LoginPage extends StatefulWidget {
   const LoginPage({super.key});

@@ -1,12 +1,11 @@
 // ignore_for_file: prefer_const_constructors, prefer_const_literals_to_create_immutables, non_constant_identifier_names
 
-import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:studymate/pages/LoginPage.dart';
-import '../Classes/User.dart';
-import '../Pop-ups/PopUps_Warning.dart';
-import '../util/TextField.dart';
-import 'CollageInformatio.dart';
+import '../../Classes/User.dart';
+import '../../Pop-ups/PopUps_Warning.dart';
+import '../../util/TextField.dart';
+import '../CollageInformatio.dart';
 
 class RegisterPage extends StatefulWidget {
     User? user;

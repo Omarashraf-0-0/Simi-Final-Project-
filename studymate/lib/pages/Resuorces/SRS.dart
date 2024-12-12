@@ -57,7 +57,7 @@ class _SRSState extends State<SRS> {
 class MaterialCourses extends StatelessWidget {
   final String pdfUrl;
 
-  const MaterialCourses({Key? key, required this.pdfUrl}) : super(key: key);
+  const MaterialCourses({super.key, required this.pdfUrl});
 
   @override
   Widget build(BuildContext context) {
@@ -84,7 +84,7 @@ class MaterialCourses extends StatelessWidget {
       await Future.delayed(const Duration(seconds: 3));
     } catch (e) {
       print('Error loading PDF: $e');
-      throw e;
+      rethrow;
     }
   }
 }

@@ -1,16 +1,18 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_font_icons/flutter_font_icons.dart';
 import 'package:google_fonts/google_fonts.dart';
-import 'package:studymate/pages/HomePage.dart';
-import 'package:studymate/pages/UserSettings.dart'; // Ensure this import is correct and the file exists
-import 'package:studymate/pages/PersonalSettings.dart';
-import 'package:studymate/pages/Universitysettings.dart'; // Ensure this import is correct and the file exists
-import 'package:studymate/pages/RCoursesSettings.dart'; // Ensure this import is correct and the file exists
+import 'package:studymate/pages/HomePage/HomePage.dart';
+import 'package:studymate/pages/Settings/UserSettings.dart'; // Ensure this import is correct and the file exists
+import 'package:studymate/pages/Settings/PersonalSettings.dart';
+import 'package:studymate/pages/Settings/Universitysettings.dart'; // Ensure this import is correct and the file exists
+import 'package:studymate/pages/Settings/RCoursesSettings.dart'; // Ensure this import is correct and the file exists
 
 // Define the CoursesSettings class if it doesn't exist
 
 
 class Settings extends StatefulWidget {
+  const Settings({super.key});
+
   @override
   _SettingsState createState() => _SettingsState();
 }

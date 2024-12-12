@@ -1,20 +1,11 @@
 // ignore_for_file: prefer_const_constructors
 
-import 'dart:ffi';
 
 import 'package:flutter/material.dart';
 import 'package:flutter_font_icons/flutter_font_icons.dart';
 import 'package:google_fonts/google_fonts.dart';
-import 'package:studymate/pages/ProfileSettings.dart';
 import '../Classes/User.dart';
-import 'package:flutter/material.dart';
 import 'package:hive/hive.dart';
-import '../Classes/User.dart';
-import '../Pop-ups/SuccesPopUp.dart';
-import '../util/TextField.dart';
-import 'Forget_Pass.dart';
-import 'package:http/http.dart' as http;
-import 'dart:convert';
 
 
 class Profilepage extends StatefulWidget {

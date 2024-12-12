@@ -5,26 +5,26 @@ import 'package:flutter_font_icons/flutter_font_icons.dart';
 import 'package:google_nav_bar/google_nav_bar.dart';
 import 'package:hive/hive.dart';
 import 'package:hive_flutter/hive_flutter.dart';
-import 'package:studymate/pages/Homebody.dart';
+import 'package:studymate/pages/HomePage/Homebody.dart';
 import 'package:studymate/pages/LoginPage.dart';
 import 'package:studymate/pages/ProfilePage.dart';
-import 'package:studymate/pages/Settings.dart';
+import 'package:studymate/pages/Settings/Settings.dart';
 import 'package:studymate/pages/ScheduleManager.dart';
-import '../Classes/User.dart';
+import '../../Classes/User.dart';
 import 'package:studymate/pages/AboLayla/AboLayla.dart';
 
 import 'package:http/http.dart' as http;
 import 'dart:convert';
 import 'package:intl/intl.dart';
 
-import '../util/TextField.dart';
+import '../../util/TextField.dart';
 
 
 
-import '../Pop-ups/PopUps_Success.dart';
-import '../Pop-ups/PopUps_Failed.dart';
-import '../Pop-ups/PopUps_Warning.dart';
-import 'Resources.dart';
+import '../../Pop-ups/PopUps_Success.dart';
+import '../../Pop-ups/PopUps_Failed.dart';
+import '../../Pop-ups/PopUps_Warning.dart';
+import '../Resuorces/Resources.dart';
 
 class Homepage extends StatefulWidget {
   User? user;
@@ -105,10 +105,10 @@ void navBottom(int index){
     final startOfDay = DateTime(today.year, today.month, today.day);
     final endOfDay = DateTime(today.year, today.month, today.day, 23, 59, 59);
     int UserID = Hive.box('userBox').get('id');
-    print("mahdy was here ${UserID}");
+    print("mahdy was here $UserID");
     try {
       final response = await http.get(Uri.parse(
-        'https://alyibrahim.pythonanywhere.com/schedule?user_id=${UserID}&start_date=${startOfDay.toIso8601String().split('T')[0]}&end_date=${endOfDay.toIso8601String().split('T')[0]}',
+        'https://alyibrahim.pythonanywhere.com/schedule?user_id=$UserID&start_date=${startOfDay.toIso8601String().split('T')[0]}&end_date=${endOfDay.toIso8601String().split('T')[0]}',
       ));
       if (response.statusCode == 200) {
         setState(() {

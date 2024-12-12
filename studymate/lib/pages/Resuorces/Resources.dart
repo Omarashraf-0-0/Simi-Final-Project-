@@ -3,8 +3,7 @@ import 'dart:convert';
 import 'package:flutter/material.dart';
 import 'package:hive_flutter/hive_flutter.dart';
 import 'package:http/http.dart' as http;
-import 'package:studymate/Classes/User.dart';
-import 'package:studymate/pages/Courses.dart';
+import 'package:studymate/pages/Resuorces/Courses.dart';
 class Resources extends StatefulWidget {
   const Resources({super.key});
 
@@ -13,30 +12,29 @@ class Resources extends StatefulWidget {
 }
 class _ResourcesState extends State<Resources> {
   List<String> courses = [];
+  List<String> coursesIndex = [];
   Future<void> takecources() async {
   
     const url = 'https://alyibrahim.pythonanywhere.com/TakeCourses';  // Replace with your actual Flask server URL
     final username = Hive.box('userBox').get('username');
+    print("USERNAME: $username");
       final Map<String, dynamic> requestBody = {
       'username': username,
     };
-
-    // Send the POST request with the JSON body
     final response = await http.post(
       Uri.parse(url),
       headers: {'Content-Type': 'application/json'},
       body: jsonEncode(requestBody),
     );
-  
 
-      
-      // Parse the JSON response
       if (response.statusCode == 200) {
         final jsonResponse = jsonDecode(response.body);
-                print(jsonResponse);
-                print(Courses);
+                print("print the jason  ? $jsonResponse");
+                
                 setState(() {
                                   courses = jsonResponse['courses'].cast<String>();
+                                  coursesIndex = (jsonResponse['CourseID'] as List).map((item) => item['COId'].toString()).toList();
+
                 });
       }
       else {
@@ -137,7 +135,10 @@ class _ResourcesState extends State<Resources> {
                                             const SizedBox(height: 20), // Add some spacing
                                             ElevatedButton(
                                               onPressed: () {
-                                                // Add your start course functionality here
+                                                final String co = "COId";
+                                                print("Course: ${courses[index]}, ${coursesIndex[index]}");
+                                                 Navigator.pushNamed(context, '/CourseContent',arguments: {'courseId': courses[index], 'courseIndex': coursesIndex[index]},);
+
                                               },
                                               style: ElevatedButton.styleFrom(
                                                 backgroundColor:
@@ -148,6 +149,7 @@ class _ResourcesState extends State<Resources> {
                                                 ),
                                               ),
                                               child: Text(
+                                                
                                                 'Start',
                                                 style: TextStyle(
                                                   color: Colors.black,
