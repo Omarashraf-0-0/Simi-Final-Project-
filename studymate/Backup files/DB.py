@@ -123,7 +123,7 @@ def login():
     password = data.get('password')
 
     if not username or not password:
-        return jsonify({'message': 'Invalid username or password'}), 400
+        return jsonify({'message': 'Invalid username or password 5555'}), 400
 
     conn = get_connection()
     if not conn:
@@ -172,7 +172,7 @@ def login():
                     return jsonify(user_data), 200
 
             # If no valid user is found or password is incorrect
-            return jsonify({'message': 'Invalid username or password'}), 401
+            return jsonify({'message': 'Invalid username or password 5555677896222111'}), 401
     except Exception as e:
         app.logger.error(f"Error during login: {e}")
         return jsonify({'message': 'An error occurred during login'}), 500
@@ -281,6 +281,54 @@ def get_schedule():
         print(f"Error while fetching schedules: {e}")
         return jsonify({"message": "An error occurred while fetching the schedule"}), 500
 
+
+@app.route('/AddSchedule', methods=['POST'])
+def add_schedule():
+    data = request.get_json()
+
+    # Extract data from the JSON body
+    user_id = data.get('id')
+    title = data.get('title')
+    date = data.get('date')
+    start_time = data.get('startTime')
+    end_time = data.get('endTime')
+    location = data.get('location')
+    category = data.get('category')
+    repeat = data.get('repeat')
+    description = data.get('description')
+    reminder_time = data.get('reminderTime')
+    repeat_until = data.get('repeatUntil')
+
+    try:
+        # Establish connection to the database
+        db = get_connection()
+        cursor = db.cursor()
+
+        # Prepare the SQL INSERT query
+        insert_query = """
+        INSERT INTO Schedule (UserId, Title, Date, StartTime, EndTime, Category, Description, Location, ReminderBefore, Repeatance, RepeatEndDate)
+        VALUES (%s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s);
+        """
+
+        # Execute the query with the data
+        cursor.execute(insert_query, (user_id, title, date, start_time, end_time, category, description, location, reminder_time, repeat, repeat_until))
+
+        # Commit the transaction
+        db.commit()
+
+        # Return a success response
+        return jsonify({"message": "Schedule added successfully!"}), 200
+
+    except Exception as e:
+        db.rollback()  # Rollback in case of error
+        return jsonify({"error": str(e)}), 500
+
+    finally:
+        cursor.close()  # Close the cursor
+        db.close()  # Close the database connection
+
+
+
 @app.route('/register_courses', methods=['POST'])
 def register_courses():
     data = request.get_json()
@@ -368,22 +416,30 @@ def get_courses_for_user():
     except mysql.connector.Error as err:
         return jsonify({'error': str(err)}), 500
 
+
+
 @app.route('/CourseContent', methods=['POST'])
 def get_courses_Content():
     try:
         data = request.get_json()
         Cidx = data.get('courseIdx') # Use query parameters
+        username = data.get('username')
         if not Cidx:
             return jsonify({'error': 'Missing username'}), 400
 
         db = get_connection()
         cursor = db.cursor(dictionary=True)
-
+        cursor2 =db.cursor()
         cursor.execute(
-            "SELECT  RFileURL , RName , CID FROM Resources WHERE COId = %s",
+            "SELECT  RFileURL , RName , CID , RId FROM Resources WHERE COId = %s",
             (Cidx,)
         )
         CourseInfo = cursor.fetchall()
+        cursor2.execute(
+                 "UPDATE Register SET recentEnter  = CURRENT_TIMESTAMP  WHERE ( COId = %s and username = %s ) ",
+                (Cidx,username,)
+        )
+        db.commit();
 
         if not CourseInfo:
             return jsonify({'error': f'No courses found for Cidx: {Cidx}'}), 404
@@ -393,11 +449,12 @@ def get_courses_Content():
             subject = {
                 'RFileURL': info['RFileURL'],
                 'RName': info['RName'],
-                'RCat' : info['CID']
+                'RCat' : info['CID'],
+                'RId' : info['RId'],
             }
             subjects.append(subject)
-
         cursor.close()
+        cursor2.close()
         db.close()
 
         # return jsonify({'URL': subjects['RFileURL'], 'Name': subjects['RName']}), 200
@@ -405,6 +462,167 @@ def get_courses_Content():
         return jsonify({'subInfo': subjects}), 200
     except mysql.connector.Error as err:
         return jsonify({'error': str(err)}), 500
+
+
+
+@app.route('/update_user', methods=['POST'])
+def update_user():
+    data = request.get_json()
+    username = data.get('username')
+
+    # Ensure username is provided (it's required for identifying the user)
+    if not username:
+        return jsonify({'message': 'Username is required'}), 400
+
+    # Fields to update
+    fields = {
+        'name': data.get('fullname'),
+        'email': data.get('email'),
+        'password': hash_password(data['password']) if data.get('password') else None,
+        'phone_number': data.get('phone_number'),
+        'birthDate': data.get('birthDate'),
+        'address': data.get('address'),
+        'college': data.get('college'),
+        'university': data.get('university'),
+        'major': data.get('major'),
+        'term_level': data.get('term_level'),
+        'Registration_Number' : data.get('Registration_Number'),
+    }
+
+    # Filter out None or empty values
+    fields_to_update = {key: value for key, value in fields.items() if value}
+
+    if not fields_to_update:
+        return jsonify({'message': 'No data to update'}), 400
+
+    # Build the query dynamically
+    set_clause = ", ".join(f"{key} = %s" for key in fields_to_update.keys())
+    values = list(fields_to_update.values()) + [username]
+
+    query = f"UPDATE user SET {set_clause} WHERE username = %s"
+
+    # Database connection
+    conn = get_connection()
+    if not conn:
+        return jsonify({'message': 'Database connection error'}), 500
+
+    try:
+        with conn.cursor(dictionary=True) as cursor:
+            cursor.execute(query, values)
+            conn.commit()
+
+            if cursor.rowcount == 1:
+                response = {'message': 'User updated successfully'}
+            else:
+                response = {'message': 'No changes made or user not found'}
+
+            return jsonify(response), 200
+    except Exception as e:
+        app.logger.error(f"Error during update_user: {e}")
+        return jsonify({'message': f'An error occurred during update_user {e}'}), 500
+    finally:
+        if conn:
+            conn.close()
+
+
+@app.route('/updateMaterial', methods=['POST'])
+def updateMaterial():
+    try:
+        data = request.get_json()
+        Midx = data.get('materialIdx')
+        MTitle = data.get('materialTitle')
+        Mcat = data.get('materialMcat')
+        if not Midx:
+            return jsonify({'error': 'Missing Midx'}), 400
+
+        db = get_connection()
+        cursor2 =db.cursor()
+
+        cursor2.execute(
+                 "UPDATE Resources SET RName  = %s , CID = %s  WHERE RId = %s",
+                (MTitle,Mcat,Midx,)
+        )
+        db.commit();
+        cursor2.close()
+        db.close()
+
+        if cursor2.rowcount == 1:
+                response = {'message': 'Resources updated successfully'}
+        else:
+                response = {'message': 'No changes made or Resources not found'}
+
+        # return jsonify({'URL': subjects['RFileURL'], 'Name': subjects['RName']}), 200
+        # return jsonify({'courses': [{'URL': subject['RFileURL'], 'Name': subject['RName']} for subject in subjects]}), 200
+        return jsonify(response), 200
+    except mysql.connector.Error as err:
+        return jsonify({'error': str(err)}), 500
+
+
+@app.route('/deleteMaterial', methods=['POST'])
+def deleteMaterial():
+    try:
+        data = request.get_json()
+        Midx = data.get('materialIdx')
+        if not Midx:
+            return jsonify({'error': 'Missing Midx'}), 400
+
+        db = get_connection()
+        cursor2 =db.cursor()
+
+        cursor2.execute(
+                 "DELETE FROM Resources WHERE RId = %s",
+                (Midx,)
+        )
+        db.commit();
+        cursor2.close()
+        db.close()
+
+        if cursor2.rowcount == 1:
+                response = {'message': 'Resourcses deleted successfully'}
+        else:
+                response = {'message': 'No changes made or Resources not found'}
+
+        # return jsonify({'URL': subjects['RFileURL'], 'Name': subjects['RName']}), 200
+        # return jsonify({'courses': [{'URL': subject['RFileURL'], 'Name': subject['RName']} for subject in subjects]}), 200
+        return jsonify(response), 200
+    except mysql.connector.Error as err:
+        return jsonify({'error': str(err)}), 500
+
+@app.route('/addMaterial', methods=['POST'])
+def addMaterial():
+    try:
+        data = request.get_json()
+        Murl = data.get('materialUrl')
+        MTitle = data.get('materialTitle')
+        Mcat = data.get('materialMcat')
+        SID = data.get('subid')
+        if not Murl:
+            return jsonify({'error': 'Missing Midx'}), 400
+
+        db = get_connection()
+        cursor2 =db.cursor()
+
+        cursor2.execute(
+                 "insert into Resources (Rname , RFileURL , CID ,COId ) values (%s , %s , %s, %s )  ",
+                (MTitle,Murl,Mcat,SID,)
+        )
+        db.commit();
+        cursor2.close()
+        db.close()
+
+        if cursor2.rowcount == 1:
+                response = {'message': 'Resourcses Added successfully'}
+        else:
+                response = {'message': 'No changes made'}
+
+        # return jsonify({'URL': subjects['RFileURL'], 'Name': subjects['RName']}), 200
+        # return jsonify({'courses': [{'URL': subject['RFileURL'], 'Name': subject['RName']} for subject in subjects]}), 200
+        return jsonify(response), 200
+    except mysql.connector.Error as err:
+        return jsonify({'error': str(err)}), 500
+
+
+
 
 # Run the app
 if __name__ == '__main__':

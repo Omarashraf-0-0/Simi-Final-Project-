@@ -8,6 +8,7 @@ import 'package:studymate/pages/HomePage/HomePage.dart';
 import 'package:studymate/pages/LoginPage.dart';
 import 'package:studymate/pages/Resuorces/MaterialCourses.dart';
 import 'package:studymate/pages/Login & Register/Register_login.dart';
+import 'package:studymate/pages/Resuorces/Resources.dart';
 import 'package:studymate/pages/Resuorces/SRS.dart';
 import 'pages/ProfilePage.dart';
 import 'pages/intro_page.dart';
@@ -37,6 +38,7 @@ class MyApp extends StatelessWidget {
         '/Material' : (context) => Materialcourses(),
         '/SRS' : (context) => SRS(),
         '/CourseContent' : (context) => CourseContent(),
+        '/Resources' : (context) => Resources(),
         // '/MaterialCourses' : (context) => MaterialCourses(pdfUrl: '',),
         }
         ,
