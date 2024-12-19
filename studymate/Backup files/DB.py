@@ -368,6 +368,83 @@ def get_courses_for_user():
     except mysql.connector.Error as err:
         return jsonify({'error': str(err)}), 500
 
+@app.route('/AddSchedule', methods=['POST'])
+def add_schedule():
+    data = request.get_json()
+
+    # Extract data from the JSON body
+    user_id = data.get('id')
+    title = data.get('title')
+    date = data.get('date')
+    start_time = data.get('startTime')
+    end_time = data.get('endTime')
+    location = data.get('location')
+    category = data.get('category')
+    repeat = data.get('repeat')
+    description = data.get('description')
+    reminder_time = data.get('reminderTime')
+    repeat_until = data.get('repeatUntil')
+
+    try:
+        # Establish connection to the database
+        db = get_connection()
+        cursor = db.cursor()
+
+        # Prepare the SQL INSERT query
+        insert_query = """
+        INSERT INTO your_table_name (UserId, Title, Date, StartTime, EndTime, Category, Description, Location, ReminderBefore, Repeatance, RepeatEndDate)
+        VALUES (%s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s);
+        """
+
+        # Execute the query with the data
+        cursor.execute(insert_query, (user_id, title, date, start_time, end_time, category, description, location, reminder_time, repeat, repeat_until))
+
+        # Commit the transaction
+        db.commit()
+
+        # Return a success response
+        return jsonify({"message": "Schedule added successfully!"}), 200
+
+    except Exception as e:
+        db.rollback()  # Rollback in case of error
+        return jsonify({"error": str(e)}), 500
+
+    finally:
+        cursor.close()  # Close the cursor
+        db.close()  # Close the database connection
+
+@app.route('/delete_task', methods=['POST'])
+def delete_Schedule():
+    data = request.get_json()
+    Sid = data.get('Sid')
+
+    if not Sid:
+        return jsonify({'error': 'Sid is required'}), 400  # Bad Request if Sid is missing
+
+    try:
+        db = get_connection()
+        cursor = db.cursor()
+
+        # Prepare SQL delete statement
+        sql_delete_query = "DELETE FROM Schedule WHERE Sid = %s"
+        cursor.execute(sql_delete_query, (Sid,))
+        db.commit()
+
+        # Check if any row was affected (i.e., deleted)
+        if cursor.rowcount == 0:
+            # No schedule found with the given Sid
+            cursor.close()
+            db.close()
+            return jsonify({'error': 'No schedule found with the given Sid'}), 404
+
+        cursor.close()
+        db.close()
+        return jsonify({'message': 'Schedule deleted successfully'}), 200
+
+    except Exception as e:
+        print("Error while deleting schedule:", e)
+        return jsonify({'error': 'An error occurred while deleting the schedule.'}), 500
+
 @app.route('/CourseContent', methods=['POST'])
 def get_courses_Content():
     try:

@@ -1,5 +1,6 @@
 {
 	"configurations": [
+		
 		{
 			"name": "studymate (Flutter)",
 			"program": "lib/main.dart",
