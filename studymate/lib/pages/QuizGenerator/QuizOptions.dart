@@ -20,6 +20,44 @@ class QuizOptions extends StatefulWidget {
 class _QuizOptionsState extends State<QuizOptions> {
   String? selectedCourse;
   int _currentSliderValue = 1;
+  TextEditingController questionsController = TextEditingController();
+  TextEditingController mcqController = TextEditingController();
+  TextEditingController tfController = TextEditingController();
+
+  void validateQuestions() {
+    int totalQuestions = int.tryParse(questionsController.text) ?? 0;
+    int mcqCount = int.tryParse(mcqController.text) ?? 0;
+    int tfCount = int.tryParse(tfController.text) ?? 0;
+
+    if (mcqCount + tfCount != totalQuestions) {
+      showDialog(
+        context: context,
+        builder: (_) => AlertDialog(
+          title: const Text("Error"),
+          content: const Text("The total number of MCQs and T/F questions must equal the number of questions."),
+          actions: [
+            TextButton(
+              onPressed: () => Navigator.pop(context),
+              child: const Text("OK"),
+            ),
+          ],
+        ),
+      );
+      return;
+    }
+
+    // Pass data to Quiz Page
+    Navigator.push(
+      context,
+      MaterialPageRoute(
+        builder: (_) => Quiz(
+          totalQuestions: totalQuestions,
+          mcqCount: mcqCount,
+          tfCount: tfCount,
+        ),
+      ),
+    );
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -233,6 +271,7 @@ class _QuizOptionsState extends State<QuizOptions> {
                   width: 75,
                   height: 40,
                   child: TextField(
+                    controller: questionsController,
                     textAlign: TextAlign.center,
                     style: TextStyle(
                       fontWeight: FontWeight.bold,
@@ -288,6 +327,7 @@ class _QuizOptionsState extends State<QuizOptions> {
                   width: 75,
                   height: 40,
                   child: TextField(
+                    controller: mcqController,
                     textAlign: TextAlign.center,
                     style: TextStyle(
                       fontWeight: FontWeight.bold,
@@ -324,6 +364,7 @@ class _QuizOptionsState extends State<QuizOptions> {
                   width: 75,
                   height: 40,
                   child: TextField(
+                    controller: tfController,
                     textAlign: TextAlign.center,
                     style: TextStyle(
                       fontWeight: FontWeight.bold,
@@ -352,12 +393,7 @@ class _QuizOptionsState extends State<QuizOptions> {
               mainAxisAlignment: MainAxisAlignment.center,
               children: [
                 ElevatedButton(
-                onPressed: () {
-                  Navigator.push(
-                    context,
-                    MaterialPageRoute(builder: (context) => Quiz()),
-                  );
-                },
+                onPressed: validateQuestions,
                 style: ElevatedButton.styleFrom(
                   backgroundColor: Color(0xFF165D96), // Button color
                   padding: EdgeInsets.symmetric(

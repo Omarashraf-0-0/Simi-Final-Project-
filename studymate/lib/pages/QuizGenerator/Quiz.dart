@@ -1,3 +1,4 @@
+import 'dart:async';
 import 'dart:convert';
 
 import 'package:flutter/material.dart';
@@ -11,53 +12,122 @@ import 'package:studymate/pages/QuizGenerator/QuizScore.dart';
 import 'package:google_fonts/google_fonts.dart';
 
 class Quiz extends StatefulWidget {
-  const Quiz({super.key});
+  final int totalQuestions;
+  final int mcqCount;
+  final int tfCount;
+
+  const Quiz({
+    super.key,
+    required this.totalQuestions,
+    required this.mcqCount,
+    required this.tfCount,
+  });
 
   @override
   State<Quiz> createState() => _QuizState();
 }
 
 class _QuizState extends State<Quiz> {
-  // Index for current question
   int currentQuestion = 0;
+  int correctAnswers = 0;
+  List<int> userAnswers = List.filled(0, -1, growable: true); // Store the selected options
+  List<bool> isCorrectList = []; // Track correctness of answers
+  late int totalSecondsRemaining; // Total time for all questions
+  Timer? timer;
 
   // List of questions and answers
-  final List<Map<String, dynamic>> questions = [
+  final List<Map<String, dynamic>> baseQuestions = [
     {
       "question": "Men A5wl wa7d fe el 23dh",
       "options": ["Salah", "Abo 3li el Kabeer", "Sala eldn", "Zambada"],
       "selectedOption": -1, // Initially no option selected
+      "correctOption": 0, // Correct option index
     },
     {
       "question": "Zb 3b3alem kam cm?",
       "options": ["69cm", "99999999cm", "LONG_LONG_MAX", "Infinity"],
       "selectedOption": -1,
+      "correctOption": 0,
     },
     {
       "question": "What is the capital of Germany?",
       "options": ["Berlin", "Madrid", "Paris", "Rome"],
       "selectedOption": -1,
+      "correctOption": 0,
     },
     {
       "question": "What is the capital of Egypt?",
       "options": ["el Mahmodyh", "Cairo", "Kima", "Rome"],
       "selectedOption": -1,
+      "correctOption": 0,
     },
   ];
 
-  // Timer (dummy implementation for UI)
-  String timer = "16:35";
+  late List<Map<String, dynamic>> questions;
 
-  // Navigate to next question
-  void nextQuestion() {
-    if (currentQuestion < questions.length - 1) {
-      setState(() {
-        currentQuestion++;
-      });
-    }
+  @override
+  void initState() {
+    super.initState();
+    totalSecondsRemaining = 60 * widget.totalQuestions; // Total time for all questions
+    questions = List.generate(widget.totalQuestions, (index) => baseQuestions[index % baseQuestions.length]);
+    startTimer();
   }
 
-  // Navigate to previous question
+  @override
+  void dispose() {
+    stopTimer();
+    super.dispose();
+  }
+
+  void startTimer() {
+    timer = Timer.periodic(const Duration(seconds: 1), (timer) {
+      if (totalSecondsRemaining > 0) {
+        setState(() {
+          totalSecondsRemaining--;
+        });
+      } else {
+        // Time's up, submit the quiz
+        submitQuiz();
+      }
+    });
+  }
+
+  void stopTimer() {
+    timer?.cancel();
+  }
+
+  void submitQuiz() {
+    stopTimer();
+    for (int i = 0; i < questions.length; i++) {
+      if (questions[i]["selectedOption"] == questions[i]["correctOption"]) {
+        correctAnswers++;
+      }
+    }
+    Navigator.push(
+      context,
+      MaterialPageRoute(
+        builder: (_) => QuizScore(
+          score: correctAnswers,
+          total: widget.totalQuestions,
+          userAnswers: userAnswers,
+          questions: questions,
+        ),
+      ),
+    );
+  }
+
+  // Select an option
+  void selectOption(int index) {
+    setState(() {
+      questions[currentQuestion]["selectedOption"] = index;
+      if (userAnswers.length > currentQuestion) {
+        userAnswers[currentQuestion] = index;
+      } else {
+        userAnswers.add(index);
+      }
+    });
+  }
+
   void previousQuestion() {
     if (currentQuestion > 0) {
       setState(() {
@@ -66,11 +136,12 @@ class _QuizState extends State<Quiz> {
     }
   }
 
-  // Select an option
-  void selectOption(int index) {
-    setState(() {
-      questions[currentQuestion]["selectedOption"] = index;
-    });
+  void nextQuestion() {
+    if (currentQuestion < questions.length - 1) {
+      setState(() {
+        currentQuestion++;
+      });
+    }
   }
 
   @override
@@ -106,7 +177,7 @@ class _QuizState extends State<Quiz> {
                 ),
                 SizedBox(width: 5), // Space between the icon and the text
                 Text(
-                  timer,
+                  '${totalSecondsRemaining ~/ 60}:${(totalSecondsRemaining % 60).toString().padLeft(2, '0')}',
                   style: TextStyle(
                     fontFamily: 'League Spartan',
                     fontSize: 14,
@@ -284,17 +355,7 @@ class _QuizState extends State<Quiz> {
 
                   // Submit Button
                   ElevatedButton(
-                    onPressed: () {
-                      Navigator.push(
-                        context,
-                        MaterialPageRoute(
-                          builder: (context) => QuizScore(
-                            score: 3, // Replace with actual score
-                            total: 4, // Replace with actual total
-                          ),
-                        ),
-                      );
-                    },
+                    onPressed: submitQuiz,
                     style: ElevatedButton.styleFrom(
                       backgroundColor: Color(0xFF165D96), // Button color
                       padding: EdgeInsets.symmetric(
