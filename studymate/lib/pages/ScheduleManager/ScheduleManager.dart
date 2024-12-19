@@ -129,8 +129,6 @@ class _ScheduleViewState extends State<ScheduleView> {
     );
   }
 
-  
-
   Widget buildAddEventPopup(BuildContext context) {
     final TextEditingController titleController = TextEditingController();
     final TextEditingController descriptionController = TextEditingController();
@@ -142,14 +140,14 @@ class _ScheduleViewState extends State<ScheduleView> {
         TextEditingController();
     final TextEditingController repeatUntilController = TextEditingController();
     String _selectedCategory = "Study";
-    titleController.text = 'test';
-    descriptionController.text = 'test';
-    dateController.text = '2024-12-12';
-    StartTimeController.text = '12:00 PM';
-    EndTimeController.text = '1:00 PM';
-    locationController.text = 'test';
-    reminderTimeController.text = '12:00 PM';
-    repeatUntilController.text = '2024-12-12';
+    // titleController.text = 'test';
+    // descriptionController.text = 'test';
+    // dateController.text = '2024-12-12';
+    // StartTimeController.text = '12:00 PM';
+    // EndTimeController.text = '1:00 PM';
+    // locationController.text = 'test';
+    // reminderTimeController.text = '12:00 PM';
+    // repeatUntilController.text = '2024-12-12';
     return Positioned.fill(
       child: GestureDetector(
         onTap: _toggleAddEventPopup, // Close the popup when tapping outside
@@ -617,16 +615,25 @@ class _ScheduleViewState extends State<ScheduleView> {
 
                                     // Define time format parsers
                                     // Parse and format StartTime
-                                    final DateTime startTime = convertTo24HourFormatWithDate(dateController.text, StartTimeController.text);
+                                    final DateTime startTime =
+                                        convertTo24HourFormatWithDate(
+                                            dateController.text,
+                                            StartTimeController.text);
                                     // print("Start Time Text: $startTime");
                                     // print("Start Time: $startTime");
 
                                     // Parse and format EndTime
-                                    final DateTime endTime = convertTo24HourFormatWithDate(dateController.text, EndTimeController.text);
+                                    final DateTime endTime =
+                                        convertTo24HourFormatWithDate(
+                                            dateController.text,
+                                            EndTimeController.text);
                                     // print("End Time: $endTime");
 
                                     // Parse and format ReminderTime
-                                    DateTime reminderTime = convertTo24HourFormatWithDate(dateController.text, reminderTimeController.text);
+                                    DateTime reminderTime =
+                                        convertTo24HourFormatWithDate(
+                                            dateController.text,
+                                            reminderTimeController.text);
                                     // print("Reminder Time: $reminderTime");
 
                                     // Parse RepeatUntil directly as a date
@@ -656,7 +663,8 @@ class _ScheduleViewState extends State<ScheduleView> {
                                         "The repeat until date cannot be before the event date.",
                                       );
                                     } else {
-                                      DateFormat outputFormat = DateFormat('yyyy-MM-dd HH:mm');
+                                      DateFormat outputFormat =
+                                          DateFormat('yyyy-MM-dd HH:mm');
                                       // All validations passed. Save the event details to the database.
                                       print(
                                           "Event details are valid. Proceeding to save...");
@@ -701,6 +709,7 @@ class _ScheduleViewState extends State<ScheduleView> {
       ),
     );
   }
+
   Future<void> AddEvent(
     String title,
     String date,
@@ -751,6 +760,7 @@ class _ScheduleViewState extends State<ScheduleView> {
     }
   }
 }
+
 DateTime convertTo24HourFormatWithDate(String dateTimeString, String time12h) {
   // Define the input formats for the date and time
   final DateFormat dateTimeFormat = DateFormat('yyyy-MM-dd');
