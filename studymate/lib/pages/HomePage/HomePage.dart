@@ -12,6 +12,7 @@ import 'package:studymate/pages/Settings/Settings.dart';
 import 'package:studymate/pages/ScheduleManager.dart';
 import '../../Classes/User.dart';
 import 'package:studymate/pages/AboLayla/AboLayla.dart';
+import 'package:studymate/pages/QuizGenerator/QuizHome.dart';
 
 import 'package:http/http.dart' as http;
 import 'dart:convert';
@@ -266,6 +267,16 @@ void navBottom(int index){
                   MaterialPageRoute(builder: (context) => AboLayla()),
                 );
                 // Handle the Abo Lyla tap
+              },
+            ),
+            ListTile(
+              leading: Image.asset('lib/assets/img/QuizTime.png', width: 24),
+              title: Text('Quiz Time'),
+              onTap: () {
+                Navigator.push(
+                  context,
+                  MaterialPageRoute(builder: (context) => QuizHome()),
+                );
               },
             ),
             ListTile(

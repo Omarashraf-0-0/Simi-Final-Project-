@@ -38,6 +38,7 @@ flutter:
     - lib/assets/animations/
     - lib/assets/img/AboLayla.jpg
     - lib/assets/img/TheRock.jpg
+    - lib/assets/img/QuizTime.png
 
   fonts:
     - family: Poppins
