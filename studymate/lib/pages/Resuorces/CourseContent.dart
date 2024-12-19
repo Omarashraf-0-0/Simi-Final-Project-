@@ -1,7 +1,13 @@
+import 'dart:isolate'; // Add this import
+import 'dart:ui';
+
 import 'dart:convert';
 import 'package:flutter/material.dart';
 import 'package:hive/hive.dart';
 import 'package:http/http.dart' as http;
+import 'package:flutter_downloader/flutter_downloader.dart';
+import 'package:permission_handler/permission_handler.dart';
+import 'package:path_provider/path_provider.dart';
 import 'package:studymate/pages/Resuorces/SRS.dart';
 
 class CourseContent extends StatefulWidget {
@@ -15,6 +21,91 @@ String? courseName;
 String? courseIndex;
 
 class _CourseContentState extends State<CourseContent> {
+  ////////////////////////////////////////////////////////////
+  String? taskId; // Store taskId as a class member
+  ReceivePort _port = ReceivePort();
+
+  @override
+  void initState() {
+    super.initState();
+
+    // Initialize FlutterDownloader
+    // Register the SendPort to communicate with the background isolate
+    IsolateNameServer.registerPortWithName(_port.sendPort, 'downloader_send_port')  ;
+
+    // Listen for data from the background isolate
+    _port.listen((dynamic data) {
+      String id = data[0];
+      int status = data[1];
+      int progress = data[2];
+
+      if (taskId == id) {
+        // Update UI or state based on download progress
+        print('Download status: $status, Progress: $progress%');
+        setState(() {
+          // Update your state here if needed
+        });
+      }
+    });
+
+    // Register the static callback
+    FlutterDownloader.registerCallback(downloadCallback);
+
+    // Other initialization code...
+    getcources();
+  }
+
+  @override
+  void dispose() {
+    // Unregister the SendPort
+    IsolateNameServer.removePortNameMapping('downloader_send_port');
+    _port.close();
+    super.dispose();
+  }
+
+  // The callback function must be static and match the expected signature
+  static void downloadCallback(String id, int status, int progress) {
+    final SendPort? send =
+        IsolateNameServer.lookupPortByName('downloader_send_port');
+    send?.send([id, status, progress]);
+  }
+
+  void _downloadPdf(String subject) async {
+    final url = subjectLinks[subject];
+
+    if (url != null) {
+      // Request storage permission
+      final status = await Permission.storage.request();
+      if (status.isGranted) {
+        // Get the external storage directory
+        final externalDir = await getExternalStorageDirectory();
+
+        // Enqueue the download task
+        taskId = await FlutterDownloader.enqueue(
+          url: url,
+          savedDir: externalDir!.path,
+          fileName: '$subject.pdf',
+          showNotification:
+              true, // Show download progress in status bar (for Android)
+          openFileFromNotification:
+              true, // Click on notification to open downloaded file (for Android)
+        );
+
+        ScaffoldMessenger.of(context).showSnackBar(
+          SnackBar(content: Text('$subject download started.')),
+        );
+      } else {
+        // Handle permission denial
+        ScaffoldMessenger.of(context).showSnackBar(
+          SnackBar(content: Text('Storage permission denied')),
+        );
+      }
+    } else {
+      print('No URL available for this subject.');
+    }
+  }
+
+  ////////////////////////////////////////////////////////////
   List<String> selectedCourseContent = [];
   Map<String, List<String>> categorizedList = {};
   List<String> listFromL = [];
@@ -64,7 +155,7 @@ class _CourseContentState extends State<CourseContent> {
     print('srsdkajsdfk$courseIndex');
     final Map<String, dynamic> requestBody = {
       'courseIdx': Hive.box('userBox').get('COId'),
-      'username' : Hive.box('userBox').get('username'),
+      'username': Hive.box('userBox').get('username'),
     };
     final response = await http.post(
       Uri.parse(url),
@@ -142,9 +233,10 @@ class _CourseContentState extends State<CourseContent> {
     } else {
       print('Request failed with status: ${response.body}.');
     }
+    
   }
 
- Future<void> addMaterial(String Rurl, String Title, String Mcat , String subid) async {
+  Future<void> addMaterial(String Rurl, String Title, String Mcat, String subid) async {
     const url = 'https://alyibrahim.pythonanywhere.com/addMaterial';
     if (Mcat == 'Lectures') {
       Mcat = 'L';
@@ -157,11 +249,10 @@ class _CourseContentState extends State<CourseContent> {
     }
     print(Mcat);
     final Map<String, dynamic> requestBody = {
-
       'materialUrl': Rurl,
       'materialTitle': Title,
       'materialMcat': Mcat,
-      'subid' : subid,
+      'subid': subid,
     };
 
     final response = await http.post(
@@ -176,12 +267,12 @@ class _CourseContentState extends State<CourseContent> {
       print('Request failed with status: ${response.body}.');
     }
   }
-  
-  @override
-  void initState() {
-    super.initState();
-    getcources();
-  }
+
+  // @override
+  // void initState() {
+  //   super.initState();
+  //   getcources();
+  // }
 
   @override
   Widget build(BuildContext context) {
@@ -233,31 +324,40 @@ class _CourseContentState extends State<CourseContent> {
               ),
             ],
           ),
-          children: subjects
-              .map(
-                (subject) => ListTile(
-                  leading: const Icon(Icons.book),
-                  title: Text(subject),
-                  trailing: IconButton(
+          children: subjects.map((subject) {
+            return ListTile(
+              leading: const Icon(Icons.book),
+              title: Text(subject),
+              trailing: Row(
+                mainAxisSize: MainAxisSize.min,
+                children: [
+                  // Download icon
+                  IconButton(
+                    icon: const Icon(Icons.file_download),
+                    onPressed: () => _downloadPdf(subject),
+                  ),
+                  // Edit icon
+                  IconButton(
                     icon: const Icon(Icons.edit, color: Colors.grey),
                     onPressed: () => _showEditPopup(context, subject),
                   ),
-                  onTap: () {
-                    final link = subjectLinks[subject];
-                    if (link != null) {
-                      Navigator.push(
-                        context,
-                        MaterialPageRoute(
-                          builder: (context) => MaterialCourses(pdfUrl: link),
-                        ),
-                      );
-                    } else {
-                      print('No link found for $subject');
-                    }
-                  },
-                ),
-              )
-              .toList(),
+                ],
+              ),
+              onTap: () {
+                final link = subjectLinks[subject];
+                if (link != null) {
+                  Navigator.push(
+                    context,
+                    MaterialPageRoute(
+                      builder: (context) => MaterialCourses(pdfUrl: link),
+                    ),
+                  );
+                } else {
+                  print('No link found for $subject');
+                }
+              },
+            );
+          }).toList(),
         ),
       ),
     );
@@ -324,13 +424,6 @@ class _CourseContentState extends State<CourseContent> {
               children: [
                 ElevatedButton(
                   onPressed: () {
-                    // if (selectedCategory == null || selectedCategory == "Select Category") {
-                    //   // Show error if no valid category is selected
-                    //   ScaffoldMessenger.of(context).showSnackBar(
-                    //     const SnackBar(content: Text('Please select a valid category.')),
-                    //   );
-                    //   return;
-                    // }
                     print('Title: ${titleController.text}');
                     deleteMaterial(subjectIds[subject]!);
                     print('$selectedCategory');
@@ -377,7 +470,6 @@ class _CourseContentState extends State<CourseContent> {
             mainAxisSize: MainAxisSize.min,
             children: [
               // Title input field
-              
               TextField(
                 controller: titleController,
                 decoration: const InputDecoration(labelText: 'Title'),
@@ -408,12 +500,17 @@ class _CourseContentState extends State<CourseContent> {
           actions: [
             ElevatedButton(
               onPressed: () {
-                // Add the new material (You can integrate it with backend logic here)
+                // Add the new material 
                 print('Title: ${titleController.text}');
                 print('Category: $selectedCategory');
                 print('URL: ${urlController.text}');
-                
-                addMaterial(urlController.text, titleController.text, selectedCategory!, Hive.box('userBox').get('COId'),);
+
+                addMaterial(
+                  urlController.text,
+                  titleController.text,
+                  selectedCategory!,
+                  Hive.box('userBox').get('COId'),
+                );
                 Navigator.pop(context); // Close the popup
               },
               child: const Text('Add'),
@@ -423,4 +520,46 @@ class _CourseContentState extends State<CourseContent> {
       },
     );
   }
+
+  // Implement the PDF download functionality
+//   void _downloadPdf(String subject) async {
+//   final url = subjectLinks[subject];
+//   if (url != null) {
+//     // Request storage permission
+//     final status = await Permission.storage.request();
+//     if (status.isGranted) {
+//       // Get the external storage directory
+//       final externalDir = await getExternalStorageDirectory();
+      
+//       // Enqueue the download task
+//       final taskId = await FlutterDownloader.enqueue(
+//         url: url,
+//         savedDir: externalDir!.path,
+//         fileName: '$subject.pdf',
+//         showNotification: true, // Show download progress in status bar (for Android)
+//         openFileFromNotification: true, // Click on notification to open downloaded file (for Android)
+//       );
+
+//       // Optional: Listen for download progress
+//       FlutterDownloader.registerCallback((id, status, progress) {
+//         if (taskId == id) {
+//           // Update UI or state based on download progress
+//           print('Download status: $status, Progress: $progress%');
+//         }
+//       });
+
+//       ScaffoldMessenger.of(context).showSnackBar(
+//         SnackBar(content: Text('$subject download started.')),
+//       );
+//     } else {
+//       // Handle permission denial
+//       ScaffoldMessenger.of(context).showSnackBar(
+//         SnackBar(content: Text('Storage permission denied')),
+//       );
+//     }
+//   } else {
+//     print('No URL available for this subject.');
+//   }
+// }
+
 }
