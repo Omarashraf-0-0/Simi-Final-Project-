@@ -8,7 +8,8 @@ import 'package:hive_flutter/hive_flutter.dart';
 // import 'package:studymate/pages/Resources/Resources.dart';
 import 'package:studymate/pages/LoginPage.dart';
 import 'package:studymate/pages/ProfilePage.dart';
-import 'package:studymate/pages/ScheduleManager.dart';
+import 'package:studymate/pages/Resuorces/SRS.dart';
+import 'package:studymate/pages/ScheduleManager/ScheduleManager.dart';
 import '../Classes/User.dart';
 import 'package:studymate/pages/AboLayla/AboLayla.dart';
 import 'package:http/http.dart' as http;
@@ -319,7 +320,10 @@ class _HomebodyState extends State<Homebody> {
                                         ),
                                         ElevatedButton(
                                           onPressed: () {
-                                              Navigator.pushNamed(context,'/SRS');
+                                              // Navigator.pushNamed(context,'/SRS');
+                                              Navigator.push(context, 
+                                              MaterialPageRoute(builder: (context) => SRS())
+                                              );
                                           },
                                           style: ElevatedButton.styleFrom(
                                             backgroundColor:

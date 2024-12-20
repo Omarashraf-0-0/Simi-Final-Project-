@@ -3,7 +3,7 @@ import 'dart:convert';
 import 'package:flutter/material.dart';
 import 'package:hive/hive.dart';
 import 'package:hive_flutter/hive_flutter.dart';
-import 'package:studymate/pages/ScheduleManager.dart';
+import 'package:studymate/pages/ScheduleManager/ScheduleManager.dart';
 import 'package:http/http.dart' as http;
 import 'package:intl/intl.dart';
 
@@ -15,6 +15,7 @@ class Homebody extends StatefulWidget {
 }
 
 class _HomebodyState extends State<Homebody> {
+ 
    Color _getCardColor(int index) {
     final List<Color> colors = [
       Color(0xFFF6F5FB), // Light Purple
@@ -51,9 +52,43 @@ class _HomebodyState extends State<Homebody> {
   void initState() {
     super.initState();
     _fetchTodaysSchedule();
+    recentCourses();
+  }
+   
+  List<String> courses = [];
+  List<String> coursesIndex = [];
+  Future<void> recentCourses() async {
+  
+    const url = 'https://alyibrahim.pythonanywhere.com/recentCourses';  // Replace with your actual Flask server URL
+    final username = Hive.box('userBox').get('username');
+    print("USERNAME: $username");
+      final Map<String, dynamic> requestBody = {
+      'username': username,
+    };
+    final response = await http.post(
+      Uri.parse(url),
+      headers: {'Content-Type': 'application/json'},
+      body: jsonEncode(requestBody),
+    );
+
+      if (response.statusCode == 200) {
+        final jsonResponse = jsonDecode(response.body);
+                print("print the jason a7a ? $jsonResponse");
+                setState(() {
+                                  courses = jsonResponse['courses'].cast<String>();
+                                  coursesIndex = (jsonResponse['CourseID'] as List).map((item) => item['COId'].toString()).toList();
+
+                });
+                print(courses);
+      }
+      else {
+        print('Request failed with status: ${response.body}.');
+
+      }
   }
 
   Future<void> _fetchTodaysSchedule() async {
+    
     final today = DateTime.now();
     final startOfDay = DateTime(today.year, today.month, today.day);
     final endOfDay = DateTime(today.year, today.month, today.day, 23, 59, 59);
@@ -232,7 +267,7 @@ class _HomebodyState extends State<Homebody> {
                       TextButton(
                         onPressed: () {
                           // navigate to the schedule page
-                          // Navigator.pushNamed(context, '/CoursesPage');
+                          Navigator.pushNamed(context, '/Resources');
                         },
                         child: Row(
                           children: [
@@ -262,7 +297,7 @@ class _HomebodyState extends State<Homebody> {
                         scrollDirection: Axis.vertical, // Enable vertical scrolling
                         child: Column(
                           children: List.generate(
-                            1, // Limit to 2 courses (you can change this number)
+                            courses.length, // Limit to 2 courses (you can change this number)
                             (index) => Padding(
                               padding: const EdgeInsets.only(
                                 bottom: 14.0, // Spacing between cards
@@ -294,14 +329,7 @@ class _HomebodyState extends State<Homebody> {
                                           .start, // Align to the left
                                       children: [
                                         Text(
-                                          'Course ${index + 1}',
-                                          style: TextStyle(
-                                            fontSize: 14,
-                                            color: Colors.grey,
-                                          ),
-                                        ),
-                                        Text(
-                                          'SRS',
+                                          courses[index],
                                           style: TextStyle(
                                             fontSize: 18,
                                             color: Colors.white,
@@ -309,9 +337,13 @@ class _HomebodyState extends State<Homebody> {
                                           ),
                                         ),
                                         ElevatedButton(
-                                          onPressed: () {
-                                              Navigator.pushNamed(context,'/SRS');
-                                          },
+                                           onPressed: () {
+                                                final String co = "COId";
+                                                 Hive.box('userBox').put('COId', coursesIndex[index]);
+                                                print("Course: ${courses[index]}, ${coursesIndex[index]}");
+                                                 Navigator.pushNamed(context, '/CourseContent',arguments: {'courseId': courses[index], 'courseIndex': coursesIndex[index]},);
+                                              
+                                              },
                                           style: ElevatedButton.styleFrom(
                                             backgroundColor:
                                                 Colors.white, // Button color

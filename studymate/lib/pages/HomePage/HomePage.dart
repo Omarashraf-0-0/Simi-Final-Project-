@@ -9,7 +9,7 @@ import 'package:studymate/pages/HomePage/Homebody.dart';
 import 'package:studymate/pages/LoginPage.dart';
 import 'package:studymate/pages/ProfilePage.dart';
 import 'package:studymate/pages/Settings/Settings.dart';
-import 'package:studymate/pages/ScheduleManager.dart';
+import 'package:studymate/pages/ScheduleManager/ScheduleManager.dart';
 import '../../Classes/User.dart';
 import 'package:studymate/pages/AboLayla/AboLayla.dart';
 import 'package:studymate/pages/QuizGenerator/QuizHome.dart';

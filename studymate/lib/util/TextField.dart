@@ -11,9 +11,10 @@ class Textfield extends StatefulWidget {
   final double borderRadius;
   final TextInputType? keyboardType;
   final TextStyle? hintStyle;
-  bool toggleVisability ;
+  bool toggleVisability;
   final bool isDateField;
-  
+  final bool isTimeField;
+  final bool isFutureDate;
 
   Textfield({
     super.key,
@@ -29,27 +30,40 @@ class Textfield extends StatefulWidget {
     this.hintStyle,
     this.toggleVisability = true,
     this.isDateField = false,
+    this.isTimeField = false,
+    this.isFutureDate = false,
   });
-
-
 
   @override
   State<Textfield> createState() => _TextfieldState();
 }
 
 class _TextfieldState extends State<Textfield> {
-
   Future<void> _selectDate(BuildContext context) async {
     DateTime? pickedDate = await showDatePicker(
       context: context,
       initialDate: DateTime.now(),
       firstDate: DateTime(1900), // Earliest selectable date
-      lastDate: DateTime.now(), // Latest selectable date (today)
+      lastDate: widget.isFutureDate ? DateTime(2101) : DateTime.now(), // Latest selectable date (today)
     );
 
     if (pickedDate != null) {
       setState(() {
         widget.controller.text = "${pickedDate.toLocal()}".split(' ')[0];
+      });
+    }
+  }
+
+
+  Future<void> _selectTime(BuildContext context) async {
+    TimeOfDay? pickedTime = await showTimePicker(
+      context: context,
+      initialTime: TimeOfDay.now(),
+    );
+
+    if (pickedTime != null) {
+      setState(() {
+        widget.controller.text = pickedTime.format(context);
       });
     }
   }
@@ -67,7 +81,9 @@ class _TextfieldState extends State<Textfield> {
         suffixIcon: widget.obscureText
             ? IconButton(
                 icon: Icon(
-                  widget.toggleVisability ? Icons.visibility_off : Icons.visibility,
+                  widget.toggleVisability
+                      ? Icons.visibility_off
+                      : Icons.visibility,
                 ),
                 onPressed: () {
                   setState(() {
@@ -84,14 +100,19 @@ class _TextfieldState extends State<Textfield> {
         ),
         focusedBorder: OutlineInputBorder(
           borderRadius: BorderRadius.circular(widget.borderRadius),
-          borderSide: BorderSide(color: widget.borderColor ?? Color(0xff1c74bb)),
+          borderSide:
+              BorderSide(color: widget.borderColor ?? Color(0xff1c74bb)),
         ),
       ),
       onTap: widget.isDateField
           ? () {
               _selectDate(context); // Show date picker if it's a date field
             }
-          : null,
+          : widget.isTimeField
+              ? () {
+                  _selectTime(context); // Show time picker if it's a time field
+                }
+              : null,
     );
   }
 }
