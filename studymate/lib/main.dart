@@ -11,6 +11,7 @@ import 'package:studymate/pages/Resuorces/MaterialCourses.dart';
 import 'package:studymate/pages/Login & Register/Register_login.dart';
 import 'package:studymate/pages/Resuorces/Resources.dart';
 import 'package:studymate/pages/Resuorces/SRS.dart';
+import 'package:studymate/pages/Resuorces/urlLuncher.dart';
 import 'pages/ProfilePage.dart';
 import 'pages/intro_page.dart';
 
@@ -30,7 +31,7 @@ class MyApp extends StatelessWidget {
   Widget build(BuildContext context) {
     return MaterialApp(
       debugShowCheckedModeBanner: false,
-      home:  IntroPage(),
+      home:  UrlLauncherPage(),
       
       routes: {
         '/RegisterPage' : (context) => RegisterLogin(),
@@ -43,6 +44,7 @@ class MyApp extends StatelessWidget {
         '/SRS' : (context) => SRS(),
         '/CourseContent' : (context) => CourseContent(),
         '/Resources' : (context) => Resources(),
+        '/UrlLauncherPage' : (context) => UrlLauncherPage(),
         // '/MaterialCourses' : (context) => MaterialCourses(pdfUrl: '',),
         }
         ,
