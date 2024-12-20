@@ -31,7 +31,7 @@ class MyApp extends StatelessWidget {
   Widget build(BuildContext context) {
     return MaterialApp(
       debugShowCheckedModeBanner: false,
-      home:  UrlLauncherPage(),
+      home:  IntroPage(),
       
       routes: {
         '/RegisterPage' : (context) => RegisterLogin(),
@@ -44,7 +44,7 @@ class MyApp extends StatelessWidget {
         '/SRS' : (context) => SRS(),
         '/CourseContent' : (context) => CourseContent(),
         '/Resources' : (context) => Resources(),
-        '/UrlLauncherPage' : (context) => UrlLauncherPage(),
+        // '/UrlLauncherPage' : (context) => UrlLauncherPage(),
         // '/MaterialCourses' : (context) => MaterialCourses(pdfUrl: '',),
         }
         ,

@@ -9,6 +9,7 @@ import 'package:flutter_downloader/flutter_downloader.dart';
 import 'package:permission_handler/permission_handler.dart';
 import 'package:path_provider/path_provider.dart';
 import 'package:studymate/pages/Resuorces/SRS.dart';
+import 'package:studymate/pages/Resuorces/urlLuncher.dart';
 
 class CourseContent extends StatefulWidget {
   const CourseContent({super.key});
@@ -116,6 +117,8 @@ class _CourseContentState extends State<CourseContent> {
   List<String> SEnames = [];
   List<String> listFromSU = [];
   List<String> SUnames = [];
+  List<String> listFromR = [];
+  List<String> Rnames = [];
   final Map<String, String> subjectLinks = {};
   final Map<String, int> subjectIds = {};
 
@@ -129,6 +132,8 @@ class _CourseContentState extends State<CourseContent> {
       Mcat = 'Su';
     } else if (Mcat == 'Quizzes') {
       Mcat = 'Q';
+    }else{
+      Mcat = 'R';
     }
     print(Mcat);
     final Map<String, dynamic> requestBody = {
@@ -190,14 +195,19 @@ class _CourseContentState extends State<CourseContent> {
         if (categorizedList['Se'] == null) {
           categorizedList['Se'] = [];
         }
+        if (categorizedList['R'] == null) {
+          categorizedList['R'] = [];
+        }
         listFromL = categorizedList['L']!;
         listFromSU = categorizedList['Su']!;
         listFromQ = categorizedList['Q']!;
         listFromSE = categorizedList['Se']!;
+        listFromR = categorizedList['R']!;
         lnames = listFromL.map((e) => e.split(':')[0]).toList();
         SEnames = listFromSE.map((e) => e.split(':')[0]).toList();
         SUnames = listFromSU.map((e) => e.split(':')[0]).toList();
         Qnames = listFromQ.map((e) => e.split(':')[0]).toList();
+        Rnames = listFromR.map((e) => e.split(':')[0]).toList();
 
         categorizedList.forEach((category, subjects) {
           for (var subject in subjects) {
@@ -246,6 +256,8 @@ class _CourseContentState extends State<CourseContent> {
       Mcat = 'Su';
     } else if (Mcat == 'Quizzes') {
       Mcat = 'Q';
+    }else{
+      Mcat = 'R';
     }
     print(Mcat);
     final Map<String, dynamic> requestBody = {
@@ -295,6 +307,7 @@ class _CourseContentState extends State<CourseContent> {
             _buildTermDropdown('Sections', SEnames),
             _buildTermDropdown('Summaries', SUnames),
             _buildTermDropdown('Quizzes', Qnames),
+            _buildTermDropdownLinks('Resources', Rnames),
             ElevatedButton(
               onPressed: () => _showAddMaterialPopup(context),
               child: const Text('Add Material'),
@@ -362,12 +375,64 @@ class _CourseContentState extends State<CourseContent> {
       ),
     );
   }
+  Widget _buildTermDropdownLinks(String term, List<String> subjects) {
+    return Padding(
+      padding: const EdgeInsets.all(16.0),
+      child: Container(
+        decoration: BoxDecoration(
+          border: Border.all(color: Colors.grey),
+          borderRadius: BorderRadius.circular(8),
+        ),
+        child: ExpansionTile(
+          title: Row(
+            children: [
+              const Icon(Icons.my_library_books, color: Color.fromARGB(255, 104, 110, 114)),
+              const SizedBox(width: 15),
+              Text(
+                term,
+                style: const TextStyle(fontSize: 18),
+              ),
+            ],
+          ),
+          children: subjects.map((subject) {
+            return ListTile(
+              leading: const Icon(Icons.book),
+              title: Text(subject),
+              trailing: Row(
+                mainAxisSize: MainAxisSize.min,
+                children: [
+                  // Edit icon
+                  IconButton(
+                    icon: const Icon(Icons.edit, color: Colors.grey),
+                    onPressed: () => _showEditPopup(context, subject),
+                  ),
+                ],
+              ),
+              onTap: () {
+                final link = subjectLinks[subject];
+                if (link != null) {
+                  Navigator.push(
+                    context,
+                    MaterialPageRoute(
+                      builder: (context) => UrlLauncherPage(url: link),
+                    ),
+                  );
+                } else {
+                  print('No link found for $subject');
+                }
+              },
+            );
+          }).toList(),
+        ),
+      ),
+    );
+  }
 
   void _showEditPopup(BuildContext context, String subject) {
     // Initialize controllers and variables
     final TextEditingController titleController = TextEditingController(text: subject);
     String? selectedCategory; // Nullable to avoid mismatch
-    final List<String> categories = ["Resource link", "Lectures", "Sections", "Summaries", "Quizzes"];
+    final List<String> categories = ["Resources", "Lectures", "Sections", "Summaries", "Quizzes"];
 
     showDialog(
       context: context,
@@ -459,7 +524,7 @@ class _CourseContentState extends State<CourseContent> {
     final TextEditingController titleController = TextEditingController();
     final TextEditingController urlController = TextEditingController();
     String? selectedCategory;
-    final List<String> categories = ["Resource link", "Lectures", "Sections", "Summaries", "Quizzes"];
+    final List<String> categories = ["Resources", "Lectures", "Sections", "Summaries", "Quizzes"];
 
     showDialog(
       context: context,
@@ -521,45 +586,5 @@ class _CourseContentState extends State<CourseContent> {
     );
   }
 
-  // Implement the PDF download functionality
-//   void _downloadPdf(String subject) async {
-//   final url = subjectLinks[subject];
-//   if (url != null) {
-//     // Request storage permission
-//     final status = await Permission.storage.request();
-//     if (status.isGranted) {
-//       // Get the external storage directory
-//       final externalDir = await getExternalStorageDirectory();
-      
-//       // Enqueue the download task
-//       final taskId = await FlutterDownloader.enqueue(
-//         url: url,
-//         savedDir: externalDir!.path,
-//         fileName: '$subject.pdf',
-//         showNotification: true, // Show download progress in status bar (for Android)
-//         openFileFromNotification: true, // Click on notification to open downloaded file (for Android)
-//       );
-
-//       // Optional: Listen for download progress
-//       FlutterDownloader.registerCallback((id, status, progress) {
-//         if (taskId == id) {
-//           // Update UI or state based on download progress
-//           print('Download status: $status, Progress: $progress%');
-//         }
-//       });
-
-//       ScaffoldMessenger.of(context).showSnackBar(
-//         SnackBar(content: Text('$subject download started.')),
-//       );
-//     } else {
-//       // Handle permission denial
-//       ScaffoldMessenger.of(context).showSnackBar(
-//         SnackBar(content: Text('Storage permission denied')),
-//       );
-//     }
-//   } else {
-//     print('No URL available for this subject.');
-//   }
-// }
-
+  
 }
