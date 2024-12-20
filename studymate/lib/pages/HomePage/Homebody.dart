@@ -3,7 +3,7 @@ import 'dart:convert';
 import 'package:flutter/material.dart';
 import 'package:hive/hive.dart';
 import 'package:hive_flutter/hive_flutter.dart';
-import 'package:studymate/pages/ScheduleManager.dart';
+import 'package:studymate/pages/ScheduleManager/ScheduleManager.dart';
 import 'package:http/http.dart' as http;
 import 'package:intl/intl.dart';
 
