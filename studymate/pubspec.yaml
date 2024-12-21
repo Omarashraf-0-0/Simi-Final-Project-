@@ -39,6 +39,15 @@ flutter:
     - lib/assets/animations/
     - lib/assets/img/AboLayla.jpg
     - lib/assets/img/TheRock.jpg
+    - lib/assets/img/GameCharacters/ElBatal.png
+    - lib/assets/img/GameCharacters/NewCommer.png
+    - lib/assets/img/GameCharacters/Explorer.png
+    - lib/assets/img/GameCharacters/Achiever.png
+    - lib/assets/img/GameCharacters/Challenger.png
+    - lib/assets/img/GameCharacters/Expert.png
+    - lib/assets/img/GameCharacters/Mentor.png
+    - lib/assets/img/GameCharacters/Legend.png
+    - lib/assets/img/GameCharacters/ElBatal.png
 
   fonts:
     - family: Poppins

@@ -12,6 +12,7 @@ import 'package:studymate/pages/Settings/Settings.dart';
 import 'package:studymate/pages/ScheduleManager/ScheduleManager.dart';
 import '../../Classes/User.dart';
 import 'package:studymate/pages/AboLayla/AboLayla.dart';
+import 'package:studymate/pages/Game/GameHome.dart';
 
 import 'package:http/http.dart' as http;
 import 'dart:convert';
@@ -49,7 +50,7 @@ void navBottom(int index){
     Homebody(),
     Resources(),
     AboLayla(),
-    AboLayla(),
+    GameHome(),
   ];
 
   Future<void> Logout() async {
@@ -266,6 +267,16 @@ void navBottom(int index){
                   MaterialPageRoute(builder: (context) => AboLayla()),
                 );
                 // Handle the Abo Lyla tap
+              },
+            ),
+            ListTile(
+              leading: Icon(Icons.videogame_asset, color: Colors.blue, size: 24), // Changed to game icon
+              title: Text('Gamification'),
+              onTap: () {
+                Navigator.push(
+                  context,
+                  MaterialPageRoute(builder: (context) => GameHome()),
+                );
               },
             ),
             ListTile(
