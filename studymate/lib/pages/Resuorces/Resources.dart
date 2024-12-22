@@ -136,9 +136,10 @@ class _ResourcesState extends State<Resources> {
                                             ElevatedButton(
                                               onPressed: () {
                                                 final String co = "COId";
+                                                 Hive.box('userBox').put('COId', coursesIndex[index]);
                                                 print("Course: ${courses[index]}, ${coursesIndex[index]}");
                                                  Navigator.pushNamed(context, '/CourseContent',arguments: {'courseId': courses[index], 'courseIndex': coursesIndex[index]},);
-
+                                              
                                               },
                                               style: ElevatedButton.styleFrom(
                                                 backgroundColor:

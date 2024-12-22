@@ -21,8 +21,12 @@ dependencies:
   dropdown_button2: any
   flutter_cached_pdfview: any
   lottie: any
-  intl: ^0.20.1
-  google_generative_ai: ^0.4.6
+  percent_indicator: ^4.2.2
+  intl: any
+  google_generative_ai: any
+  permission_handler: any
+  flutter_downloader: any
+  url_launcher: any
   flutter_slidable: any
 google_fonts: any # Uncomment if you want to use Google Fonts
 
@@ -39,6 +43,7 @@ flutter:
     - lib/assets/animations/
     - lib/assets/img/AboLayla.jpg
     - lib/assets/img/TheRock.jpg
+    - lib/assets/img/QuizTime.png
     - lib/assets/img/GameCharacters/ElBatal.png
     - lib/assets/img/GameCharacters/NewCommer.png
     - lib/assets/img/GameCharacters/Explorer.png
