@@ -1,7 +1,11 @@
 // ignore_for_file: prefer_const_constructors, non_constant_identifier_names, prefer_interpolation_to_compose_strings
 
+import 'dart:async';
+import 'dart:io';
+
 import 'package:flutter/material.dart';
 import 'package:hive/hive.dart';
+import 'package:path_provider/path_provider.dart';
 import 'package:studymate/Pop-ups/PopUps_Failed.dart';
 import 'package:studymate/Pop-ups/PopUps_Warning.dart';
 import '../Classes/User.dart';
@@ -27,6 +31,69 @@ class _LoginPageState extends State<LoginPage> {
   // Add a boolean to manage the "Remember Me" toggle state
   bool isRememberMeChecked = false;
 
+
+
+
+  Future<bool> fetchAndSaveProfileImage() async {
+    final url = 'https://alyibrahim.pythonanywhere.com/get-profile-image'; // Replace with your server URL
+
+    try {
+      // Get the username from Hive box
+      final username = Hive.box('userBox').get('username');
+      if (username == null) {
+        print("Username not found in Hive box");
+        return false;
+      }
+
+      print(">>>>>>>>> $username");
+
+      // Create a map with the username
+      final Map<String, String> body = {
+        'username': username,
+      };
+
+      // Send the username as JSON in the body of a POST request
+      final response = await http
+          .post(
+        Uri.parse(url),
+        headers: {'Content-Type': 'application/json'}, // Set content type to JSON
+        body: jsonEncode(body), // Encode the body as JSON
+      )
+          .timeout(
+        Duration(seconds: 30), // Adjust the duration as needed
+      );
+
+      if (response.statusCode == 200) {
+        // Get the image bytes from the response
+        final bytes = response.bodyBytes;
+
+        // Encode the image bytes as Base64
+        final base64Image = base64Encode(bytes);
+
+        // Save the Base64 image string to Hive
+        Hive.box('userBox').put('profileImageBase64', base64Image);
+
+
+
+        print(">>>>>>>>>> Done <<<<<<<<");
+        // Update the UI to display the image
+        return true;
+      } else {
+        // Handle error if the image is not found or another error occurs
+        print("Failed to load image: ${response.statusCode} ===== ${response.body}");
+        return false;
+      }
+    } on TimeoutException catch (_) {
+      print("Request timed out");
+      return false;
+    } catch (e) {
+      print("An error occurred: $e");
+      return false;
+    }
+  }
+
+
+
   Future<void> login() async {
     final username = UsernameController.text;
     final password = PasswordController.text;
@@ -41,7 +108,7 @@ class _LoginPageState extends State<LoginPage> {
         showWarningPopup(
           context,
           'Error',
-          'Username and password cannot be empty',
+          'Username and password can\'t be empty',
         );
       return;
       }
@@ -55,7 +122,6 @@ class _LoginPageState extends State<LoginPage> {
     final response = await http.post(
       Uri.parse(url),
       headers: {'Content-Type': 'application/json'},
-      // body: jsonEncode(requestBody),
       body: jsonEncode(requestBody),
     );
 
@@ -66,6 +132,7 @@ class _LoginPageState extends State<LoginPage> {
         final jsonResponse = jsonDecode(response.body);
 
         if (jsonResponse['success'] == true) {
+
           // print(">>>>>>>>>>>>>>>> ${Hive.box('userBox').get('level')}");
           // Successful login, show welcome message and navigate
           // ScaffoldMessenger.of(context).showSnackBar(
@@ -92,6 +159,7 @@ class _LoginPageState extends State<LoginPage> {
             Hive.box('userBox').put('title', jsonResponse['title']);
             Hive.box('userBox').put('Registration_Number', jsonResponse['registrationNumber']);
             Hive.box('userBox').put('birthDate', jsonResponse['birthDate']);
+            fetchAndSaveProfileImage();
           if (isRememberMeChecked) {
             // Save the username and password to Hive
             Hive.box('userBox').put('isLoggedIn', true);

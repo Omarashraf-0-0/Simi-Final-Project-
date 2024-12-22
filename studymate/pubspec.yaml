@@ -8,8 +8,13 @@ environment:
   sdk: ^3.5.3
 
 dependencies:
+  firebase_core: any
+  firebase_auth: any
+  cloud_firestore: ^4.0.5
   flutter:
     sdk: flutter
+  image_picker: ^0.8.3
+  firebase_storage: ^11.2.6
   http: any # Add a specific version for the http package, update as needed
   cupertino_icons: any
   flutter_font_icons: any
