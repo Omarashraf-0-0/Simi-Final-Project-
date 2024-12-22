@@ -3,6 +3,8 @@ import 'dart:convert';
 import 'package:flutter/material.dart';
 import 'package:hive/hive.dart';
 import 'package:hive_flutter/hive_flutter.dart';
+import 'package:studymate/pages/Resuorces/CourseContent.dart';
+import 'package:studymate/pages/Resuorces/Resources.dart';
 import 'package:studymate/pages/ScheduleManager/ScheduleManager.dart';
 import 'package:http/http.dart' as http;
 import 'package:intl/intl.dart';
@@ -267,7 +269,12 @@ class _HomebodyState extends State<Homebody> {
                       TextButton(
                         onPressed: () {
                           // navigate to the schedule page
-                          Navigator.pushNamed(context, '/Resources');
+                          // Navigator.pushNamed(context, '/Resources');
+                          Navigator.push(
+                              context,
+                              MaterialPageRoute(
+                                  builder: (context) => Resources())
+                                  );
                         },
                         child: Row(
                           children: [
@@ -341,8 +348,9 @@ class _HomebodyState extends State<Homebody> {
                                                 final String co = "COId";
                                                  Hive.box('userBox').put('COId', coursesIndex[index]);
                                                 print("Course: ${courses[index]}, ${coursesIndex[index]}");
-                                                 Navigator.pushNamed(context, '/CourseContent',arguments: {'courseId': courses[index], 'courseIndex': coursesIndex[index]},);
-                                              
+                                                //  Navigator.pushNamed(context, '/CourseContent',arguments: {'courseId': courses[index], 'courseIndex': coursesIndex[index]},);
+                                                // Navigator.push(context, MaterialPageRoute(builder: (context) => CourseContent(courses[index], coursesIndex[index])));
+                                                Navigator.push(context, MaterialPageRoute(builder: (context) => CourseContent()));
                                               },
                                           style: ElevatedButton.styleFrom(
                                             backgroundColor:

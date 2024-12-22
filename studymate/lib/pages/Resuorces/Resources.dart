@@ -3,6 +3,7 @@ import 'dart:convert';
 import 'package:flutter/material.dart';
 import 'package:hive_flutter/hive_flutter.dart';
 import 'package:http/http.dart' as http;
+import 'package:studymate/pages/Resuorces/CourseContent.dart';
 import 'package:studymate/pages/Resuorces/Courses.dart';
 class Resources extends StatefulWidget {
   const Resources({super.key});
@@ -138,7 +139,8 @@ class _ResourcesState extends State<Resources> {
                                                 final String co = "COId";
                                                  Hive.box('userBox').put('COId', coursesIndex[index]);
                                                 print("Course: ${courses[index]}, ${coursesIndex[index]}");
-                                                 Navigator.pushNamed(context, '/CourseContent',arguments: {'courseId': courses[index], 'courseIndex': coursesIndex[index]},);
+                                                //  Navigator.pushNamed(context, '/CourseContent',arguments: {'courseId': courses[index], 'courseIndex': coursesIndex[index]},);
+                                                Navigator.push(context, MaterialPageRoute(builder: (context) => CourseContent()));
                                               
                                               },
                                               style: ElevatedButton.styleFrom(
