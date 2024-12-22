@@ -26,7 +26,7 @@ dependencies:
   google_generative_ai: any
   permission_handler: any
   flutter_downloader: any
-  url_launcher: any
+  # url_launcher: any
   flutter_slidable: any
 google_fonts: any # Uncomment if you want to use Google Fonts
 

@@ -288,9 +288,9 @@ class _CourseContentState extends State<CourseContent> {
 
   @override
   Widget build(BuildContext context) {
-    final args = ModalRoute.of(context)?.settings.arguments as Map<String, dynamic>;
-    courseName = args?['courseId'];
-    courseIndex = args?['courseIndex'];
+    // final args = ModalRoute.of(context)?.settings.arguments as Map<String, dynamic>;
+    // courseName = args?['courseId'];
+    // courseIndex = args?['courseIndex'];
 
     return Scaffold(
       appBar: AppBar(
@@ -411,12 +411,12 @@ class _CourseContentState extends State<CourseContent> {
               onTap: () {
                 final link = subjectLinks[subject];
                 if (link != null) {
-                  Navigator.push(
-                    context,
-                    MaterialPageRoute(
-                      builder: (context) => UrlLauncherPage(url: link),
-                    ),
-                  );
+                  // Navigator.push(
+                  //   context,
+                  //   MaterialPageRoute(
+                  //     builder: (context) => UrlLauncherPage(url: link),
+                  //   ),
+                  // );
                 } else {
                   print('No link found for $subject');
                 }

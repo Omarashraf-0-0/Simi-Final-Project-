@@ -1,27 +1,27 @@
 import 'dart:async';
 import 'dart:convert';
-
 import 'package:flutter/material.dart';
-import 'package:flutter_font_icons/flutter_font_icons.dart';
-import 'package:google_nav_bar/google_nav_bar.dart';
+import 'QuizScore.dart';
+import 'package:http/http.dart' as http;
 import 'package:hive/hive.dart';
 import 'package:hive_flutter/hive_flutter.dart';
-import 'package:studymate/pages/HomePage/HomePage.dart';
-import 'package:studymate/pages/QuizGenerator/QuizHome.dart';
-import 'package:studymate/pages/QuizGenerator/QuizScore.dart';
 import 'package:google_fonts/google_fonts.dart';
 
 class Quiz extends StatefulWidget {
   final int totalQuestions;
   final int mcqCount;
   final int tfCount;
+  final Map<String, dynamic> quizData;
+  final String coId; // Added coId
 
   const Quiz({
-    super.key,
+    Key? key,
     required this.totalQuestions,
     required this.mcqCount,
     required this.tfCount,
-  });
+    required this.quizData,
+    required this.coId, // Added coId
+  }) : super(key: key);
 
   @override
   State<Quiz> createState() => _QuizState();
@@ -30,46 +30,56 @@ class Quiz extends StatefulWidget {
 class _QuizState extends State<Quiz> {
   int currentQuestion = 0;
   int correctAnswers = 0;
-  List<int> userAnswers = List.filled(0, -1, growable: true); // Store the selected options
-  List<bool> isCorrectList = []; // Track correctness of answers
-  late int totalSecondsRemaining; // Total time for all questions
+  List<int> userAnswers = [];
+  late int totalSecondsRemaining;
   Timer? timer;
-
-  // List of questions and answers
-  final List<Map<String, dynamic>> baseQuestions = [
-    {
-      "question": "Men A5wl wa7d fe el 23dh",
-      "options": ["Salah", "Abo 3li el Kabeer", "Sala eldn", "Zambada"],
-      "selectedOption": -1, // Initially no option selected
-      "correctOption": 0, // Correct option index
-    },
-    {
-      "question": "Zb 3b3alem kam cm?",
-      "options": ["69cm", "99999999cm", "LONG_LONG_MAX", "Infinity"],
-      "selectedOption": -1,
-      "correctOption": 0,
-    },
-    {
-      "question": "What is the capital of Germany?",
-      "options": ["Berlin", "Madrid", "Paris", "Rome"],
-      "selectedOption": -1,
-      "correctOption": 0,
-    },
-    {
-      "question": "What is the capital of Egypt?",
-      "options": ["el Mahmodyh", "Cairo", "Kima", "Rome"],
-      "selectedOption": -1,
-      "correctOption": 0,
-    },
-  ];
 
   late List<Map<String, dynamic>> questions;
 
   @override
   void initState() {
     super.initState();
-    totalSecondsRemaining = 60 * widget.totalQuestions; // Total time for all questions
-    questions = List.generate(widget.totalQuestions, (index) => baseQuestions[index % baseQuestions.length]);
+    totalSecondsRemaining = 60 * widget.totalQuestions;
+
+    questions = [];
+    List<dynamic> quizQuestions = widget.quizData['questions'];
+
+    for (var q in quizQuestions) {
+      List<dynamic> options;
+
+      if (q.containsKey("options") && q["options"] != null) {
+        options = q["options"];
+      } else {
+        options = [];
+      }
+
+      String questionType = q["type"].toString().trim().toUpperCase();
+
+      if (questionType == "TF") {
+        options = ['True', 'False'];
+
+        String correctAnswer = q["answer"].toString().trim().toLowerCase();
+        if (correctAnswer == 't' || correctAnswer == 'true') {
+          q["answer"] = 'True';
+        } else if (correctAnswer == 'f' || correctAnswer == 'false') {
+          q["answer"] = 'False';
+        } else {
+          q["answer"] = 'True';
+        }
+      }
+
+      Map<String, dynamic> question = {
+        "question": q["question"],
+        "options": options,
+        "correctAnswer": q["answer"],
+        "selectedOption": -1,
+        "type": questionType,
+        "explanation": q["explanation"],
+        "lecture": q["lecture"].toString(),
+      };
+      questions.add(question);
+    }
+
     startTimer();
   }
 
@@ -86,7 +96,6 @@ class _QuizState extends State<Quiz> {
           totalSecondsRemaining--;
         });
       } else {
-        // Time's up, submit the quiz
         submitQuiz();
       }
     });
@@ -96,13 +105,57 @@ class _QuizState extends State<Quiz> {
     timer?.cancel();
   }
 
-  void submitQuiz() {
+  void submitQuiz() async {
     stopTimer();
+    correctAnswers = 0;
+    List<String> userAnsList = [];
+    List<String> quizAnsList = [];
+    List<String> lectureNumbers = [];
+
     for (int i = 0; i < questions.length; i++) {
-      if (questions[i]["selectedOption"] == questions[i]["correctOption"]) {
-        correctAnswers++;
+      int selectedOptionIndex = questions[i]["selectedOption"];
+      String correctAnswer = questions[i]["correctAnswer"];
+      String lectureNum = questions[i]["lecture"] ?? 'Unknown';
+
+      lectureNumbers.add(lectureNum);
+      quizAnsList.add(correctAnswer);
+
+      if (selectedOptionIndex != -1) {
+        String selectedAnswer = '';
+        if (questions[i]["type"] == "MCQ") {
+          selectedAnswer = String.fromCharCode(65 + selectedOptionIndex);
+        } else if (questions[i]["type"] == "TF") {
+          selectedAnswer = questions[i]["options"][selectedOptionIndex];
+        }
+
+        userAnsList.add(selectedAnswer);
+
+        if (questions[i]["type"] == "MCQ") {
+          if (selectedAnswer.toUpperCase() == correctAnswer.toUpperCase()) {
+            correctAnswers++;
+          }
+        } else if (questions[i]["type"] == "TF") {
+          if (selectedAnswer.toLowerCase() == correctAnswer.toLowerCase()) {
+            correctAnswers++;
+          }
+        }
+      } else {
+        userAnsList.add('');
       }
     }
+
+    Map<String, dynamic> submissionData = {
+      'UserID': await getUserID(),
+      'UserAns': userAnsList.join(','),
+      'QuizAns': quizAnsList.join(','),
+      'LecNum': lectureNumbers.join(','),
+      'co_id': widget.coId, // Include co_id in submission
+    };
+
+    print('Submission Data: $submissionData');
+
+    await submitToServer(submissionData);
+
     Navigator.push(
       context,
       MaterialPageRoute(
@@ -116,7 +169,32 @@ class _QuizState extends State<Quiz> {
     );
   }
 
-  // Select an option
+  Future<int> getUserID() async {
+    var userBox = await Hive.openBox('userBox');
+    int userID = userBox.get('id', defaultValue: 0); // Make sure the key is correct
+    print('Retrieved UserID: $userID');
+    return userID;
+  }
+
+  Future<void> submitToServer(Map<String, dynamic> data) async {
+    try {
+      final response = await http.post(
+        Uri.parse('http://alyibrahim.pythonanywhere.com/submit_quiz'),
+        headers: {'Content-Type': 'application/json'},
+        body: jsonEncode(data),
+      );
+
+      if (response.statusCode == 200) {
+        print('Quiz results submitted successfully.');
+      } else {
+        print('Failed to submit quiz results: ${response.statusCode}');
+        print('Response: ${response.body}');
+      }
+    } catch (e) {
+      print('Error submitting quiz results: $e');
+    }
+  }
+
   void selectOption(int index) {
     setState(() {
       questions[currentQuestion]["selectedOption"] = index;
@@ -146,10 +224,22 @@ class _QuizState extends State<Quiz> {
 
   @override
   Widget build(BuildContext context) {
+    if (questions.isEmpty) {
+      return Scaffold(
+        appBar: AppBar(
+          backgroundColor: Color(0xFF165D96),
+          title: Text('Quiz'),
+        ),
+        body: Center(
+          child: Text('No questions available.'),
+        ),
+      );
+    }
+
     return Scaffold(
       backgroundColor: Colors.white,
       appBar: AppBar(
-        backgroundColor: Color(0xFF165D96), // Blue color for the AppBar
+        backgroundColor: Color(0xFF165D96),
         title: Text(
           'Quiz',
           style: TextStyle(
@@ -159,7 +249,7 @@ class _QuizState extends State<Quiz> {
             color: Colors.white,
           ),
         ),
-        centerTitle: true, // Center the title in the AppBar
+        centerTitle: true,
         actions: [
           Container(
             padding: const EdgeInsets.all(8),
@@ -172,17 +262,17 @@ class _QuizState extends State<Quiz> {
               children: [
                 Icon(
                   Icons.watch_later,
-                  color: Color(0xFF165D96), // Watch icon color
+                  color: Color(0xFF165D96),
                   size: 24,
                 ),
-                SizedBox(width: 5), // Space between the icon and the text
+                SizedBox(width: 5),
                 Text(
                   '${totalSecondsRemaining ~/ 60}:${(totalSecondsRemaining % 60).toString().padLeft(2, '0')}',
                   style: TextStyle(
                     fontFamily: 'League Spartan',
                     fontSize: 14,
-                    fontWeight: FontWeight.bold, // Make the timer text bold
-                    color: Color(0xFF165D96), // Timer text color
+                    fontWeight: FontWeight.bold,
+                    color: Color(0xFF165D96),
                   ),
                 ),
               ],
@@ -195,11 +285,8 @@ class _QuizState extends State<Quiz> {
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
             const SizedBox(height: 15),
-
-            // Question Navigator Slider
             Padding(
-              padding: const EdgeInsets.symmetric(
-                  horizontal: 16.0), // Add margin from right and left
+              padding: const EdgeInsets.symmetric(horizontal: 16.0),
               child: SizedBox(
                 height: 50,
                 child: ListView.builder(
@@ -215,15 +302,14 @@ class _QuizState extends State<Quiz> {
                       child: Column(
                         children: [
                           Container(
-                            width:
-                                50, // Ensure the width is equal to the height to make it a circle
+                            width: 50,
                             margin: const EdgeInsets.symmetric(horizontal: 4),
                             padding: const EdgeInsets.all(10),
                             decoration: BoxDecoration(
                               color: currentQuestion == index
                                   ? Color(0xFF165D96)
                                   : Colors.grey.shade400,
-                              shape: BoxShape.circle, // Set the shape to circle
+                              shape: BoxShape.circle,
                             ),
                             child: Center(
                               child: Text(
@@ -236,9 +322,7 @@ class _QuizState extends State<Quiz> {
                               ),
                             ),
                           ),
-                          SizedBox(
-                              height:
-                                  4), // Space between the circle and the line
+                          SizedBox(height: 4),
                           Container(
                             width: 50,
                             height: 2,
@@ -254,8 +338,6 @@ class _QuizState extends State<Quiz> {
               ),
             ),
             const SizedBox(height: 16),
-
-            // Question Text
             Padding(
               padding: const EdgeInsets.all(16.0),
               child: Text(
@@ -267,22 +349,18 @@ class _QuizState extends State<Quiz> {
                 ),
               ),
             ),
-
-            // Options
             ...List.generate(
               questions[currentQuestion]["options"].length,
               (index) {
-                bool isSelected =
-                    questions[currentQuestion]["selectedOption"] == index;
+                bool isSelected = questions[currentQuestion]["selectedOption"] == index;
 
                 return GestureDetector(
                   onTap: () => selectOption(index),
                   child: Container(
-                    margin:
-                        const EdgeInsets.symmetric(vertical: 8, horizontal: 16),
+                    margin: const EdgeInsets.symmetric(vertical: 8, horizontal: 16),
                     padding: const EdgeInsets.all(12),
                     decoration: BoxDecoration(
-                      color: Colors.transparent, // Remove background color
+                      color: Colors.transparent,
                       borderRadius: BorderRadius.circular(12),
                     ),
                     child: Row(
@@ -291,14 +369,14 @@ class _QuizState extends State<Quiz> {
                           width: 50,
                           height: 50,
                           decoration: BoxDecoration(
-                            color: isSelected
-                                ? Color(0xFF165D96)
-                                : Colors.grey.shade400,
+                            color: isSelected ? Color(0xFF165D96) : Colors.grey.shade400,
                             shape: BoxShape.circle,
                           ),
                           child: Center(
                             child: Text(
-                              String.fromCharCode(65 + index), // A, B, C, D
+                              questions[currentQuestion]["type"] == "MCQ"
+                                  ? String.fromCharCode(65 + index)
+                                  : questions[currentQuestion]["options"][index].toLowerCase() == 'true' ? 'T' : 'F',
                               style: TextStyle(
                                 fontFamily: 'League Spartan',
                                 color: Colors.white,
@@ -308,13 +386,15 @@ class _QuizState extends State<Quiz> {
                           ),
                         ),
                         const SizedBox(width: 16),
-                        Text(
-                          questions[currentQuestion]["options"][index],
-                          style: TextStyle(
-                            fontFamily: 'League Spartan',
-                            fontSize: 16,
-                            fontWeight: FontWeight.bold, // Make the options bold
-                            color: isSelected ? Color(0xFF165D96) : Colors.black,
+                        Expanded(
+                          child: Text(
+                            questions[currentQuestion]["options"][index],
+                            style: TextStyle(
+                              fontFamily: 'League Spartan',
+                              fontSize: 16,
+                              fontWeight: FontWeight.bold,
+                              color: isSelected ? Color(0xFF165D96) : Colors.black,
+                            ),
                           ),
                         ),
                       ],
@@ -323,25 +403,19 @@ class _QuizState extends State<Quiz> {
                 );
               },
             ),
-
             const Spacer(),
-
-            // Navigation Buttons (Back, Submit, Next)
             Padding(
               padding: const EdgeInsets.symmetric(horizontal: 16.0),
               child: Row(
                 mainAxisAlignment: MainAxisAlignment.spaceBetween,
                 children: [
-                  // Back Button
                   GestureDetector(
                     onTap: currentQuestion > 0 ? previousQuestion : null,
                     child: Container(
                       width: 50,
                       height: 50,
                       decoration: BoxDecoration(
-                        color: currentQuestion > 0
-                            ? Color(0xFF165D96)
-                            : Colors.grey.shade400,
+                        color: currentQuestion > 0 ? Color(0xFF165D96) : Colors.grey.shade400,
                         shape: BoxShape.circle,
                       ),
                       child: Center(
@@ -352,41 +426,32 @@ class _QuizState extends State<Quiz> {
                       ),
                     ),
                   ),
-
-                  // Submit Button
                   ElevatedButton(
                     onPressed: submitQuiz,
                     style: ElevatedButton.styleFrom(
-                      backgroundColor: Color(0xFF165D96), // Button color
-                      padding: EdgeInsets.symmetric(
-                          horizontal: 70, vertical: 10), // Button size
+                      backgroundColor: Color(0xFF165D96),
+                      padding: EdgeInsets.symmetric(horizontal: 70, vertical: 10),
                       shape: RoundedRectangleBorder(
-                        borderRadius: BorderRadius.circular(10), // Button radius
+                        borderRadius: BorderRadius.circular(10),
                       ),
                     ),
                     child: Text(
                       'Submit',
                       style: TextStyle(
                         fontFamily: 'League Spartan',
-                        fontSize: 25, // Button text size
-                        fontWeight: FontWeight.bold, // Bold text
-                        color: Colors.white, // Text color
+                        fontSize: 25,
+                        fontWeight: FontWeight.bold,
+                        color: Colors.white,
                       ),
                     ),
                   ),
-
-                  // Next Button
                   GestureDetector(
-                    onTap: currentQuestion < questions.length - 1
-                        ? nextQuestion
-                        : null,
+                    onTap: currentQuestion < questions.length - 1 ? nextQuestion : null,
                     child: Container(
                       width: 50,
                       height: 50,
                       decoration: BoxDecoration(
-                        color: currentQuestion < questions.length - 1
-                            ? Color(0xFF165D96)
-                            : Colors.grey.shade400,
+                        color: currentQuestion < questions.length - 1 ? Color(0xFF165D96) : Colors.grey.shade400,
                         shape: BoxShape.circle,
                       ),
                       child: Center(
