@@ -11,6 +11,7 @@ import 'Forget_Pass.dart';
 import 'package:http/http.dart' as http;
 import 'dart:convert';
 import '../Pop-ups/PopUps_Success.dart';
+import './UserUpdater.dart';
 
 
 class PersonalSettings extends StatefulWidget {
@@ -27,30 +28,30 @@ class _PersonalSettingsState extends State<PersonalSettings> {
   bool _isPasswordVisible = false;
   bool _isConfirmPasswordVisible = false;
 
-
-
   Future<void> UpdateData() async {
-    const url = 'https://alyibrahim.pythonanywhere.com/login';
-    final Map<String, dynamic> requestBody = {
-      'Query': 'login',
-      'username': 'username',
-      'password': 'password',
+    // Define the API endpoint
+    const url = 'https://alyibrahim.pythonanywhere.com/update_user';
+
+    // Create an instance of UserUpdater
+    final userUpdater = UserUpdater(url: url);
+
+    // Prepare the data to send and update
+    final Map<String, dynamic> requestData = {
+      'Query': 'update_user',
+      'username': Hive.box('userBox').get('username'),
+      'phone_number': PhoneNumberController.text,
+      'address': AddressController.text,
+      'fullName': FullNameController.text,
+      'birthDate': DateOfBirthController.text,
     };
 
-    // Send the POST request with the JSON body
-    final response = await http.post(
-      Uri.parse(url),
-      headers: {'Content-Type': 'application/json'},
-      body: jsonEncode(requestBody),
+    // Use UserUpdater to handle the update process
+    await userUpdater.updateUserData(
+      requestData: requestData,
+      context: context,
     );
-    Hive.box('userBox').put('phone_number', PhoneNumberController.text);
-    Hive.box('userBox').put('address', AddressController.text);
-    Hive.box('userBox').put('fullName', FullNameController.text);
-    Hive.box('userBox').put('birthDate', DateOfBirthController.text);
-    print(response.body);
-    showSuccessPopup(context, 'Done successfully', 'Data update successfully');
-
   }
+
 
 
 
@@ -58,7 +59,7 @@ class _PersonalSettingsState extends State<PersonalSettings> {
   Widget build(BuildContext context) {
     FullNameController.text=Hive.box('userBox').get('fullName');
     PhoneNumberController.text=Hive.box('userBox').get('phone_number');
-    DateOfBirthController.text=Hive.box('userBox').get('birthDate');
+    //DateOfBirthController.text=Hive.box('userBox').get('birthDate');
     AddressController.text=Hive.box('userBox').get('address');
     return Scaffold(
       appBar: AppBar(

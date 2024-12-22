@@ -14,7 +14,7 @@ import 'dart:convert';
 import '../Pop-ups/PopUps_Success.dart';
 import '../Pop-ups/PopUps_Failed.dart';
 import '../Pop-ups/PopUps_Warning.dart';
-
+import './UserUpdater.dart';
 
 
 
@@ -38,18 +38,27 @@ String? selectedUniversity = Hive.box('userBox').get('university');
   final List<String> majors = ['Computer Science', 'Business Administration', 'Media', 'Pharmacy', 'Engineering'];
   final List<String> termLevels = ['Prep', '1', '2', '3', '4', '5', '6', '7', '8', '9', '10'];
 
-  bool upDateData(){
-    if(selectedUniversity==null||selectedCollege==null||selectedMajor==null||selectedTermLevel==null||RegistrationNumberController.text.isEmpty){
-      showWarningPopup(context, 'Warning', 'Please fill all the fields');
-      return false;
-    }
-    Hive.box('userBox').put('university', selectedUniversity);
-    Hive.box('userBox').put('college', selectedCollege);
-    Hive.box('userBox').put('major', selectedMajor);
-    Hive.box('userBox').put('term_level', selectedTermLevel);
-    Hive.box('userBox').put('Registration_Number', RegistrationNumberController.text);
-    return true;
-  }
+Future<void> updateData() async {
+  // Create an instance of UserUpdater
+  final userUpdater = UserUpdater(url: 'https://alyibrahim.pythonanywhere.com/update_user');
+
+  // Prepare the data to send and update
+  final Map<String, dynamic> requestData = {
+    'username' : Hive.box('userBox').get('username'),
+    'university': selectedUniversity,
+    'college': selectedCollege,
+    'major': selectedMajor,
+    'term_level': selectedTermLevel,
+    'Registration_Number': RegistrationNumberController.text,
+  };
+
+  // Use UserUpdater to handle the update process
+  await userUpdater.updateUserData(
+    requestData: requestData,
+    context: context,
+  );
+
+}
 
   @override
   Widget build(BuildContext context) {
@@ -217,10 +226,8 @@ String? selectedUniversity = Hive.box('userBox').get('university');
                   ),
                   child: TextButton(
                     onPressed: () {
-                      if(upDateData()){
-                        showSuccessPopup(context,"Done successfully", 'University Information Updated Successfully');
-                      // Save changes action
-                    }},
+                      updateData();
+                    },
                     child: Padding(
                       padding: const EdgeInsets.symmetric(horizontal: 20.0),
                       child: Text(

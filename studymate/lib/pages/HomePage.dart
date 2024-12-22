@@ -201,7 +201,8 @@ void navBottom(int index){
                   onPressed: () {
                     // navigate to the profile page
                     Navigator.push(context,
-                        MaterialPageRoute(builder: (context) => Profilepage(user: widget.user,)));
+                        MaterialPageRoute(builder: (context) => Profilepage()));
+                    setState(() {});
                   },
                   style: ElevatedButton.styleFrom(
                     backgroundColor: Color(0xFF165D96),
@@ -210,10 +211,19 @@ void navBottom(int index){
                     padding: EdgeInsets.all(0),
                     minimumSize: Size(0, 0),
                   ),
-                  child: CircleAvatar(
-                    radius: 18,
-                    backgroundImage: AssetImage('lib/assets/img/pfp.jpg'),
-                  ),
+                  child:
+                    CircleAvatar(
+                      radius: 18,
+                      backgroundColor: Colors.grey, // Placeholder color
+                      backgroundImage: Hive.box('userBox').get('profileImageBase64') == null
+                          ? null
+                          : MemoryImage(base64Decode(Hive.box('userBox').get('profileImageBase64'))),
+                      child: Hive.box('userBox').get('profileImageBase64') == null
+                          ? CircularProgressIndicator(
+                        valueColor: AlwaysStoppedAnimation<Color>(Color(0xFF01D7ED)), // Spinner color
+                      )
+                          : null, // Show spinner only if no image is found
+                    )
                 ),
               ],
             ),

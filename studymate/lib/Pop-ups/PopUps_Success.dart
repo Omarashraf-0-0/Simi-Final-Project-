@@ -13,9 +13,10 @@ void showSuccessPopup(BuildContext context, String title, String message,[String
         bottom: Radius.circular(30)
     )),
     context: context,
+    backgroundColor: Colors.grey[250],
+
     builder: (BuildContext context) {
       return Container(
-        color: Colors.grey[250],
         width: 320,
         child: Column(
           mainAxisSize: MainAxisSize.min, // Prevent expanding unnecessarily

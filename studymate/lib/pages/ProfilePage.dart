@@ -1,10 +1,11 @@
 // ignore_for_file: prefer_const_constructors
 
 import 'dart:ffi';
-
+import 'dart:io';
 import 'package:flutter/material.dart';
 import 'package:flutter_font_icons/flutter_font_icons.dart';
 import 'package:google_fonts/google_fonts.dart';
+import 'package:path_provider/path_provider.dart';
 import 'package:studymate/pages/ProfileSettings.dart';
 import '../Classes/User.dart';
 import 'package:flutter/material.dart';
@@ -15,20 +16,167 @@ import '../util/TextField.dart';
 import 'Forget_Pass.dart';
 import 'package:http/http.dart' as http;
 import 'dart:convert';
-
+import 'package:flutter/material.dart';
+import 'package:image_picker/image_picker.dart';
+import 'dart:convert'; // For base64 encoding
+import 'dart:io'; // For File operations
+import 'package:flutter/material.dart';
+import 'package:image_picker/image_picker.dart';
+import 'package:hive/hive.dart'; // For Hive operations
+import '../Pop-ups/PopUps_Success.dart';
+import './UserUpdater.dart';
 
 class Profilepage extends StatefulWidget {
   User? user;
+  File? _imageFile;
   Profilepage({super.key,this.user});
+
+
+  Future<bool> fetchAndSaveProfileImage() async {
+    final url = 'https://alyibrahim.pythonanywhere.com/get-profile-image'; // Replace with your server URL
+
+// Get the username from Hive box
+    final username = Hive.box('userBox').get('username');
+    print(">>>>>>>>> $username");
+
+// Create a map with the username
+    final Map<String, String> body = {
+      'username': username,
+    };
+
+// Send the username as JSON in the body of a POST request
+    final response = await http
+        .post(
+      Uri.parse(url),
+      headers: {'Content-Type': 'application/json'}, // Set content type to JSON
+      body: jsonEncode(body), // Encode the body as JSON
+    )
+        .timeout(
+      Duration(seconds: 30), // Adjust the duration as needed
+    );
+    if (response.statusCode == 200) {
+      // Get the image bytes from the response
+      final bytes = response.bodyBytes;
+
+      // Get the device's temporary directory to save the image
+      final directory = await getTemporaryDirectory();
+
+      // Create a unique file name based on username and extension
+      final imagePath = '${directory.path}/${Hive.box('userBox').get('username')}_profile.jpg';
+
+      // Create a file and write the bytes to it
+      _imageFile = File(imagePath)..writeAsBytesSync(bytes);
+
+      print(">>>>>>>>>> Done <<<<<<<<");
+      // Update the UI to display the image
+      return true;
+    } else {
+      // Handle error if the image is not found or another error occurs
+      print("Failed to load image: ${response.statusCode} ===== ${response.body}");
+      return false;
+    }
+  }
+
+
+
+
 
   @override
   State<Profilepage> createState() => _ProfilepageState();
+
 }
+
+
 
 class _ProfilepageState extends State<Profilepage> {
 
+  bool _isImageLoading = true;
+
+  @override
+  void initState() {
+    super.initState();
+    // Fetch the profile image when the page is initialized
+    widget.fetchAndSaveProfileImage().then((result) {
+      setState(() {
+        _isImageLoading = false; // Set loading to false once the image is fetched
+      });
+    });
+  }
+
+
   @override
   Widget build(BuildContext context) {
+
+     // To hold the selected image file
+    final ImagePicker _picker = ImagePicker();
+
+
+    Future<void> saveProfileImageToHive(File imageFile) async {
+      try {
+        // Read the image as bytes
+        final bytes = await imageFile.readAsBytes();
+
+        // Convert bytes to Base64 string
+        final base64String = base64Encode(bytes);
+
+        // Store the Base64 string in Hive
+        await Hive.box('userBox').put('profileImageBase64', base64String);
+
+        print('Profile image saved successfully!');
+      } catch (e) {
+        print('Error saving profile image: $e');
+      }finally{
+        setState(() {});
+      }
+    }
+
+
+
+    Future<void> uploadImageToServer(File imageFile, String serverUrl, String username) async {
+      try {
+        // Create a multipart request
+        var request = http.MultipartRequest('POST', Uri.parse(serverUrl));
+
+        // Attach the file
+        request.files.add(await http.MultipartFile.fromPath(
+          'image', // The key to match on the Flask server
+          imageFile.path,
+        ));
+
+        // Add other fields if needed
+        request.fields['username'] = username;
+
+        // Send the request
+        var response = await request.send();
+
+        if (response.statusCode == 200) {
+          print('Image uploaded successfully!');
+          // Optional: Decode and use the response from the server
+          var responseBody = await response.stream.bytesToString();
+          print('Server Response: $responseBody');
+          saveProfileImageToHive(imageFile);
+        } else {
+          print('Failed to upload image. Status code: ${response.statusCode}');
+          print('Response: ${await response.stream.bytesToString()}');
+        }
+      } catch (e) {
+        print('Error uploading image: $e');
+      }
+    }
+    
+
+    // Function to pick an image
+    Future<void> _pickImage() async {
+      final pickedFile = await _picker.pickImage(source: ImageSource.gallery);
+
+      if (pickedFile != null) {
+        setState(() {
+          uploadImageToServer(File(pickedFile.path), 'https://alyibrahim.pythonanywhere.com/upload-image',
+              Hive.box('userBox').get('username'));
+        });
+      }
+    }
+
     print("XP : ${widget.user?.xp}");
     return Scaffold(
       appBar: AppBar(
@@ -81,9 +229,45 @@ class _ProfilepageState extends State<Profilepage> {
               crossAxisAlignment: CrossAxisAlignment.center,
               // mainAxisAlignment: MainAxisAlignment.center,
               children: [
-                CircleAvatar(
-                  radius: 60,
-                  backgroundImage: AssetImage('lib/assets/img/mahdy.jpg'),
+                Stack(
+                  children: [
+                    if (Hive.box('userBox').get('profileImageBase64')==null)
+                      CircleAvatar(
+                        radius: 60,
+                        backgroundColor: Colors.grey, // Placeholder color
+                        child: CircularProgressIndicator(
+                          valueColor: AlwaysStoppedAnimation<Color>(Color(0xFF01D7ED)), // Change spinner color here
+                        ),
+                      )
+                    else
+                      CircleAvatar(
+                        radius: 60,
+                        backgroundImage: MemoryImage(base64Decode(Hive.box('userBox').get('profileImageBase64')))),
+                    Positioned(
+                      bottom: 0, // Position button slightly outside the avatar
+                      right: 5,
+                      child: GestureDetector(
+                        onTap: _pickImage,
+                        child: Container(
+                          height: 40,
+                          width: 40,
+                          decoration: BoxDecoration(
+                            color: Colors.blue,
+                            shape: BoxShape.circle,
+                            border: Border.all(
+                              color: Colors.white,
+                              width: 2,
+                            ),
+                          ),
+                          child: Icon(
+                            Icons.camera_alt,
+                            color: Colors.white,
+                            size: 20,
+                          ),
+                        ),
+                      ),
+                    ),
+                  ],
                 ),
                 SizedBox(width: 20),
                 Column(
