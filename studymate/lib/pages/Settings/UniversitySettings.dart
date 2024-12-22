@@ -5,6 +5,7 @@ import 'package:studymate/pages/Settings/Settings.dart';
 import 'package:studymate/pages/Settings/UserSettings.dart';
 import 'package:flutter/material.dart';
 import 'package:hive/hive.dart';
+import 'package:studymate/pages/UserUpdater.dart';
 import '../../Classes/User.dart';
 import '../../Pop-ups/SuccesPopUp.dart';
 import '../../util/TextField.dart';
@@ -40,18 +41,27 @@ String? selectedUniversity = Hive.box('userBox').get('university');
   final List<String> majors = ['Computer Science', 'Business Administration', 'Media', 'Pharmacy', 'Engineering'];
   final List<String> termLevels = ['Prep', '1', '2', '3', '4', '5', '6', '7', '8', '9', '10'];
 
-  bool upDateData(){
-    if(selectedUniversity==null||selectedCollege==null||selectedMajor==null||selectedTermLevel==null||RegistrationNumberController.text.isEmpty){
-      showWarningPopup(context, 'Warning', 'Please fill all the fields');
-      return false;
-    }
-    Hive.box('userBox').put('university', selectedUniversity);
-    Hive.box('userBox').put('college', selectedCollege);
-    Hive.box('userBox').put('major', selectedMajor);
-    Hive.box('userBox').put('term_level', selectedTermLevel);
-    Hive.box('userBox').put('Registration_Number', RegistrationNumberController.text);
-    return true;
-  }
+Future<void> updateData() async {
+  // Create an instance of UserUpdater
+  final userUpdater = UserUpdater(url: 'https://alyibrahim.pythonanywhere.com/update_user');
+
+  // Prepare the data to send and update
+  final Map<String, dynamic> requestData = {
+    'username' : Hive.box('userBox').get('username'),
+    'university': selectedUniversity,
+    'college': selectedCollege,
+    'major': selectedMajor,
+    'term_level': selectedTermLevel,
+    'Registration_Number': RegistrationNumberController.text,
+  };
+
+  // Use UserUpdater to handle the update process
+  await userUpdater.updateUserData(
+    requestData: requestData,
+    context: context,
+  );
+
+}
 
   @override
   Widget build(BuildContext context) {
@@ -219,10 +229,8 @@ String? selectedUniversity = Hive.box('userBox').get('university');
                   ),
                   child: TextButton(
                     onPressed: () {
-                      if(upDateData()){
-                        showSuccessPopup(context,"Done successfully", 'University Information Updated Successfully');
-                      // Save changes action
-                    }},
+                      updateData();
+                    },
                     child: Padding(
                       padding: const EdgeInsets.symmetric(horizontal: 20.0),
                       child: Text(
