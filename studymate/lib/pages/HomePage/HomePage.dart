@@ -10,10 +10,12 @@ import 'package:studymate/pages/LoginPage.dart';
 import 'package:studymate/pages/ProfilePage.dart';
 import 'package:studymate/pages/Settings/Settings.dart';
 import 'package:studymate/pages/ScheduleManager/ScheduleManager.dart';
-import '../../Classes/User.dart';
+import '../../Classes/User.dart' as User;
 import 'package:studymate/pages/AboLayla/AboLayla.dart';
 import 'package:studymate/pages/QuizGenerator/QuizHome.dart';
 import 'package:studymate/pages/Game/GameHome.dart';
+import 'package:studymate/pages/Game/GameLeaderBoard.dart';
+import 'package:studymate/pages/Leaderboard.dart';
 
 import 'package:http/http.dart' as http;
 import 'dart:convert';
@@ -29,7 +31,7 @@ import '../../Pop-ups/PopUps_Warning.dart';
 import '../Resuorces/Resources.dart';
 
 class Homepage extends StatefulWidget {
-  User? user;
+  User.User? user = User.User();
   Homepage({
     super.key,
     this.user,
@@ -51,7 +53,7 @@ void navBottom(int index){
     Homebody(),
     Resources(),
     AboLayla(),
-    GameHome(),
+    GameLeaderBoard(),
   ];
 
   Future<void> Logout() async {
@@ -300,6 +302,16 @@ void navBottom(int index){
                 );
               },
             ),
+            ListTile(
+            leading: Icon(Icons.leaderboard, color: Colors.blue, size: 24), // Changed to leaderboard icon
+            title: Text('Leaderboard'),
+            onTap: () {
+              Navigator.push(
+                context,
+                MaterialPageRoute(builder: (context) =>GameLeaderBoard()),
+              );
+            },
+          ),
             ListTile(
               leading: Icon(Icons.schedule),
               title: Text('Schedule'),
