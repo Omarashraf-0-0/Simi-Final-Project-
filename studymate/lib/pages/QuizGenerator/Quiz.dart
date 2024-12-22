@@ -1,18 +1,20 @@
+// Quiz.dart
+
 import 'dart:async';
 import 'dart:convert';
 import 'package:flutter/material.dart';
 import 'QuizScore.dart';
+import '../../Pop-ups/ConfirmationPopUp.dart'; // Import the ConfirmationPopUp
 import 'package:http/http.dart' as http;
 import 'package:hive/hive.dart';
 import 'package:hive_flutter/hive_flutter.dart';
-import 'package:google_fonts/google_fonts.dart';
 
 class Quiz extends StatefulWidget {
   final int totalQuestions;
   final int mcqCount;
   final int tfCount;
   final Map<String, dynamic> quizData;
-  final String coId; // Added coId
+  final String coId;
 
   const Quiz({
     Key? key,
@@ -20,7 +22,7 @@ class Quiz extends StatefulWidget {
     required this.mcqCount,
     required this.tfCount,
     required this.quizData,
-    required this.coId, // Added coId
+    required this.coId,
   }) : super(key: key);
 
   @override
@@ -47,17 +49,19 @@ class _QuizState extends State<Quiz> {
     for (var q in quizQuestions) {
       List<dynamic> options;
 
-      if (q.containsKey("options") && q["options"] != null) {
-        options = q["options"];
-      } else {
-        options = [];
-      }
+      String questionType = q["type"]
+          .toString()
+          .replaceAll(RegExp(r'[^a-zA-Z]'), '')
+          .trim()
+          .toUpperCase();
 
-      String questionType = q["type"].toString().trim().toUpperCase();
+      if (questionType == "TF" || questionType == "TRUEFALSE") {
+        options = ['True', 'False']; // Set options for TF questions
 
-      if (questionType == "TF") {
-        options = ['True', 'False'];
+        // Assign options to the question object
+        q["options"] = options;
 
+        // Ensure correctAnswer is set to 'True' or 'False'
         String correctAnswer = q["answer"].toString().trim().toLowerCase();
         if (correctAnswer == 't' || correctAnswer == 'true') {
           q["answer"] = 'True';
@@ -66,11 +70,25 @@ class _QuizState extends State<Quiz> {
         } else {
           q["answer"] = 'True';
         }
+      } else if (questionType == "MCQ") {
+        // For MCQ questions, ensure options are available
+        if (q.containsKey("options") && q["options"] != null) {
+          options = q["options"];
+        } else {
+          options = [];
+        }
+      } else {
+        // Unknown question type
+        options = [];
+        print("Unknown question type for question: ${q["question"]}");
       }
+
+      // Ensure options are assigned
+      q["options"] = options;
 
       Map<String, dynamic> question = {
         "question": q["question"],
-        "options": options,
+        "options": q["options"], // Ensure options are included
         "correctAnswer": q["answer"],
         "selectedOption": -1,
         "type": questionType,
@@ -122,20 +140,29 @@ class _QuizState extends State<Quiz> {
 
       if (selectedOptionIndex != -1) {
         String selectedAnswer = '';
-        if (questions[i]["type"] == "MCQ") {
+        // Normalize question type
+        String questionType = questions[i]["type"]
+            .toString()
+            .replaceAll(RegExp(r'[^a-zA-Z]'), '')
+            .trim()
+            .toUpperCase();
+
+        if (questionType == "MCQ") {
           selectedAnswer = String.fromCharCode(65 + selectedOptionIndex);
-        } else if (questions[i]["type"] == "TF") {
+        } else if (questionType == "TF" || questionType == "TRUEFALSE") {
           selectedAnswer = questions[i]["options"][selectedOptionIndex];
         }
 
         userAnsList.add(selectedAnswer);
 
-        if (questions[i]["type"] == "MCQ") {
+        // Scoring Logic
+        if (questionType == "MCQ") {
           if (selectedAnswer.toUpperCase() == correctAnswer.toUpperCase()) {
             correctAnswers++;
           }
-        } else if (questions[i]["type"] == "TF") {
-          if (selectedAnswer.toLowerCase() == correctAnswer.toLowerCase()) {
+        } else if (questionType == "TF" || questionType == "TRUEFALSE") {
+          if (selectedAnswer.trim().toLowerCase() ==
+              correctAnswer.trim().toLowerCase()) {
             correctAnswers++;
           }
         }
@@ -149,7 +176,7 @@ class _QuizState extends State<Quiz> {
       'UserAns': userAnsList.join(','),
       'QuizAns': quizAnsList.join(','),
       'LecNum': lectureNumbers.join(','),
-      'co_id': widget.coId, // Include co_id in submission
+      'co_id': widget.coId,
     };
 
     print('Submission Data: $submissionData');
@@ -171,7 +198,8 @@ class _QuizState extends State<Quiz> {
 
   Future<int> getUserID() async {
     var userBox = await Hive.openBox('userBox');
-    int userID = userBox.get('id', defaultValue: 0); // Make sure the key is correct
+    int userID =
+        userBox.get('id', defaultValue: 0); // Make sure the key is correct
     print('Retrieved UserID: $userID');
     return userID;
   }
@@ -285,6 +313,7 @@ class _QuizState extends State<Quiz> {
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
             const SizedBox(height: 15),
+            // Question navigation bar
             Padding(
               padding: const EdgeInsets.symmetric(horizontal: 16.0),
               child: SizedBox(
@@ -338,6 +367,7 @@ class _QuizState extends State<Quiz> {
               ),
             ),
             const SizedBox(height: 16),
+            // Question text
             Padding(
               padding: const EdgeInsets.all(16.0),
               child: Text(
@@ -349,19 +379,30 @@ class _QuizState extends State<Quiz> {
                 ),
               ),
             ),
+            // Options
             ...List.generate(
-              questions[currentQuestion]["options"].length,
+              questions[currentQuestion]["options"] != null
+                  ? questions[currentQuestion]["options"].length
+                  : 0,
               (index) {
-                bool isSelected = questions[currentQuestion]["selectedOption"] == index;
+                bool isSelected =
+                    questions[currentQuestion]["selectedOption"] == index;
 
                 return GestureDetector(
                   onTap: () => selectOption(index),
                   child: Container(
-                    margin: const EdgeInsets.symmetric(vertical: 8, horizontal: 16),
+                    margin:
+                        const EdgeInsets.symmetric(vertical: 8, horizontal: 16),
                     padding: const EdgeInsets.all(12),
                     decoration: BoxDecoration(
                       color: Colors.transparent,
                       borderRadius: BorderRadius.circular(12),
+                      border: Border.all(
+                        color: isSelected
+                            ? Color(0xFF165D96)
+                            : Colors.grey.shade400,
+                        width: 2,
+                      ),
                     ),
                     child: Row(
                       children: [
@@ -369,14 +410,18 @@ class _QuizState extends State<Quiz> {
                           width: 50,
                           height: 50,
                           decoration: BoxDecoration(
-                            color: isSelected ? Color(0xFF165D96) : Colors.grey.shade400,
+                            color: isSelected
+                                ? Color(0xFF165D96)
+                                : Colors.grey.shade400,
                             shape: BoxShape.circle,
                           ),
                           child: Center(
                             child: Text(
                               questions[currentQuestion]["type"] == "MCQ"
                                   ? String.fromCharCode(65 + index)
-                                  : questions[currentQuestion]["options"][index].toLowerCase() == 'true' ? 'T' : 'F',
+                                  : questions[currentQuestion]["options"][index]
+                                      .substring(0, 1)
+                                      .toUpperCase(),
                               style: TextStyle(
                                 fontFamily: 'League Spartan',
                                 color: Colors.white,
@@ -393,7 +438,9 @@ class _QuizState extends State<Quiz> {
                               fontFamily: 'League Spartan',
                               fontSize: 16,
                               fontWeight: FontWeight.bold,
-                              color: isSelected ? Color(0xFF165D96) : Colors.black,
+                              color: isSelected
+                                  ? Color(0xFF165D96)
+                                  : Colors.black,
                             ),
                           ),
                         ),
@@ -404,18 +451,22 @@ class _QuizState extends State<Quiz> {
               },
             ),
             const Spacer(),
+            // Navigation buttons and Submit button
             Padding(
               padding: const EdgeInsets.symmetric(horizontal: 16.0),
               child: Row(
                 mainAxisAlignment: MainAxisAlignment.spaceBetween,
                 children: [
+                  // Previous Question Button
                   GestureDetector(
                     onTap: currentQuestion > 0 ? previousQuestion : null,
                     child: Container(
                       width: 50,
                       height: 50,
                       decoration: BoxDecoration(
-                        color: currentQuestion > 0 ? Color(0xFF165D96) : Colors.grey.shade400,
+                        color: currentQuestion > 0
+                            ? Color(0xFF165D96)
+                            : Colors.grey.shade400,
                         shape: BoxShape.circle,
                       ),
                       child: Center(
@@ -426,11 +477,28 @@ class _QuizState extends State<Quiz> {
                       ),
                     ),
                   ),
+                  // Submit Button with Confirmation Dialog
                   ElevatedButton(
-                    onPressed: submitQuiz,
+                    onPressed: () {
+                      // Show confirmation popup
+                      showDialog(
+                        context: context,
+                        builder: (context) => ConfirmationPopUp(
+                          onConfirm: () {
+                            Navigator.of(context).pop(); // Close the dialog
+                            submitQuiz();
+                          },
+                          onCancel: () {
+                            Navigator.of(context).pop(); // Close the dialog
+                            // Do nothing, return to quiz
+                          },
+                        ),
+                      );
+                    },
                     style: ElevatedButton.styleFrom(
                       backgroundColor: Color(0xFF165D96),
-                      padding: EdgeInsets.symmetric(horizontal: 70, vertical: 10),
+                      padding:
+                          EdgeInsets.symmetric(horizontal: 70, vertical: 10),
                       shape: RoundedRectangleBorder(
                         borderRadius: BorderRadius.circular(10),
                       ),
@@ -445,13 +513,18 @@ class _QuizState extends State<Quiz> {
                       ),
                     ),
                   ),
+                  // Next Question Button
                   GestureDetector(
-                    onTap: currentQuestion < questions.length - 1 ? nextQuestion : null,
+                    onTap: currentQuestion < questions.length - 1
+                        ? nextQuestion
+                        : null,
                     child: Container(
                       width: 50,
                       height: 50,
                       decoration: BoxDecoration(
-                        color: currentQuestion < questions.length - 1 ? Color(0xFF165D96) : Colors.grey.shade400,
+                        color: currentQuestion < questions.length - 1
+                            ? Color(0xFF165D96)
+                            : Colors.grey.shade400,
                         shape: BoxShape.circle,
                       ),
                       child: Center(

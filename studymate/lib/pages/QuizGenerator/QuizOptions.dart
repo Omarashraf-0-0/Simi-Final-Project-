@@ -29,6 +29,7 @@ class _QuizOptionsState extends State<QuizOptions> {
   List<String> coursesIndex = [];
   List<Map<String, String>> lectures = []; // List of lectures with their URLs
   bool isLoading = true; // To handle loading state
+  bool isGenerating = false; // This variable for the generating state, to make the loading (Shawky was here) ;)
 
   Future<void> takecourses() async {
     const url =
@@ -103,6 +104,10 @@ class _QuizOptionsState extends State<QuizOptions> {
   }
 
 void validateQuestions() async {
+  setState(() {
+    isGenerating = true;
+  });
+
   int totalQuestions = int.tryParse(questionsController.text) ?? 0;
   int mcqCount = int.tryParse(mcqController.text) ?? 0;
   int tfCount = int.tryParse(tfController.text) ?? 0;
@@ -110,6 +115,9 @@ void validateQuestions() async {
   int lectureTo = int.tryParse(lectureToController.text) ?? lectures.length;
 
   if (mcqCount + tfCount != totalQuestions) {
+    setState(() {
+      isGenerating = false;
+    });
     showDialog(
       context: context,
       builder: (_) => AlertDialog(
@@ -128,6 +136,9 @@ void validateQuestions() async {
   }
 
   if (selectedCourse == null) {
+    setState(() {
+      isGenerating = false;
+    });
     print('No course selected.');
     return;
   }
@@ -135,7 +146,7 @@ void validateQuestions() async {
   // Prepare data to send to the server
   Map<String, dynamic> requestData = {
     'course_name': selectedCourse!.replaceAll(' ', ''),
-    'co_id': selectedCourseId,  // Include co_id
+    'co_id': selectedCourseId, // Include co_id
     'lecture_start': lectureFrom,
     'lecture_end': lectureTo,
     'number_of_questions': totalQuestions,
@@ -147,33 +158,49 @@ void validateQuestions() async {
   print(jsonEncode(requestData));
 
   // Send data to server
-  final response = await http.post(
-    Uri.parse('https://alyibrahim.pythonanywhere.com/generate_quiz'),
-    headers: {'Content-Type': 'application/json'},
-    body: jsonEncode(requestData),
-  );
-
-  if (response.statusCode == 200) {
-    // Successfully received JSON response from server
-    var jsonResponse = jsonDecode(response.body);
-    print(jsonResponse); // For testing purposes
-
-    // Navigate to the Quiz screen and pass the quiz data and co_id
-    Navigator.push(
-      context,
-      MaterialPageRoute(
-        builder: (context) => Quiz(
-          quizData: jsonResponse, // Pass the quiz data
-          totalQuestions: totalQuestions,
-          mcqCount: mcqCount,
-          tfCount: tfCount,
-          coId: selectedCourseId!, // Pass the co_id
-        ),
-      ),
+  try {
+    final response = await http.post(
+      Uri.parse('https://alyibrahim.pythonanywhere.com/generate_quiz'),
+      headers: {'Content-Type': 'application/json'},
+      body: jsonEncode(requestData),
     );
-  } else {
-    print('Server error: ${response.statusCode}');
-    print('Response body: ${response.body}');
+
+    if (response.statusCode == 200) {
+      // Successfully received JSON response from server
+      var jsonResponse = jsonDecode(response.body);
+      print(jsonResponse); // For testing purposes
+
+      setState(() {
+        isGenerating = false;
+      });
+
+      // Navigate to the Quiz screen and pass the quiz data and co_id
+      Navigator.push(
+        context,
+        MaterialPageRoute(
+          builder: (context) => Quiz(
+            quizData: jsonResponse, // Pass the quiz data
+            totalQuestions: totalQuestions,
+            mcqCount: mcqCount,
+            tfCount: tfCount,
+            coId: selectedCourseId!, // Pass the co_id
+          ),
+        ),
+      );
+    } else {
+      setState(() {
+        isGenerating = false;
+      });
+      print('Server error: ${response.statusCode}');
+      print('Response body: ${response.body}');
+      // Show error message if needed
+    }
+  } catch (e) {
+    setState(() {
+      isGenerating = false;
+    });
+    print('Error: $e');
+    // Show error message if needed
   }
 }
 
@@ -193,7 +220,7 @@ void validateQuestions() async {
         backgroundColor: const Color(0xFF165D96),
         centerTitle: true,
       ),
-      body: isLoading
+      body: isLoading || isGenerating
           ? const Center(child: CircularProgressIndicator())
           : SingleChildScrollView(
               padding: const EdgeInsets.only(top: 20, left: 16, right: 16),
