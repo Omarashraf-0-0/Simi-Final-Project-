@@ -16,6 +16,7 @@ import 'package:studymate/pages/QuizGenerator/QuizHome.dart';
 import 'package:studymate/pages/Game/GameHome.dart';
 import 'package:studymate/pages/Game/GameLeaderBoard.dart';
 import 'package:studymate/pages/Leaderboard.dart';
+import 'package:studymate/pages/CV.dart';
 
 import 'package:http/http.dart' as http;
 import 'dart:convert';
@@ -309,6 +310,16 @@ void navBottom(int index){
               Navigator.push(
                 context,
                 MaterialPageRoute(builder: (context) =>GameLeaderBoard()),
+              );
+            },
+          ),
+          ListTile(
+            leading: Icon(Icons.description, color: Colors.blue, size: 24), // Changed to CV icon
+            title: Text('CV Maker'),
+            onTap: () {
+              Navigator.push(
+                context,
+                MaterialPageRoute(builder: (context) => CV()),
               );
             },
           ),
