@@ -27,6 +27,8 @@ dependencies:
   flutter_downloader: any
   url_launcher: any
   flutter_slidable: any
+  flutter_local_notifications: ^18.0.1
+  timezone: any
 google_fonts: any # Uncomment if you want to use Google Fonts
 
 dev_dependencies:

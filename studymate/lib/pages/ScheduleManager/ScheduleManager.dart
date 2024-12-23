@@ -1,17 +1,19 @@
 import 'dart:convert';
-import 'package:http/http.dart' as http;
 import 'package:flutter/material.dart';
+import 'package:flutter_local_notifications/flutter_local_notifications.dart';
 import 'package:google_fonts/google_fonts.dart';
 import 'package:hive/hive.dart';
+import 'package:http/http.dart' as http;
+import 'package:intl/intl.dart';
 import 'package:studymate/Pop-ups/PopUps_Failed.dart';
 import 'package:studymate/Pop-ups/PopUps_Success.dart';
 import 'package:studymate/Pop-ups/PopUps_Warning.dart';
-import 'package:studymate/Pop-ups/SuccesPopUp.dart';
+import 'package:studymate/util/TextField.dart';
+import 'package:timezone/data/latest.dart' as tz;
+import 'package:timezone/timezone.dart' as tz;
 import 'DayView.dart';
 import 'WeekView.dart';
 import 'MonthView.dart';
-import 'package:studymate/util/TextField.dart';
-import 'package:intl/intl.dart';
 
 class ScheduleView extends StatefulWidget {
   const ScheduleView({super.key});
@@ -31,6 +33,33 @@ class _ScheduleViewState extends State<ScheduleView> {
     MonthView(),
   ];
 
+  // Initialize the notification plugin
+  final FlutterLocalNotificationsPlugin flutterLocalNotificationsPlugin =
+      FlutterLocalNotificationsPlugin();
+
+  @override
+  void initState() {
+    super.initState();
+    initializeNotificationPlugin();
+  }
+
+  // Function to initialize the notification plugin
+  void initializeNotificationPlugin() {
+    final AndroidInitializationSettings initializationSettingsAndroid =
+        AndroidInitializationSettings('@mipmap/ic_launcher');
+
+    final InitializationSettings initializationSettings = InitializationSettings(
+      android: initializationSettingsAndroid,
+    );
+
+    flutterLocalNotificationsPlugin.initialize(
+      initializationSettings,
+    );
+
+    // Initialize time zone data
+    tz.initializeTimeZones();
+  }
+
   void _toggleAddEventPopup() {
     setState(() {
       _showAddEventPopup = !_showAddEventPopup;
@@ -39,7 +68,7 @@ class _ScheduleViewState extends State<ScheduleView> {
 
   @override
   Widget build(BuildContext context) {
-    print(Hive.box('userBox').get('id'));
+    // print(Hive.box('userBox').get('id'));
     return Stack(
       children: [
         Scaffold(
@@ -140,14 +169,8 @@ class _ScheduleViewState extends State<ScheduleView> {
         TextEditingController();
     final TextEditingController repeatUntilController = TextEditingController();
     String _selectedCategory = "Study";
-    // titleController.text = 'test';
-    // descriptionController.text = 'test';
-    // dateController.text = '2024-12-12';
-    // StartTimeController.text = '12:00 PM';
-    // EndTimeController.text = '1:00 PM';
-    // locationController.text = 'test';
-    // reminderTimeController.text = '12:00 PM';
-    // repeatUntilController.text = '2024-12-12';
+    String _selectedRepeat = "None";
+
     return Positioned.fill(
       child: GestureDetector(
         onTap: _toggleAddEventPopup, // Close the popup when tapping outside
@@ -162,9 +185,9 @@ class _ScheduleViewState extends State<ScheduleView> {
                 color: Colors.white, // Popup background color
                 child: Container(
                   width: MediaQuery.of(context).size.width *
-                      0.9, // 80% of the screen
+                      0.9, // 90% of the screen
                   height: MediaQuery.of(context).size.height *
-                      0.9, // 80% of the screen height
+                      0.9, // 90% of the screen height
 
                   decoration: BoxDecoration(
                     color: Colors.white,
@@ -354,7 +377,6 @@ class _ScheduleViewState extends State<ScheduleView> {
                               ),
                               SizedBox(height: 15),
 
-                              // Location Row
                               // Location Field Row
                               Row(
                                 children: [
@@ -416,7 +438,7 @@ class _ScheduleViewState extends State<ScheduleView> {
                                   ),
                                   SizedBox(width: 8),
                                   Expanded(
-                                    child: DropdownButtonFormField(
+                                    child: DropdownButtonFormField<String>(
                                       decoration: InputDecoration(
                                         border: OutlineInputBorder(
                                           borderRadius:
@@ -428,18 +450,21 @@ class _ScheduleViewState extends State<ScheduleView> {
                                         filled: true,
                                         fillColor: Colors.white,
                                       ),
-                                      // isExpanded: true,
-                                      value: "None",
-                                      onChanged: (value) {
-                                        print(value);
+                                      value: _selectedRepeat,
+                                      onChanged: (String? value) {
+                                        if (value != null) {
+                                          setState(() {
+                                            _selectedRepeat = value;
+                                          });
+                                        }
                                       },
                                       items: [
                                         "None",
                                         "Daily",
                                         "Weekly",
-                                        "Monthly"
+                                        "Monthly",
                                       ].map((repeat) {
-                                        return DropdownMenuItem(
+                                        return DropdownMenuItem<String>(
                                           value: repeat,
                                           child: Text(repeat),
                                         );
@@ -449,34 +474,35 @@ class _ScheduleViewState extends State<ScheduleView> {
                                 ],
                               ),
                               SizedBox(height: 15),
-                              // Repeat Row
                               // Repeat Until Row
-                              Row(
-                                children: [
-                                  Text(
-                                    "Repeat Until: ",
-                                    style: TextStyle(
-                                      fontWeight: FontWeight.bold,
-                                      fontSize: 16,
+                              if (_selectedRepeat != "None")
+                                Row(
+                                  children: [
+                                    Text(
+                                      "Repeat Until: ",
+                                      style: TextStyle(
+                                        fontWeight: FontWeight.bold,
+                                        fontSize: 16,
+                                      ),
                                     ),
-                                  ),
-                                  SizedBox(width: 8),
-                                  Expanded(
-                                    child: Textfield(
-                                      controller: repeatUntilController,
-                                      hintText: "Select Date",
-                                      fillColor: Colors.grey[200],
-                                      borderColor: Colors.blue,
-                                      borderRadius: 10.0,
-                                      hintStyle: TextStyle(color: Colors.grey),
-                                      isDateField:
-                                          true, // Custom handling for date picker
-                                      isFutureDate:
-                                          true, // Only allow future dates
+                                    SizedBox(width: 8),
+                                    Expanded(
+                                      child: Textfield(
+                                        controller: repeatUntilController,
+                                        hintText: "Select Date",
+                                        fillColor: Colors.grey[200],
+                                        borderColor: Colors.blue,
+                                        borderRadius: 10.0,
+                                        hintStyle:
+                                            TextStyle(color: Colors.grey),
+                                        isDateField:
+                                            true, // Custom handling for date picker
+                                        isFutureDate:
+                                            true, // Only allow future dates
+                                      ),
                                     ),
-                                  ),
-                                ],
-                              ),
+                                  ],
+                                ),
                               SizedBox(height: 15),
                               // Description Row
                               Column(
@@ -584,15 +610,15 @@ class _ScheduleViewState extends State<ScheduleView> {
                                     "Error",
                                     "Please enter a reminder time for the event",
                                   );
-                                } else if (repeatUntilController.text !=
-                                        "None" &&
+                                } else if (_selectedRepeat != "None" &&
                                     repeatUntilController.text.isEmpty) {
                                   showWarningPopup(
                                     context,
                                     "Error",
                                     "Please enter a repeat until date for the event",
                                   );
-                                } else if (descriptionController.text.isEmpty) {
+                                } else if (descriptionController
+                                    .text.isEmpty) {
                                   showWarningPopup(
                                     context,
                                     "Error",
@@ -613,33 +639,32 @@ class _ScheduleViewState extends State<ScheduleView> {
                                     DateTime eventDate =
                                         DateTime.parse(eventDateText);
 
-                                    // Define time format parsers
                                     // Parse and format StartTime
                                     final DateTime startTime =
                                         convertTo24HourFormatWithDate(
                                             dateController.text,
                                             StartTimeController.text);
-                                    // print("Start Time Text: $startTime");
-                                    // print("Start Time: $startTime");
 
                                     // Parse and format EndTime
                                     final DateTime endTime =
                                         convertTo24HourFormatWithDate(
                                             dateController.text,
                                             EndTimeController.text);
-                                    // print("End Time: $endTime");
 
                                     // Parse and format ReminderTime
                                     DateTime reminderTime =
                                         convertTo24HourFormatWithDate(
                                             dateController.text,
                                             reminderTimeController.text);
-                                    // print("Reminder Time: $reminderTime");
 
                                     // Parse RepeatUntil directly as a date
-                                    DateTime repeatUntil = DateTime.parse(
-                                        repeatUntilController.text.trim());
-                                    // print("Repeat Until: $repeatUntil");
+                                    DateTime repeatUntil = _selectedRepeat !=
+                                                "None" &&
+                                            repeatUntilController
+                                                .text.isNotEmpty
+                                        ? DateTime.parse(
+                                            repeatUntilController.text.trim())
+                                        : eventDate;
 
                                     // Validation checks
                                     if (startTime.isAfter(endTime)) {
@@ -655,8 +680,8 @@ class _ScheduleViewState extends State<ScheduleView> {
                                         "Error",
                                         "The reminder time cannot be after the start time.",
                                       );
-                                    } else if (repeatUntil
-                                        .isBefore(eventDate)) {
+                                    } else if (_selectedRepeat != "None" &&
+                                        repeatUntil.isBefore(eventDate)) {
                                       showWarningPopup(
                                         context,
                                         "Error",
@@ -666,8 +691,7 @@ class _ScheduleViewState extends State<ScheduleView> {
                                       DateFormat outputFormat =
                                           DateFormat('yyyy-MM-dd HH:mm');
                                       // All validations passed. Save the event details to the database.
-                                      print(
-                                          "Event details are valid. Proceeding to save...");
+                                      // print("Event details are valid. Proceeding to save...");
                                       AddEvent(
                                         titleController.text,
                                         eventDateText,
@@ -675,17 +699,15 @@ class _ScheduleViewState extends State<ScheduleView> {
                                         outputFormat.format(endTime),
                                         locationController.text,
                                         _selectedCategory,
-                                        "None",
+                                        _selectedRepeat,
                                         descriptionController.text,
                                         outputFormat.format(reminderTime),
                                         outputFormat.format(repeatUntil),
                                       );
-
-                                      // _toggleAddEventPopup(); // Close the popup
                                     }
                                   } catch (e) {
                                     // Handle parsing errors
-                                    print("Error: $e");
+                                    // print("Error: $e");
                                     showWarningPopup(
                                       context,
                                       "Error",
@@ -744,12 +766,27 @@ class _ScheduleViewState extends State<ScheduleView> {
           'Content-Type': 'application/json',
         },
         body: jsonEncode(data));
+
     if (response.statusCode == 200) {
+      // Parse the reminderTime string into a DateTime object
+      DateTime scheduledDate = DateTime.parse(reminderTime);
+
+      // Schedule the notification
+      await scheduleNotification(
+        title: title,
+        body: description,
+        scheduledDate: scheduledDate,
+      );
+
+      // Show success popup
       showSuccessPopup(
         context,
         "Success",
         "Event added successfully",
       );
+
+      // Close the add event popup
+      _toggleAddEventPopup();
     } else {
       showFailedPopup(
         context,
@@ -759,20 +796,49 @@ class _ScheduleViewState extends State<ScheduleView> {
       );
     }
   }
+
+  // Function to schedule a notification
+  Future<void> scheduleNotification({
+    required String title,
+    required String body,
+    required DateTime scheduledDate,
+  }) async {
+    // Convert DateTime to TZDateTime for timezone compatibility
+    final tz.TZDateTime tzScheduledDate =
+        tz.TZDateTime.from(scheduledDate, tz.local);
+
+    await flutterLocalNotificationsPlugin.zonedSchedule(
+      scheduledDate.millisecondsSinceEpoch ~/ 1000, // Unique notification ID
+      title, // Notification title
+      body, // Notification body
+      tzScheduledDate, // Time to show the notification
+      const NotificationDetails(
+        android: AndroidNotificationDetails(
+          '1', // Replace with your channel ID
+          'Your Channel Name', // Replace with your channel name
+          channelDescription: 'Your channel description', // Optional description
+          importance: Importance.max, // High visibility
+          priority: Priority.high, // High priority
+        ),
+      ),
+      androidScheduleMode: AndroidScheduleMode.exactAllowWhileIdle,
+      uiLocalNotificationDateInterpretation:
+          UILocalNotificationDateInterpretation.absoluteTime,
+    );
+
+    // print('Notification scheduled for: $tzScheduledDate');
+  }
 }
 
+// Helper function to convert time to 24-hour format with date
 DateTime convertTo24HourFormatWithDate(String dateTimeString, String time12h) {
   // Define the input formats for the date and time
   final DateFormat dateTimeFormat = DateFormat('yyyy-MM-dd');
   final DateFormat timeFormat12h = DateFormat('h:mm a');
-  final DateFormat outputFormat = DateFormat('yyyy-MM-dd HH:mm');
-  // print("Input Date Time: $dateTimeString");
-  // print("Input Time: $time12h");
+
   // Parse the date and time strings
   DateTime parsedDateTime = dateTimeFormat.parse(dateTimeString);
-  // print("Parsed Date Time: $parsedDateTime");
   DateTime parsedTime = timeFormat12h.parse(time12h);
-  // print("Parsed Time: $parsedTime");
 
   // Combine the date and time into a single DateTime object
   DateTime combinedDateTime = DateTime(
@@ -782,9 +848,6 @@ DateTime convertTo24HourFormatWithDate(String dateTimeString, String time12h) {
     parsedTime.hour,
     parsedTime.minute,
   );
-  // print("Combined Date Time: $combinedDateTime");
-  // Format the combined DateTime object to a string in the desired format
-  String dateTime24h = outputFormat.format(combinedDateTime);
-  print("24-Hour Date Time: $dateTime24h");
+
   return combinedDateTime;
 }
