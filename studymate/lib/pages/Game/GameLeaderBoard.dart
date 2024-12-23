@@ -1,4 +1,5 @@
 import 'dart:convert';
+import 'dart:typed_data';
 import 'package:flutter/material.dart';
 import 'package:hive_flutter/hive_flutter.dart';
 import 'package:http/http.dart' as http;
@@ -46,7 +47,6 @@ class _GameLeaderBoardState extends State<GameLeaderBoard> {
           'pfp': currentUserData['pfp'],
         };
 
-
         // Sort users by XP and then alphabetically if XP is equal
         users.sort((a, b) {
           int xpComparison = b['xp'].compareTo(a['xp']);
@@ -70,24 +70,40 @@ class _GameLeaderBoardState extends State<GameLeaderBoard> {
     }
   }
 
+  // Helper function to get ImageProvider from base64 string
+  ImageProvider<Object> getImageProvider(String? base64String) {
+    if (base64String != null && base64String.isNotEmpty) {
+      try {
+        Uint8List imageBytes = base64Decode(base64String);
+        return MemoryImage(imageBytes);
+      } catch (e) {
+        // Handle the exception as needed
+        print('Error decoding base64 image: $e');
+        return AssetImage('lib/assets/img/default.jpeg');
+      }
+    } else {
+      return AssetImage('lib/assets/img/default.jpeg');
+    }
+  }
+
   Color _getRankColor(String rank) {
     switch (rank) {
       case 'El Batal':
-        return Color(0xFFb3141c);
+        return const Color(0xFFb3141c);
       case 'Legend':
-        return Color(0xFFFFD700);
+        return const Color(0xFFFFD700);
       case 'Mentor':
-        return Color(0xFF6F42C1);
+        return const Color(0xFF6F42C1);
       case 'Expert':
-        return Color(0xFFFD7E14);
+        return const Color(0xFFFD7E14);
       case 'Challenger':
-        return Color(0xFFFFC107);
+        return const Color(0xFFFFC107);
       case 'Achiever':
-        return Color(0xFF28A745);
+        return const Color(0xFF28A745);
       case 'Explorer':
-        return Color(0xFF007BFF);
+        return const Color(0xFF007BFF);
       case 'NewComer':
-        return Color(0xFF808080);
+        return const Color(0xFF808080);
       default:
         return Colors.black;
     }
@@ -106,7 +122,8 @@ class _GameLeaderBoardState extends State<GameLeaderBoard> {
       topTenUsers = users;
     }
 
-    bool isCurrentUserInTopTen = currentUserRank > 0 && currentUserRank <= 10;
+    bool isCurrentUserInTopTen =
+        currentUserRank > 0 && currentUserRank <= 10;
 
     return Scaffold(
       backgroundColor: const Color(0xFF1E1E2A),
@@ -115,7 +132,7 @@ class _GameLeaderBoardState extends State<GameLeaderBoard> {
         elevation: 0,
         leading: IconButton(
           icon:
-              const Icon(Icons.arrow_back_ios_new_rounded, color: Colors.white),
+          const Icon(Icons.arrow_back_ios_new_rounded, color: Colors.white),
           onPressed: () {
             Navigator.pop(context);
           },
@@ -134,61 +151,61 @@ class _GameLeaderBoardState extends State<GameLeaderBoard> {
       body: isLoading
           ? const Center(child: CircularProgressIndicator())
           : Column(
-              children: [
-                // Top 3 Users Section
-                if (topTenUsers.length >= 3)
-                  Padding(
-                    padding: const EdgeInsets.symmetric(vertical: 16.0),
-                    child: Row(
-                      mainAxisAlignment: MainAxisAlignment.spaceEvenly,
-                      children: [
-                        // Second Place
-                        _buildTopUser(
-                          rank: 2,
-                          user: topTenUsers[1],
-                          isCrownVisible: false,
-                        ),
-                        // First Place
-                        _buildTopUser(
-                          rank: 1,
-                          user: topTenUsers[0],
-                          isCrownVisible: true,
-                        ),
-                        // Third Place
-                        _buildTopUser(
-                          rank: 3,
-                          user: topTenUsers[2],
-                          isCrownVisible: false,
-                        ),
-                      ],
-                    ),
+        children: [
+          // Top 3 Users Section
+          if (topTenUsers.length >= 3)
+            Padding(
+              padding: const EdgeInsets.symmetric(vertical: 16.0),
+              child: Row(
+                mainAxisAlignment: MainAxisAlignment.spaceEvenly,
+                children: [
+                  // Second Place
+                  _buildTopUser(
+                    rank: 2,
+                    user: topTenUsers[1],
+                    isCrownVisible: false,
                   ),
-                // Users List
-                Expanded(
-                  child: ListView.builder(
-                    itemCount: topTenUsers.length - 3,
-                    itemBuilder: (context, index) {
-                      final user = topTenUsers[index + 3];
-                      final rank = index + 4;
-                      final isCurrentUser =
-                          user['username'] == currentUser?['username'];
-
-                      return _buildUserTile(
-                        rank: rank,
-                        user: user,
-                        isCurrentUser: isCurrentUser,
-                      );
-                    },
+                  // First Place
+                  _buildTopUser(
+                    rank: 1,
+                    user: topTenUsers[0],
+                    isCrownVisible: true,
                   ),
-                ),
-                if (!isCurrentUserInTopTen && currentUserRank > 0)
-                  _buildUserTile(
-                    rank: currentUserRank,
-                    user: currentUser!,
-                    isCurrentUser: true,
+                  // Third Place
+                  _buildTopUser(
+                    rank: 3,
+                    user: topTenUsers[2],
+                    isCrownVisible: false,
                   ),
-              ],
+                ],
+              ),
             ),
+          // Users List
+          Expanded(
+            child: ListView.builder(
+              itemCount: topTenUsers.length - 3,
+              itemBuilder: (context, index) {
+                final user = topTenUsers[index + 3];
+                final rank = index + 4;
+                final isCurrentUser =
+                    user['username'] == currentUser?['username'];
+
+                return _buildUserTile(
+                  rank: rank,
+                  user: user,
+                  isCurrentUser: isCurrentUser,
+                );
+              },
+            ),
+          ),
+          if (!isCurrentUserInTopTen && currentUserRank > 0)
+            _buildUserTile(
+              rank: currentUserRank,
+              user: currentUser!,
+              isCurrentUser: true,
+            ),
+        ],
+      ),
     );
   }
 
@@ -223,10 +240,7 @@ class _GameLeaderBoardState extends State<GameLeaderBoard> {
               backgroundColor: rankColor,
               child: CircleAvatar(
                 radius: avatarRadius - 4,
-                backgroundImage: user['pfp'] != null && user['pfp'] != ''
-                    ? NetworkImage(user['pfp'])
-                    : const AssetImage('assets/avatar_placeholder.png')
-                        as ImageProvider,
+                backgroundImage: getImageProvider(user['pfp']),
               ),
             ),
             if (rankIcon != null)
@@ -265,9 +279,7 @@ class _GameLeaderBoardState extends State<GameLeaderBoard> {
 
     return ListTile(
       leading: CircleAvatar(
-        backgroundImage: user['pfp'] != null && user['pfp'] != ''
-            ? NetworkImage(user['pfp'])
-            : const AssetImage('assets/avatar_placeholder.png') as ImageProvider,
+        backgroundImage: getImageProvider(user['pfp']),
       ),
       title: Text(
         user['username'],

@@ -48,6 +48,7 @@ flutter:
     - lib/assets/animations/
     - lib/assets/img/AboLayla.jpg
     - lib/assets/img/TheRock.jpg
+    - lib/assets/img/default.jpeg
     - lib/assets/img/QuizTime.png
     - lib/assets/img/GameCharacters/ElBatal.png
     - lib/assets/img/GameCharacters/NewCommer.png
