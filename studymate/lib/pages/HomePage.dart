@@ -42,10 +42,10 @@ class _HomepageState extends State<Homepage> {
   int idx = 0 ;
 void navBottom(int index){
   setState((){
-    idx = index ; 
+    idx = index ;
   });
 }
-  final List<Widget> pages = [ 
+  final List<Widget> pages = [
     Homebody(),
     Resources(),
     AboLayla(),
@@ -121,7 +121,7 @@ void navBottom(int index){
           _isLoading = false;
           _events = [];
           print('Failed to fetch today\'s schedule with status code ${response.statusCode}');
-          
+
         });
       }
     } catch (e) {
@@ -203,6 +203,9 @@ void navBottom(int index){
                     Navigator.push(context,
                         MaterialPageRoute(builder: (context) => Profilepage()));
                     setState(() {});
+                    Navigator.push(context,
+                    MaterialPageRoute(builder: (context) => Profilepage(user:widget.user))
+                    );
                   },
                   style: ElevatedButton.styleFrom(
                     backgroundColor: Color(0xFF165D96),
@@ -268,6 +271,13 @@ void navBottom(int index){
               },
             ),
             ListTile(
+              leading: Icon(Icons.settings),
+              title: Text('Settings'),
+              onTap: () {
+                // Handle the Settings tap
+              },
+            ),
+            ListTile(
               leading: Image.asset('lib/assets/img/ai_icon.png', width: 24),
               title: Text('Abo Layla'),
               onTap: () {
@@ -311,6 +321,16 @@ void navBottom(int index){
               onTap: () {
                 // Handle the Logout tap
                 Logout();
+              },
+            ),
+            ListTile(
+              leading: Icon(Icons.schedule),
+              title: Text('Schedule'),
+              onTap: () {
+                // Handle the Close tap
+                Navigator.pushReplacement(context,
+                    MaterialPageRoute(builder: (context) => ScheduleView())
+                  );
               },
             ),
           ],
