@@ -24,6 +24,62 @@ class LoginPage extends StatefulWidget {
   State<LoginPage> createState() => _LoginPageState();
 }
 
+class GamingPopup extends StatelessWidget {
+  final String title;
+  final String description;
+
+  const GamingPopup({
+    Key? key,
+    required this.title,
+    required this.description,
+  }) : super(key: key);
+
+  @override
+  Widget build(BuildContext context) {
+    return AlertDialog(
+      backgroundColor: Colors.black87,
+      shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(15)),
+      title: Text(
+        title,
+        style: TextStyle(
+          color: Colors.yellowAccent,
+          fontSize: 24,
+          fontFamily: 'PressStart2P', // Use a gaming font
+        ),
+        textAlign: TextAlign.center,
+      ),
+      content: Text(
+        description,
+        style: TextStyle(
+          color: Colors.white,
+          fontSize: 18,
+          fontFamily: 'PressStart2P',
+        ),
+        textAlign: TextAlign.center,
+      ),
+      actions: [
+        Center(
+          child: ElevatedButton(
+            onPressed: () {
+              Navigator.pop(context); // Close the popup
+            },
+            style: ElevatedButton.styleFrom(
+              backgroundColor: Colors.yellowAccent,
+              shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(10)),
+            ),
+            child: Text(
+              'Continue',
+              style: TextStyle(
+                fontFamily: 'PressStart2P',
+              ),
+            ),
+          ),
+        ),
+      ],
+    );
+  }
+}
+
 class _LoginPageState extends State<LoginPage> {
   final UsernameController = TextEditingController();
   final PasswordController = TextEditingController();
@@ -33,6 +89,67 @@ class _LoginPageState extends State<LoginPage> {
 
 
 
+Future<void> updateXpAndTitle(int currentXp) async {
+    const xpUrl = 'https://alyibrahim.pythonanywhere.com/set_xp';
+    const titleUrl = 'https://alyibrahim.pythonanywhere.com/set_title';
+    final username = Hive.box('userBox').get('username');
+
+    int newXp = currentXp + 5; // Add 5 XP
+
+    // Update XP on the server
+    final xpResponse = await http.post(
+      Uri.parse(xpUrl),
+      headers: {'Content-Type': 'application/json'},
+      body: jsonEncode({'username': username, 'xp': newXp}),
+    );
+
+    if (xpResponse.statusCode == 200) {
+      // Update XP locally
+      Hive.box('userBox').put('xp', newXp);
+      print("XP updated successfully to $newXp");
+
+      // Determine new title based on XP
+      String newTitle;
+      if (newXp >= 3000) {
+        newTitle = 'El Batal';
+      } else if (newXp >= 2200) {
+        newTitle = 'Legend';
+      } else if (newXp >= 1500) {
+        newTitle = 'Mentor';
+      } else if (newXp >= 1000) {
+        newTitle = 'Expert';
+      } else if (newXp >= 600) {
+        newTitle = 'Challenger';
+      } else if (newXp >= 300) {
+        newTitle = 'Achiever';
+      } else if (newXp >= 100) {
+        newTitle = 'Explorer';
+      } else {
+        newTitle = 'NewComer';
+      }
+
+      // Check if the title has changed
+      String currentTitle = Hive.box('userBox').get('title');
+      if (currentTitle != newTitle) {
+        // Update title on the server
+        final titleResponse = await http.post(
+          Uri.parse(titleUrl),
+          headers: {'Content-Type': 'application/json'},
+          body: jsonEncode({'username': username, 'title': newTitle}),
+        );
+
+        if (titleResponse.statusCode == 200) {
+          // Update title locally
+          Hive.box('userBox').put('title', newTitle);
+          print("Title updated successfully to $newTitle");
+        } else {
+          print("Failed to update title: ${titleResponse.reasonPhrase}");
+        }
+      }
+    } else {
+      print("Failed to update XP: ${xpResponse.reasonPhrase}");
+    }
+  }
 
   Future<bool> fetchAndSaveProfileImage() async {
     final url = 'https://alyibrahim.pythonanywhere.com/get-profile-image'; // Replace with your server URL
@@ -170,6 +287,10 @@ class _LoginPageState extends State<LoginPage> {
 
           }
           
+          int currentXp = jsonResponse['xp'] ?? 0; // Get current XP, default to 0 if null
+          await updateXpAndTitle(currentXp);
+
+          
           User? user = User(
             id: jsonResponse['id'],
             username: jsonResponse['username'],
@@ -198,6 +319,9 @@ class _LoginPageState extends State<LoginPage> {
           //     user: user,
           //   )),
           // );
+          currentXp = jsonResponse['xp'] ?? 0; // Get current XP, default to 0 if null
+          await updateXpAndTitle(currentXp);
+
           Navigator.pushReplacement(context,
             MaterialPageRoute(builder: (context) => DonePopUp(
               user: user,
@@ -458,3 +582,4 @@ class _LoginPageState extends State<LoginPage> {
     );
   }
 }
+
