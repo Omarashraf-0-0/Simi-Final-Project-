@@ -4,7 +4,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_font_icons/flutter_font_icons.dart';
 import 'package:google_nav_bar/google_nav_bar.dart';
 import 'package:hive/hive.dart';
-import 'package:hive_flutter/hive_flutter.dart';
+// import 'package:hive_flutter/hive_flutter.dart';
 import 'package:studymate/pages/HomePage/Homebody.dart';
 import 'package:studymate/pages/LoginPage.dart';
 import 'package:studymate/pages/ProfilePage.dart';
@@ -20,36 +20,38 @@ import 'package:studymate/pages/Leaderboard.dart';
 import 'package:http/http.dart' as http;
 import 'dart:convert';
 import 'package:intl/intl.dart';
+import 'package:studymate/pages/Notifications/Notification.dart';
 
-import '../../util/TextField.dart';
+// import '../../util/TextField.dart';
 
-
-
-import '../../Pop-ups/PopUps_Success.dart';
-import '../../Pop-ups/PopUps_Failed.dart';
-import '../../Pop-ups/PopUps_Warning.dart';
+// import '../../Pop-ups/PopUps_Success.dart';
+// import '../../Pop-ups/PopUps_Failed.dart';
+// import '../../Pop-ups/PopUps_Warning.dart';
 import '../Resuorces/Resources.dart';
+
+// Import the NotificationsPage (you need to create this page)
 
 class Homepage extends StatefulWidget {
   User.User? user = User.User();
   Homepage({
-    super.key,
+    Key? key,
     this.user,
-  });
+  }) : super(key: key);
 
   @override
   State<Homepage> createState() => _HomepageState();
 }
 
 class _HomepageState extends State<Homepage> {
+  int idx = 0;
 
-  int idx = 0 ;
-void navBottom(int index){
-  setState((){
-    idx = index ; 
-  });
-}
-  final List<Widget> pages = [ 
+  void navBottom(int index) {
+    setState(() {
+      idx = index;
+    });
+  }
+
+  final List<Widget> pages = [
     Homebody(),
     Resources(),
     AboLayla(),
@@ -65,44 +67,118 @@ void navBottom(int index){
         context, MaterialPageRoute(builder: (context) => LoginPage()));
   }
 
-  // Function to generate card colors
-  Color _getCardColor(int index) {
-    final List<Color> colors = [
-      Color(0xFFF6F5FB), // Light Purple
-      Color(0xFFFFF4F4), // Light Pink
-      Color(0xFFF5F9F9), // White or another fallback color
-    ];
-    return colors[index % colors.length]; // Cycle through these colors
-  }
+  // Notifications list
+  List<Map<String, String>> _notifications = [];
 
-  Color _getCardColorCourses(int index) {
-    final List<Color> colors = [
-      Color(0xFF165D96),
-    ];
-    return colors[index % colors.length]; // Cycle through these colors
-  }
-
-  String _getCourseBackground(int index) {
-    final List<String> colors = [
-      'lib/assets/img/bg1.jpg',
-      'lib/assets/img/bg2.jpg',
-      'lib/assets/img/bg3.jpg',
-      'lib/assets/img/bg4.jpg',
-      'lib/assets/img/bg5.jpg',
-      'lib/assets/img/bg6.jpg',
-      'lib/assets/img/bg7.jpg',
-      'lib/assets/img/bg8.jpg',
-    ];
-    return colors[index % colors.length]; // Cycle through these colors
-  }
-
-  List<dynamic> _events = [];
-  bool _isLoading = true;
   @override
   void initState() {
     super.initState();
     _fetchTodaysSchedule();
+    fetchNotifications(); // Fetch notifications on init
   }
+
+  // Fetch notifications (you can replace this with your API call)
+  // void _fetchNotifications() async {
+  //   // For demonstration purposes, using sample data
+  //   setState(() {
+  //     _notifications = [
+  //       {
+  //         'title': 'Event Reminder',
+  //         'body': 'Don\'t forget your meeting at 10 AM.',
+  //       },
+  //       {
+  //         'title': 'New Message',
+  //         'body': 'You have received a new message.',
+  //       },
+  //       {
+  //         'title': 'Update Available',
+  //         'body': 'A new update is available for download.',
+  //       },
+  //       {
+  //         'title': 'Special Offer',
+  //         'body': 'Check out our special offer.',
+  //       },
+  //     ];
+  //   });
+  // }
+
+  void _showNotificationsPopup() {
+    showDialog(
+      context: context,
+      builder: (BuildContext context) {
+        return Dialog(
+          shape: RoundedRectangleBorder(
+            borderRadius: BorderRadius.circular(15.0),
+          ),
+          child: Container(
+            // constraints: BoxConstraints(maxHeight: 400), // Adjust as needed
+            child: Column(
+              mainAxisSize: MainAxisSize.min,
+              children: [
+                // Title
+                Padding(
+                  padding: const EdgeInsets.all(16.0),
+                  child: Text(
+                    'Notifications',
+                    style: TextStyle(
+                      fontSize: 20,
+                      fontWeight: FontWeight.bold,
+                    ),
+                  ),
+                ),
+                Divider(height: 1),
+                // Notifications list
+                Flexible(
+                  child: _notifications.isNotEmpty
+                      ? ListView.builder(
+                          shrinkWrap: true,
+                          itemCount: _notifications.length > 3
+                              ? 3
+                              : _notifications.length,
+                          itemBuilder: (context, index) {
+                            final notification = _notifications[index];
+                            return ListTile(
+                              title: Text(notification['title'] ?? ''),
+                              subtitle: Text(notification['body'] ?? ''),
+                              onTap: () {
+                                // Handle notification tap if needed
+                              },
+                            );
+                          },
+                        )
+                      : Padding(
+                          padding: const EdgeInsets.all(16.0),
+                          child: Text('No notifications'),
+                        ),
+                ),
+                Divider(height: 1),
+                // View all notifications button
+                TextButton(
+                  onPressed: () {
+                    Navigator.pop(context); // Close the dialog
+                    // Navigate to the notifications page
+                    Navigator.push(
+                      context,
+                      MaterialPageRoute(
+                        builder: (context) => NotificationPage(
+                          notifications: _notifications,
+                        ),
+                      ),
+                    );
+                  },
+                  child: Text('View all notifications'),
+                ),
+              ],
+            ),
+          ),
+        );
+      },
+    );
+  }
+
+  // Your existing code...
+  List<dynamic> _events = [];
+  bool _isLoading = true;
 
   Future<void> _fetchTodaysSchedule() async {
     final today = DateTime.now();
@@ -124,8 +200,8 @@ void navBottom(int index){
         setState(() {
           _isLoading = false;
           _events = [];
-          print('Failed to fetch today\'s schedule with status code ${response.statusCode}');
-          
+          print(
+              'Failed to fetch today\'s schedule with status code ${response.statusCode}');
         });
       }
     } catch (e) {
@@ -136,20 +212,19 @@ void navBottom(int index){
       });
     }
   }
+
   String _formatTime(String time) {
-  try {
-    // Parse the time string into a DateTime object
-    final parsedTime = DateFormat('HH:mm:ss').parse(time);
+    try {
+      // Parse the time string into a DateTime object
+      final parsedTime = DateFormat('HH:mm:ss').parse(time);
 
-    // Format the DateTime object into a 12-hour format
-    return DateFormat('hh:mm a').format(parsedTime);
-  } catch (e) {
-    // Return a fallback value if parsing fails
-    return 'Invalid Time';
+      // Format the DateTime object into a 12-hour format
+      return DateFormat('hh:mm a').format(parsedTime);
+    } catch (e) {
+      // Return a fallback value if parsing fails
+      return 'Invalid Time';
+    }
   }
-}
-
-
 
   @override
   Widget build(BuildContext context) {
@@ -157,7 +232,6 @@ void navBottom(int index){
       backgroundColor: Colors.white,
       appBar: AppBar(
         backgroundColor: Color(0xFF165D96), // using hex color
-        // title: Center(child: Text('Home Page')),
         leading: Builder(builder: (context) {
           return IconButton(
             icon: Icon(
@@ -184,9 +258,8 @@ void navBottom(int index){
               children: [
                 ElevatedButton(
                   onPressed: () {
-                    showSuccessPopup(context, 'title', 'message');
-                    // navigate to the notifications page
-                    // Navigator.pushNamed(context, '/NotificationsPage');
+                    // Show the notifications popup
+                    _showNotificationsPopup();
                   },
                   style: ElevatedButton.styleFrom(
                     backgroundColor: Color(0xFF165D96),
@@ -204,9 +277,12 @@ void navBottom(int index){
                 ElevatedButton(
                   onPressed: () {
                     // navigate to the profile page
-                    Navigator.push(context,
-                        MaterialPageRoute(builder: (context) => Profilepage()));
-                    setState(() {});
+                    Navigator.push(
+                        context,
+                        MaterialPageRoute(
+                            builder: (context) => Profilepage(
+                                  user: widget.user,
+                                )));
                   },
                   style: ElevatedButton.styleFrom(
                     backgroundColor: Color(0xFF165D96),
@@ -235,6 +311,7 @@ void navBottom(int index){
         ],
       ),
       drawer: Drawer(
+        // Your existing drawer code
         child: ListView(
           padding: EdgeInsets.zero,
           children: <Widget>[
@@ -246,10 +323,11 @@ void navBottom(int index){
                 children: [
                   // app logo
                   Image.asset(
-                      'lib/assets/img/El_Batal_Study_Mate_Light_Mode-removebg-preview.png',
-                      height: 60,
-                      width: 60,
-                      color: Colors.white),
+                    'lib/assets/img/El_Batal_Study_Mate_Light_Mode-removebg-preview.png',
+                    height: 60,
+                    width: 60,
+                    color: Colors.white,
+                  ),
                   SizedBox(
                     width: 10,
                   ),
@@ -350,9 +428,7 @@ void navBottom(int index){
           ],
         ),
       ),
-
-      body:pages[idx],
-
+      body: pages[idx],
       bottomNavigationBar: Container(
         margin: EdgeInsets.symmetric(
           horizontal: 20,
@@ -407,51 +483,45 @@ void navBottom(int index){
       ),
     );
   }
+
+ Future<void> fetchNotifications() async {
+  
+    const url = 'https://alyibrahim.pythonanywhere.com/getNotification';  // Replace with your actual Flask server URL
+    final username = Hive.box('userBox').get('id');
+    print("USERNAME: $username");
+      final Map<String, dynamic> requestBody = {
+      'username': username,
+    };
+    final response = await http.post(
+      Uri.parse(url),
+      headers: {'Content-Type': 'application/json'},
+      body: jsonEncode(requestBody),
+    );
+
+      if (response.statusCode == 200) {
+        final jsonResponse = jsonDecode(response.body);
+                print("print the jason  ? $jsonResponse");
+                
+                setState(() {
+
+                          //  _notifications = jsonResponse["notifications"].map<Map<String, String>>((n) => {"title": n["title"], "body": n["body"]}).toList();
+
+                          var notifications = jsonResponse["notifications"]
+                            .map<Map<String, String>>((n) => {
+                                  "title": n["title"].toString(),
+                                  "body": n["body"].toString(),
+                                  "id": n["id"].toString()
+                                })
+                            .toList();
+                            print("notifications A7A ?? : $notifications");
+                            _notifications = notifications;
+
+                });
+      }
+      else {
+        print('Request failed with status: ${response.body}.');
+
+      }
+  }
+
 }
-// Card(
-//                   elevation: 5,
-//                   child: Padding(
-//                     padding: const EdgeInsets.all(8.0),
-//                     child: Column(
-//                       children: [
-//                         Row(
-//                           mainAxisAlignment: MainAxisAlignment.spaceBetween,
-//                           children: [
-//                             Text(
-//                               'Maths',
-//                               style: TextStyle(
-//                                 fontSize: 20,
-//                                 fontWeight: FontWeight.bold,
-//                               ),
-//                             ),
-//                             Text(
-//                               '10:00 AM',
-//                               style: TextStyle(
-//                                 fontSize: 16,
-//                                 color: Colors.grey,
-//                               ),
-//                             ),
-//                           ],
-//                         ),
-//                         SizedBox(
-//                           height: 10,
-//                         ),
-//                         Row(
-//                           children: [
-//                             Icon(
-//                               Icons.location_on,
-//                               color: Colors.blue,
-//                             ),
-//                             Text(
-//                               'Room 101',
-//                               style: TextStyle(
-//                                 fontSize: 16,
-//                                 color: Colors.grey,
-//                               ),
-//                             ),
-//                           ],
-//                         ),
-//                       ],
-//                     ),
-//                   ),
-//                 ),

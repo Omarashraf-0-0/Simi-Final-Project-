@@ -1,8 +1,8 @@
 import 'dart:convert';
-
 import 'package:flutter/material.dart';
 import 'package:hive_flutter/hive_flutter.dart';
 import 'package:http/http.dart' as http;
+import 'package:studymate/main.dart';
 import 'package:studymate/pages/Resuorces/CourseContent.dart';
 import 'package:studymate/pages/Resuorces/Courses.dart';
 class Resources extends StatefulWidget {
@@ -136,6 +136,9 @@ class _ResourcesState extends State<Resources> {
                                             const SizedBox(height: 20), // Add some spacing
                                             ElevatedButton(
                                               onPressed: () {
+                                                String title = "Welcome to ${courses[index]}";
+                                                String body = "Get started with the course content";
+                                                  showNotification(title, body);
                                                 final String co = "COId";
                                                  Hive.box('userBox').put('COId', coursesIndex[index]);
                                                 print("Course: ${courses[index]}, ${coursesIndex[index]}");
