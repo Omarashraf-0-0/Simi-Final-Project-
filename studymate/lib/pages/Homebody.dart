@@ -8,7 +8,7 @@ import 'package:hive_flutter/hive_flutter.dart';
 // import 'package:studymate/pages/Resources/Resources.dart';
 import 'package:studymate/pages/LoginPage.dart';
 import 'package:studymate/pages/ProfilePage.dart';
-import 'package:studymate/pages/CV.dart';
+import 'package:studymate/pages/Career/CV.dart';
 import 'package:studymate/pages/Resuorces/SRS.dart';
 import 'package:studymate/pages/ScheduleManager/ScheduleManager.dart';
 import '../Classes/User.dart';

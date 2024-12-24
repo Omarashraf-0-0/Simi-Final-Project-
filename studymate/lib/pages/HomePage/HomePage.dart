@@ -16,7 +16,7 @@ import 'package:studymate/pages/QuizGenerator/QuizHome.dart';
 import 'package:studymate/pages/Game/GameHome.dart';
 import 'package:studymate/pages/Game/GameLeaderBoard.dart';
 import 'package:studymate/pages/Leaderboard.dart';
-import 'package:studymate/pages/CV.dart';
+import 'package:studymate/pages/Career/CareerHome.dart';
 
 import 'package:http/http.dart' as http;
 import 'dart:convert';
@@ -57,6 +57,7 @@ class _HomepageState extends State<Homepage> {
     Resources(),
     AboLayla(),
     GameLeaderBoard(),
+    CareerHome(),
   ];
 
   Future<void> Logout() async {
@@ -397,7 +398,7 @@ class _HomepageState extends State<Homepage> {
             onTap: () {
               Navigator.push(
                 context,
-                MaterialPageRoute(builder: (context) => CV()),
+                MaterialPageRoute(builder: (context) => CareerHome()),
               );
             },
           ),
