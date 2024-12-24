@@ -24,6 +24,7 @@ String? courseIndex;
 class _CourseContentState extends State<CourseContent> {
   ////////////////////////////////////////////////////////////
   String? taskId; // Store taskId as a class member
+  String userRole = '';
   ReceivePort _port = ReceivePort();
 
   @override
@@ -32,7 +33,8 @@ class _CourseContentState extends State<CourseContent> {
 
     // Initialize FlutterDownloader
     // Register the SendPort to communicate with the background isolate
-    IsolateNameServer.registerPortWithName(_port.sendPort, 'downloader_send_port')  ;
+    IsolateNameServer.registerPortWithName(
+        _port.sendPort, 'downloader_send_port');
 
     // Listen for data from the background isolate
     _port.listen((dynamic data) {
@@ -52,6 +54,7 @@ class _CourseContentState extends State<CourseContent> {
     // Register the static callback
     FlutterDownloader.registerCallback(downloadCallback);
 
+    userRole = Hive.box('userBox').get('role') ?? 'student';
     // Other initialization code...
     getcources();
   }
@@ -132,7 +135,7 @@ class _CourseContentState extends State<CourseContent> {
       Mcat = 'Su';
     } else if (Mcat == 'Quizzes') {
       Mcat = 'Q';
-    }else{
+    } else {
       Mcat = 'R';
     }
     print(Mcat);
@@ -178,7 +181,8 @@ class _CourseContentState extends State<CourseContent> {
           if (!categorizedList.containsKey(category)) {
             categorizedList[category] = [];
           }
-          categorizedList[category]?.add('${resource['RName']}: ${resource['RFileURL']}');
+          categorizedList[category]
+              ?.add('${resource['RName']}: ${resource['RFileURL']}');
           subjectIds[resource['RName']] = resource['RId'];
         });
 
@@ -243,10 +247,10 @@ class _CourseContentState extends State<CourseContent> {
     } else {
       print('Request failed with status: ${response.body}.');
     }
-    
   }
 
-  Future<void> addMaterial(String Rurl, String Title, String Mcat, String subid) async {
+  Future<void> addMaterial(
+      String Rurl, String Title, String Mcat, String subid) async {
     const url = 'https://alyibrahim.pythonanywhere.com/addMaterial';
     if (Mcat == 'Lectures') {
       Mcat = 'L';
@@ -256,7 +260,7 @@ class _CourseContentState extends State<CourseContent> {
       Mcat = 'Su';
     } else if (Mcat == 'Quizzes') {
       Mcat = 'Q';
-    }else{
+    } else {
       Mcat = 'R';
     }
     print(Mcat);
@@ -308,10 +312,11 @@ class _CourseContentState extends State<CourseContent> {
             _buildTermDropdown('Summaries', SUnames),
             _buildTermDropdown('Quizzes', Qnames),
             _buildTermDropdownLinks('Resources', Rnames),
-            ElevatedButton(
-              onPressed: () => _showAddMaterialPopup(context),
-              child: const Text('Add Material'),
-            ),
+            if (userRole == 'moderator') // Add this condition
+              ElevatedButton(
+                onPressed: () => _showAddMaterialPopup(context),
+                child: const Text('Add Material'),
+              ),
           ],
         ),
       ),
@@ -329,7 +334,8 @@ class _CourseContentState extends State<CourseContent> {
         child: ExpansionTile(
           title: Row(
             children: [
-              const Icon(Icons.my_library_books, color: Color.fromARGB(255, 104, 110, 114)),
+              const Icon(Icons.my_library_books,
+                  color: Color.fromARGB(255, 104, 110, 114)),
               const SizedBox(width: 15),
               Text(
                 term,
@@ -349,11 +355,12 @@ class _CourseContentState extends State<CourseContent> {
                     icon: const Icon(Icons.file_download),
                     onPressed: () => _downloadPdf(subject),
                   ),
-                  // Edit icon
-                  IconButton(
-                    icon: const Icon(Icons.edit, color: Colors.grey),
-                    onPressed: () => _showEditPopup(context, subject),
-                  ),
+                  if (userRole == 'moderator') // Add this condition
+                    // Edit icon
+                    IconButton(
+                      icon: const Icon(Icons.edit, color: Colors.grey),
+                      onPressed: () => _showEditPopup(context, subject),
+                    ),
                 ],
               ),
               onTap: () {
@@ -375,6 +382,7 @@ class _CourseContentState extends State<CourseContent> {
       ),
     );
   }
+
   Widget _buildTermDropdownLinks(String term, List<String> subjects) {
     return Padding(
       padding: const EdgeInsets.all(16.0),
@@ -386,7 +394,8 @@ class _CourseContentState extends State<CourseContent> {
         child: ExpansionTile(
           title: Row(
             children: [
-              const Icon(Icons.my_library_books, color: Color.fromARGB(255, 104, 110, 114)),
+              const Icon(Icons.my_library_books,
+                  color: Color.fromARGB(255, 104, 110, 114)),
               const SizedBox(width: 15),
               Text(
                 term,
@@ -401,11 +410,12 @@ class _CourseContentState extends State<CourseContent> {
               trailing: Row(
                 mainAxisSize: MainAxisSize.min,
                 children: [
-                  // Edit icon
-                  IconButton(
-                    icon: const Icon(Icons.edit, color: Colors.grey),
-                    onPressed: () => _showEditPopup(context, subject),
-                  ),
+                  if (userRole == 'moderator') // Add this condition
+                    // Edit icon
+                    IconButton(
+                      icon: const Icon(Icons.edit, color: Colors.grey),
+                      onPressed: () => _showEditPopup(context, subject),
+                    ),
                 ],
               ),
               onTap: () {
@@ -430,9 +440,16 @@ class _CourseContentState extends State<CourseContent> {
 
   void _showEditPopup(BuildContext context, String subject) {
     // Initialize controllers and variables
-    final TextEditingController titleController = TextEditingController(text: subject);
+    final TextEditingController titleController =
+        TextEditingController(text: subject);
     String? selectedCategory; // Nullable to avoid mismatch
-    final List<String> categories = ["Resources", "Lectures", "Sections", "Summaries", "Quizzes"];
+    final List<String> categories = [
+      "Resources",
+      "Lectures",
+      "Sections",
+      "Summaries",
+      "Quizzes"
+    ];
 
     showDialog(
       context: context,
@@ -447,7 +464,8 @@ class _CourseContentState extends State<CourseContent> {
                   child: Text(
                     '$subject',
                     style: const TextStyle(fontSize: 18),
-                    overflow: TextOverflow.ellipsis, // Truncate text if it overflows
+                    overflow:
+                        TextOverflow.ellipsis, // Truncate text if it overflows
                     maxLines: 1,
                   ),
                 ),
@@ -498,15 +516,18 @@ class _CourseContentState extends State<CourseContent> {
                 ),
                 ElevatedButton(
                   onPressed: () {
-                    if (selectedCategory == null || selectedCategory == "Select Category") {
+                    if (selectedCategory == null ||
+                        selectedCategory == "Select Category") {
                       // Show error if no valid category is selected
                       ScaffoldMessenger.of(context).showSnackBar(
-                        const SnackBar(content: Text('Please select a valid category.')),
+                        const SnackBar(
+                            content: Text('Please select a valid category.')),
                       );
                       return;
                     }
                     print('Title: ${titleController.text}');
-                    updateMaterial(subjectIds[subject]!, titleController.text, selectedCategory!);
+                    updateMaterial(subjectIds[subject]!, titleController.text,
+                        selectedCategory!);
                     print('$selectedCategory');
                     Navigator.pop(context); // Close the popup
                   },
@@ -524,7 +545,13 @@ class _CourseContentState extends State<CourseContent> {
     final TextEditingController titleController = TextEditingController();
     final TextEditingController urlController = TextEditingController();
     String? selectedCategory;
-    final List<String> categories = ["Resources", "Lectures", "Sections", "Summaries", "Quizzes"];
+    final List<String> categories = [
+      "Resources",
+      "Lectures",
+      "Sections",
+      "Summaries",
+      "Quizzes"
+    ];
 
     showDialog(
       context: context,
@@ -565,7 +592,7 @@ class _CourseContentState extends State<CourseContent> {
           actions: [
             ElevatedButton(
               onPressed: () {
-                // Add the new material 
+                // Add the new material
                 print('Title: ${titleController.text}');
                 print('Category: $selectedCategory');
                 print('URL: ${urlController.text}');
@@ -585,6 +612,4 @@ class _CourseContentState extends State<CourseContent> {
       },
     );
   }
-
-  
 }
