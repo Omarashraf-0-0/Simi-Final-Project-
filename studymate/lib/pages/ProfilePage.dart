@@ -1,14 +1,9 @@
 // ignore_for_file: prefer_const_constructors
 
-
 import 'package:flutter/material.dart';
 import 'package:flutter_font_icons/flutter_font_icons.dart';
 import 'package:google_fonts/google_fonts.dart';
-import 'dart:ffi';
 import 'dart:io';
-import 'package:flutter/material.dart';
-import 'package:flutter_font_icons/flutter_font_icons.dart';
-import 'package:google_fonts/google_fonts.dart';
 import 'package:path_provider/path_provider.dart';
 import '../Classes/User.dart';
 import 'package:hive/hive.dart';
@@ -17,44 +12,64 @@ import '../Classes/User.dart';
 import '../Pop-ups/SuccesPopUp.dart';
 import '../util/TextField.dart';
 import 'package:http/http.dart' as http;
-import 'dart:convert';
-import 'package:flutter/material.dart';
 import 'dart:convert'; // For base64 encoding
-import 'dart:io'; // For File operations
-import 'package:flutter/material.dart';
 import 'package:image_picker/image_picker.dart';
-import 'package:hive/hive.dart'; // For Hive operations
 import '../Pop-ups/PopUps_Success.dart';
 import './UserUpdater.dart';
 
 class Profilepage extends StatefulWidget {
   User? user;
-  File? _imageFile;
-  Profilepage({super.key,this.user});
+  Profilepage({Key? key, this.user}) : super(key: key);
 
+  @override
+  State<Profilepage> createState() => _ProfilepageState();
+}
 
+class _ProfilepageState extends State<Profilepage> {
+  File? _imageFile; // To hold the profile image file
+  bool _isImageLoading = true;
+  final ImagePicker _picker = ImagePicker();
+
+  @override
+  void initState() {
+    super.initState();
+    // Fetch the profile image when the page is initialized
+    fetchAndSaveProfileImage().then((result) {
+      if (mounted) {
+        setState(() {
+          _isImageLoading =
+              false; // Set loading to false once the image is fetched
+        });
+      }
+    });
+  }
+
+  // Fetch and save the profile image
   Future<bool> fetchAndSaveProfileImage() async {
-    final url = 'https://alyibrahim.pythonanywhere.com/get-profile-image'; // Replace with your server URL
+    final url =
+        'https://alyibrahim.pythonanywhere.com/get-profile-image'; // Replace with your server URL
 
-// Get the username from Hive box
+    // Get the username from Hive box
     final username = Hive.box('userBox').get('username');
-    print(">>>>>>>>> $username");
+    print("Username: $username");
 
-// Create a map with the username
+    // Create a map with the username
     final Map<String, String> body = {
       'username': username,
     };
 
-// Send the username as JSON in the body of a POST request
+    // Send the username as JSON in the body of a POST request
     final response = await http
         .post(
-      Uri.parse(url),
-      headers: {'Content-Type': 'application/json'}, // Set content type to JSON
-      body: jsonEncode(body), // Encode the body as JSON
-    )
+          Uri.parse(url),
+          headers: {
+            'Content-Type': 'application/json'
+          }, // Set content type to JSON
+          body: jsonEncode(body), // Encode the body as JSON
+        )
         .timeout(
-      Duration(seconds: 30), // Adjust the duration as needed
-    );
+          Duration(seconds: 30), // Adjust the duration as needed
+        );
     if (response.statusCode == 200) {
       // Get the image bytes from the response
       final bytes = response.bodyBytes;
@@ -63,206 +78,162 @@ class Profilepage extends StatefulWidget {
       final directory = await getTemporaryDirectory();
 
       // Create a unique file name based on username and extension
-      final imagePath = '${directory.path}/${Hive.box('userBox').get('username')}_profile.jpg';
+      final imagePath =
+          '${directory.path}/${Hive.box('userBox').get('username')}_profile.jpg';
 
       // Create a file and write the bytes to it
       _imageFile = File(imagePath)..writeAsBytesSync(bytes);
 
-      print(">>>>>>>>>> Done <<<<<<<<");
-      // Update the UI to display the image
+      print("Profile image fetched and saved.");
+      // Optionally, save the image to Hive or update UI
       return true;
     } else {
       // Handle error if the image is not found or another error occurs
-      print("Failed to load image: ${response.statusCode} ===== ${response.body}");
+      print(
+          "Failed to load image: ${response.statusCode} ===== ${response.body}");
       return false;
     }
   }
 
+  // Function to save the profile image to Hive
+  Future<void> saveProfileImageToHive(File imageFile) async {
+    try {
+      // Read the image as bytes
+      final bytes = await imageFile.readAsBytes();
 
+      // Convert bytes to Base64 string
+      final base64String = base64Encode(bytes);
 
+      // Store the Base64 string in Hive
+      await Hive.box('userBox').put('profileImageBase64', base64String);
 
-
-
-  @override
-  State<Profilepage> createState() => _ProfilepageState();
-
-}
-
-
-
-class _ProfilepageState extends State<Profilepage> {
-
-  bool _isImageLoading = true;
-
-  @override
-  void initState() {
-    super.initState();
-    // Fetch the profile image when the page is initialized
-    widget.fetchAndSaveProfileImage().then((result) {
-      setState(() {
-        _isImageLoading = false; // Set loading to false once the image is fetched
-      });
-    });
+      print('Profile image saved successfully!');
+    } catch (e) {
+      print('Error saving profile image: $e');
+    } finally {
+      if (mounted) {
+        setState(() {}); // Update the UI if mounted
+      }
+    }
   }
+
+  // Function to upload the image to the server
+  Future<void> uploadImageToServer(
+      File imageFile, String serverUrl, String username) async {
+    try {
+      // Create a multipart request
+      var request = http.MultipartRequest('POST', Uri.parse(serverUrl));
+
+      // Attach the file
+      request.files.add(await http.MultipartFile.fromPath(
+        'image', // The key to match on the Flask server
+        imageFile.path,
+      ));
+
+      // Add other fields if needed
+      request.fields['username'] = username;
+
+      // Send the request
+      var response = await request.send();
+
+      if (response.statusCode == 200) {
+        print('Image uploaded successfully!');
+        // Optional: Decode and use the response from the server
+        var responseBody = await response.stream.bytesToString();
+        print('Server Response: $responseBody');
+        await saveProfileImageToHive(imageFile);
+      } else {
+        print('Failed to upload image. Status code: ${response.statusCode}');
+        print('Response: ${await response.stream.bytesToString()}');
+      }
+    } catch (e) {
+      print('Error uploading image: $e');
+    }
+  }
+
+  // Function to pick an image
+  Future<void> _pickImage() async {
+    final pickedFile = await _picker.pickImage(source: ImageSource.gallery);
+
+    if (pickedFile != null) {
+      await uploadImageToServer(
+          File(pickedFile.path),
+          'https://alyibrahim.pythonanywhere.com/upload-image',
+          Hive.box('userBox').get('username'));
+    }
+  }
+
+  // Function to get the rank color
   Color _getRankColor(String rank) {
-  switch (rank) {
-    case 'El Batal':
-      return Color(0xFFb3141c);
-    case 'Legend':
-      return Color(0xFFFFD700);
-    case 'Mentor':
-      return Color(0xFF6F42C1);
-    case 'Expert':
-      return Color(0xFFFD7E14);
-    case 'Challenger':
-      return Color(0xFFFFC107);
-    case 'Achiever':
-      return Color(0xFF28A745);
-    case 'Explorer':
-      return Color(0xFF007BFF);
-    case 'NewComer':
-      return Color(0xFF808080);
-    default:
-      return Colors.black;
+    switch (rank) {
+      case 'El Batal':
+        return Color(0xFFb3141c);
+      case 'Legend':
+        return Color(0xFFFFD700);
+      case 'Mentor':
+        return Color(0xFF6F42C1);
+      case 'Expert':
+        return Color(0xFFFD7E14);
+      case 'Challenger':
+        return Color(0xFFFFC107);
+      case 'Achiever':
+        return Color(0xFF28A745);
+      case 'Explorer':
+        return Color(0xFF007BFF);
+      case 'NewComer':
+        return Color(0xFF808080);
+      default:
+        return Colors.black;
+    }
   }
-}
 
-double _getProgressValue(int xp, String rank) {
-  switch (rank) {
-    case 'El Batal':
-      return xp / 3000;
-    case 'Legend':
-      return (xp - 2200) / 800;
-    case 'Mentor':
-      return (xp - 1500) / 700;
-    case 'Expert':
-      return (xp - 1000) / 500;
-    case 'Challenger':
-      return (xp - 600) / 400;
-    case 'Achiever':
-      return (xp - 300) / 300;
-    case 'Explorer':
-      return (xp - 100) / 200;
-    case 'NewComer':
-      return xp / 100;
-    default:
-      return 0.0;
+  // Function to get the progress value
+  double _getProgressValue(int xp, String rank) {
+    switch (rank) {
+      case 'El Batal':
+        return xp / 3000;
+      case 'Legend':
+        return (xp - 2200) / 800;
+      case 'Mentor':
+        return (xp - 1500) / 700;
+      case 'Expert':
+        return (xp - 1000) / 500;
+      case 'Challenger':
+        return (xp - 600) / 400;
+      case 'Achiever':
+        return (xp - 300) / 300;
+      case 'Explorer':
+        return (xp - 100) / 200;
+      case 'NewComer':
+        return xp / 100;
+      default:
+        return 0.0;
+    }
   }
-}
+
   @override
   Widget build(BuildContext context) {
-
-     // To hold the selected image file
-    final ImagePicker _picker = ImagePicker();
-
-
-    Future<void> saveProfileImageToHive(File imageFile) async {
-      try {
-        // Read the image as bytes
-        final bytes = await imageFile.readAsBytes();
-
-        // Convert bytes to Base64 string
-        final base64String = base64Encode(bytes);
-
-        // Store the Base64 string in Hive
-        await Hive.box('userBox').put('profileImageBase64', base64String);
-
-        print('Profile image saved successfully!');
-      } catch (e) {
-        print('Error saving profile image: $e');
-      }finally{
-        setState(() {});
-      }
-    }
-
-
-
-    Future<void> uploadImageToServer(File imageFile, String serverUrl, String username) async {
-      try {
-        // Create a multipart request
-        var request = http.MultipartRequest('POST', Uri.parse(serverUrl));
-
-        // Attach the file
-        request.files.add(await http.MultipartFile.fromPath(
-          'image', // The key to match on the Flask server
-          imageFile.path,
-        ));
-
-        // Add other fields if needed
-        request.fields['username'] = username;
-
-        // Send the request
-        var response = await request.send();
-
-        if (response.statusCode == 200) {
-          print('Image uploaded successfully!');
-          // Optional: Decode and use the response from the server
-          var responseBody = await response.stream.bytesToString();
-          print('Server Response: $responseBody');
-          saveProfileImageToHive(imageFile);
-        } else {
-          print('Failed to upload image. Status code: ${response.statusCode}');
-          print('Response: ${await response.stream.bytesToString()}');
-        }
-      } catch (e) {
-        print('Error uploading image: $e');
-      }
-    }
-    
-
-    // Function to pick an image
-    Future<void> _pickImage() async {
-      final pickedFile = await _picker.pickImage(source: ImageSource.gallery);
-
-      if (pickedFile != null) {
-        setState(() {
-          uploadImageToServer(File(pickedFile.path), 'https://alyibrahim.pythonanywhere.com/upload-image',
-              Hive.box('userBox').get('username'));
-        });
-      }
-    }
-
     print("XP : ${widget.user?.xp}");
     return Scaffold(
       appBar: AppBar(
         backgroundColor: Color(0xFF165D96),
         leading: IconButton(
-            icon: Icon(Icons.arrow_back_ios_new_rounded, color: Color(0xFF01D7ED)),
+            icon: Icon(Icons.arrow_back_ios_new_rounded,
+                color: Color(0xFF01D7ED)),
             onPressed: () {
               Navigator.pop(context);
-            }
-        ),
-        title: Center(child: Text('Profile Page',
-          style: TextStyle(
-            color: Colors.white,
-            fontSize: 20,
-            fontWeight: FontWeight.bold,
-            // backgroundColor: Colors.black,
+            }),
+        title: Center(
+          child: Text(
+            'Profile Page',
+            style: TextStyle(
+              color: Colors.white,
+              fontSize: 20,
+              fontWeight: FontWeight.bold,
+              // backgroundColor: Colors.black,
+            ),
           ),
         ),
-        ),
-        titleTextStyle: TextStyle(
-          color: Colors.black,
-          fontSize: 20,
-          fontWeight: FontWeight.bold,
-          // backgroundColor: Colors.black,
-        ),
-        // actions: [
-        //   IconButton(
-        //       icon: Icon(
-        //         Ionicons.settings_outline,
-        //         color: Color(0xFF01D7ED),
-        //         size: 25,
-
-        //       ),
-        //       onPressed: () {
-        //         Navigator.push(
-        //           context,
-        //           MaterialPageRoute(builder: (context) => ProfileSettings()),
-        //         );
-        //       }
-        //   ),
-        // ],
       ),
       body: SingleChildScrollView(
         padding: const EdgeInsets.only(top: 20, left: 16, right: 16),
@@ -276,18 +247,31 @@ double _getProgressValue(int xp, String rank) {
               children: [
                 Stack(
                   children: [
-                    if (Hive.box('userBox').get('profileImageBase64')==null)
+                    if (_isImageLoading)
                       CircleAvatar(
                         radius: 60,
                         backgroundColor: Colors.grey, // Placeholder color
                         child: CircularProgressIndicator(
-                          valueColor: AlwaysStoppedAnimation<Color>(Color(0xFF01D7ED)), // Change spinner color here
+                          valueColor: AlwaysStoppedAnimation<Color>(
+                              Color(0xFF01D7ED)), // Change spinner color here
+                        ),
+                      )
+                    else if (Hive.box('userBox').get('profileImageBase64') ==
+                        null)
+                      CircleAvatar(
+                        radius: 60,
+                        backgroundColor: Colors.grey, // Placeholder color
+                        child: Icon(
+                          Icons.person,
+                          size: 60,
+                          color: Colors.white,
                         ),
                       )
                     else
                       CircleAvatar(
-                        radius: 60,
-                        backgroundImage: MemoryImage(base64Decode(Hive.box('userBox').get('profileImageBase64')))),
+                          radius: 60,
+                          backgroundImage: MemoryImage(base64Decode(
+                              Hive.box('userBox').get('profileImageBase64')))),
                     Positioned(
                       bottom: 0, // Position button slightly outside the avatar
                       right: 5,
@@ -315,53 +299,66 @@ double _getProgressValue(int xp, String rank) {
                   ],
                 ),
                 SizedBox(width: 20),
+                // User Information
                 Column(
                   crossAxisAlignment: CrossAxisAlignment.start,
                   children: [
-                  Text(
-                      Hive.box('userBox').get('title'),
+                    Text(
+                      Hive.box('userBox').get('title') ?? '',
                       style: TextStyle(
                         fontSize: 16,
                         fontWeight: FontWeight.bold,
                         fontFamily: GoogleFonts.leagueSpartan().fontFamily,
-                        color: _getRankColor(Hive.box('userBox').get('title')), // Use the function to get the color
+                        color: _getRankColor(
+                            Hive.box('userBox').get('title') ?? ''),
                       ),
                     ),
                     // SizedBox(height: 1),
                     Text(
-                        Hive.box('userBox').get('fullName'),
+                      Hive.box('userBox').get('fullName') ?? '',
                       style: TextStyle(
                         fontSize: 24,
                         fontWeight: FontWeight.bold,
                         fontFamily: GoogleFonts.leagueSpartan().fontFamily,
-
                       ),
                     ),
                     SizedBox(height: 1),
                     Text(
-                      "${Hive.box('userBox').get('xp')}",
+                      "${Hive.box('userBox').get('xp') ?? 0}",
                       style: TextStyle(
                           fontSize: 12,
                           fontWeight: FontWeight.bold,
                           fontFamily: GoogleFonts.leagueSpartan().fontFamily,
-                          color: _getRankColor(Hive.box('userBox').get('title'))
-                      ),
+                          color: _getRankColor(
+                              Hive.box('userBox').get('title') ?? '')),
                     ),
-                    SizedBox(height: 5,),
+                    SizedBox(
+                      height: 5,
+                    ),
                     SizedBox(
                       height: 10,
-                      width: MediaQuery.of(context).size.width * 0.3,  // 30% of the screen width
+                      width: MediaQuery.of(context).size.width *
+                          0.3, // 30% of the screen width
                       child: LinearProgressIndicator(
                         borderRadius: BorderRadius.circular(5),
-                        value: _getProgressValue(Hive.box('userBox').get('xp'), Hive.box('userBox').get('title')),
-                        backgroundColor: _getProgressValue(Hive.box('userBox').get('xp'), Hive.box('userBox').get('title')) == 0 ? Colors.black : Color.fromARGB(255, 0, 0, 0),  // Background color
-                        color: _getRankColor(Hive.box('userBox').get('title')),  // Progress color
+                        value: _getProgressValue(
+                            Hive.box('userBox').get('xp') ?? 0,
+                            Hive.box('userBox').get('title') ?? ''),
+                        backgroundColor: _getProgressValue(
+                                    Hive.box('userBox').get('xp') ?? 0,
+                                    Hive.box('userBox').get('title') ?? '') ==
+                                0
+                            ? Colors.black
+                            : Color.fromARGB(255, 0, 0, 0), // Background color
+                        color: _getRankColor(
+                            Hive.box('userBox').get('title') ?? ''),
                       ),
                     ),
                   ],
                 )
               ],
             ),
+            SizedBox(height: 20),
             SizedBox(height: 20),
             Row(
               mainAxisAlignment: MainAxisAlignment.spaceAround,
@@ -488,15 +485,13 @@ double _getProgressValue(int xp, String rank) {
               ),
             ),
             SizedBox(height: 5),
-
             Text(
               'Email',
               style: TextStyle(
                   fontSize: 15,
                   fontWeight: FontWeight.bold,
                   fontFamily: GoogleFonts.leagueSpartan().fontFamily,
-                  color: Color(0xFF1BC0C4)
-              ),
+                  color: Color(0xFF1BC0C4)),
             ),
             SizedBox(height: 1),
             Text(
@@ -505,8 +500,7 @@ double _getProgressValue(int xp, String rank) {
                   fontSize: 15,
                   fontWeight: FontWeight.bold,
                   fontFamily: GoogleFonts.leagueSpartan().fontFamily,
-                  color: Color.fromARGB(255, 0, 0, 0)
-              ),
+                  color: Color.fromARGB(255, 0, 0, 0)),
             ),
             SizedBox(height: 3),
             Text(
@@ -515,8 +509,7 @@ double _getProgressValue(int xp, String rank) {
                   fontSize: 15,
                   fontWeight: FontWeight.bold,
                   fontFamily: GoogleFonts.leagueSpartan().fontFamily,
-                  color: Color(0xFF1BC0C4)
-              ),
+                  color: Color(0xFF1BC0C4)),
             ),
             SizedBox(height: 1),
             Text(
@@ -525,8 +518,7 @@ double _getProgressValue(int xp, String rank) {
                   fontSize: 15,
                   fontWeight: FontWeight.bold,
                   fontFamily: GoogleFonts.leagueSpartan().fontFamily,
-                  color: Color.fromARGB(255, 0, 0, 0)
-              ),
+                  color: Color.fromARGB(255, 0, 0, 0)),
             ),
             SizedBox(height: 3),
             Text(
@@ -535,8 +527,7 @@ double _getProgressValue(int xp, String rank) {
                   fontSize: 15,
                   fontWeight: FontWeight.bold,
                   fontFamily: GoogleFonts.leagueSpartan().fontFamily,
-                  color: Color(0xFF1BC0C4)
-              ),
+                  color: Color(0xFF1BC0C4)),
             ),
             SizedBox(height: 1),
             Text(
@@ -545,8 +536,7 @@ double _getProgressValue(int xp, String rank) {
                   fontSize: 15,
                   fontWeight: FontWeight.bold,
                   fontFamily: GoogleFonts.leagueSpartan().fontFamily,
-                  color: Color.fromARGB(255, 0, 0, 0)
-              ),
+                  color: Color.fromARGB(255, 0, 0, 0)),
             ),
             SizedBox(height: 10),
             Text(
@@ -564,8 +554,7 @@ double _getProgressValue(int xp, String rank) {
                   fontSize: 15,
                   fontWeight: FontWeight.bold,
                   fontFamily: GoogleFonts.leagueSpartan().fontFamily,
-                  color: Color(0xFF1BC0C4)
-              ),
+                  color: Color(0xFF1BC0C4)),
             ),
             SizedBox(height: 1),
             Text(
@@ -574,8 +563,7 @@ double _getProgressValue(int xp, String rank) {
                   fontSize: 15,
                   fontWeight: FontWeight.bold,
                   fontFamily: GoogleFonts.leagueSpartan().fontFamily,
-                  color: Color.fromARGB(255, 0, 0, 0)
-              ),
+                  color: Color.fromARGB(255, 0, 0, 0)),
             ),
             SizedBox(height: 3),
             Text(
@@ -584,8 +572,7 @@ double _getProgressValue(int xp, String rank) {
                   fontSize: 15,
                   fontWeight: FontWeight.bold,
                   fontFamily: GoogleFonts.leagueSpartan().fontFamily,
-                  color: Color(0xFF1BC0C4)
-              ),
+                  color: Color(0xFF1BC0C4)),
             ),
             SizedBox(height: 1),
             Text(
@@ -594,8 +581,7 @@ double _getProgressValue(int xp, String rank) {
                   fontSize: 15,
                   fontWeight: FontWeight.bold,
                   fontFamily: GoogleFonts.leagueSpartan().fontFamily,
-                  color: Color.fromARGB(255, 0, 0, 0)
-              ),
+                  color: Color.fromARGB(255, 0, 0, 0)),
             ),
             SizedBox(height: 3),
             Text(
@@ -604,8 +590,7 @@ double _getProgressValue(int xp, String rank) {
                   fontSize: 15,
                   fontWeight: FontWeight.bold,
                   fontFamily: GoogleFonts.leagueSpartan().fontFamily,
-                  color: Color(0xFF1BC0C4)
-              ),
+                  color: Color(0xFF1BC0C4)),
             ),
             SizedBox(height: 1),
             Text(
@@ -614,8 +599,7 @@ double _getProgressValue(int xp, String rank) {
                   fontSize: 15,
                   fontWeight: FontWeight.bold,
                   fontFamily: GoogleFonts.leagueSpartan().fontFamily,
-                  color: Color.fromARGB(255, 0, 0, 0)
-              ),
+                  color: Color.fromARGB(255, 0, 0, 0)),
             ),
             SizedBox(height: 3),
             Text(
@@ -624,8 +608,7 @@ double _getProgressValue(int xp, String rank) {
                   fontSize: 15,
                   fontWeight: FontWeight.bold,
                   fontFamily: GoogleFonts.leagueSpartan().fontFamily,
-                  color: Color(0xFF1BC0C4)
-              ),
+                  color: Color(0xFF1BC0C4)),
             ),
             SizedBox(height: 1),
             Text(
@@ -634,8 +617,7 @@ double _getProgressValue(int xp, String rank) {
                   fontSize: 15,
                   fontWeight: FontWeight.bold,
                   fontFamily: GoogleFonts.leagueSpartan().fontFamily,
-                  color: Color.fromARGB(255, 0, 0, 0)
-              ),
+                  color: Color.fromARGB(255, 0, 0, 0)),
             ),
             SizedBox(height: 10),
             Text(
@@ -653,8 +635,7 @@ double _getProgressValue(int xp, String rank) {
                   fontSize: 15,
                   fontWeight: FontWeight.bold,
                   fontFamily: GoogleFonts.leagueSpartan().fontFamily,
-                  color: Color(0xFF1BC0C4)
-              ),
+                  color: Color(0xFF1BC0C4)),
             ),
             SizedBox(height: 1),
           ],

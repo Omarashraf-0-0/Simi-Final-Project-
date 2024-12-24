@@ -18,12 +18,13 @@ class _NotificationPageState extends State<NotificationPage> {
   @override
   void initState() {
     super.initState();
+    // Make a local copy of the notifications list
     notifications = List.from(widget.notifications);
   }
 
   Future<void> deleteNotification(String notificationId) async {
     const url =
-        'https://alyibrahim.pythonanywhere.com/deleteNotification'; // Replace with your actual server URL
+        'https://alyibrahim.pythonanywhere.com/deleteNotification';
 
     final Map<String, dynamic> requestBody = {
       'notificationId': notificationId,
@@ -39,6 +40,7 @@ class _NotificationPageState extends State<NotificationPage> {
       print("Notification deleted successfully");
     } else {
       print('Request failed with status: ${response.body}.');
+      // Optionally, show an error message if deletion fails
     }
   }
 
@@ -49,7 +51,7 @@ class _NotificationPageState extends State<NotificationPage> {
     });
 
     const url =
-        'https://alyibrahim.pythonanywhere.com/deleteAllNotifications'; // Replace with your actual server URL
+        'https://alyibrahim.pythonanywhere.com/deleteAllNotifications';
 
     try {
       final response = await http.post(
@@ -124,8 +126,8 @@ class _NotificationPageState extends State<NotificationPage> {
           builder: (BuildContext dialogContext) {
             return AlertDialog(
               title: Text('Delete Notification'),
-              content:
-                  Text('Are you sure you want to delete this notification?'),
+              content: Text(
+                  'Are you sure you want to delete this notification?'),
               actions: [
                 TextButton(
                   onPressed: () {
@@ -165,7 +167,7 @@ class _NotificationPageState extends State<NotificationPage> {
                     itemBuilder: (context, index) {
                       final notification = notifications[index];
                       return Dismissible(
-                        key: Key(notification['id']!),
+                        key: UniqueKey(), // Use UniqueKey to ensure uniqueness
                         direction: DismissDirection.endToStart,
                         background: Container(
                           color: Colors.red,
@@ -182,13 +184,12 @@ class _NotificationPageState extends State<NotificationPage> {
                           final String notificationId =
                               notification['id']!;
 
-                          // Remove the notification from the list
+                          // Remove the notification from the list using the index
                           setState(() {
-                            notifications.removeWhere((item) =>
-                                item['id'] == notificationId);
+                            notifications.removeAt(index);
                           });
 
-                          // Call deleteNotification
+                          // Call deleteNotification to remove it from the server
                           await deleteNotification(notificationId);
                         },
                         child: NotificationTile(
@@ -253,7 +254,7 @@ class NotificationTile extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    // Limiting the message to show only the first 100 characters (or your desired limit)
+    // Limit the message to show only the first 100 characters
     String previewBody =
         body.length > 100 ? body.substring(0, 100) + '...' : body;
 
@@ -285,11 +286,11 @@ class NotificationTile extends StatelessWidget {
             borderRadius: BorderRadius.circular(15),
           ),
           child: SingleChildScrollView(
-            // Added SingleChildScrollView to handle long content
+            // Handle long content
             child: Column(
               mainAxisSize: MainAxisSize.min,
               children: [
-                // Custom header with blue color
+                // Header with blue background
                 Container(
                   padding: const EdgeInsets.all(16),
                   color: Colors.blue,
@@ -303,7 +304,7 @@ class NotificationTile extends StatelessWidget {
                     ),
                   ),
                 ),
-                // Body content (full message)
+                // Full message content
                 Padding(
                   padding: const EdgeInsets.all(16),
                   child: Text(
@@ -311,7 +312,7 @@ class NotificationTile extends StatelessWidget {
                     style: const TextStyle(fontSize: 16),
                   ),
                 ),
-                // Close button at the bottom
+                // Close button
                 Padding(
                   padding: const EdgeInsets.only(bottom: 16),
                   child: ElevatedButton(
@@ -323,7 +324,7 @@ class NotificationTile extends StatelessWidget {
                     ),
                     onPressed: () {
                       Navigator.of(dialogContext)
-                          .pop(); // Use dialogContext to close the dialog
+                          .pop(); // Close the dialog
                     },
                     child: const Text('Close',
                         style: TextStyle(color: Colors.white)),

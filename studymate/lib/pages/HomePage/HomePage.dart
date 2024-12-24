@@ -7,6 +7,7 @@ import 'package:hive/hive.dart';
 // import 'package:hive_flutter/hive_flutter.dart';
 import 'package:studymate/pages/HomePage/Homebody.dart';
 import 'package:studymate/pages/LoginPage.dart';
+import 'package:studymate/pages/Performance/PerformanceHome.dart';
 import 'package:studymate/pages/ProfilePage.dart';
 import 'package:studymate/pages/Settings/Settings.dart';
 import 'package:studymate/pages/ScheduleManager/ScheduleManager.dart';
@@ -79,29 +80,6 @@ class _HomepageState extends State<Homepage> {
   }
 
   // Fetch notifications (you can replace this with your API call)
-  // void _fetchNotifications() async {
-  //   // For demonstration purposes, using sample data
-  //   setState(() {
-  //     _notifications = [
-  //       {
-  //         'title': 'Event Reminder',
-  //         'body': 'Don\'t forget your meeting at 10 AM.',
-  //       },
-  //       {
-  //         'title': 'New Message',
-  //         'body': 'You have received a new message.',
-  //       },
-  //       {
-  //         'title': 'Update Available',
-  //         'body': 'A new update is available for download.',
-  //       },
-  //       {
-  //         'title': 'Special Offer',
-  //         'body': 'Check out our special offer.',
-  //       },
-  //     ];
-  //   });
-  // }
 
   void _showNotificationsPopup() {
     showDialog(
@@ -192,25 +170,31 @@ class _HomepageState extends State<Homepage> {
         'https://alyibrahim.pythonanywhere.com/schedule?user_id=$UserID&start_date=${startOfDay.toIso8601String().split('T')[0]}&end_date=${endOfDay.toIso8601String().split('T')[0]}',
       ));
       if (response.statusCode == 200) {
-        setState(() {
-          _events = json.decode(response.body);
-          _isLoading = false;
-          print(_events);
-        });
+        if (mounted) {
+          setState(() {
+            _events = json.decode(response.body);
+            _isLoading = false;
+            print(_events);
+          });
+        }
       } else {
-        setState(() {
-          _isLoading = false;
-          _events = [];
-          print(
-              'Failed to fetch today\'s schedule with status code ${response.statusCode}');
-        });
+        if (mounted) {
+          setState(() {
+            _isLoading = false;
+            _events = [];
+            print(
+                'Failed to fetch today\'s schedule with status code ${response.statusCode}');
+          });
+        }
       }
     } catch (e) {
       print("Error fetching today's schedule: $e");
-      setState(() {
-        _isLoading = false;
-        _events = [];
-      });
+      if (mounted) {
+        setState(() {
+          _isLoading = false;
+          _events = [];
+        });
+      }
     }
   }
 
@@ -292,19 +276,21 @@ class _HomepageState extends State<Homepage> {
                     padding: EdgeInsets.all(0),
                     minimumSize: Size(0, 0),
                   ),
-                  child:
-                    CircleAvatar(
-                      radius: 18,
-                      backgroundColor: Colors.grey, // Placeholder color
-                      backgroundImage: Hive.box('userBox').get('profileImageBase64') == null
-                          ? null
-                          : MemoryImage(base64Decode(Hive.box('userBox').get('profileImageBase64'))),
-                      child: Hive.box('userBox').get('profileImageBase64') == null
-                          ? CircularProgressIndicator(
-                        valueColor: AlwaysStoppedAnimation<Color>(Color(0xFF01D7ED)), // Spinner color
-                      )
-                          : null, // Show spinner only if no image is found
-                    )
+                  child: CircleAvatar(
+                    radius: 18,
+                    backgroundColor: Colors.grey, // Placeholder color
+                    backgroundImage:
+                        Hive.box('userBox').get('profileImageBase64') == null
+                            ? null
+                            : MemoryImage(base64Decode(
+                                Hive.box('userBox').get('profileImageBase64'))),
+                    child: Hive.box('userBox').get('profileImageBase64') == null
+                        ? CircularProgressIndicator(
+                            valueColor: AlwaysStoppedAnimation<Color>(
+                                Color(0xFF01D7ED)), // Spinner color
+                          )
+                        : null, // Show spinner only if no image is found
+                  ),
                 ),
               ],
             ),
@@ -358,7 +344,7 @@ class _HomepageState extends State<Homepage> {
                   context,
                   MaterialPageRoute(builder: (context) => AboLayla()),
                 );
-                // Handle the Abo Lyla tap
+                // Handle the Abo Layla tap
               },
             ),
             ListTile(
@@ -372,7 +358,8 @@ class _HomepageState extends State<Homepage> {
               },
             ),
             ListTile(
-              leading: Icon(Icons.videogame_asset, color: Colors.blue, size: 24), // Changed to game icon
+              leading: Icon(Icons.videogame_asset,
+                  color: Colors.blue, size: 24), // Changed to game icon
               title: Text('Gamification'),
               onTap: () {
                 Navigator.push(
@@ -382,30 +369,41 @@ class _HomepageState extends State<Homepage> {
               },
             ),
             ListTile(
-            leading: Icon(Icons.leaderboard, color: Colors.blue, size: 24), // Changed to leaderboard icon
-            title: Text('Leaderboard'),
-            onTap: () {
-              Navigator.push(
-                context,
-                MaterialPageRoute(builder: (context) =>GameLeaderBoard()),
-              );
-            },
-          ),
-          ListTile(
-            leading: Icon(Icons.description, color: Colors.blue, size: 24), // Changed to CV icon
-            title: Text('CV Maker'),
-            onTap: () {
-              Navigator.push(
-                context,
-                MaterialPageRoute(builder: (context) => CV()),
-              );
-            },
-          ),
+              leading: Icon(Icons.leaderboard,
+                  color: Colors.blue, size: 24), // Changed to leaderboard icon
+              title: Text('Leaderboard'),
+              onTap: () {
+                Navigator.push(
+                  context,
+                  MaterialPageRoute(builder: (context) => GameLeaderBoard()),
+                );
+              },
+            ),
+            ListTile(
+              leading: Icon(Icons.description,
+                  color: Colors.blue, size: 24), // Changed to CV icon
+              title: Text('CV Maker'),
+              onTap: () {
+                Navigator.push(
+                  context,
+                  MaterialPageRoute(builder: (context) => CV()),
+                );
+              },
+            ),
+            ListTile(
+              leading: Icon(Icons.insights_outlined),
+              title: Text('Insights'),
+              onTap: () {
+                // Handle the Insights tap
+                Navigator.push(context,
+                    MaterialPageRoute(builder: (context) => InsightsPage()));
+              },
+            ),
             ListTile(
               leading: Icon(Icons.schedule),
               title: Text('Schedule'),
               onTap: () {
-                // Handle the Close tap
+                // Handle the Schedule tap
                 Navigator.pop(context);
                 Navigator.push(context,
                     MaterialPageRoute(builder: (context) => ScheduleView()));
@@ -482,11 +480,15 @@ class _HomepageState extends State<Homepage> {
               setState(() {
                 idx = index;
               });
+              if (index == 0) {
+                fetchNotifications();
+                _fetchTodaysSchedule();
+              }
             },
             tabs: [
               GButton(icon: Ionicons.ios_home_outline, text: 'Home'),
               GButton(icon: Ionicons.ios_book_outline, text: 'Courses'),
-              GButton(icon: Ionicons.hardware_chip_outline, text: 'Abo Lyla'),
+              GButton(icon: Ionicons.hardware_chip_outline, text: 'Abo Layla'),
               GButton(icon: Ionicons.trophy_outline, text: 'Leaderboard'),
             ],
           ),
@@ -495,12 +497,12 @@ class _HomepageState extends State<Homepage> {
     );
   }
 
- Future<void> fetchNotifications() async {
-  
-    const url = 'https://alyibrahim.pythonanywhere.com/getNotification';  // Replace with your actual Flask server URL
+  Future<void> fetchNotifications() async {
+    const url =
+        'https://alyibrahim.pythonanywhere.com/getNotification'; // Replace with your actual Flask server URL
     final username = Hive.box('userBox').get('id');
     print("USERNAME: $username");
-      final Map<String, dynamic> requestBody = {
+    final Map<String, dynamic> requestBody = {
       'username': username,
     };
     final response = await http.post(
@@ -509,30 +511,25 @@ class _HomepageState extends State<Homepage> {
       body: jsonEncode(requestBody),
     );
 
-      if (response.statusCode == 200) {
-        final jsonResponse = jsonDecode(response.body);
-                print("print the jason  ? $jsonResponse");
-                
-                setState(() {
-
-                          //  _notifications = jsonResponse["notifications"].map<Map<String, String>>((n) => {"title": n["title"], "body": n["body"]}).toList();
-
-                          var notifications = jsonResponse["notifications"]
-                            .map<Map<String, String>>((n) => {
-                                  "title": n["title"].toString(),
-                                  "body": n["body"].toString(),
-                                  "id": n["id"].toString()
-                                })
-                            .toList();
-                            print("notifications A7A ?? : $notifications");
-                            _notifications = notifications;
-
-                });
+    if (response.statusCode == 200) {
+      final jsonResponse = jsonDecode(response.body);
+      print("print the json: $jsonResponse");
+      if (mounted) {
+        setState(() {
+          print("jsonResponse: $jsonResponse");
+          var notifications = jsonResponse["notifications"]
+              .map<Map<String, String>>((n) => {
+                    "title": n["title"].toString(),
+                    "body": n["body"].toString(),
+                    "id": n["id"].toString()
+                  })
+              .toList();
+          print("notifications: $notifications");
+          _notifications = notifications;
+        });
       }
-      else {
-        print('Request failed with status: ${response.body}.');
-
-      }
+    } else {
+      print('Request failed with status: ${response.body}.');
+    }
   }
-
 }

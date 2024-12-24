@@ -37,18 +37,45 @@ class _ScheduleViewState extends State<ScheduleView> {
   final FlutterLocalNotificationsPlugin flutterLocalNotificationsPlugin =
       FlutterLocalNotificationsPlugin();
 
+  // Move TextEditingControllers and state variables here
+  final TextEditingController titleController = TextEditingController();
+  final TextEditingController descriptionController = TextEditingController();
+  final TextEditingController dateController = TextEditingController();
+  final TextEditingController StartTimeController = TextEditingController();
+  final TextEditingController EndTimeController = TextEditingController();
+  final TextEditingController locationController = TextEditingController();
+  final TextEditingController reminderTimeController = TextEditingController();
+  final TextEditingController repeatUntilController = TextEditingController();
+
+  String _selectedCategory = "Study";
+  String _selectedRepeat = "None";
+
   @override
   void initState() {
     super.initState();
     initializeNotificationPlugin();
   }
 
+  @override
+  void dispose() {
+    // Dispose of the controllers when the widget is disposed
+    titleController.dispose();
+    descriptionController.dispose();
+    dateController.dispose();
+    StartTimeController.dispose();
+    EndTimeController.dispose();
+    locationController.dispose();
+    reminderTimeController.dispose();
+    repeatUntilController.dispose();
+    super.dispose();
+  }
+
   // Function to initialize the notification plugin
   void initializeNotificationPlugin() {
-    final AndroidInitializationSettings initializationSettingsAndroid =
+    const AndroidInitializationSettings initializationSettingsAndroid =
         AndroidInitializationSettings('@mipmap/ic_launcher');
 
-    final InitializationSettings initializationSettings = InitializationSettings(
+    const InitializationSettings initializationSettings = InitializationSettings(
       android: initializationSettingsAndroid,
     );
 
@@ -63,6 +90,19 @@ class _ScheduleViewState extends State<ScheduleView> {
   void _toggleAddEventPopup() {
     setState(() {
       _showAddEventPopup = !_showAddEventPopup;
+      if (!_showAddEventPopup) {
+        // Reset the controllers and state variables when the popup is closed
+        titleController.clear();
+        descriptionController.clear();
+        dateController.clear();
+        StartTimeController.clear();
+        EndTimeController.clear();
+        locationController.clear();
+        reminderTimeController.clear();
+        repeatUntilController.clear();
+        _selectedCategory = "Study";
+        _selectedRepeat = "None";
+      }
     });
   }
 
@@ -73,12 +113,12 @@ class _ScheduleViewState extends State<ScheduleView> {
       children: [
         Scaffold(
           appBar: AppBar(
-            backgroundColor: Color(0xFF165D96),
+            backgroundColor: const Color(0xFF165D96),
             leading: IconButton(
               onPressed: () {
                 Navigator.pop(context);
               },
-              icon: Icon(Icons.arrow_back_ios_outlined,
+              icon: const Icon(Icons.arrow_back_ios_outlined,
                   color: Colors.white, size: 30),
             ),
             title: Center(
@@ -90,7 +130,7 @@ class _ScheduleViewState extends State<ScheduleView> {
                     ))),
             actions: [
               IconButton(
-                icon: Icon(
+                icon: const Icon(
                   Icons.add_circle_outline,
                   color: Colors.white,
                   size: 30,
@@ -101,7 +141,7 @@ class _ScheduleViewState extends State<ScheduleView> {
           ),
           body: Column(
             children: [
-              SizedBox(height: 20),
+              const SizedBox(height: 20),
               // Circular Tabs
               Row(
                 mainAxisAlignment: MainAxisAlignment.center,
@@ -121,7 +161,7 @@ class _ScheduleViewState extends State<ScheduleView> {
                             height: 30,
                             decoration: BoxDecoration(
                               color: _selectedIndex == index
-                                  ? Color(0xFF165D96)
+                                  ? const Color(0xFF165D96)
                                   : Colors.grey[300],
                               borderRadius: BorderRadius.circular(30),
                             ),
@@ -145,7 +185,7 @@ class _ScheduleViewState extends State<ScheduleView> {
                   );
                 }),
               ),
-              SizedBox(height: 20),
+              const SizedBox(height: 20),
               // Selected View
               Expanded(
                 child: _views[_selectedIndex],
@@ -159,18 +199,6 @@ class _ScheduleViewState extends State<ScheduleView> {
   }
 
   Widget buildAddEventPopup(BuildContext context) {
-    final TextEditingController titleController = TextEditingController();
-    final TextEditingController descriptionController = TextEditingController();
-    final TextEditingController dateController = TextEditingController();
-    final TextEditingController StartTimeController = TextEditingController();
-    final TextEditingController EndTimeController = TextEditingController();
-    final TextEditingController locationController = TextEditingController();
-    final TextEditingController reminderTimeController =
-        TextEditingController();
-    final TextEditingController repeatUntilController = TextEditingController();
-    String _selectedCategory = "Study";
-    String _selectedRepeat = "None";
-
     return Positioned.fill(
       child: GestureDetector(
         onTap: _toggleAddEventPopup, // Close the popup when tapping outside
@@ -199,8 +227,8 @@ class _ScheduleViewState extends State<ScheduleView> {
                     children: [
                       // Title Section with Background Color
                       Container(
-                        padding: EdgeInsets.all(16),
-                        decoration: BoxDecoration(
+                        padding: const EdgeInsets.all(16),
+                        decoration: const BoxDecoration(
                           color: Color(
                               0xFF165D96), // New background color for the title
                           borderRadius: BorderRadius.only(
@@ -219,23 +247,23 @@ class _ScheduleViewState extends State<ScheduleView> {
                           ),
                         ),
                       ),
-                      SizedBox(height: 15),
+                      const SizedBox(height: 15),
                       Expanded(
                         child: SingleChildScrollView(
-                          padding: EdgeInsets.all(16),
+                          padding: const EdgeInsets.all(16),
                           child: Column(
                             children: [
                               // Event Title Row
                               Row(
                                 children: [
-                                  Text(
+                                  const Text(
                                     "Title: ",
                                     style: TextStyle(
                                       fontWeight: FontWeight.bold,
                                       fontSize: 16,
                                     ),
                                   ),
-                                  SizedBox(width: 8),
+                                  const SizedBox(width: 8),
                                   Expanded(
                                     child: Textfield(
                                       controller: titleController,
@@ -243,23 +271,24 @@ class _ScheduleViewState extends State<ScheduleView> {
                                       fillColor: Colors.grey[200],
                                       borderColor: Colors.blue,
                                       borderRadius: 10.0,
-                                      hintStyle: TextStyle(color: Colors.grey),
+                                      hintStyle:
+                                          const TextStyle(color: Colors.grey),
                                     ),
                                   ),
                                 ],
                               ),
-                              SizedBox(height: 15),
+                              const SizedBox(height: 15),
                               // Date Row
                               Row(
                                 children: [
-                                  Text(
+                                  const Text(
                                     "Date: ",
                                     style: TextStyle(
                                       fontWeight: FontWeight.bold,
                                       fontSize: 16,
                                     ),
                                   ),
-                                  SizedBox(width: 8),
+                                  const SizedBox(width: 8),
                                   Expanded(
                                     child: Textfield(
                                       controller: dateController,
@@ -267,26 +296,27 @@ class _ScheduleViewState extends State<ScheduleView> {
                                       fillColor: Colors.grey[200],
                                       borderColor: Colors.blue,
                                       borderRadius: 10.0,
-                                      hintStyle: TextStyle(color: Colors.grey),
+                                      hintStyle:
+                                          const TextStyle(color: Colors.grey),
                                       isDateField: true,
                                       isFutureDate: true,
                                     ),
                                   ),
                                 ],
                               ),
-                              SizedBox(height: 20),
+                              const SizedBox(height: 20),
 
                               // Start time Row
                               Row(
                                 children: [
-                                  Text(
+                                  const Text(
                                     "Start Time: ",
                                     style: TextStyle(
                                       fontWeight: FontWeight.bold,
                                       fontSize: 16,
                                     ),
                                   ),
-                                  SizedBox(width: 8),
+                                  const SizedBox(width: 8),
                                   Expanded(
                                     child: Textfield(
                                       controller: StartTimeController,
@@ -294,24 +324,25 @@ class _ScheduleViewState extends State<ScheduleView> {
                                       fillColor: Colors.grey[200],
                                       borderColor: Colors.blue,
                                       borderRadius: 10.0,
-                                      hintStyle: TextStyle(color: Colors.grey),
+                                      hintStyle:
+                                          const TextStyle(color: Colors.grey),
                                       isTimeField: true,
                                     ),
                                   ),
                                 ],
                               ),
-                              SizedBox(height: 15),
+                              const SizedBox(height: 15),
                               // End time Row
                               Row(
                                 children: [
-                                  Text(
+                                  const Text(
                                     "End Time: ",
                                     style: TextStyle(
                                       fontWeight: FontWeight.bold,
                                       fontSize: 16,
                                     ),
                                   ),
-                                  SizedBox(width: 8),
+                                  const SizedBox(width: 8),
                                   Expanded(
                                     child: Textfield(
                                       controller: EndTimeController,
@@ -319,31 +350,32 @@ class _ScheduleViewState extends State<ScheduleView> {
                                       fillColor: Colors.grey[200],
                                       borderColor: Colors.blue,
                                       borderRadius: 10.0,
-                                      hintStyle: TextStyle(color: Colors.grey),
+                                      hintStyle:
+                                          const TextStyle(color: Colors.grey),
                                       isTimeField: true,
                                     ),
                                   ),
                                 ],
                               ),
-                              SizedBox(height: 15),
+                              const SizedBox(height: 15),
                               // Category Row
                               Row(
                                 children: [
-                                  Text(
+                                  const Text(
                                     "Category: ",
                                     style: TextStyle(
                                       fontWeight: FontWeight.bold,
                                       fontSize: 16,
                                     ),
                                   ),
-                                  SizedBox(width: 8),
+                                  const SizedBox(width: 8),
                                   Expanded(
                                     child: DropdownButtonFormField<String>(
                                       decoration: InputDecoration(
                                         border: OutlineInputBorder(
                                           borderRadius:
                                               BorderRadius.circular(10),
-                                          borderSide: BorderSide(
+                                          borderSide: const BorderSide(
                                             color: Colors.blue,
                                           ),
                                         ),
@@ -375,19 +407,19 @@ class _ScheduleViewState extends State<ScheduleView> {
                                   ),
                                 ],
                               ),
-                              SizedBox(height: 15),
+                              const SizedBox(height: 15),
 
                               // Location Field Row
                               Row(
                                 children: [
-                                  Text(
+                                  const Text(
                                     "Location: ",
                                     style: TextStyle(
                                       fontWeight: FontWeight.bold,
                                       fontSize: 16,
                                     ),
                                   ),
-                                  SizedBox(width: 8),
+                                  const SizedBox(width: 8),
                                   Expanded(
                                     child: Textfield(
                                       controller: locationController,
@@ -395,23 +427,24 @@ class _ScheduleViewState extends State<ScheduleView> {
                                       fillColor: Colors.grey[200],
                                       borderColor: Colors.blue,
                                       borderRadius: 10.0,
-                                      hintStyle: TextStyle(color: Colors.grey),
+                                      hintStyle:
+                                          const TextStyle(color: Colors.grey),
                                     ),
                                   ),
                                 ],
                               ),
-                              SizedBox(height: 15),
+                              const SizedBox(height: 15),
                               // Reminder Time Row
                               Row(
                                 children: [
-                                  Text(
+                                  const Text(
                                     "Reminder Time: ",
                                     style: TextStyle(
                                       fontWeight: FontWeight.bold,
                                       fontSize: 16,
                                     ),
                                   ),
-                                  SizedBox(width: 8),
+                                  const SizedBox(width: 8),
                                   Expanded(
                                     child: Textfield(
                                       controller: reminderTimeController,
@@ -419,31 +452,32 @@ class _ScheduleViewState extends State<ScheduleView> {
                                       fillColor: Colors.grey[200],
                                       borderColor: Colors.blue,
                                       borderRadius: 10.0,
-                                      hintStyle: TextStyle(color: Colors.grey),
+                                      hintStyle:
+                                          const TextStyle(color: Colors.grey),
                                       isTimeField: true,
                                     ),
                                   ),
                                 ],
                               ),
-                              SizedBox(height: 15),
+                              const SizedBox(height: 15),
                               // Repeat Row
                               Row(
                                 children: [
-                                  Text(
+                                  const Text(
                                     "Repeat: ",
                                     style: TextStyle(
                                       fontWeight: FontWeight.bold,
                                       fontSize: 16,
                                     ),
                                   ),
-                                  SizedBox(width: 8),
+                                  const SizedBox(width: 8),
                                   Expanded(
                                     child: DropdownButtonFormField<String>(
                                       decoration: InputDecoration(
                                         border: OutlineInputBorder(
                                           borderRadius:
                                               BorderRadius.circular(10),
-                                          borderSide: BorderSide(
+                                          borderSide: const BorderSide(
                                             color: Colors.blue,
                                           ),
                                         ),
@@ -473,19 +507,19 @@ class _ScheduleViewState extends State<ScheduleView> {
                                   ),
                                 ],
                               ),
-                              SizedBox(height: 15),
+                              const SizedBox(height: 15),
                               // Repeat Until Row
                               if (_selectedRepeat != "None")
                                 Row(
                                   children: [
-                                    Text(
+                                    const Text(
                                       "Repeat Until: ",
                                       style: TextStyle(
                                         fontWeight: FontWeight.bold,
                                         fontSize: 16,
                                       ),
                                     ),
-                                    SizedBox(width: 8),
+                                    const SizedBox(width: 8),
                                     Expanded(
                                       child: Textfield(
                                         controller: repeatUntilController,
@@ -494,7 +528,7 @@ class _ScheduleViewState extends State<ScheduleView> {
                                         borderColor: Colors.blue,
                                         borderRadius: 10.0,
                                         hintStyle:
-                                            TextStyle(color: Colors.grey),
+                                            const TextStyle(color: Colors.grey),
                                         isDateField:
                                             true, // Custom handling for date picker
                                         isFutureDate:
@@ -503,24 +537,25 @@ class _ScheduleViewState extends State<ScheduleView> {
                                     ),
                                   ],
                                 ),
-                              SizedBox(height: 15),
+                              if (_selectedRepeat != "None")
+                                const SizedBox(height: 15),
                               // Description Row
                               Column(
                                 crossAxisAlignment: CrossAxisAlignment.start,
                                 children: [
-                                  Text(
+                                  const Text(
                                     "Description:",
                                     style: TextStyle(
                                       fontWeight: FontWeight.bold,
                                       fontSize: 16,
                                     ),
                                   ),
-                                  SizedBox(height: 15),
+                                  const SizedBox(height: 15),
                                   Row(
                                     children: [
                                       Expanded(
                                         child: Container(
-                                          padding: EdgeInsets.symmetric(
+                                          padding: const EdgeInsets.symmetric(
                                               vertical:
                                                   10), // Optional: For padding around
                                           child: TextFormField(
@@ -533,8 +568,8 @@ class _ScheduleViewState extends State<ScheduleView> {
                                                 borderRadius:
                                                     BorderRadius.circular(10),
                                               ),
-                                              hintStyle:
-                                                  TextStyle(color: Colors.grey),
+                                              hintStyle: const TextStyle(
+                                                  color: Colors.grey),
                                             ),
                                             keyboardType: TextInputType
                                                 .multiline, // Allow multiple lines
@@ -549,20 +584,20 @@ class _ScheduleViewState extends State<ScheduleView> {
                                   )
                                 ],
                               ),
-                              SizedBox(height: 15),
+                              const SizedBox(height: 15),
                             ],
                           ),
                         ),
                       ),
                       // Action Buttons
                       Container(
-                        padding: EdgeInsets.all(16),
+                        padding: const EdgeInsets.all(16),
                         child: Row(
                           mainAxisAlignment: MainAxisAlignment.end,
                           children: [
                             TextButton(
                               onPressed: _toggleAddEventPopup,
-                              child: Text("Cancel"),
+                              child: const Text("Cancel"),
                             ),
                             ElevatedButton(
                               onPressed: () {
@@ -716,7 +751,7 @@ class _ScheduleViewState extends State<ScheduleView> {
                                   }
                                 }
                               },
-                              child: Text("Save"),
+                              child: const Text("Save"),
                             )
                           ],
                         ),

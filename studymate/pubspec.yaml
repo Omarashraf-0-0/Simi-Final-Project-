@@ -36,6 +36,7 @@ dependencies:
   timezone: any
   firebase_core: 2.32.0 # Use the latest version
   firebase_messaging: any
+  fl_chart: ^0.69.2
 google_fonts: any # Uncomment if you want to use Google Fonts
 
 dev_dependencies:

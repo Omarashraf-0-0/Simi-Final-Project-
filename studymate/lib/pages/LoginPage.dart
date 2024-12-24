@@ -65,7 +65,8 @@ class GamingPopup extends StatelessWidget {
             },
             style: ElevatedButton.styleFrom(
               backgroundColor: Colors.yellowAccent,
-              shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(10)),
+              shape: RoundedRectangleBorder(
+                  borderRadius: BorderRadius.circular(10)),
             ),
             child: Text(
               'Continue',
@@ -83,13 +84,11 @@ class GamingPopup extends StatelessWidget {
 class _LoginPageState extends State<LoginPage> {
   final UsernameController = TextEditingController();
   final PasswordController = TextEditingController();
-  
+
   // Add a boolean to manage the "Remember Me" toggle state
   bool isRememberMeChecked = false;
 
-
-
-Future<void> updateXpAndTitle(int currentXp) async {
+  Future<void> updateXpAndTitle(int currentXp) async {
     const xpUrl = 'https://alyibrahim.pythonanywhere.com/set_xp';
     const titleUrl = 'https://alyibrahim.pythonanywhere.com/set_title';
     final username = Hive.box('userBox').get('username');
@@ -152,7 +151,8 @@ Future<void> updateXpAndTitle(int currentXp) async {
   }
 
   Future<bool> fetchAndSaveProfileImage() async {
-    final url = 'https://alyibrahim.pythonanywhere.com/get-profile-image'; // Replace with your server URL
+    final url =
+        'https://alyibrahim.pythonanywhere.com/get-profile-image'; // Replace with your server URL
 
     try {
       // Get the username from Hive box
@@ -172,13 +172,15 @@ Future<void> updateXpAndTitle(int currentXp) async {
       // Send the username as JSON in the body of a POST request
       final response = await http
           .post(
-        Uri.parse(url),
-        headers: {'Content-Type': 'application/json'}, // Set content type to JSON
-        body: jsonEncode(body), // Encode the body as JSON
-      )
+            Uri.parse(url),
+            headers: {
+              'Content-Type': 'application/json'
+            }, // Set content type to JSON
+            body: jsonEncode(body), // Encode the body as JSON
+          )
           .timeout(
-        Duration(seconds: 30), // Adjust the duration as needed
-      );
+            Duration(seconds: 30), // Adjust the duration as needed
+          );
 
       if (response.statusCode == 200) {
         // Get the image bytes from the response
@@ -190,14 +192,13 @@ Future<void> updateXpAndTitle(int currentXp) async {
         // Save the Base64 image string to Hive
         Hive.box('userBox').put('profileImageBase64', base64Image);
 
-
-
         print(">>>>>>>>>> Done <<<<<<<<");
         // Update the UI to display the image
         return true;
       } else {
         // Handle error if the image is not found or another error occurs
-        print("Failed to load image: ${response.statusCode} ===== ${response.body}");
+        print(
+            "Failed to load image: ${response.statusCode} ===== ${response.body}");
         return false;
       }
     } on TimeoutException catch (_) {
@@ -209,39 +210,37 @@ Future<void> updateXpAndTitle(int currentXp) async {
     }
   }
 
-
-
   Future<void> login() async {
     final username = UsernameController.text;
     final password = PasswordController.text;
-    const url = 'https://alyibrahim.pythonanywhere.com/login';  // Replace with your actual Flask server URL
+    const url =
+        'https://alyibrahim.pythonanywhere.com/login'; // Replace with your actual Flask server URL
 
     try {
       // Ensure the username and password are not empty
       if (username.isEmpty || password.isEmpty) {
-      // ScaffoldMessenger.of(context).showSnackBar(
-      //   SnackBar(content: Text('Username and password cannot be empty')),
-      // );
+        // ScaffoldMessenger.of(context).showSnackBar(
+        //   SnackBar(content: Text('Username and password cannot be empty')),
+        // );
         showWarningPopup(
           context,
           'Error',
           'Username and password can\'t be empty',
         );
-      return;
+        return;
       }
       // Sending login request with username and password as query parameters
       final Map<String, dynamic> requestBody = {
-      'Query': 'login',
-      'username': username,
-      'password': password,
-    };
-    // Send the POST request with the JSON body
-    final response = await http.post(
-      Uri.parse(url),
-      headers: {'Content-Type': 'application/json'},
-      body: jsonEncode(requestBody),
-    );
-
+        'Query': 'login',
+        'username': username,
+        'password': password,
+      };
+      // Send the POST request with the JSON body
+      final response = await http.post(
+        Uri.parse(url),
+        headers: {'Content-Type': 'application/json'},
+        body: jsonEncode(requestBody),
+      );
 
       print(response.body);
       // Parse the JSON response
@@ -249,7 +248,6 @@ Future<void> updateXpAndTitle(int currentXp) async {
         final jsonResponse = jsonDecode(response.body);
 
         if (jsonResponse['success'] == true) {
-
           // print(">>>>>>>>>>>>>>>> ${Hive.box('userBox').get('level')}");
           // Successful login, show welcome message and navigate
           // ScaffoldMessenger.of(context).showSnackBar(
@@ -257,40 +255,41 @@ Future<void> updateXpAndTitle(int currentXp) async {
           // );
           // navigate to the homepage
           // Inside your login success function
-            Hive.box('userBox').put('id', jsonResponse['id']);
-            Hive.box('userBox').put('username', jsonResponse['username']);
-            Hive.box('userBox').put('password', jsonResponse['password']);
-            Hive.box('userBox').put('fullName', jsonResponse['name']);
-            Hive.box('userBox').put('role', jsonResponse['role']);
-            Hive.box('userBox').put('email', jsonResponse['email']);
-            Hive.box('userBox').put('phone_number', jsonResponse['phone_number']);
-            Hive.box('userBox').put('address', jsonResponse['address']);
-            Hive.box('userBox').put('gender', jsonResponse['gender']);
-            Hive.box('userBox').put('college', jsonResponse['college']);
-            Hive.box('userBox').put('university', jsonResponse['university']);
-            Hive.box('userBox').put('major', jsonResponse['major']);
-            Hive.box('userBox').put('term_level', jsonResponse['term_level']);
-            Hive.box('userBox').put('pfp', jsonResponse['pfp']);
-            Hive.box('userBox').put('xp', jsonResponse['xp']);
-            Hive.box('userBox').put('level', jsonResponse['level']);
-            Hive.box('userBox').put('title', jsonResponse['title']);
-            Hive.box('userBox').put('Registration_Number', jsonResponse['registrationNumber']);
-            Hive.box('userBox').put('birthDate', jsonResponse['birthDate']);
-            fetchAndSaveProfileImage();
+          Hive.box('userBox').put('id', jsonResponse['id']);
+          Hive.box('userBox').put('username', jsonResponse['username']);
+          Hive.box('userBox').put('password', jsonResponse['password']);
+          Hive.box('userBox').put('fullName', jsonResponse['name']);
+          Hive.box('userBox').put('role', jsonResponse['role']);
+          Hive.box('userBox').put('email', jsonResponse['email']);
+          Hive.box('userBox').put('phone_number', jsonResponse['phone_number']);
+          Hive.box('userBox').put('address', jsonResponse['address']);
+          Hive.box('userBox').put('gender', jsonResponse['gender']);
+          Hive.box('userBox').put('college', jsonResponse['college']);
+          Hive.box('userBox').put('university', jsonResponse['university']);
+          Hive.box('userBox').put('major', jsonResponse['major']);
+          Hive.box('userBox').put('term_level', jsonResponse['term_level']);
+          Hive.box('userBox').put('pfp', jsonResponse['pfp']);
+          Hive.box('userBox').put('xp', jsonResponse['xp']);
+          Hive.box('userBox').put('level', jsonResponse['level']);
+          Hive.box('userBox').put('title', jsonResponse['title']);
+          Hive.box('userBox')
+              .put('Registration_Number', jsonResponse['registrationNumber']);
+          Hive.box('userBox').put('birthDate', jsonResponse['birthDate']);
+          fetchAndSaveProfileImage();
           if (isRememberMeChecked) {
             // Save the username and password to Hive
             Hive.box('userBox').put('isLoggedIn', true);
-            Hive.box('userBox').put('loginTime', DateTime.now().millisecondsSinceEpoch);
+            Hive.box('userBox')
+                .put('loginTime', DateTime.now().millisecondsSinceEpoch);
           } else {
             // Clear the username and password from Hive
             Hive.box('userBox').put('isLoggedIn', false);
-
           }
-          
-          int currentXp = jsonResponse['xp'] ?? 0; // Get current XP, default to 0 if null
+
+          int currentXp =
+              jsonResponse['xp'] ?? 0; // Get current XP, default to 0 if null
           await updateXpAndTitle(currentXp);
 
-          
           User? user = User(
             id: jsonResponse['id'],
             username: jsonResponse['username'],
@@ -319,20 +318,22 @@ Future<void> updateXpAndTitle(int currentXp) async {
           //     user: user,
           //   )),
           // );
-          currentXp = jsonResponse['xp'] ?? 0; // Get current XP, default to 0 if null
+          currentXp =
+              jsonResponse['xp'] ?? 0; // Get current XP, default to 0 if null
           await updateXpAndTitle(currentXp);
 
-          Navigator.pushReplacement(context,
-            MaterialPageRoute(builder: (context) => DonePopUp(
-              user: user,
-              title: 'Woo Hoo!',
-              description: 'Welcome back, ${jsonResponse['name']}!',
-              color : const Color(0xff3BBD5E),
-              textColor : Colors.black,
-              routeName : '/HomePage',
-              )
-              ),
-              );
+          Navigator.pushReplacement(
+            context,
+            MaterialPageRoute(
+                builder: (context) => DonePopUp(
+                      user: user,
+                      title: 'Woo Hoo!',
+                      description: 'Welcome back, ${jsonResponse['name']}!',
+                      color: const Color(0xff3BBD5E),
+                      textColor: Colors.black,
+                      routeName: '/HomePage',
+                    )),
+          );
           //Navigator.pushReplacement(context, MaterialPageRoute(builder: (context) => Homepage()));
         } else {
           // Failed login, show error message
@@ -347,58 +348,59 @@ Future<void> updateXpAndTitle(int currentXp) async {
         }
       } else {
         // Server error
-      //   showDialog(
-      //     context: context,
-      //     builder: (BuildContext context) {
-      //     return AlertDialog(
-      //       title: Text('Network Error'),
-      //       content: 
-      //       SelectableText(
-      //         'Network error: ${response.statusCode} ${response.reasonPhrase}',
-      //         ),
-      //       actions: [
-      //       TextButton(
-      //         onPressed: () {
-      //         Navigator.of(context).pop();
-      //         },
-      //         child: Text('OK'),
-      //       ),
-      //       ],
-      //     );
-      //   },
-      // );
+        //   showDialog(
+        //     context: context,
+        //     builder: (BuildContext context) {
+        //     return AlertDialog(
+        //       title: Text('Network Error'),
+        //       content:
+        //       SelectableText(
+        //         'Network error: ${response.statusCode} ${response.reasonPhrase}',
+        //         ),
+        //       actions: [
+        //       TextButton(
+        //         onPressed: () {
+        //         Navigator.of(context).pop();
+        //         },
+        //         child: Text('OK'),
+        //       ),
+        //       ],
+        //     );
+        //   },
+        // );
         showFailedPopup(
           context,
           'Error',
-          response.reasonPhrase=='UNAUTHORIZED'?'Wrong Username Or Password':'${response.reasonPhrase}',
+          response.reasonPhrase == 'UNAUTHORIZED'
+              ? 'Wrong Username Or Password'
+              : '${response.reasonPhrase}',
         );
       }
     } catch (error) {
       // Handle network or server unreachable errors
-    //   showDialog(
-    //   context: context,
-    //   builder: (BuildContext context) {
-    //   return AlertDialog(
-    //     title: Text('Network Error'),
-    //     content: SelectableText('Network error: $error'),
-    //     actions: [
-    //     TextButton(
-    //       onPressed: () {
-    //       Navigator.of(context).pop();
-    //       },
-    //       child: Text('OK'),
-    //     ),
-    //     ],
-    //   );
-    //   },
-    // );
+      //   showDialog(
+      //   context: context,
+      //   builder: (BuildContext context) {
+      //   return AlertDialog(
+      //     title: Text('Network Error'),
+      //     content: SelectableText('Network error: $error'),
+      //     actions: [
+      //     TextButton(
+      //       onPressed: () {
+      //       Navigator.of(context).pop();
+      //       },
+      //       child: Text('OK'),
+      //     ),
+      //     ],
+      //   );
+      //   },
+      // );
       showWarningPopup(
         context,
         'Network Error',
         '$error',
       );
     }
-    
   }
 
   @override
@@ -435,7 +437,10 @@ Future<void> updateXpAndTitle(int currentXp) async {
                 child: Textfield(
                   controller: UsernameController,
                   hintText: 'Username',
-                  suffixIcon: Icon(Icons.person_2_outlined , size: 25,),
+                  suffixIcon: Icon(
+                    Icons.person_2_outlined,
+                    size: 25,
+                  ),
                 ),
               ),
               // Password
@@ -446,7 +451,10 @@ Future<void> updateXpAndTitle(int currentXp) async {
                   controller: PasswordController,
                   hintText: 'Password',
                   obscureText: true,
-                  suffixIcon: Icon(Icons.remove_red_eye,size: 25,),
+                  suffixIcon: Icon(
+                    Icons.remove_red_eye,
+                    size: 25,
+                  ),
                   toggleVisability: false,
                 ),
               ),
@@ -516,7 +524,6 @@ Future<void> updateXpAndTitle(int currentXp) async {
                     onPressed: () {
                       // Login button action
                       login();
-                      
                     },
                     child: Padding(
                       padding: const EdgeInsets.symmetric(horizontal: 80.0),
@@ -554,12 +561,11 @@ Future<void> updateXpAndTitle(int currentXp) async {
                   ),
                   child: TextButton(
                     onPressed: () {
-                      Navigator.push(context,
-                        MaterialPageRoute(builder: (context) => RegisterLogin(
-                          
-                        )
-                          ),
-                          );
+                      Navigator.push(
+                        context,
+                        MaterialPageRoute(
+                            builder: (context) => RegisterLogin()),
+                      );
                     },
                     child: Padding(
                       padding: const EdgeInsets.symmetric(horizontal: 20),
@@ -582,4 +588,3 @@ Future<void> updateXpAndTitle(int currentXp) async {
     );
   }
 }
-
