@@ -2,9 +2,10 @@ import 'dart:convert';
 import 'package:flutter/material.dart';
 import 'package:hive/hive.dart';
 import 'package:http/http.dart' as http;
+import 'package:google_fonts/google_fonts.dart';
 
 class Courses extends StatefulWidget {
-  const Courses({super.key});
+  const Courses({Key? key}) : super(key: key);
 
   @override
   _CoursesState createState() => _CoursesState();
@@ -13,6 +14,14 @@ class Courses extends StatefulWidget {
 class _CoursesState extends State<Courses> {
   // List to store selected courses
   List<String> selectedCourses = [];
+
+  // Branding colors
+  final Color blue1 = const Color(0xFF1c74bb);
+  final Color blue2 = const Color(0xFF165d96);
+  final Color cyan1 = const Color(0xFF18bebc);
+  final Color cyan2 = const Color(0xFF139896);
+  final Color black = const Color(0xFF000000);
+  final Color white = const Color(0xFFFFFFFF);
 
   // Function to handle the course selection toggle
   void _toggleCourseSelection(String course) {
@@ -31,101 +40,91 @@ class _CoursesState extends State<Courses> {
     String? username = userBox.get('username');
     if (username == null) {
       // If username is not found, show an error
-      showDialog(
-        context: context,
-        builder: (_) => AlertDialog(
-          title: const Text('Error'),
-          content: const Text('No username found. Please log in.'),
-          actions: [
-            TextButton(
-              onPressed: () {
-                Navigator.pop(context);
-              },
-              child: const Text('OK'),
-            ),
-          ],
-        ),
-      );
+      _showErrorDialog('No username found. Please log in.');
       return;
     }
 
     // Make an API call to register courses with the username
     try {
       final response = await registerCoursesApi(username, selectedCourses);
-      print(selectedCourses);
       print("Response body: ${response.body}");
       if (response.statusCode == 200) {
-        print("selectedCkjljourses: $selectedCourses");
-        final Map<String, dynamic> Response = jsonDecode(response.body);
-        if (Response['success'] == 'Courses registered successfully') {
+        final Map<String, dynamic> responseData = jsonDecode(response.body);
+        if (responseData['success'] == 'Courses registered successfully') {
           // Show success dialog
-          showDialog(
-            context: context,
-            builder: (_) => AlertDialog(
-              title: const Text('Success'),
-              content: const Text('Courses registered successfully.'),
-              actions: [
-                TextButton(
-                  onPressed: () {
-                    Navigator.pop(context);
-                  },
-                  child: const Text('OK'),
-                ),
-              ],
-            ),
-          );
+          _showSuccessDialog('Courses registered successfully.');
         } else {
-          throw Exception(Response['error']);
+          throw Exception(responseData['error']);
         }
       } else {
         // Show error dialog
-        showDialog(
-          context: context,
-          builder: (_) => AlertDialog(
-            title: const Text('Error'),
-            content: const Text('Failed to register courses123.'),
-            actions: [
-              TextButton(
-                onPressed: () {
-                  Navigator.pop(context);
-                },
-                child: const Text('OK'),
-              ),
-            ],
-          ),
-        );
+        _showErrorDialog('Failed to register courses. Please try again.');
       }
     } catch (e) {
       // Show error dialog
-      showDialog(
-        context: context,
-        builder: (_) => AlertDialog(
-          title: const Text('Error'),
-          content: Text('Failed to register courses: $e'),
-          actions: [
-            TextButton(
-              onPressed: () {
-                Navigator.pop(context);
-              },
-              child: const Text('OK'),
-            ),
-          ],
-        ),
-      );
+      _showErrorDialog('Failed to register courses: $e');
     }
+  }
+
+  // Function to show error dialog
+  void _showErrorDialog(String message) {
+    showDialog(
+      context: context,
+      builder: (_) => AlertDialog(
+        title: Text('Error', style: TextStyle(color: black)),
+        content: Text(message, style: TextStyle(color: black)),
+        actions: [
+          TextButton(
+            onPressed: () {
+              Navigator.pop(context);
+            },
+            child: Text('OK', style: TextStyle(color: blue2)),
+          ),
+        ],
+      ),
+    );
+  }
+
+  // Function to show success dialog
+  void _showSuccessDialog(String message) {
+    showDialog(
+      context: context,
+      builder: (_) => AlertDialog(
+        title: Text('Success', style: TextStyle(color: black)),
+        content: Text(message, style: TextStyle(color: black)),
+        actions: [
+          TextButton(
+            onPressed: () {
+              Navigator.pop(context);
+              Navigator.pop(context); // Navigate back after success
+            },
+            child: Text('OK', style: TextStyle(color: blue2)),
+          ),
+        ],
+      ),
+    );
   }
 
   @override
   Widget build(BuildContext context) {
+    // Screen size for responsive design
+    final size = MediaQuery.of(context).size;
+
     return Scaffold(
+      backgroundColor: white,
       appBar: AppBar(
-        title: const Text(
+        backgroundColor: blue2,
+        title: Text(
           'Courses',
-          style: TextStyle(color: Colors.black), // Text color
+          style: GoogleFonts.leagueSpartan(
+            color: white,
+            fontWeight: FontWeight.bold,
+          ),
         ),
+        centerTitle: true,
       ),
       body: Padding(
-        padding: const EdgeInsets.all(8.0),
+        padding: EdgeInsets.symmetric(horizontal: size.width * 0.05, vertical: size.height * 0.02),
         child: ListView(
           children: [
             // Terms and Courses
@@ -168,7 +167,7 @@ class _CoursesState extends State<Courses> {
             ]),
             // Term 5
             _buildTermDropdown('Term 5', [
-              'Software Requirements and specifications',
+              'Software Requirements and Specifications',
               'Mobile App Development Training',
               'Intro to Artificial Intelligence',
               'Differential Equations',
@@ -201,15 +200,29 @@ class _CoursesState extends State<Courses> {
               'IoT',
               'Cloud Architecture',
             ]),
+
+            SizedBox(height: size.height * 0.02),
+
             // Submit Button
             if (selectedCourses.isNotEmpty)
-              Padding(
-                padding: const EdgeInsets.symmetric(vertical: 16.0),
+              SizedBox(
+                width: double.infinity,
                 child: ElevatedButton(
                   onPressed: _registerCourses,
+                  style: ElevatedButton.styleFrom(
+                    backgroundColor: blue2,
+                    padding: EdgeInsets.symmetric(vertical: 15),
+                    shape: RoundedRectangleBorder(
+                      borderRadius: BorderRadius.circular(10),
+                    ),
+                  ),
                   child: Text(
-                    'Add',
-                    style: TextStyle(color: Colors.blue[800]),
+                    'Add Courses',
+                    style: GoogleFonts.leagueSpartan(
+                      color: white,
+                      fontSize: 16,
+                      fontWeight: FontWeight.bold,
+                    ),
                   ),
                 ),
               ),
@@ -221,20 +234,24 @@ class _CoursesState extends State<Courses> {
 
   Widget _buildTermDropdown(String term, List<String> subjects) {
     return Padding(
-      padding: const EdgeInsets.all(16.0),
+      padding: const EdgeInsets.only(bottom: 16.0),
       child: Container(
         decoration: BoxDecoration(
-          border: Border.all(color: Colors.grey), // Border color
-          borderRadius: BorderRadius.circular(8), // Rounded corners
+          color: cyan1.withOpacity(0.1),
+          borderRadius: BorderRadius.circular(8),
         ),
         child: ExpansionTile(
           title: Row(
             children: [
-              const Icon(Icons.my_library_books, color: Color.fromARGB(255, 104, 110, 114)), // Icon
+              const Icon(Icons.menu_book_outlined, color: Colors.black), // Icon
               const SizedBox(width: 15),
               Text(
                 term,
-                style: const TextStyle(fontSize: 18),
+                style: GoogleFonts.leagueSpartan(
+                  fontSize: 18,
+                  fontWeight: FontWeight.bold,
+                  color: black,
+                ),
               ),
             ],
           ),
@@ -245,11 +262,15 @@ class _CoursesState extends State<Courses> {
                     selectedCourses.contains(subject)
                         ? Icons.check_circle
                         : Icons.check_circle_outline,
-                    color: selectedCourses.contains(subject)
-                        ? Colors.blue[800]
-                        : Colors.grey,
+                    color: selectedCourses.contains(subject) ? blue2 : Colors.grey,
                   ),
-                  title: Text(subject),
+                  title: Text(
+                    subject,
+                    style: TextStyle(
+                      fontSize: 16,
+                      color: black,
+                    ),
+                  ),
                   onTap: () {
                     _toggleCourseSelection(subject); // Toggle selection
                   },
@@ -261,26 +282,26 @@ class _CoursesState extends State<Courses> {
     );
   }
 
-  // API function to register coursesc
+  // API function to register courses
   Future<http.Response> registerCoursesApi(String username, List<String> selectedCourses) async {
-    final url = 'https://alyibrahim.pythonanywhere.com/register_courses';  // URL for your Flask API
-
-
+    final url = 'https://alyibrahim.pythonanywhere.com/register_courses'; // URL for your Flask API
 
     final Map<String, dynamic> requestBody = {
       'username': username,
       'Courses': selectedCourses, // Send the list of selected courses
     };
-        print(selectedCourses);
 
-    print("Request bodyiou: $requestBody");
-    
-    final response = await http.post(
-      Uri.parse(url),
-      headers: {'Content-Type': 'application/json'},
-      body: jsonEncode(requestBody),
-    );
+    print("Request body: $requestBody");
 
-    return response;
+    try {
+      final response = await http.post(
+        Uri.parse(url),
+        headers: {'Content-Type': 'application/json'},
+        body: jsonEncode(requestBody),
+      );
+      return response;
+    } catch (e) {
+      throw Exception('Failed to send request: $e');
+    }
   }
 }

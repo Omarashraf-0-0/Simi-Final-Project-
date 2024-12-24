@@ -17,6 +17,7 @@ import 'package:studymate/pages/QuizGenerator/QuizHome.dart';
 import 'package:studymate/pages/Game/GameHome.dart';
 import 'package:studymate/pages/Game/GameLeaderBoard.dart';
 import 'package:studymate/pages/Leaderboard.dart';
+import 'package:studymate/pages/OTP.dart';
 import 'package:studymate/pages/Career/CareerHome.dart';
 
 import 'package:http/http.dart' as http;
@@ -424,7 +425,9 @@ class _HomepageState extends State<Homepage> {
               leading: Icon(Icons.help),
               title: Text('Help'),
               onTap: () {
-                // Handle the Help tap
+                Navigator.pop(context);
+                Navigator.push(context,
+                    MaterialPageRoute(builder: (context) => OTP()));
               },
             ),
             ListTile(
