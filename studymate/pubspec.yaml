@@ -31,6 +31,7 @@ dependencies:
   permission_handler: any
   flutter_downloader: any
   # url_launcher: any
+  url_launcher: ^6.0.9
   flutter_slidable: any
   flutter_local_notifications: ^18.0.1
   timezone: any
@@ -63,6 +64,11 @@ flutter:
     - lib/assets/img/GameCharacters/Mentor.png
     - lib/assets/img/GameCharacters/Legend.png
     - lib/assets/img/GameCharacters/ElBatal.png
+    - lib/assets/img/Job.png
+    - lib/assets/img/cv.png
+    - lib/assets/img/cv2.png
+    - lib/assets/img/career.png
+    - lib/assets/img/career2.png    
 
   fonts:
     - family: Poppins
