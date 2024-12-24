@@ -5,7 +5,6 @@ import 'package:flutter/material.dart';
 import 'package:google_fonts/google_fonts.dart';
 import 'package:studymate/pages/Settings/Settings.dart';
 import 'package:studymate/pages/Settings/UserSettings.dart';
-import 'package:flutter/material.dart';
 import 'package:hive/hive.dart';
 import 'package:studymate/pages/UserUpdater.dart';
 import '../../Classes/User.dart';
@@ -13,14 +12,11 @@ import '../../Pop-ups/SuccesPopUp.dart';
 import '../../util/TextField.dart';
 import '../Login & Register/Forget_Pass.dart';
 import 'package:http/http.dart' as http;
-import 'dart:convert';
 import '../../Pop-ups/PopUps_Success.dart';
 import '../../Pop-ups/PopUps_Failed.dart';
 import '../../Pop-ups/PopUps_Warning.dart';
 
 import 'package:image_picker/image_picker.dart';
-import 'package:hive/hive.dart';
-
 
 class UserSettings extends StatefulWidget {
   const UserSettings({super.key});
@@ -30,24 +26,40 @@ class UserSettings extends StatefulWidget {
 }
 
 class _UserSettingsState extends State<UserSettings> {
-  final TextEditingController EmailController = TextEditingController();
-  final TextEditingController UsernameController = TextEditingController();
-  final TextEditingController PasswordController = TextEditingController();
-  final TextEditingController ConfirmPasswordController = TextEditingController();
+  final TextEditingController emailController = TextEditingController();
+  final TextEditingController usernameController = TextEditingController();
+  final TextEditingController passwordController = TextEditingController();
+  final TextEditingController confirmPasswordController = TextEditingController();
 
   bool _isPasswordVisible = false;
   bool _isConfirmPasswordVisible = false;
 
   final _userUpdater = UserUpdater(url: 'https://alyibrahim.pythonanywhere.com/update_user');
 
-  // Call this method when updating user data
+  // Colors according to your branding
+  final Color blue1 = Color(0xFF1c74bb);
+  final Color blue2 = Color(0xFF165d96);
+  final Color cyan1 = Color(0xFF18bebc);
+  final Color cyan2 = Color(0xFF139896);
+  final Color black = Color(0xFF000000);
+  final Color white = Color(0xFFFFFFFF);
+
+  @override
+  void initState() {
+    super.initState();
+    // Initialize the text controllers with data from Hive
+    emailController.text = Hive.box('userBox').get('email', defaultValue: '');
+    usernameController.text = Hive.box('userBox').get('fullName', defaultValue: '');
+  }
+
+  // Method to update user data
   Future<void> updateData() async {
     final Map<String, dynamic> data = {
       'username': Hive.box('userBox').get('username'),
-      'fullName': UsernameController.text,
-      'email': EmailController.text,
-      'password': PasswordController.text.isNotEmpty ? PasswordController.text : null,
-      'confirmPassword': ConfirmPasswordController.text,
+      'fullName': usernameController.text,
+      'email': emailController.text,
+      'password': passwordController.text.isNotEmpty ? passwordController.text : null,
+      'confirmPassword': confirmPasswordController.text,
     };
 
     await _userUpdater.updateUserData(
@@ -71,210 +83,184 @@ class _UserSettingsState extends State<UserSettings> {
 
       // After the async operation completes, update the UI
       setState(() {
-        // Trigger a rebuild to update the UI with the new image
-        // No additional state variables are needed here if you're relying on Hive to store and retrieve the image data
+        // Refresh the UI
       });
     }
   }
 
   @override
   Widget build(BuildContext context) {
-    print("The Email : ${Hive.box('userBox').get('id')}");
-    EmailController.text = Hive.box('userBox').get('email', defaultValue: 'Default from Hive');
-    UsernameController.text = Hive.box('userBox').get('fullName', defaultValue: 'Default from Hive');
+    // Get the profile image
+    final profileImageBase64 = Hive.box('userBox').get('profileImageBase64');
+
     return Scaffold(
       appBar: AppBar(
-        backgroundColor: Color(0xFF165D96),
+        backgroundColor: blue2,
         leading: IconButton(
-            icon: Icon(Icons.arrow_back_ios_new_rounded, color: Colors.white),
-            onPressed: () {
-              Navigator.pop(context);
-            }),
-        title: Center(child: Text('User Settings')),
-        titleTextStyle: TextStyle(
-          color: Colors.white,
-          fontSize: 20,
-          fontWeight: FontWeight.bold,
-          // backgroundColor: Colors.black,
+          icon: Icon(Icons.arrow_back_ios_new_rounded, color: white),
+          onPressed: () {
+            Navigator.pop(context);
+          },
         ),
+        title: Text(
+          'User Settings',
+          style: GoogleFonts.leagueSpartan(
+            color: white,
+            fontWeight: FontWeight.bold,
+          ),
+        ),
+        centerTitle: true,
       ),
       body: Padding(
-        padding: const EdgeInsets.only(top: 20, left: 16, right: 16),
+        padding: const EdgeInsets.all(16.0),
         child: SingleChildScrollView(
           child: Column(
-            // mainAxisAlignment: MainAxisAlignment.center,
-            crossAxisAlignment: CrossAxisAlignment.start,
             children: [
               // Profile Picture Section
-              Row(
-                crossAxisAlignment: CrossAxisAlignment.center,
-                children: [
-                  Text(
-                    'Profile Picture',
-                    style: TextStyle(
-                      fontSize: 28,
-                      fontWeight: FontWeight.bold,
-                      fontFamily: GoogleFonts.leagueSpartan().fontFamily,
-                      color: Color.fromARGB(255, 0, 0, 0),
-                    ),
+              Align(
+                alignment: Alignment.centerLeft,
+                child: Text(
+                  'Profile Picture',
+                  style: GoogleFonts.leagueSpartan(
+                    fontSize: 24,
+                    fontWeight: FontWeight.bold,
+                    color: black,
                   ),
-                ],
+                ),
               ),
               SizedBox(height: 20),
-              Row(
-                children: [
-                  CircleAvatar(
-                    radius: 65,
-                    backgroundColor: Colors.transparent,
-                    backgroundImage: Hive.box('userBox').get('profileImageBase64') == null
-                        ? null
-                        : MemoryImage(base64Decode(Hive.box('userBox').get('profileImageBase64'))),
-                    child: Hive.box('userBox').get('profileImageBase64') == null
-                        ? CircularProgressIndicator(
-                      valueColor: AlwaysStoppedAnimation<Color>(Color(0xFF01D7ED)),
-                    )
-                        : null,
-                  ),
-                  SizedBox(width: 25),
-                  Expanded(
-                    child: Container(
-                      height: 50,
-                      decoration: BoxDecoration(
-                        color: const Color.fromRGBO(22, 93, 150, 1),
-                        borderRadius: BorderRadius.circular(60),
-                      ),
-                      child: TextButton(
-                        onPressed: () {
-                          _pickImage();
-                        },
-                        child: Center(
-                          child: Text(
-                            'Upload Image',
-                            style: TextStyle(
-                              color: Colors.white,
-                              fontSize: 20,
-                              fontWeight: FontWeight.bold,
-                              fontFamily: GoogleFonts.leagueSpartan().fontFamily,
-                            ),
+              Center(
+                child: Stack(
+                  alignment: Alignment.bottomRight,
+                  children: [
+                    CircleAvatar(
+                      radius: 65,
+                      backgroundColor: cyan1,
+                      backgroundImage: profileImageBase64 != null
+                          ? MemoryImage(base64Decode(profileImageBase64))
+                          : AssetImage('assets/images/default_avatar.png') as ImageProvider,
+                    ),
+                    Positioned(
+                      bottom: 0,
+                      right: 4,
+                      child: GestureDetector(
+                        onTap: _pickImage,
+                        child: CircleAvatar(
+                          radius: 20,
+                          backgroundColor: cyan2,
+                          child: Icon(
+                            Icons.camera_alt,
+                            color: white,
                           ),
                         ),
                       ),
                     ),
-                  ),
-                ],
+                  ],
+                ),
               ),
+              SizedBox(height: 40),
               // User Information Section
+              Align(
+                alignment: Alignment.centerLeft,
+                child: Text(
+                  'User Information',
+                  style: GoogleFonts.leagueSpartan(
+                    fontSize: 24,
+                    fontWeight: FontWeight.bold,
+                    color: black,
+                  ),
+                ),
+              ),
               SizedBox(height: 20),
-              Row(
-                crossAxisAlignment: CrossAxisAlignment.center,
-                children: [
-                  Text(
-                    'User Information',
-                    style: TextStyle(
-                      fontSize: 28,
-                      fontWeight: FontWeight.bold,
-                      fontFamily: GoogleFonts.leagueSpartan().fontFamily,
-                      color: Color.fromARGB(255, 0, 0, 0),
-                    ),
-                  ),
-                ],
-              ),
-              SizedBox(height: 55),
               // Username TextField
-              SizedBox(
-                width: 375,
-                child: TextField(
-                  controller: UsernameController,
-                  decoration: InputDecoration(
-                    hintText: 'User',
-                    suffixIcon: Icon(Icons.person),
+              TextField(
+                controller: usernameController,
+                decoration: InputDecoration(
+                  labelText: 'Full Name',
+                  prefixIcon: Icon(Icons.person),
+                  border: OutlineInputBorder(
+                    borderRadius: BorderRadius.circular(15),
                   ),
-                  keyboardType: TextInputType.text,
                 ),
               ),
-              SizedBox(height: 55),
+              SizedBox(height: 20),
               // Email TextField
-              SizedBox(
-                width: 375,
-                child: TextField(
-                  controller: EmailController,
-                  decoration: InputDecoration(
-                    hintText: 'Email',
-                    suffixIcon: Icon(Icons.email),
+              TextField(
+                controller: emailController,
+                decoration: InputDecoration(
+                  labelText: 'Email',
+                  prefixIcon: Icon(Icons.email),
+                  border: OutlineInputBorder(
+                    borderRadius: BorderRadius.circular(15),
                   ),
-                  keyboardType: TextInputType.emailAddress,
                 ),
+                keyboardType: TextInputType.emailAddress,
               ),
-              SizedBox(height: 55),
+              SizedBox(height: 20),
               // Password TextField
-              SizedBox(
-                width: 375,
-                child: TextField(
-                  controller: PasswordController,
-                  decoration: InputDecoration(
-                    hintText: 'Password',
-                    suffixIcon: IconButton(
-                      icon: Icon(
-                        _isPasswordVisible ? Icons.visibility : Icons.visibility_off,
-                      ),
-                      onPressed: () {
-                        setState(() {
-                          _isPasswordVisible = !_isPasswordVisible;
-                        });
-                      },
+              TextField(
+                controller: passwordController,
+                decoration: InputDecoration(
+                  labelText: 'New Password',
+                  prefixIcon: Icon(Icons.lock),
+                  suffixIcon: IconButton(
+                    icon: Icon(
+                      _isPasswordVisible ? Icons.visibility : Icons.visibility_off,
                     ),
-                  ),
-                  keyboardType: TextInputType.visiblePassword,
-                  obscureText: !_isPasswordVisible,
-                ),
-              ),
-              SizedBox(height: 55),
-              // Confirm Password TextField
-              SizedBox(
-                width: 375,
-                child: TextField(
-                  controller: ConfirmPasswordController,
-                  decoration: InputDecoration(
-                    hintText: 'Confirm Password',
-                    suffixIcon: IconButton(
-                      icon: Icon(
-                        _isConfirmPasswordVisible ? Icons.visibility : Icons.visibility_off,
-                      ),
-                      onPressed: () {
-                        setState(() {
-                          _isConfirmPasswordVisible = !_isConfirmPasswordVisible;
-                        });
-                      },
-                    ),
-                  ),
-                  keyboardType: TextInputType.visiblePassword,
-                  obscureText: !_isConfirmPasswordVisible,
-                ),
-              ),
-              SizedBox(height: 25),
-              // Save Changes Button
-              Center(
-                child: Container(
-                  width: 200,
-                  decoration: BoxDecoration(
-                    color: const Color.fromRGBO(22, 93, 150, 1),
-                    borderRadius: BorderRadius.circular(5),
-                  ),
-                  child: TextButton(
                     onPressed: () {
-                      updateData();
+                      setState(() {
+                        _isPasswordVisible = !_isPasswordVisible;
+                      });
                     },
-                    child: Padding(
-                      padding: const EdgeInsets.symmetric(horizontal: 20.0),
-                      child: Text(
-                        'Save Changes',
-                        style: TextStyle(
-                          color: Colors.white,
-                          fontSize: 20,
-                          fontWeight: FontWeight.bold,
-                          fontFamily: GoogleFonts.leagueSpartan().fontFamily,
-                        ),
-                      ),
+                  ),
+                  border: OutlineInputBorder(
+                    borderRadius: BorderRadius.circular(15),
+                  ),
+                ),
+                obscureText: !_isPasswordVisible,
+              ),
+              SizedBox(height: 20),
+              // Confirm Password TextField
+              TextField(
+                controller: confirmPasswordController,
+                decoration: InputDecoration(
+                  labelText: 'Confirm Password',
+                  prefixIcon: Icon(Icons.lock),
+                  suffixIcon: IconButton(
+                    icon: Icon(
+                      _isConfirmPasswordVisible ? Icons.visibility : Icons.visibility_off,
+                    ),
+                    onPressed: () {
+                      setState(() {
+                        _isConfirmPasswordVisible = !_isConfirmPasswordVisible;
+                      });
+                    },
+                  ),
+                  border: OutlineInputBorder(
+                    borderRadius: BorderRadius.circular(15),
+                  ),
+                ),
+                obscureText: !_isConfirmPasswordVisible,
+              ),
+              SizedBox(height: 30),
+              // Save Changes Button
+              SizedBox(
+                width: double.infinity,
+                child: ElevatedButton(
+                  onPressed: updateData,
+                  style: ElevatedButton.styleFrom(
+                    backgroundColor: blue2,
+                    padding: EdgeInsets.symmetric(vertical: 15),
+                    shape: RoundedRectangleBorder(
+                      borderRadius: BorderRadius.circular(15),
+                    ),
+                  ),
+                  child: Text(
+                    'Save Changes',
+                    style: GoogleFonts.leagueSpartan(
+                      fontSize: 18,
+                      fontWeight: FontWeight.bold,
+                      color: white,
                     ),
                   ),
                 ),

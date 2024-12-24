@@ -266,7 +266,7 @@ class _HomepageState extends State<Homepage> {
                         context,
                         MaterialPageRoute(
                             builder: (context) => Profilepage(
-                                  user: widget.user,
+                                  // user: widget.user,
                                 )));
                   },
                   style: ElevatedButton.styleFrom(

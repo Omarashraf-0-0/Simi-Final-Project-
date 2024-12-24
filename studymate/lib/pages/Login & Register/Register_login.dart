@@ -1,341 +1,314 @@
 import 'package:flutter/material.dart';
+import 'package:google_fonts/google_fonts.dart';
 import 'package:studymate/pages/LoginPage.dart';
-import 'package:studymate/pages/Login & Register/RegisterPage.dart';
+import 'package:studymate/pages/Login%20&%20Register/RegisterPage.dart';
 import '../../Classes/User.dart';
 import '../../Pop-ups/PopUps_Warning.dart';
-import '../../util/TextField.dart';
 
 class RegisterLogin extends StatefulWidget {
-    User? user =  User();
-    RegisterLogin({super.key,
-    // this.user,
-    });
+  RegisterLogin({Key? key}) : super(key: key);
 
   @override
   State<RegisterLogin> createState() => _RegisterLoginState();
 }
 
 class _RegisterLoginState extends State<RegisterLogin> {
-  final UsernameController = TextEditingController();
-  final EmailController = TextEditingController();
-  final PasswordController = TextEditingController();
-  final ConfirmPasswordController = TextEditingController();
-  final GenderController = TextEditingController();
+  final TextEditingController usernameController = TextEditingController();
+  final TextEditingController emailController = TextEditingController();
+  final TextEditingController passwordController = TextEditingController();
+  final TextEditingController confirmPasswordController = TextEditingController();
+
+  String? gender;
+
+  // Branding colors
+  final Color blue1 = Color(0xFF1c74bb);
+  final Color blue2 = Color(0xFF165d96);
+  final Color cyan1 = Color(0xFF18bebc);
+  final Color cyan2 = Color(0xFF139896);
+  final Color black = Color(0xFF000000);
+  final Color white = Color(0xFFFFFFFF);
+
+  final _formKey = GlobalKey<FormState>(); // Form key for validation
+
+  @override
+  void dispose() {
+    // Dispose controllers to free up resources
+    usernameController.dispose();
+    emailController.dispose();
+    passwordController.dispose();
+    confirmPasswordController.dispose();
+    super.dispose();
+  }
+
+  void validateAndProceed() {
+    if (_formKey.currentState!.validate()) {
+      if (gender == null) {
+        showWarningPopup(context, 'Error', 'Please select your gender.', 'OK');
+        return;
+      }
+      // Create a new User object with the entered data
+      User user = User(
+        username: usernameController.text,
+        email: emailController.text,
+        password: passwordController.text,
+        gender: gender,
+      );
+
+      // Navigate to the next registration page
+      Navigator.push(
+        context,
+        MaterialPageRoute(
+          builder: (context) => RegisterPage(
+            user: user,
+          ),
+        ),
+      );
+    }
+  }
 
   @override
   Widget build(BuildContext context) {
+    // Screen size for responsive design
+    final size = MediaQuery.of(context).size;
+
     return Scaffold(
-      body: Padding(
-        padding: const EdgeInsets.symmetric(vertical: 30.0),
-        child: SingleChildScrollView(
-          child: Center(
-            child: Column(
-              mainAxisAlignment: MainAxisAlignment.spaceBetween,
-              crossAxisAlignment: CrossAxisAlignment.center,
-              children: [
-                // add a back button arrow to the left with a circular outlayer
-                Padding(
-                  padding: const EdgeInsets.only(left: 10, bottom: 20),
-                  child: Row(
-                    children: [
-                      Container(
-                        decoration: BoxDecoration(
-                          color: Colors.white,
-                          shape: BoxShape.circle,
-                        ),
-                        child: IconButton(
-                          onPressed: () {
-                            Navigator.pop(context);
-                          },
-                          icon: Icon(
-                            Icons.arrow_back,
-                            color: Colors.black,
-                          ),
-                        ),
-                      ),
-                    ],
-                  ),
-                ),
-                Column(
+      backgroundColor: white,
+      body: SingleChildScrollView(
+        child: Padding(
+          padding: EdgeInsets.symmetric(horizontal: size.width * 0.08, vertical: size.height * 0.05),
+          child: Column(
+            crossAxisAlignment: CrossAxisAlignment.start,
+            children: [
+              // Back Button
+              IconButton(
+                icon: Icon(Icons.arrow_back_ios_new, color: black),
+                onPressed: () {
+                  Navigator.pop(context);
+                },
+              ),
+              SizedBox(height: size.height * 0.02),
+              // Title
+              Center(
+                child: Column(
                   children: [
                     Text(
-                      'Etfadal Ma3anaa',
-                      style: TextStyle(
-                        fontSize: 42,
+                      'Welcome Aboard!',
+                      style: GoogleFonts.leagueSpartan(
+                        fontSize: 32,
                         fontWeight: FontWeight.bold,
+                        color: black,
                       ),
                     ),
-                    Text('Login Information',
-                        style: TextStyle(
-                          fontSize: 18,
-                          fontWeight: FontWeight.bold,
-                        )),
-                    SizedBox(
-                      height: 25,
-                    ),
-                    SizedBox(
-                        width: 375,
-                        child: Textfield(
-                            controller: EmailController, hintText: 'Email',
-                            keyboardType: TextInputType.emailAddress,
-                            suffixIcon: Icon(Icons.email),
-                            )),
-                    SizedBox(
-                      height: 25,
-                    ),
-                    SizedBox(
-                        width: 375,
-                        child: Textfield(
-                          controller: UsernameController,
-                          hintText: 'Username',
-                        )),
-                    SizedBox(
-                      height: 25,
-                    ),
-                    SizedBox(
-                        width: 375,
-                        child: Textfield(
-                          controller: PasswordController,
-                          hintText: 'Password',
-                          obscureText: true,
-                          toggleVisability: false,
-                        )),
-                        SizedBox(
-                      height: 25,
-                    ),
-                    SizedBox(
-                        width: 375,
-                        child: Textfield(
-                            controller: ConfirmPasswordController,
-                            hintText: 'Confirm Password',
-                            obscureText: true,
-                            toggleVisability: false)),
-                    SizedBox(
-                      height: 25,
-                    ),
-                    Padding(
-                      padding: const EdgeInsets.only(left: 10),
-                      child: Column(
-                        crossAxisAlignment: CrossAxisAlignment.center,
-                        children: [
-                          SizedBox(
-                            width: 375,
-                            child: Text('Gender :',
-                                style: TextStyle(
-                                  fontSize: 22,
-                                  fontWeight: FontWeight.bold,
-                                  textBaseline: TextBaseline.alphabetic,
-                                )),
-                          ),
-                          SizedBox(
-                            height: 10,
-                          ),
-                          Row(
-                            mainAxisAlignment: MainAxisAlignment.start,
-                            children: [
-                              Expanded(
-                                child: SizedBox(
-                                  width: 180,
-                                  child: SizedBox(
-                                    width: 180,
-                                    child: Row(
-                                      children: [
-                                        Radio(
-                                          value: 'Male',
-                                          groupValue: GenderController.text,
-                                          onChanged: (value) {
-                                            setState(() {
-                                              GenderController.text =
-                                                  value.toString();
-                                            });
-                                          },
-                                        ),
-                                        Text('Male'),
-                                      ],
-                                    ),
-                                  ),
-                                ),
-                              ),
-                              SizedBox(
-                                width: 15,
-                              ),
-                              SizedBox(
-                                width: 180,
-                                child: Row(
-                                  children: [
-                                    Radio(
-                                      value: 'Female',
-                                      groupValue: GenderController.text,
-                                      onChanged: (value) {
-                                        setState(() {
-                                          GenderController.text =
-                                              value.toString();
-                                        });
-                                      },
-                                    ),
-                                    Text('Female'),
-                                  ],
-                                ),
-                              ),
-                            ],
-                          ),
-                        ],
+                    SizedBox(height: 8),
+                    Text(
+                      'Create your account',
+                      style: GoogleFonts.leagueSpartan(
+                        fontSize: 18,
+                        color: Colors.grey[700],
                       ),
                     ),
-                    SizedBox(
-                      height: 25,
-                    ),
-                    ElevatedButton(
-                      onPressed: () {
-                        
-                        
-                        if (UsernameController.text.isEmpty || EmailController.text.isEmpty || PasswordController.text.isEmpty || GenderController.text.isEmpty) {
-                          // ScaffoldMessenger.of(context).showSnackBar(
-                          //   SnackBar(content: Text('Please fill in all fields.')),
-                          // );
-                          showWarningPopup(context, 'Error', 'Please fill in all fields.', 'OK');
-                        }
-
-                        else if (!RegExp(r'^[a-zA-Z0-9_]+$').hasMatch(UsernameController.text)) {
-                          // ScaffoldMessenger.of(context).showSnackBar(
-                          //   SnackBar(content: Text('Username can only contain letters, numbers, and underscores.')),
-                          // );
-                          showWarningPopup(context, 'Error', 'Username can only contain letters, numbers, and underscores.', 'OK');
-                        }
-
-                        else if (!RegExp(r'^[^@]+@[^@]+\.[^@]+').hasMatch(EmailController.text)) {
-                          // ScaffoldMessenger.of(context).showSnackBar(
-                          //   SnackBar(content: Text('Invalid email address.')),
-                          // );
-                          showWarningPopup(context, 'Error', 'Invalid email address.', 'OK');
-                        }
-
-                        else if (PasswordController.text != ConfirmPasswordController.text) {
-                          // ScaffoldMessenger.of(context).showSnackBar(
-                          //   SnackBar(content: Text('Passwords do not match.')),
-                          // );
-                          showWarningPopup(context, 'Error', 'Passwords do not match.', 'OK');
-                        }
-
-                        else if (PasswordController.text.length < 8 || 
-                            !RegExp(r'[A-Z]').hasMatch(PasswordController.text) || 
-                            !RegExp(r'[a-z]').hasMatch(PasswordController.text) || 
-                            !RegExp(r'\d').hasMatch(PasswordController.text)) {
-                          // ScaffoldMessenger.of(context).showSnackBar(
-                          //   SnackBar(content: Text('Password must be at least 8 characters long and contain at least one uppercase letter, one lowercase letter, and one number.')),
-                          // );
-                          showWarningPopup(context, 'Error', 'Password must be at least 8 characters long and contain at least one uppercase letter, one lowercase letter, and one number.', 'OK');
-                        }
-
-                        else {
-                        widget.user?.username = UsernameController.text;
-                        widget.user?.email = EmailController.text;
-                        widget.user?.password = PasswordController.text;
-                        widget.user?.gender = GenderController.text;
-                        // showDialog(
-                        //   context: context,
-                        //   builder: (BuildContext context) {
-                        //     return AlertDialog(
-                        //       title: Text('Registration Successful!'),
-                        //       content: SelectableText(
-                        //         'Username: ${widget.user?.username}\nEmail: ${widget.user?.email}\nPassword: ${widget.user?.password}\nGender: ${widget.user?.gender}',
-                        //       ),
-                        //       actions: [
-                        //         TextButton(
-                        //           onPressed: () {
-                        //             Navigator.of(context).pop(); // Close the dialog
-                        //             Navigator.pushReplacement(
-                        //               context,
-                        //               MaterialPageRoute(
-                        //                 builder: (context) => RegisterPage(
-                        //                   user: widget.user,
-                        //                 ),
-                        //               ),
-                        //             );
-                        //           },
-                        //           child: Text('OK'),
-                        //         ),
-                        //       ],
-                        //     );
-                        //   },
-                        // );
-                        // showSuccessPopup(context, 'Registration Successful!', 'Username: ${widget.user?.username}\nEmail: ${widget.user?.email}\nPassword: ${widget.user?.password}\nGender: ${widget.user?.gender}', 'OK');
-                        Navigator.push(
-                              context,
-                              MaterialPageRoute(
-                                builder: (context) => RegisterPage(
-                                  user: widget.user,
-                                ),
-                              ),
-                            );
-                      }
-
-                        // Navigator.pop(context);
-                        
-                      },
-                      style: ElevatedButton.styleFrom(
-                        padding:
-                            EdgeInsets.symmetric(horizontal: 110, vertical: 15),
-                        // add color #165D96 to the background
-                        backgroundColor: Color(0xff165D96),
-                        // rounded corners remove
-                        shape: RoundedRectangleBorder(
+                  ],
+                ),
+              ),
+              SizedBox(height: size.height * 0.04),
+              // Registration Form
+              Form(
+                key: _formKey,
+                child: Column(
+                  children: [
+                    // Email Field
+                    TextFormField(
+                      controller: emailController,
+                      decoration: InputDecoration(
+                        labelText: 'Email',
+                        prefixIcon: Icon(Icons.email_outlined),
+                        border: OutlineInputBorder(
                           borderRadius: BorderRadius.circular(15),
                         ),
                       ),
+                      keyboardType: TextInputType.emailAddress,
+                      validator: (value) {
+                        if (value == null || value.isEmpty) {
+                          return 'Please enter your email.';
+                        } else if (!RegExp(r'^[^@]+@[^@]+\.[^@]+').hasMatch(value)) {
+                          return 'Invalid email address.';
+                        }
+                        return null;
+                      },
+                    ),
+                    SizedBox(height: size.height * 0.025),
+                    // Username Field
+                    TextFormField(
+                      controller: usernameController,
+                      decoration: InputDecoration(
+                        labelText: 'Username',
+                        prefixIcon: Icon(Icons.person_outline),
+                        border: OutlineInputBorder(
+                          borderRadius: BorderRadius.circular(15),
+                        ),
+                      ),
+                      validator: (value) {
+                        if (value == null || value.isEmpty) {
+                          return 'Please enter your username.';
+                        } else if (!RegExp(r'^[a-zA-Z0-9_]+$').hasMatch(value)) {
+                          return 'Username can only contain letters, numbers, and underscores.';
+                        }
+                        return null;
+                      },
+                    ),
+                    SizedBox(height: size.height * 0.025),
+                    // Password Field
+                    TextFormField(
+                      controller: passwordController,
+                      decoration: InputDecoration(
+                        labelText: 'Password',
+                        prefixIcon: Icon(Icons.lock_outline),
+                        border: OutlineInputBorder(
+                          borderRadius: BorderRadius.circular(15),
+                        ),
+                      ),
+                      obscureText: true,
+                      validator: (value) {
+                        if (value == null || value.isEmpty) {
+                          return 'Please enter your password.';
+                        } else if (value.length < 8 ||
+                            !RegExp(r'[A-Z]').hasMatch(value) ||
+                            !RegExp(r'[a-z]').hasMatch(value) ||
+                            !RegExp(r'\d').hasMatch(value)) {
+                          return 'Password must be at least 8 characters long and contain at least one uppercase letter, one lowercase letter, and one number.';
+                        }
+                        return null;
+                      },
+                    ),
+                    SizedBox(height: size.height * 0.025),
+                    // Confirm Password Field
+                    TextFormField(
+                      controller: confirmPasswordController,
+                      decoration: InputDecoration(
+                        labelText: 'Confirm Password',
+                        prefixIcon: Icon(Icons.lock_outline),
+                        border: OutlineInputBorder(
+                          borderRadius: BorderRadius.circular(15),
+                        ),
+                      ),
+                      obscureText: true,
+                      validator: (value) {
+                        if (value == null || value.isEmpty) {
+                          return 'Please confirm your password.';
+                        } else if (value != passwordController.text) {
+                          return 'Passwords do not match.';
+                        }
+                        return null;
+                      },
+                    ),
+                    SizedBox(height: size.height * 0.025),
+                    // Gender Selection
+                    Align(
+                      alignment: Alignment.centerLeft,
                       child: Text(
-                        'Next',
-                        style: TextStyle(
-                          color: Colors.white,
+                        'Gender:',
+                        style: GoogleFonts.leagueSpartan(
                           fontSize: 18,
+                          fontWeight: FontWeight.bold,
+                          color: black,
+                        ),
+                      ),
+                    ),
+                    SizedBox(height: size.height * 0.01),
+                    Row(
+                      children: [
+                        Expanded(
+                          child: RadioListTile<String>(
+                            title: Text('Male'),
+                            value: 'Male',
+                            groupValue: gender,
+                            onChanged: (value) {
+                              setState(() {
+                                gender = value;
+                              });
+                            },
+                          ),
+                        ),
+                        Expanded(
+                          child: RadioListTile<String>(
+                            title: Text('Female'),
+                            value: 'Female',
+                            groupValue: gender,
+                            onChanged: (value) {
+                              setState(() {
+                                gender = value;
+                              });
+                            },
+                          ),
+                        ),
+                      ],
+                    ),
+                    SizedBox(height: size.height * 0.04),
+                    // Next Button
+                    SizedBox(
+                      width: double.infinity,
+                      child: ElevatedButton(
+                        onPressed: validateAndProceed,
+                        style: ElevatedButton.styleFrom(
+                          backgroundColor: blue2,
+                          padding: EdgeInsets.symmetric(vertical: 15),
+                          shape: RoundedRectangleBorder(
+                            borderRadius: BorderRadius.circular(15),
+                          ),
+                        ),
+                        child: Text(
+                          'Next',
+                          style: GoogleFonts.leagueSpartan(
+                            fontSize: 18,
+                            fontWeight: FontWeight.bold,
+                            color: white,
+                          ),
                         ),
                       ),
                     ),
                   ],
                 ),
-                SizedBox(
-                  height: 40,
-                ),
-                Column(
+              ),
+              SizedBox(height: size.height * 0.05),
+              // Already have an account
+              Center(
+                child: Column(
                   children: [
-                    Text('Already have an account?',
-                        style: TextStyle(
-                          fontSize: 22,
-                          fontWeight: FontWeight.bold,
-                        )),
-                    SizedBox(
-                      height: 5,
+                    Text(
+                      'Already have an account?',
+                      style: GoogleFonts.leagueSpartan(
+                        fontSize: 16,
+                        color: black,
+                      ),
                     ),
-                    ElevatedButton(
+                    SizedBox(height: 8),
+                    OutlinedButton(
                       onPressed: () {
-                        // Navigator.pop(context);
+                        // Navigate to Login page
                         Navigator.pushReplacement(
                           context,
                           MaterialPageRoute(builder: (context) => LoginPage()),
                         );
                       },
-                      style: ElevatedButton.styleFrom(
-                        padding:
-                            EdgeInsets.symmetric(horizontal: 60, vertical: 5),
-                        // add color #165D96 to the background
-                        backgroundColor: Color(0xff165D96),
-                        // rounded corners remove
+                      style: OutlinedButton.styleFrom(
+                        side: BorderSide(color: blue2, width: 2),
+                        padding: EdgeInsets.symmetric(horizontal: 40, vertical: 12),
                         shape: RoundedRectangleBorder(
                           borderRadius: BorderRadius.circular(15),
                         ),
                       ),
                       child: Text(
                         'Login',
-                        style: TextStyle(
-                          color: Colors.white,
-                          fontSize: 14,
+                        style: GoogleFonts.leagueSpartan(
+                          fontSize: 16,
+                          color: blue2,
                         ),
                       ),
                     ),
                   ],
-                )
-              ],
-            ),
+                ),
+              ),
+            ],
           ),
         ),
       ),

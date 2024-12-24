@@ -1,197 +1,126 @@
-// ignore_for_file: prefer_const_constructors
-
-import 'package:flutter/material.dart';
-import 'package:flutter_font_icons/flutter_font_icons.dart';
-import 'package:google_fonts/google_fonts.dart';
+import 'dart:convert';
 import 'dart:io';
-import 'package:path_provider/path_provider.dart';
-import '../Classes/User.dart';
+import 'package:flutter/material.dart';
+import 'package:google_fonts/google_fonts.dart';
 import 'package:hive/hive.dart';
-
-import '../Classes/User.dart';
-import '../Pop-ups/SuccesPopUp.dart';
-import '../util/TextField.dart';
-import 'package:http/http.dart' as http;
-import 'dart:convert'; // For base64 encoding
 import 'package:image_picker/image_picker.dart';
-import '../Pop-ups/PopUps_Success.dart';
-import './UserUpdater.dart';
+import 'package:http/http.dart' as http;
 
 class Profilepage extends StatefulWidget {
-  User? user;
-  Profilepage({Key? key, this.user}) : super(key: key);
+  const Profilepage({Key? key}) : super(key: key);
 
   @override
-  State<Profilepage> createState() => _ProfilepageState();
+  _ProfilepageState createState() => _ProfilepageState();
 }
 
 class _ProfilepageState extends State<Profilepage> {
-  File? _imageFile; // To hold the profile image file
-  bool _isImageLoading = true;
-  final ImagePicker _picker = ImagePicker();
+  // Branding colors
+  final Color blue1 = const Color(0xFF1c74bb);
+  final Color blue2 = const Color(0xFF165d96);
+  final Color cyan1 = const Color(0xFF18bebc);
+  final Color cyan2 = const Color(0xFF139896);
+  final Color black = const Color(0xFF000000);
+  final Color white = const Color(0xFFFFFFFF);
+
+  bool _isImageLoading = false;
+  late String _fullName;
+  late String _title;
+  late int _xp;
+  late String _email;
+  late String _phoneNumber;
+  late String _registrationNumber;
+  late String _university;
+  late String _college;
+  late String _major;
+  late String _termLevel;
+  List<String> _courses = [];
 
   @override
   void initState() {
     super.initState();
-    // Fetch the profile image when the page is initialized
-    fetchAndSaveProfileImage().then((result) {
-      if (mounted) {
-        setState(() {
-          _isImageLoading =
-              false; // Set loading to false once the image is fetched
-        });
-      }
-    });
+    _loadUserData();
+    _fetchAndSaveProfileImage();
   }
 
-  // Fetch and save the profile image
-  Future<bool> fetchAndSaveProfileImage() async {
-    final url =
-        'https://alyibrahim.pythonanywhere.com/get-profile-image'; // Replace with your server URL
+  void _loadUserData() {
+    final userBox = Hive.box('userBox');
+    _fullName = userBox.get('fullName') ?? '';
+    _title = userBox.get('title') ?? 'NewComer';
+    _xp = userBox.get('xp') ?? 0;
+    _email = userBox.get('email') ?? '';
+    _phoneNumber = userBox.get('phone_number') ?? '';
+    _registrationNumber = userBox.get('Registration_Number') ?? '';
+    _university = userBox.get('university') ?? '';
+    _college = userBox.get('college') ?? '';
+    _major = userBox.get('major') ?? '';
+    _termLevel = '${userBox.get('term_level') ?? ''}';
+    _courses = ['Data Structures and Algorithms', 'Software Requirements and Specification'];
+  }
 
-    // Get the username from Hive box
+  Future<void> _fetchAndSaveProfileImage() async {
+    setState(() {
+      _isImageLoading = true;
+    });
+
+    final url = 'https://alyibrahim.pythonanywhere.com/get-profile-image';
     final username = Hive.box('userBox').get('username');
-    print("Username: $username");
 
-    // Create a map with the username
     final Map<String, String> body = {
       'username': username,
     };
 
-    // Send the username as JSON in the body of a POST request
-    final response = await http
-        .post(
-          Uri.parse(url),
-          headers: {
-            'Content-Type': 'application/json'
-          }, // Set content type to JSON
-          body: jsonEncode(body), // Encode the body as JSON
-        )
-        .timeout(
-          Duration(seconds: 30), // Adjust the duration as needed
-        );
-    if (response.statusCode == 200) {
-      // Get the image bytes from the response
-      final bytes = response.bodyBytes;
-
-      // Get the device's temporary directory to save the image
-      final directory = await getTemporaryDirectory();
-
-      // Create a unique file name based on username and extension
-      final imagePath =
-          '${directory.path}/${Hive.box('userBox').get('username')}_profile.jpg';
-
-      // Create a file and write the bytes to it
-      _imageFile = File(imagePath)..writeAsBytesSync(bytes);
-
-      print("Profile image fetched and saved.");
-      // Optionally, save the image to Hive or update UI
-      return true;
-    } else {
-      // Handle error if the image is not found or another error occurs
-      print(
-          "Failed to load image: ${response.statusCode} ===== ${response.body}");
-      return false;
-    }
-  }
-
-  // Function to save the profile image to Hive
-  Future<void> saveProfileImageToHive(File imageFile) async {
     try {
-      // Read the image as bytes
-      final bytes = await imageFile.readAsBytes();
-
-      // Convert bytes to Base64 string
-      final base64String = base64Encode(bytes);
-
-      // Store the Base64 string in Hive
-      await Hive.box('userBox').put('profileImageBase64', base64String);
-
-      print('Profile image saved successfully!');
-    } catch (e) {
-      print('Error saving profile image: $e');
-    } finally {
-      if (mounted) {
-        setState(() {}); // Update the UI if mounted
-      }
-    }
-  }
-
-  // Function to upload the image to the server
-  Future<void> uploadImageToServer(
-      File imageFile, String serverUrl, String username) async {
-    try {
-      // Create a multipart request
-      var request = http.MultipartRequest('POST', Uri.parse(serverUrl));
-
-      // Attach the file
-      request.files.add(await http.MultipartFile.fromPath(
-        'image', // The key to match on the Flask server
-        imageFile.path,
-      ));
-
-      // Add other fields if needed
-      request.fields['username'] = username;
-
-      // Send the request
-      var response = await request.send();
+      final response = await http.post(
+        Uri.parse(url),
+        headers: {'Content-Type': 'application/json'},
+        body: jsonEncode(body),
+      ).timeout(
+        const Duration(seconds: 30),
+      );
 
       if (response.statusCode == 200) {
-        print('Image uploaded successfully!');
-        // Optional: Decode and use the response from the server
-        var responseBody = await response.stream.bytesToString();
-        print('Server Response: $responseBody');
-        await saveProfileImageToHive(imageFile);
+        final bytes = response.bodyBytes;
+        final base64Image = base64Encode(bytes);
+        Hive.box('userBox').put('profileImageBase64', base64Image);
       } else {
-        print('Failed to upload image. Status code: ${response.statusCode}');
-        print('Response: ${await response.stream.bytesToString()}');
+        print("Failed to load image: ${response.statusCode} ===== ${response.body}");
       }
     } catch (e) {
-      print('Error uploading image: $e');
+      print("An error occurred: $e");
     }
+
+    setState(() {
+      _isImageLoading = false;
+    });
   }
 
-  // Function to pick an image
-  Future<void> _pickImage() async {
-    final pickedFile = await _picker.pickImage(source: ImageSource.gallery);
-
-    if (pickedFile != null) {
-      await uploadImageToServer(
-          File(pickedFile.path),
-          'https://alyibrahim.pythonanywhere.com/upload-image',
-          Hive.box('userBox').get('username'));
-    }
-  }
-
-  // Function to get the rank color
   Color _getRankColor(String rank) {
     switch (rank) {
       case 'El Batal':
-        return Color(0xFFb3141c);
+        return const Color(0xFFb3141c);
       case 'Legend':
-        return Color(0xFFFFD700);
+        return const Color(0xFFFFD700);
       case 'Mentor':
-        return Color(0xFF6F42C1);
+        return const Color(0xFF6F42C1);
       case 'Expert':
-        return Color(0xFFFD7E14);
+        return const Color(0xFFFD7E14);
       case 'Challenger':
-        return Color(0xFFFFC107);
+        return const Color(0xFFFFC107);
       case 'Achiever':
-        return Color(0xFF28A745);
+        return const Color(0xFF28A745);
       case 'Explorer':
-        return Color(0xFF007BFF);
+        return const Color(0xFF007BFF);
       case 'NewComer':
-        return Color(0xFF808080);
+        return const Color(0xFF808080);
       default:
         return Colors.black;
     }
   }
 
-  // Function to get the progress value
   double _getProgressValue(int xp, String rank) {
     switch (rank) {
       case 'El Batal':
-        return xp / 3000;
+        return (xp - 3000) / 1000;
       case 'Legend':
         return (xp - 2200) / 800;
       case 'Mentor':
@@ -211,436 +140,299 @@ class _ProfilepageState extends State<Profilepage> {
     }
   }
 
+  Future<void> _pickImage() async {
+    final picker = ImagePicker();
+
+    final pickedFile = await picker.pickImage(source: ImageSource.gallery);
+
+    if (pickedFile != null) {
+      await _uploadAndSaveImage(File(pickedFile.path));
+    }
+  }
+
+  Future<void> _uploadAndSaveImage(File imageFile) async {
+    final serverUrl = 'https://alyibrahim.pythonanywhere.com/upload-image';
+    final username = Hive.box('userBox').get('username');
+
+    try {
+      var request = http.MultipartRequest('POST', Uri.parse(serverUrl));
+      request.files.add(await http.MultipartFile.fromPath(
+        'image',
+        imageFile.path,
+      ));
+      request.fields['username'] = username;
+
+      var response = await request.send();
+
+      if (response.statusCode == 200) {
+        print('Image uploaded successfully!');
+        var responseBody = await response.stream.bytesToString();
+        print('Server Response: $responseBody');
+        _saveProfileImageToHive(imageFile);
+      } else {
+        print('Failed to upload image. Status code: ${response.statusCode}');
+        print('Response: ${await response.stream.bytesToString()}');
+      }
+    } catch (e) {
+      print('Error uploading image: $e');
+    }
+  }
+
+  Future<void> _saveProfileImageToHive(File imageFile) async {
+    try {
+      final bytes = await imageFile.readAsBytes();
+      final base64String = base64Encode(bytes);
+      await Hive.box('userBox').put('profileImageBase64', base64String);
+      print('Profile image saved successfully!');
+      setState(() {}); // Refresh the UI
+    } catch (e) {
+      print('Error saving profile image: $e');
+    }
+  }
+
   @override
   Widget build(BuildContext context) {
-    print("XP : ${widget.user?.xp}");
+    final size = MediaQuery.of(context).size;
+
     return Scaffold(
+      backgroundColor: white,
       appBar: AppBar(
-        backgroundColor: Color(0xFF165D96),
+        backgroundColor: blue2,
         leading: IconButton(
-            icon: Icon(Icons.arrow_back_ios_new_rounded,
-                color: Color(0xFF01D7ED)),
+          icon: Icon(Icons.arrow_back_ios_new_rounded, color: white),
+          onPressed: () {
+            Navigator.pop(context);
+          },
+        ),
+        title: Text(
+          'Profile',
+          style: GoogleFonts.leagueSpartan(
+            color: white,
+            fontWeight: FontWeight.bold,
+          ),
+        ),
+        centerTitle: true,
+        actions: [
+          IconButton(
+            icon: Icon(Icons.settings_outlined, color: white),
             onPressed: () {
-              Navigator.pop(context);
-            }),
-        title: Center(
-          child: Text(
-            'Profile Page',
-            style: TextStyle(
-              color: Colors.white,
-              fontSize: 20,
-              fontWeight: FontWeight.bold,
-              // backgroundColor: Colors.black,
+              // Navigate to settings page
+            },
+          ),
+        ],
+      ),
+      body: _isImageLoading
+          ? Center(child: CircularProgressIndicator())
+          : SingleChildScrollView(
+              child: Padding(
+                padding: EdgeInsets.symmetric(horizontal: size.width * 0.08, vertical: size.height * 0.04),
+                child: Column(
+                  crossAxisAlignment: CrossAxisAlignment.center,
+                  children: [
+                    // Profile Picture and Name
+                    Stack(
+                      alignment: Alignment.bottomRight,
+                      children: [
+                        CircleAvatar(
+                          radius: 60,
+                          backgroundColor: cyan1,
+                          backgroundImage: Hive.box('userBox').get('profileImageBase64') != null
+                              ? MemoryImage(base64Decode(Hive.box('userBox').get('profileImageBase64')))
+                              : AssetImage('assets/images/default_avatar.png') as ImageProvider,
+                        ),
+                        GestureDetector(
+                          onTap: _pickImage,
+                          child: CircleAvatar(
+                            radius: 20,
+                            backgroundColor: cyan2,
+                            child: Icon(
+                              Icons.camera_alt,
+                              color: white,
+                            ),
+                          ),
+                        ),
+                      ],
+                    ),
+                    SizedBox(height: size.height * 0.02),
+                    Text(
+                      _fullName,
+                      style: GoogleFonts.leagueSpartan(
+                        fontSize: 24,
+                        fontWeight: FontWeight.bold,
+                        color: black,
+                      ),
+                    ),
+                    SizedBox(height: size.height * 0.005),
+                    Text(
+                      _title,
+                      style: GoogleFonts.leagueSpartan(
+                        fontSize: 18,
+                        fontWeight: FontWeight.bold,
+                        color: _getRankColor(_title),
+                      ),
+                    ),
+                    SizedBox(height: size.height * 0.01),
+                    // Progress Bar
+                    LinearProgressIndicator(
+                      value: _getProgressValue(_xp, _title),
+                      backgroundColor: Colors.grey[300],
+                      color: _getRankColor(_title),
+                    ),
+                    SizedBox(height: size.height * 0.02),
+                    // Stats
+                    Row(
+                      mainAxisAlignment: MainAxisAlignment.spaceAround,
+                      children: [
+                        _buildStatCard('3', 'Day Streak', Icons.flash_on_outlined, const Color(0xFFE0F6FC), cyan1),
+                        _buildStatCard('1', 'Top 5 Finishes', Icons.emoji_events_outlined, const Color(0xFFFDF1CB), const Color(0xFFFDD539)),
+                        _buildStatCard('$_xp', 'XP', Icons.star_outline, const Color(0xFFF1D6FC), const Color(0xFFC174FA)), // Changed from 'Gems' to 'XP'
+                      ],
+                    ),
+                    SizedBox(height: size.height * 0.03),
+                    // Personal Information
+                    _buildSectionTitle('Personal Information'),
+                    _buildInfoRow('Email', _email),
+                    _buildInfoRow('Phone Number', _phoneNumber),
+                    _buildInfoRow('Registration Number', _registrationNumber),
+                    SizedBox(height: size.height * 0.02),
+                    // College Information
+                    _buildSectionTitle('College Information'),
+                    _buildInfoRow('University', _university),
+                    _buildInfoRow('College', _college),
+                    _buildInfoRow('Major', _major),
+                    _buildInfoRow('Term Level', _termLevel),
+                    SizedBox(height: size.height * 0.02),
+                    // Courses
+                    _buildSectionTitle('Courses'),
+                    _buildCourses(),
+                    SizedBox(height: size.height * 0.02),
+                    // Logout Button
+                    ElevatedButton(
+                      onPressed: () {
+                        // Implement logout logic
+                      },
+                      style: ElevatedButton.styleFrom(
+                        backgroundColor: blue2,
+                        padding: EdgeInsets.symmetric(vertical: 15, horizontal: 40),
+                        shape: RoundedRectangleBorder(
+                          borderRadius: BorderRadius.circular(15),
+                        ),
+                      ),
+                      child: Text(
+                        'Logout',
+                        style: GoogleFonts.leagueSpartan(
+                          fontSize: 18,
+                          fontWeight: FontWeight.bold,
+                          color: white,
+                        ),
+                      ),
+                    ),
+                  ],
+                ),
+              ),
             ),
+    );
+  }
+
+  Widget _buildStatCard(String value, String label, IconData icon, Color bgColor, Color iconColor) {
+    return Column(
+      children: [
+        Container(
+          decoration: BoxDecoration(
+            color: bgColor,
+            borderRadius: BorderRadius.circular(10),
+          ),
+          padding: const EdgeInsets.all(12),
+          child: Icon(
+            icon,
+            color: iconColor,
+            size: 32,
+          ),
+        ),
+        const SizedBox(height: 8),
+        Text(
+          value,
+          style: GoogleFonts.leagueSpartan(
+            fontSize: 18,
+            fontWeight: FontWeight.bold,
+            color: black,
+          ),
+        ),
+        const SizedBox(height: 4),
+        SizedBox(
+          width: 80,
+          child: Text(
+            label,
+            style: GoogleFonts.leagueSpartan(
+              fontSize: 14,
+              color: Colors.grey[700],
+            ),
+            textAlign: TextAlign.center,
+          ),
+        ),
+      ],
+    );
+  }
+
+  Widget _buildSectionTitle(String title) {
+    return Align(
+      alignment: Alignment.centerLeft,
+      child: Padding(
+        padding: const EdgeInsets.only(bottom: 8),
+        child: Text(
+          title,
+          style: GoogleFonts.leagueSpartan(
+            fontSize: 22,
+            fontWeight: FontWeight.bold,
+            color: black,
           ),
         ),
       ),
-      body: SingleChildScrollView(
-        padding: const EdgeInsets.only(top: 20, left: 16, right: 16),
-        child: Column(
-          // mainAxisAlignment: MainAxisAlignment.center,
-          crossAxisAlignment: CrossAxisAlignment.start,
-          children: [
-            Row(
-              crossAxisAlignment: CrossAxisAlignment.center,
-              // mainAxisAlignment: MainAxisAlignment.center,
-              children: [
-                Stack(
-                  children: [
-                    if (_isImageLoading)
-                      CircleAvatar(
-                        radius: 60,
-                        backgroundColor: Colors.grey, // Placeholder color
-                        child: CircularProgressIndicator(
-                          valueColor: AlwaysStoppedAnimation<Color>(
-                              Color(0xFF01D7ED)), // Change spinner color here
-                        ),
-                      )
-                    else if (Hive.box('userBox').get('profileImageBase64') ==
-                        null)
-                      CircleAvatar(
-                        radius: 60,
-                        backgroundColor: Colors.grey, // Placeholder color
-                        child: Icon(
-                          Icons.person,
-                          size: 60,
-                          color: Colors.white,
-                        ),
-                      )
-                    else
-                      CircleAvatar(
-                          radius: 60,
-                          backgroundImage: MemoryImage(base64Decode(
-                              Hive.box('userBox').get('profileImageBase64')))),
-                    Positioned(
-                      bottom: 0, // Position button slightly outside the avatar
-                      right: 5,
-                      child: GestureDetector(
-                        onTap: _pickImage,
-                        child: Container(
-                          height: 40,
-                          width: 40,
-                          decoration: BoxDecoration(
-                            color: Colors.blue,
-                            shape: BoxShape.circle,
-                            border: Border.all(
-                              color: Colors.white,
-                              width: 2,
-                            ),
-                          ),
-                          child: Icon(
-                            Icons.camera_alt,
-                            color: Colors.white,
-                            size: 20,
-                          ),
-                        ),
-                      ),
-                    ),
-                  ],
-                ),
-                SizedBox(width: 20),
-                // User Information
-                Column(
-                  crossAxisAlignment: CrossAxisAlignment.start,
-                  children: [
-                    Text(
-                      Hive.box('userBox').get('title') ?? '',
-                      style: TextStyle(
-                        fontSize: 16,
-                        fontWeight: FontWeight.bold,
-                        fontFamily: GoogleFonts.leagueSpartan().fontFamily,
-                        color: _getRankColor(
-                            Hive.box('userBox').get('title') ?? ''),
-                      ),
-                    ),
-                    // SizedBox(height: 1),
-                    Text(
-                      Hive.box('userBox').get('fullName') ?? '',
-                      style: TextStyle(
-                        fontSize: 24,
-                        fontWeight: FontWeight.bold,
-                        fontFamily: GoogleFonts.leagueSpartan().fontFamily,
-                      ),
-                    ),
-                    SizedBox(height: 1),
-                    Text(
-                      "${Hive.box('userBox').get('xp') ?? 0}",
-                      style: TextStyle(
-                          fontSize: 12,
-                          fontWeight: FontWeight.bold,
-                          fontFamily: GoogleFonts.leagueSpartan().fontFamily,
-                          color: _getRankColor(
-                              Hive.box('userBox').get('title') ?? '')),
-                    ),
-                    SizedBox(
-                      height: 5,
-                    ),
-                    SizedBox(
-                      height: 10,
-                      width: MediaQuery.of(context).size.width *
-                          0.3, // 30% of the screen width
-                      child: LinearProgressIndicator(
-                        borderRadius: BorderRadius.circular(5),
-                        value: _getProgressValue(
-                            Hive.box('userBox').get('xp') ?? 0,
-                            Hive.box('userBox').get('title') ?? ''),
-                        backgroundColor: _getProgressValue(
-                                    Hive.box('userBox').get('xp') ?? 0,
-                                    Hive.box('userBox').get('title') ?? '') ==
-                                0
-                            ? Colors.black
-                            : Color.fromARGB(255, 0, 0, 0), // Background color
-                        color: _getRankColor(
-                            Hive.box('userBox').get('title') ?? ''),
-                      ),
-                    ),
-                  ],
-                )
-              ],
+    );
+  }
+
+  Widget _buildInfoRow(String label, String value) {
+    return Padding(
+      padding: const EdgeInsets.symmetric(vertical: 6),
+      child: Row(
+        children: [
+          Text(
+            '$label: ',
+            style: GoogleFonts.leagueSpartan(
+              fontSize: 16,
+              fontWeight: FontWeight.bold,
+              color: cyan1,
             ),
-            SizedBox(height: 20),
-            SizedBox(height: 20),
-            Row(
-              mainAxisAlignment: MainAxisAlignment.spaceAround,
-              children: [
-                ClipRRect(
-                  borderRadius: BorderRadius.circular(10),
-                  child: Container(
-                    height: 35,
-                    width: 35,
-                    color: Color(0xFFE0F6FC),
-                    child: Icon(
-                      Ionicons.flash,
-                      color: Color(0xFF01D7ED),
-                      size: 25,
-                    ),
-                  ),
-                ),
-                SizedBox(width: 10),
-                Column(
-                  crossAxisAlignment: CrossAxisAlignment.start,
-                  children: [
-                    Text(
-                      '3',
-                      style: TextStyle(
-                        fontSize: 16,
-                        fontWeight: FontWeight.bold,
-                        fontFamily: GoogleFonts.leagueSpartan().fontFamily,
-                      ),
-                    ),
-                    Text(
-                      'Day Streak',
-                      style: TextStyle(
-                        fontSize: 12,
-                        color: Color(0xFF767676),
-                        fontWeight: FontWeight.bold,
-                        fontFamily: GoogleFonts.leagueSpartan().fontFamily,
-                      ),
-                    ),
-                  ],
-                ),
-                SizedBox(width: 20),
-                ClipRRect(
-                  borderRadius: BorderRadius.circular(10),
-                  child: Container(
-                    height: 35,
-                    width: 35,
-                    color: Color(0xFFFDF1CB),
-                    child: Icon(
-                      Ionicons.medal,
-                      color: Color(0xFFFDD539),
-                      size: 25,
-                    ),
-                  ),
-                ),
-                SizedBox(width: 10),
-                Column(
-                  crossAxisAlignment: CrossAxisAlignment.start,
-                  children: [
-                    Text(
-                      '1',
-                      style: TextStyle(
-                        fontSize: 16,
-                        fontWeight: FontWeight.bold,
-                        fontFamily: GoogleFonts.leagueSpartan().fontFamily,
-                      ),
-                    ),
-                    Text(
-                      'Top 5 Finishes',
-                      style: TextStyle(
-                        fontSize: 12,
-                        color: Color(0xFF767676),
-                        fontWeight: FontWeight.bold,
-                        fontFamily: GoogleFonts.leagueSpartan().fontFamily,
-                      ),
-                    ),
-                  ],
-                ),
-                SizedBox(width: 20),
-                ClipRRect(
-                  borderRadius: BorderRadius.circular(10),
-                  child: Container(
-                    height: 35,
-                    width: 35,
-                    color: Color(0xFFF1D6FC),
-                    child: Icon(
-                      Ionicons.star,
-                      color: Color(0xFFC174FA),
-                      size: 25,
-                    ),
-                  ),
-                ),
-                SizedBox(width: 10),
-                Column(
-                  crossAxisAlignment: CrossAxisAlignment.start,
-                  children: [
-                    Text(
-                      'x6',
-                      style: TextStyle(
-                        fontSize: 16,
-                        fontWeight: FontWeight.bold,
-                        fontFamily: GoogleFonts.leagueSpartan().fontFamily,
-                      ),
-                    ),
-                    Text(
-                      'Gems',
-                      style: TextStyle(
-                        fontSize: 12,
-                        color: Color(0xFF767676),
-                        fontWeight: FontWeight.bold,
-                        fontFamily: GoogleFonts.leagueSpartan().fontFamily,
-                      ),
-                    ),
-                  ],
-                )
-              ],
-            ),
-            SizedBox(height: 20),
-            Text(
-              'Personal Information',
-              style: TextStyle(
-                fontSize: 24,
-                fontWeight: FontWeight.bold,
-                fontFamily: GoogleFonts.leagueSpartan().fontFamily,
+          ),
+          Expanded(
+            child: Text(
+              value,
+              style: GoogleFonts.leagueSpartan(
+                fontSize: 16,
+                color: black,
               ),
             ),
-            SizedBox(height: 5),
-            Text(
-              'Email',
-              style: TextStyle(
-                  fontSize: 15,
-                  fontWeight: FontWeight.bold,
-                  fontFamily: GoogleFonts.leagueSpartan().fontFamily,
-                  color: Color(0xFF1BC0C4)),
-            ),
-            SizedBox(height: 1),
-            Text(
-              "${Hive.box('userBox').get('email')}",
-              style: TextStyle(
-                  fontSize: 15,
-                  fontWeight: FontWeight.bold,
-                  fontFamily: GoogleFonts.leagueSpartan().fontFamily,
-                  color: Color.fromARGB(255, 0, 0, 0)),
-            ),
-            SizedBox(height: 3),
-            Text(
-              'Phone Number',
-              style: TextStyle(
-                  fontSize: 15,
-                  fontWeight: FontWeight.bold,
-                  fontFamily: GoogleFonts.leagueSpartan().fontFamily,
-                  color: Color(0xFF1BC0C4)),
-            ),
-            SizedBox(height: 1),
-            Text(
-              "${Hive.box('userBox').get('phone_number')}",
-              style: TextStyle(
-                  fontSize: 15,
-                  fontWeight: FontWeight.bold,
-                  fontFamily: GoogleFonts.leagueSpartan().fontFamily,
-                  color: Color.fromARGB(255, 0, 0, 0)),
-            ),
-            SizedBox(height: 3),
-            Text(
-              'Registration Number',
-              style: TextStyle(
-                  fontSize: 15,
-                  fontWeight: FontWeight.bold,
-                  fontFamily: GoogleFonts.leagueSpartan().fontFamily,
-                  color: Color(0xFF1BC0C4)),
-            ),
-            SizedBox(height: 1),
-            Text(
-              "${Hive.box('userBox').get('Registration_Number')}",
-              style: TextStyle(
-                  fontSize: 15,
-                  fontWeight: FontWeight.bold,
-                  fontFamily: GoogleFonts.leagueSpartan().fontFamily,
-                  color: Color.fromARGB(255, 0, 0, 0)),
-            ),
-            SizedBox(height: 10),
-            Text(
-              'College Information',
-              style: TextStyle(
-                fontSize: 24,
-                fontWeight: FontWeight.bold,
-                fontFamily: GoogleFonts.leagueSpartan().fontFamily,
-              ),
-            ),
-            SizedBox(height: 5),
-            Text(
-              'University',
-              style: TextStyle(
-                  fontSize: 15,
-                  fontWeight: FontWeight.bold,
-                  fontFamily: GoogleFonts.leagueSpartan().fontFamily,
-                  color: Color(0xFF1BC0C4)),
-            ),
-            SizedBox(height: 1),
-            Text(
-              "${Hive.box('userBox').get('university')}",
-              style: TextStyle(
-                  fontSize: 15,
-                  fontWeight: FontWeight.bold,
-                  fontFamily: GoogleFonts.leagueSpartan().fontFamily,
-                  color: Color.fromARGB(255, 0, 0, 0)),
-            ),
-            SizedBox(height: 3),
-            Text(
-              'College',
-              style: TextStyle(
-                  fontSize: 15,
-                  fontWeight: FontWeight.bold,
-                  fontFamily: GoogleFonts.leagueSpartan().fontFamily,
-                  color: Color(0xFF1BC0C4)),
-            ),
-            SizedBox(height: 1),
-            Text(
-              "${Hive.box('userBox').get('college')}",
-              style: TextStyle(
-                  fontSize: 15,
-                  fontWeight: FontWeight.bold,
-                  fontFamily: GoogleFonts.leagueSpartan().fontFamily,
-                  color: Color.fromARGB(255, 0, 0, 0)),
-            ),
-            SizedBox(height: 3),
-            Text(
-              'Major',
-              style: TextStyle(
-                  fontSize: 15,
-                  fontWeight: FontWeight.bold,
-                  fontFamily: GoogleFonts.leagueSpartan().fontFamily,
-                  color: Color(0xFF1BC0C4)),
-            ),
-            SizedBox(height: 1),
-            Text(
-              "${Hive.box('userBox').get('major')}",
-              style: TextStyle(
-                  fontSize: 15,
-                  fontWeight: FontWeight.bold,
-                  fontFamily: GoogleFonts.leagueSpartan().fontFamily,
-                  color: Color.fromARGB(255, 0, 0, 0)),
-            ),
-            SizedBox(height: 3),
-            Text(
-              'Term Level',
-              style: TextStyle(
-                  fontSize: 15,
-                  fontWeight: FontWeight.bold,
-                  fontFamily: GoogleFonts.leagueSpartan().fontFamily,
-                  color: Color(0xFF1BC0C4)),
-            ),
-            SizedBox(height: 1),
-            Text(
-              "${Hive.box('userBox').get('term_level')}",
-              style: TextStyle(
-                  fontSize: 15,
-                  fontWeight: FontWeight.bold,
-                  fontFamily: GoogleFonts.leagueSpartan().fontFamily,
-                  color: Color.fromARGB(255, 0, 0, 0)),
-            ),
-            SizedBox(height: 10),
-            Text(
-              "Courses",
-              style: TextStyle(
-                fontSize: 24,
-                fontWeight: FontWeight.bold,
-                fontFamily: GoogleFonts.leagueSpartan().fontFamily,
-              ),
-            ),
-            SizedBox(height: 5),
-            Text(
-              'Data Structures and Algorithms - Software Requirments and Specification',
-              style: TextStyle(
-                  fontSize: 15,
-                  fontWeight: FontWeight.bold,
-                  fontFamily: GoogleFonts.leagueSpartan().fontFamily,
-                  color: Color(0xFF1BC0C4)),
-            ),
-            SizedBox(height: 1),
-          ],
-        ),
+          ),
+        ],
       ),
+    );
+  }
+
+  Widget _buildCourses() {
+    return Column(
+      crossAxisAlignment: CrossAxisAlignment.start,
+      children: _courses.map((course) {
+        return Padding(
+          padding: const EdgeInsets.symmetric(vertical: 4),
+          child: Text(
+            '- $course',
+            style: GoogleFonts.leagueSpartan(
+              fontSize: 16,
+              color: black,
+            ),
+          ),
+        );
+      }).toList(),
     );
   }
 }

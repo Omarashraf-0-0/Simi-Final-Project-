@@ -1,11 +1,8 @@
-// ignore_for_file: prefer_const_constructors, non_constant_identifier_names, prefer_interpolation_to_compose_strings
-
 import 'dart:async';
-import 'dart:io';
+import 'dart:convert';
 
 import 'package:flutter/material.dart';
 import 'package:hive/hive.dart';
-import 'package:path_provider/path_provider.dart';
 import 'package:studymate/Pop-ups/PopUps_Failed.dart';
 import 'package:studymate/Pop-ups/PopUps_Warning.dart';
 import '../Classes/User.dart';
@@ -13,7 +10,6 @@ import '../Pop-ups/SuccesPopUp.dart';
 import '../util/TextField.dart';
 import 'Login & Register/Forget_Pass.dart';
 import 'package:http/http.dart' as http;
-import 'dart:convert';
 
 import 'Login & Register/Register_login.dart';
 
@@ -24,69 +20,23 @@ class LoginPage extends StatefulWidget {
   State<LoginPage> createState() => _LoginPageState();
 }
 
-class GamingPopup extends StatelessWidget {
-  final String title;
-  final String description;
-
-  const GamingPopup({
-    Key? key,
-    required this.title,
-    required this.description,
-  }) : super(key: key);
-
-  @override
-  Widget build(BuildContext context) {
-    return AlertDialog(
-      backgroundColor: Colors.black87,
-      shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(15)),
-      title: Text(
-        title,
-        style: TextStyle(
-          color: Colors.yellowAccent,
-          fontSize: 24,
-          fontFamily: 'PressStart2P', // Use a gaming font
-        ),
-        textAlign: TextAlign.center,
-      ),
-      content: Text(
-        description,
-        style: TextStyle(
-          color: Colors.white,
-          fontSize: 18,
-          fontFamily: 'PressStart2P',
-        ),
-        textAlign: TextAlign.center,
-      ),
-      actions: [
-        Center(
-          child: ElevatedButton(
-            onPressed: () {
-              Navigator.pop(context); // Close the popup
-            },
-            style: ElevatedButton.styleFrom(
-              backgroundColor: Colors.yellowAccent,
-              shape: RoundedRectangleBorder(
-                  borderRadius: BorderRadius.circular(10)),
-            ),
-            child: Text(
-              'Continue',
-              style: TextStyle(
-                fontFamily: 'PressStart2P',
-              ),
-            ),
-          ),
-        ),
-      ],
-    );
-  }
-}
-
 class _LoginPageState extends State<LoginPage> {
-  final UsernameController = TextEditingController();
-  final PasswordController = TextEditingController();
+  final usernameController = TextEditingController();
+  final passwordController = TextEditingController();
 
   // Add a boolean to manage the "Remember Me" toggle state
   bool isRememberMeChecked = false;
+
+  // Add a boolean to manage the password visibility
+  bool isPasswordVisible = false;
+
+  // Colors according to your branding
+  final Color blue1 = Color(0xFF1c74bb);
+  final Color blue2 = Color(0xFF165d96);
+  final Color cyan1 = Color(0xFF18bebc);
+  final Color cyan2 = Color(0xFF139896);
+  final Color black = Color(0xFF000000);
+  final Color white = Color(0xFFFFFFFF);
 
   Future<void> updateXpAndTitle(int currentXp) async {
     const xpUrl = 'https://alyibrahim.pythonanywhere.com/set_xp';
@@ -151,8 +101,7 @@ class _LoginPageState extends State<LoginPage> {
   }
 
   Future<bool> fetchAndSaveProfileImage() async {
-    final url =
-        'https://alyibrahim.pythonanywhere.com/get-profile-image'; // Replace with your server URL
+    final url = 'https://alyibrahim.pythonanywhere.com/get-profile-image'; // Replace with your server URL
 
     try {
       // Get the username from Hive box
@@ -162,8 +111,6 @@ class _LoginPageState extends State<LoginPage> {
         return false;
       }
 
-      print(">>>>>>>>> $username");
-
       // Create a map with the username
       final Map<String, String> body = {
         'username': username,
@@ -172,15 +119,13 @@ class _LoginPageState extends State<LoginPage> {
       // Send the username as JSON in the body of a POST request
       final response = await http
           .post(
-            Uri.parse(url),
-            headers: {
-              'Content-Type': 'application/json'
-            }, // Set content type to JSON
-            body: jsonEncode(body), // Encode the body as JSON
-          )
+        Uri.parse(url),
+        headers: {'Content-Type': 'application/json'}, // Set content type to JSON
+        body: jsonEncode(body), // Encode the body as JSON
+      )
           .timeout(
-            Duration(seconds: 30), // Adjust the duration as needed
-          );
+        Duration(seconds: 30), // Adjust the duration as needed
+      );
 
       if (response.statusCode == 200) {
         // Get the image bytes from the response
@@ -192,13 +137,11 @@ class _LoginPageState extends State<LoginPage> {
         // Save the Base64 image string to Hive
         Hive.box('userBox').put('profileImageBase64', base64Image);
 
-        print(">>>>>>>>>> Done <<<<<<<<");
         // Update the UI to display the image
         return true;
       } else {
         // Handle error if the image is not found or another error occurs
-        print(
-            "Failed to load image: ${response.statusCode} ===== ${response.body}");
+        print("Failed to load image: ${response.statusCode} ===== ${response.body}");
         return false;
       }
     } on TimeoutException catch (_) {
@@ -211,17 +154,13 @@ class _LoginPageState extends State<LoginPage> {
   }
 
   Future<void> login() async {
-    final username = UsernameController.text;
-    final password = PasswordController.text;
-    const url =
-        'https://alyibrahim.pythonanywhere.com/login'; // Replace with your actual Flask server URL
+    final username = usernameController.text;
+    final password = passwordController.text;
+    const url = 'https://alyibrahim.pythonanywhere.com/login'; // Replace with your actual Flask server URL
 
     try {
       // Ensure the username and password are not empty
       if (username.isEmpty || password.isEmpty) {
-        // ScaffoldMessenger.of(context).showSnackBar(
-        //   SnackBar(content: Text('Username and password cannot be empty')),
-        // );
         showWarningPopup(
           context,
           'Error',
@@ -248,13 +187,7 @@ class _LoginPageState extends State<LoginPage> {
         final jsonResponse = jsonDecode(response.body);
 
         if (jsonResponse['success'] == true) {
-          // print(">>>>>>>>>>>>>>>> ${Hive.box('userBox').get('level')}");
-          // Successful login, show welcome message and navigate
-          // ScaffoldMessenger.of(context).showSnackBar(
-          //   SnackBar(content: Text(jsonResponse['message'])),
-          // );
-          // navigate to the homepage
-          // Inside your login success function
+          // Save user data to Hive
           Hive.box('userBox').put('id', jsonResponse['id']);
           Hive.box('userBox').put('username', jsonResponse['username']);
           Hive.box('userBox').put('password', jsonResponse['password']);
@@ -272,22 +205,19 @@ class _LoginPageState extends State<LoginPage> {
           Hive.box('userBox').put('xp', jsonResponse['xp']);
           Hive.box('userBox').put('level', jsonResponse['level']);
           Hive.box('userBox').put('title', jsonResponse['title']);
-          Hive.box('userBox')
-              .put('Registration_Number', jsonResponse['registrationNumber']);
+          Hive.box('userBox').put('Registration_Number', jsonResponse['registrationNumber']);
           Hive.box('userBox').put('birthDate', jsonResponse['birthDate']);
           fetchAndSaveProfileImage();
           if (isRememberMeChecked) {
-            // Save the username and password to Hive
+            // Save the login state to Hive
             Hive.box('userBox').put('isLoggedIn', true);
-            Hive.box('userBox')
-                .put('loginTime', DateTime.now().millisecondsSinceEpoch);
+            Hive.box('userBox').put('loginTime', DateTime.now().millisecondsSinceEpoch);
           } else {
-            // Clear the username and password from Hive
+            // Clear the login state from Hive
             Hive.box('userBox').put('isLoggedIn', false);
           }
 
-          int currentXp =
-              jsonResponse['xp'] ?? 0; // Get current XP, default to 0 if null
+          int currentXp = jsonResponse['xp'] ?? 0; // Get current XP, default to 0 if null
           await updateXpAndTitle(currentXp);
 
           User? user = User(
@@ -311,35 +241,22 @@ class _LoginPageState extends State<LoginPage> {
             registrationNumber: jsonResponse['registrationNumber'],
             birthDate: jsonResponse['birthDate'],
           );
-          // Navigate to the homepage
-          // Navigator.pushReplacement(
-          //   context,
-          //   MaterialPageRoute(builder: (context) => Homepage(
-          //     user: user,
-          //   )),
-          // );
-          currentXp =
-              jsonResponse['xp'] ?? 0; // Get current XP, default to 0 if null
-          await updateXpAndTitle(currentXp);
 
           Navigator.pushReplacement(
             context,
             MaterialPageRoute(
-                builder: (context) => DonePopUp(
-                      user: user,
-                      title: 'Woo Hoo!',
-                      description: 'Welcome back, ${jsonResponse['name']}!',
-                      color: const Color(0xff3BBD5E),
-                      textColor: Colors.black,
-                      routeName: '/HomePage',
-                    )),
+              builder: (context) => DonePopUp(
+                user: user,
+                title: 'Woo Hoo!',
+                description: 'Welcome back, ${jsonResponse['name']}!',
+                color: const Color(0xff3BBD5E),
+                textColor: Colors.black,
+                routeName: '/HomePage',
+              ),
+            ),
           );
-          //Navigator.pushReplacement(context, MaterialPageRoute(builder: (context) => Homepage()));
         } else {
           // Failed login, show error message
-          // ScaffoldMessenger.of(context).showSnackBar(
-          //   SnackBar(content: Text(jsonResponse['message'])),
-          // );
           showWarningPopup(
             context,
             'Error',
@@ -348,53 +265,14 @@ class _LoginPageState extends State<LoginPage> {
         }
       } else {
         // Server error
-        //   showDialog(
-        //     context: context,
-        //     builder: (BuildContext context) {
-        //     return AlertDialog(
-        //       title: Text('Network Error'),
-        //       content:
-        //       SelectableText(
-        //         'Network error: ${response.statusCode} ${response.reasonPhrase}',
-        //         ),
-        //       actions: [
-        //       TextButton(
-        //         onPressed: () {
-        //         Navigator.of(context).pop();
-        //         },
-        //         child: Text('OK'),
-        //       ),
-        //       ],
-        //     );
-        //   },
-        // );
         showFailedPopup(
           context,
           'Error',
-          response.reasonPhrase == 'UNAUTHORIZED'
-              ? 'Wrong Username Or Password'
-              : '${response.reasonPhrase}',
+          response.reasonPhrase == 'UNAUTHORIZED' ? 'Wrong Username Or Password' : '${response.reasonPhrase}',
         );
       }
     } catch (error) {
       // Handle network or server unreachable errors
-      //   showDialog(
-      //   context: context,
-      //   builder: (BuildContext context) {
-      //   return AlertDialog(
-      //     title: Text('Network Error'),
-      //     content: SelectableText('Network error: $error'),
-      //     actions: [
-      //     TextButton(
-      //       onPressed: () {
-      //       Navigator.of(context).pop();
-      //       },
-      //       child: Text('OK'),
-      //     ),
-      //     ],
-      //   );
-      //   },
-      // );
       showWarningPopup(
         context,
         'Network Error',
@@ -405,90 +283,96 @@ class _LoginPageState extends State<LoginPage> {
 
   @override
   Widget build(BuildContext context) {
+    // Get screen size for responsive design
+    final size = MediaQuery.of(context).size;
+
     return Scaffold(
-      backgroundColor: Colors.white,
+      backgroundColor: white,
       body: SingleChildScrollView(
         child: Center(
-          child: Column(
-            mainAxisAlignment: MainAxisAlignment.center,
-            children: [
-              // Image
-              SizedBox(height: 70),
-              Image.asset(
-                'lib/assets/img/El_Batal_Study_Mate_Light_Mode-removebg-preview.png',
-                height: 200,
-                width: 500,
-              ),
-              // Title
-              SizedBox(height: 0),
-              Text(
-                'Nawart ya Mate',
-                style: TextStyle(
-                  fontSize: 40,
-                  fontWeight: FontWeight.bold,
-                  fontFamily: 'Poppins',
-                  color: Colors.black,
+          child: Padding(
+            padding: EdgeInsets.symmetric(horizontal: size.width * 0.08),
+            child: Column(
+              mainAxisAlignment: MainAxisAlignment.center,
+              children: [
+                // Logo Image
+                SizedBox(height: size.height * 0.08),
+                Image.asset(
+                  'lib/assets/img/El_Batal_Study_Mate_Light_Mode-removebg-preview.png',
+                  height: size.height * 0.25,
                 ),
-              ),
-              // Username
-              SizedBox(height: 40),
-              Padding(
-                padding: const EdgeInsets.symmetric(horizontal: 25),
-                child: Textfield(
-                  controller: UsernameController,
-                  hintText: 'Username',
-                  suffixIcon: Icon(
-                    Icons.person_2_outlined,
-                    size: 25,
+                SizedBox(height: size.height * 0.02),
+                // Title
+                Text(
+                  'Welcome Back!',
+                  style: TextStyle(
+                    fontSize: 32,
+                    fontWeight: FontWeight.bold,
+                    fontFamily: 'Poppins',
+                    color: black,
                   ),
                 ),
-              ),
-              // Password
-              SizedBox(height: 20),
-              Padding(
-                padding: const EdgeInsets.symmetric(horizontal: 25),
-                child: Textfield(
-                  controller: PasswordController,
-                  hintText: 'Password',
-                  obscureText: true,
-                  suffixIcon: Icon(
-                    Icons.remove_red_eye,
-                    size: 25,
+                SizedBox(height: size.height * 0.04),
+                // Username TextField
+                TextField(
+                  controller: usernameController,
+                  decoration: InputDecoration(
+                    labelText: 'Username',
+                    prefixIcon: Icon(Icons.person_outline),
+                    border: OutlineInputBorder(
+                      borderRadius: BorderRadius.circular(15),
+                    ),
                   ),
-                  toggleVisability: false,
                 ),
-              ),
-              // Remember Me and Forgot Password
-              SizedBox(height: 20),
-              Padding(
-                padding: const EdgeInsets.only(right: 25),
-                child: Row(
+                SizedBox(height: size.height * 0.025),
+                // Password TextField
+                TextField(
+                  controller: passwordController,
+                  decoration: InputDecoration(
+                    labelText: 'Password',
+                    prefixIcon: Icon(Icons.lock_outline),
+                    suffixIcon: IconButton(
+                      icon: Icon(
+                        isPasswordVisible ? Icons.visibility : Icons.visibility_off,
+                      ),
+                      onPressed: () {
+                        setState(() {
+                          isPasswordVisible = !isPasswordVisible;
+                        });
+                      },
+                    ),
+                    border: OutlineInputBorder(
+                      borderRadius: BorderRadius.circular(15),
+                    ),
+                  ),
+                  obscureText: !isPasswordVisible,
+                ),
+                SizedBox(height: size.height * 0.02),
+                // Remember Me and Forgot Password
+                Row(
                   mainAxisAlignment: MainAxisAlignment.spaceBetween,
                   children: [
-                    Padding(
-                      padding: const EdgeInsets.symmetric(horizontal: 20),
-                      child: Row(
-                        children: [
-                          // "Remember Me" checkbox
-                          Checkbox(
-                            value: isRememberMeChecked,
-                            onChanged: (value) {
-                              setState(() {
-                                isRememberMeChecked = value!;
-                              });
-                            },
+                    Row(
+                      children: [
+                        // "Remember Me" checkbox
+                        Checkbox(
+                          value: isRememberMeChecked,
+                          activeColor: cyan1,
+                          onChanged: (value) {
+                            setState(() {
+                              isRememberMeChecked = value!;
+                            });
+                          },
+                        ),
+                        Text(
+                          'Remember Me',
+                          style: TextStyle(
+                            color: black,
+                            fontFamily: 'Poppins',
                           ),
-                          Text(
-                            'Remember Me',
-                            style: TextStyle(
-                              color: Colors.black,
-                              fontFamily: 'Poppins',
-                            ),
-                          ),
-                        ],
-                      ),
+                        ),
+                      ],
                     ),
-                    // SizedBox(width: 60),
                     InkWell(
                       onTap: () {
                         // Navigate to Forgot Password page
@@ -502,7 +386,7 @@ class _LoginPageState extends State<LoginPage> {
                       child: Text(
                         'Forgot Password?',
                         style: TextStyle(
-                          color: const Color.fromARGB(255, 190, 61, 61),
+                          color: Colors.redAccent,
                           decoration: TextDecoration.underline,
                           fontFamily: 'Poppins',
                         ),
@@ -510,78 +394,72 @@ class _LoginPageState extends State<LoginPage> {
                     ),
                   ],
                 ),
-              ),
-              // Login Button
-              SizedBox(height: 20),
-              Padding(
-                padding: const EdgeInsets.symmetric(horizontal: 25),
-                child: Container(
-                  decoration: BoxDecoration(
-                    color: const Color.fromRGBO(22, 93, 150, 1),
-                    borderRadius: BorderRadius.circular(5),
-                  ),
-                  child: TextButton(
-                    onPressed: () {
-                      // Login button action
-                      login();
-                    },
-                    child: Padding(
-                      padding: const EdgeInsets.symmetric(horizontal: 80.0),
-                      child: Text(
-                        'Login',
-                        style: TextStyle(
-                          color: Colors.white,
-                          fontSize: 20,
-                          fontFamily: 'Poppins',
-                        ),
+                SizedBox(height: size.height * 0.04),
+                // Login Button
+                SizedBox(
+                  width: double.infinity,
+                  child: ElevatedButton(
+                    onPressed: login,
+                    style: ElevatedButton.styleFrom(
+                      backgroundColor: blue2,
+                      padding: EdgeInsets.symmetric(vertical: 15),
+                      shape: RoundedRectangleBorder(
+                        borderRadius: BorderRadius.circular(15),
+                      ),
+                    ),
+                    child: Text(
+                      'Login',
+                      style: TextStyle(
+                        color: white,
+                        fontSize: 18,
+                        fontFamily: 'Poppins',
+                        fontWeight: FontWeight.bold,
                       ),
                     ),
                   ),
                 ),
-              ),
-              // Sign up
-              SizedBox(height: 60),
-              Text(
-                "Don't have account?",
-                style: TextStyle(
-                  fontSize: 20,
-                  fontWeight: FontWeight.bold,
-                  fontFamily: 'Poppins',
-                  color: Colors.black,
-                ),
-              ),
-              // Sign up button
-              SizedBox(height: 10),
-              Padding(
-                padding: const EdgeInsets.symmetric(horizontal: 25),
-                child: Container(
-                  decoration: BoxDecoration(
-                    color: const Color.fromRGBO(22, 93, 150, 1),
-                    borderRadius: BorderRadius.circular(60),
+                SizedBox(height: size.height * 0.06),
+                // Sign up prompt
+                Text(
+                  "Don't have an account?",
+                  style: TextStyle(
+                    fontSize: 18,
+                    fontFamily: 'Poppins',
+                    color: black,
                   ),
-                  child: TextButton(
+                ),
+                SizedBox(height: size.height * 0.02),
+                // Sign up button
+                SizedBox(
+                  width: double.infinity,
+                  child: OutlinedButton(
                     onPressed: () {
+                      // Navigate to Sign Up page
                       Navigator.push(
                         context,
-                        MaterialPageRoute(
-                            builder: (context) => RegisterLogin()),
+                        MaterialPageRoute(builder: (context) => RegisterLogin()),
                       );
                     },
-                    child: Padding(
-                      padding: const EdgeInsets.symmetric(horizontal: 20),
-                      child: Text(
-                        'Etfadal Ma3anaa',
-                        style: TextStyle(
-                          color: Colors.white,
-                          fontFamily: 'Poppins',
-                          fontSize: 15,
-                        ),
+                    style: OutlinedButton.styleFrom(
+                      side: BorderSide(color: blue2, width: 2),
+                      padding: EdgeInsets.symmetric(vertical: 15),
+                      shape: RoundedRectangleBorder(
+                        borderRadius: BorderRadius.circular(15),
+                      ),
+                    ),
+                    child: Text(
+                      'Create an Account',
+                      style: TextStyle(
+                        color: blue2,
+                        fontFamily: 'Poppins',
+                        fontSize: 18,
                       ),
                     ),
                   ),
                 ),
-              ),
-            ],
+                SizedBox(height: size.height * 0.04),
+              ],
+            ),
           ),
         ),
       ),
