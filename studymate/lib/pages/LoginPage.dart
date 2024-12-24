@@ -10,7 +10,7 @@ import '../Pop-ups/SuccesPopUp.dart';
 import '../util/TextField.dart';
 import 'Login & Register/Forget_Pass.dart';
 import 'package:http/http.dart' as http;
-
+import 'package:studymate/pages/XPChangePopup.dart';
 import 'Login & Register/Register_login.dart';
 
 class LoginPage extends StatefulWidget {
@@ -37,6 +37,19 @@ class _LoginPageState extends State<LoginPage> {
   final Color cyan2 = Color(0xFF139896);
   final Color black = Color(0xFF000000);
   final Color white = Color(0xFFFFFFFF);
+
+  void showXPChangePopup(BuildContext context, int xpChange, String message) {
+    showDialog(
+      context: context,
+      barrierDismissible: false, // Prevent closing the popup by tapping outside
+      builder: (BuildContext context) {
+        return XPChangePopup(
+          xpChange: xpChange,
+          message: message,
+        );
+      },
+    );
+  }
 
   Future<void> updateXpAndTitle(int currentXp) async {
     const xpUrl = 'https://alyibrahim.pythonanywhere.com/set_xp';
@@ -219,6 +232,7 @@ class _LoginPageState extends State<LoginPage> {
 
           int currentXp = jsonResponse['xp'] ?? 0; // Get current XP, default to 0 if null
           await updateXpAndTitle(currentXp);
+          showXPChangePopup(context, 5, 'You have gained 5 XP!');
 
           User? user = User(
             id: jsonResponse['id'],
