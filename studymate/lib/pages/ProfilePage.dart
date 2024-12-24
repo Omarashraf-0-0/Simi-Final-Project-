@@ -82,6 +82,7 @@ class Profilepage extends StatefulWidget {
 
 
 
+
   @override
   State<Profilepage> createState() => _ProfilepageState();
 
@@ -103,8 +104,51 @@ class _ProfilepageState extends State<Profilepage> {
       });
     });
   }
+  Color _getRankColor(String rank) {
+  switch (rank) {
+    case 'El Batal':
+      return Color(0xFFb3141c);
+    case 'Legend':
+      return Color(0xFFFFD700);
+    case 'Mentor':
+      return Color(0xFF6F42C1);
+    case 'Expert':
+      return Color(0xFFFD7E14);
+    case 'Challenger':
+      return Color(0xFFFFC107);
+    case 'Achiever':
+      return Color(0xFF28A745);
+    case 'Explorer':
+      return Color(0xFF007BFF);
+    case 'NewComer':
+      return Color(0xFF808080);
+    default:
+      return Colors.black;
+  }
+}
 
-
+double _getProgressValue(int xp, String rank) {
+  switch (rank) {
+    case 'El Batal':
+      return xp / 3000;
+    case 'Legend':
+      return (xp - 2200) / 800;
+    case 'Mentor':
+      return (xp - 1500) / 700;
+    case 'Expert':
+      return (xp - 1000) / 500;
+    case 'Challenger':
+      return (xp - 600) / 400;
+    case 'Achiever':
+      return (xp - 300) / 300;
+    case 'Explorer':
+      return (xp - 100) / 200;
+    case 'NewComer':
+      return xp / 100;
+    default:
+      return 0.0;
+  }
+}
   @override
   Widget build(BuildContext context) {
 
@@ -274,13 +318,13 @@ class _ProfilepageState extends State<Profilepage> {
                 Column(
                   crossAxisAlignment: CrossAxisAlignment.start,
                   children: [
-                    Text(
+                  Text(
                       Hive.box('userBox').get('title'),
                       style: TextStyle(
-                          fontSize: 16,
-                          fontWeight: FontWeight.bold,
-                          fontFamily: GoogleFonts.leagueSpartan().fontFamily,
-                          color: Color(0xFFB20000)
+                        fontSize: 16,
+                        fontWeight: FontWeight.bold,
+                        fontFamily: GoogleFonts.leagueSpartan().fontFamily,
+                        color: _getRankColor(Hive.box('userBox').get('title')), // Use the function to get the color
                       ),
                     ),
                     // SizedBox(height: 1),
@@ -295,25 +339,24 @@ class _ProfilepageState extends State<Profilepage> {
                     ),
                     SizedBox(height: 1),
                     Text(
-                      "${Hive.box('userBox').get('level')}",
+                      "${Hive.box('userBox').get('xp')}",
                       style: TextStyle(
                           fontSize: 12,
                           fontWeight: FontWeight.bold,
                           fontFamily: GoogleFonts.leagueSpartan().fontFamily,
-                          color: Color(0xFFB20000)
+                          color: _getRankColor(Hive.box('userBox').get('title'))
                       ),
                     ),
                     SizedBox(height: 5,),
                     SizedBox(
-                        height: 10,
-                        width: MediaQuery.of(context).size.width * 0.3,  // 80% of the screen width
-                        child:
-                        LinearProgressIndicator(
-                          borderRadius: BorderRadius.circular(5),
-                          value: Hive.box('userBox').get('xp')*0.1,
-                          backgroundColor: Color(0xFF01D7ED),  // Background color
-                          color: Color(0xFFB20000),  // Progress color
-                        )
+                      height: 10,
+                      width: MediaQuery.of(context).size.width * 0.3,  // 30% of the screen width
+                      child: LinearProgressIndicator(
+                        borderRadius: BorderRadius.circular(5),
+                        value: _getProgressValue(Hive.box('userBox').get('xp'), Hive.box('userBox').get('title')),
+                        backgroundColor: _getProgressValue(Hive.box('userBox').get('xp'), Hive.box('userBox').get('title')) == 0 ? Colors.black : Color.fromARGB(255, 0, 0, 0),  // Background color
+                        color: _getRankColor(Hive.box('userBox').get('title')),  // Progress color
+                      ),
                     ),
                   ],
                 )

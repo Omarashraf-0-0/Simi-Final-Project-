@@ -194,6 +194,33 @@ class _QuizState extends State<Quiz> {
         ),
       ),
     );
+    // Calculate XP changes based on the quiz result
+
+int xpChange = 0;
+int totalQuestions = widget.totalQuestions;
+double scorePercentage = (correctAnswers / totalQuestions) * 100;
+
+// Determine if the user passed or failed (you might have a passing criteria)
+bool isPassed = scorePercentage >= 50; // Assuming 50% is the passing score
+
+if (isPassed) {
+  // User passed the quiz
+  xpChange = correctAnswers; // 1 XP for each correct answer
+
+  // Check for perfect score bonus
+  if (scorePercentage == 100 && totalQuestions >= 10) {
+    xpChange += 5; // Add 5 bonus XP
+  }
+} else {
+  // User failed the quiz
+  xpChange = -5; // Deduct 5 XP
+}
+
+// Update XP on the server
+await updateUserXP(xpChange);
+
+// Show a popup indicating the XP gained or lost
+showXPChangePopup(context, xpChange);
   }
 
   Future<int> getUserID() async {
@@ -222,6 +249,130 @@ class _QuizState extends State<Quiz> {
       print('Error submitting quiz results: $e');
     }
   }
+  Future<void> updateUserXP(int xpChange) async {
+  const xpUrl = 'https://alyibrahim.pythonanywhere.com/set_xp';
+  const titleUrl = 'https://alyibrahim.pythonanywhere.com/set_title';
+
+  // Get the current XP from Hive
+  var userBox = Hive.box('userBox');
+  int currentXp = userBox.get('xp', defaultValue: 0);
+  String username = userBox.get('username', defaultValue: '');
+
+  int newXp = currentXp + xpChange;
+
+  // Ensure XP doesn't go below zero
+  if (newXp < 0) {
+    newXp = 0;
+  }
+
+  // Update XP on the server
+  final xpResponse = await http.post(
+    Uri.parse(xpUrl),
+    headers: {'Content-Type': 'application/json'},
+    body: jsonEncode({'username': username, 'xp': newXp}),
+  );
+
+  if (xpResponse.statusCode == 200) {
+    // Update XP locally
+    userBox.put('xp', newXp);
+    print("XP updated successfully to $newXp");
+
+    // Determine new title based on XP
+    String newTitle;
+    if (newXp >= 3000) {
+      newTitle = 'El Batal';
+    } else if (newXp >= 2200) {
+      newTitle = 'Legend';
+    } else if (newXp >= 1500) {
+      newTitle = 'Mentor';
+    } else if (newXp >= 1000) {
+      newTitle = 'Expert';
+    } else if (newXp >= 600) {
+      newTitle = 'Challenger';
+    } else if (newXp >= 300) {
+      newTitle = 'Achiever';
+    } else if (newXp >= 100) {
+      newTitle = 'Explorer';
+    } else {
+      newTitle = 'NewComer';
+    }
+
+    // Check if the title has changed
+    String currentTitle = userBox.get('title', defaultValue: '');
+    if (currentTitle != newTitle) {
+      // Update title on the server
+      final titleResponse = await http.post(
+        Uri.parse(titleUrl),
+        headers: {'Content-Type': 'application/json'},
+        body: jsonEncode({'username': username, 'title': newTitle}),
+      );
+
+      if (titleResponse.statusCode == 200) {
+        // Update title locally
+        userBox.put('title', newTitle);
+        print("Title updated successfully to $newTitle");
+      } else {
+        print("Failed to update title: ${titleResponse.reasonPhrase}");
+      }
+    }
+  } else {
+    print("Failed to update XP: ${xpResponse.reasonPhrase}");
+  }
+}
+void showXPChangePopup(BuildContext context, int xpChange) {
+  String message;
+  if (xpChange > 0) {
+    message = 'Congratulations! You earned $xpChange XP.';
+  } else if (xpChange < 0) {
+    message = 'You lost ${xpChange.abs()} XP. Better luck next time!';
+  } else {
+    message = 'No XP change.';
+  }
+
+  showDialog(
+    context: context,
+    builder: (context) => AlertDialog(
+      title: Text(
+        'Quiz Result',
+        style: TextStyle(
+          fontFamily: 'League Spartan',
+          fontWeight: FontWeight.bold,
+        ),
+      ),
+      content: Text(
+        message,
+        style: TextStyle(
+          fontFamily: 'League Spartan',
+        ),
+      ),
+      actions: [
+        TextButton(
+          onPressed: () {
+            Navigator.of(context).pop(); // Close the popup
+            // Navigate to the QuizScore page
+            Navigator.push(
+              context,
+              MaterialPageRoute(
+                builder: (_) => QuizScore(
+                  score: correctAnswers,
+                  total: widget.totalQuestions,
+                  userAnswers: userAnswers,
+                  questions: questions,
+                ),
+              ),
+            );
+          },
+          child: Text(
+            'OK',
+            style: TextStyle(
+              fontFamily: 'League Spartan',
+            ),
+          ),
+        ),
+      ],
+    ),
+  );
+}
 
   void selectOption(int index) {
     setState(() {
