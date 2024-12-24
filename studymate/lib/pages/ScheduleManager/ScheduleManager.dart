@@ -167,7 +167,7 @@ class _ScheduleViewState extends State<ScheduleView> {
                       0.9, // 80% of the screen height
 
                   decoration: BoxDecoration(
-                    color: Colors.white,
+                    color:Theme.of(context).scaffoldBackgroundColor,
                     borderRadius: BorderRadius.circular(15),
                   ),
                   child: Column(
@@ -207,9 +207,9 @@ class _ScheduleViewState extends State<ScheduleView> {
                                 children: [
                                   Text(
                                     "Title: ",
-                                    style: TextStyle(
+                                    style: Theme.of(context).textTheme.titleLarge?.copyWith(
                                       fontWeight: FontWeight.bold,
-                                      fontSize: 16,
+                                     // fontSize: 16,
                                     ),
                                   ),
                                   SizedBox(width: 8),
@@ -325,7 +325,7 @@ class _ScheduleViewState extends State<ScheduleView> {
                                           ),
                                         ),
                                         filled: true,
-                                        fillColor: Colors.grey[200],
+                                        fillColor: Colors.grey,
                                       ),
                                       value:
                                           _selectedCategory, // Use the state variable here
@@ -426,7 +426,7 @@ class _ScheduleViewState extends State<ScheduleView> {
                                           ),
                                         ),
                                         filled: true,
-                                        fillColor: Colors.white,
+                                        fillColor: Colors.grey,
                                       ),
                                       // isExpanded: true,
                                       value: "None",
@@ -501,14 +501,17 @@ class _ScheduleViewState extends State<ScheduleView> {
                                             controller: descriptionController,
                                             decoration: InputDecoration(
                                               hintText: "Description",
-                                              fillColor: Colors.grey[200],
+                                             fillColor:Theme.of(context).scaffoldBackgroundColor,
                                               filled: true,
                                               border: OutlineInputBorder(
                                                 borderRadius:
                                                     BorderRadius.circular(10),
                                               ),
                                               hintStyle:
-                                                  TextStyle(color: Colors.grey),
+                                                  Theme.of(context).textTheme.bodyLarge?.copyWith(
+                                                   // color: Colors.grey
+                                             
+                                                    ),
                                             ),
                                             keyboardType: TextInputType
                                                 .multiline, // Allow multiple lines
@@ -536,7 +539,9 @@ class _ScheduleViewState extends State<ScheduleView> {
                           children: [
                             TextButton(
                               onPressed: _toggleAddEventPopup,
-                              child: Text("Cancel"),
+                              child: Text("Cancel",
+                              style: Theme.of(context).textTheme.titleSmall?.copyWith(fontWeight:FontWeight.bold),
+                              ),
                             ),
                             ElevatedButton(
                               onPressed: () {
@@ -694,7 +699,8 @@ class _ScheduleViewState extends State<ScheduleView> {
                                   }
                                 }
                               },
-                              child: Text("Save"),
+                              child: Text("Save",
+                              style: Theme.of(context).textTheme.titleSmall?.copyWith(fontWeight:FontWeight.bold),),
                             )
                           ],
                         ),

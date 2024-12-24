@@ -150,10 +150,9 @@ class _HomebodyState extends State<Homebody> {
                     children: [
                       Text(
                         'Today\'s Schedule',
-                        style: TextStyle(
-                          fontSize: 24,
+                        style: Theme.of(context).textTheme.headlineMedium?.copyWith(
                           fontFamily: 'Poppins',
-                          // fontWeight: FontWeight.bold,
+                           fontWeight: FontWeight.normal,
                         ),
                         textAlign: TextAlign.left,
                       ),
@@ -257,10 +256,9 @@ class _HomebodyState extends State<Homebody> {
                     children: [
                       Text(
                         'Recent Courses',
-                        style: TextStyle(
-                          fontSize: 24,
+                        style: Theme.of(context).textTheme.headlineMedium?.copyWith(
                           fontFamily: 'Poppins',
-                          // fontWeight: FontWeight.bold,
+                           fontWeight: FontWeight.normal,
                         ),
                         textAlign: TextAlign.left,
                       ),
@@ -376,10 +374,9 @@ class _HomebodyState extends State<Homebody> {
                     children: [
                       Text(
                         'Recent Quizzes',
-                        style: TextStyle(
-                          fontSize: 24,
-                          fontFamily: 'Poppins',
-                          // fontWeight: FontWeight.bold,
+                        style: Theme.of(context).textTheme.headlineMedium?.copyWith(
+                        fontFamily: 'Poppins',
+                        fontWeight: FontWeight.normal,
                         ),
                         textAlign: TextAlign.left,
                       ),

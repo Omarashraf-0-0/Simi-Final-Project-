@@ -50,11 +50,11 @@ class _SettingsState extends State<Settings> {
                 children: [
                  Text(
                         'Select ',
-                        style: TextStyle(
+                        style: Theme.of(context).textTheme.displayLarge?.copyWith(
                           fontSize: 28,
                           fontWeight: FontWeight.bold,
                           fontFamily: GoogleFonts.leagueSpartan().fontFamily,
-                          color: Color.fromARGB(255, 0, 0, 0)
+                          //color: Color.fromARGB(255, 0, 0, 0)
                         ),
                       ),
                       Text(

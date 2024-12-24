@@ -5,6 +5,7 @@ import 'package:flutter_font_icons/flutter_font_icons.dart';
 import 'package:google_nav_bar/google_nav_bar.dart';
 import 'package:hive/hive.dart';
 import 'package:hive_flutter/hive_flutter.dart';
+import 'package:studymate/main.dart';
 import 'package:studymate/pages/HomePage/Homebody.dart';
 import 'package:studymate/pages/LoginPage.dart';
 import 'package:studymate/pages/ProfilePage.dart';
@@ -19,8 +20,6 @@ import 'dart:convert';
 import 'package:intl/intl.dart';
 
 import '../../util/TextField.dart';
-
-
 
 import '../../Pop-ups/PopUps_Success.dart';
 import '../../Pop-ups/PopUps_Failed.dart';
@@ -39,14 +38,14 @@ class Homepage extends StatefulWidget {
 }
 
 class _HomepageState extends State<Homepage> {
+  int idx = 0;
+  void navBottom(int index) {
+    setState(() {
+      idx = index;
+    });
+  }
 
-  int idx = 0 ;
-void navBottom(int index){
-  setState((){
-    idx = index ; 
-  });
-}
-  final List<Widget> pages = [ 
+  final List<Widget> pages = [
     Homebody(),
     Resources(),
     AboLayla(),
@@ -121,8 +120,8 @@ void navBottom(int index){
         setState(() {
           _isLoading = false;
           _events = [];
-          print('Failed to fetch today\'s schedule with status code ${response.statusCode}');
-          
+          print(
+              'Failed to fetch today\'s schedule with status code ${response.statusCode}');
         });
       }
     } catch (e) {
@@ -133,25 +132,24 @@ void navBottom(int index){
       });
     }
   }
+
   String _formatTime(String time) {
-  try {
-    // Parse the time string into a DateTime object
-    final parsedTime = DateFormat('HH:mm:ss').parse(time);
+    try {
+      // Parse the time string into a DateTime object
+      final parsedTime = DateFormat('HH:mm:ss').parse(time);
 
-    // Format the DateTime object into a 12-hour format
-    return DateFormat('hh:mm a').format(parsedTime);
-  } catch (e) {
-    // Return a fallback value if parsing fails
-    return 'Invalid Time';
+      // Format the DateTime object into a 12-hour format
+      return DateFormat('hh:mm a').format(parsedTime);
+    } catch (e) {
+      // Return a fallback value if parsing fails
+      return 'Invalid Time';
+    }
   }
-}
-
-
 
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      backgroundColor: Colors.white,
+      backgroundColor: Theme.of(context).scaffoldBackgroundColor,
       appBar: AppBar(
         backgroundColor: Color(0xFF165D96), // using hex color
         // title: Center(child: Text('Home Page')),
@@ -199,33 +197,38 @@ void navBottom(int index){
                   ),
                 ),
                 ElevatedButton(
-                  onPressed: () {
-                    // navigate to the profile page
-                    Navigator.push(context,
-                        MaterialPageRoute(builder: (context) => Profilepage()));
-                    setState(() {});
-                  },
-                  style: ElevatedButton.styleFrom(
-                    backgroundColor: Color(0xFF165D96),
-                    shape: CircleBorder(),
-                    elevation: 0,
-                    padding: EdgeInsets.all(0),
-                    minimumSize: Size(0, 0),
-                  ),
-                  child:
-                    CircleAvatar(
+                    onPressed: () {
+                      // navigate to the profile page
+                      Navigator.push(
+                          context,
+                          MaterialPageRoute(
+                              builder: (context) => Profilepage()));
+                      setState(() {});
+                    },
+                    style: ElevatedButton.styleFrom(
+                      backgroundColor: Color(0xFF165D96),
+                      shape: CircleBorder(),
+                      elevation: 0,
+                      padding: EdgeInsets.all(0),
+                      minimumSize: Size(0, 0),
+                    ),
+                    child: CircleAvatar(
                       radius: 18,
                       backgroundColor: Colors.grey, // Placeholder color
-                      backgroundImage: Hive.box('userBox').get('profileImageBase64') == null
+                      backgroundImage: Hive.box('userBox')
+                                  .get('profileImageBase64') ==
+                              null
                           ? null
-                          : MemoryImage(base64Decode(Hive.box('userBox').get('profileImageBase64'))),
-                      child: Hive.box('userBox').get('profileImageBase64') == null
-                          ? CircularProgressIndicator(
-                        valueColor: AlwaysStoppedAnimation<Color>(Color(0xFF01D7ED)), // Spinner color
-                      )
-                          : null, // Show spinner only if no image is found
-                    )
-                ),
+                          : MemoryImage(base64Decode(
+                              Hive.box('userBox').get('profileImageBase64'))),
+                      child:
+                          Hive.box('userBox').get('profileImageBase64') == null
+                              ? CircularProgressIndicator(
+                                  valueColor: AlwaysStoppedAnimation<Color>(
+                                      Color(0xFF01D7ED)), // Spinner color
+                                )
+                              : null, // Show spinner only if no image is found
+                    )),
               ],
             ),
           ),
@@ -324,12 +327,19 @@ void navBottom(int index){
                 Logout();
               },
             ),
+            ListTile(
+             // leading: const Text('Dark Mode',
+             // style: TextStyle(fontSize: 14), ),
+              leading: Switch(
+                  value: themeManager.themeData == ThemeMode.dark,
+                  onChanged: (value) {
+                    themeManager.toggleTheme(value);
+                  }),
+            ),
           ],
         ),
       ),
-
-      body:pages[idx],
-
+      body: pages[idx],
       bottomNavigationBar: Container(
         margin: EdgeInsets.symmetric(
           horizontal: 20,

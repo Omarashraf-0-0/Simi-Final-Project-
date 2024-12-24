@@ -147,7 +147,7 @@ class _QuizState extends State<Quiz> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      backgroundColor: Colors.white,
+      backgroundColor: Theme.of(context).scaffoldBackgroundColor,
       appBar: AppBar(
         backgroundColor: Color(0xFF165D96), // Blue color for the AppBar
         title: Text(
@@ -260,10 +260,8 @@ class _QuizState extends State<Quiz> {
               padding: const EdgeInsets.all(16.0),
               child: Text(
                 questions[currentQuestion]["question"],
-                style: TextStyle(
+                style: Theme.of(context).textTheme.headlineSmall?.copyWith(
                   fontFamily: 'League Spartan',
-                  fontSize: 18,
-                  fontWeight: FontWeight.bold,
                 ),
               ),
             ),
@@ -310,11 +308,12 @@ class _QuizState extends State<Quiz> {
                         const SizedBox(width: 16),
                         Text(
                           questions[currentQuestion]["options"][index],
-                          style: TextStyle(
+                          style: Theme.of(context).textTheme.titleLarge?.copyWith(
                             fontFamily: 'League Spartan',
                             fontSize: 16,
                             fontWeight: FontWeight.bold, // Make the options bold
-                            color: isSelected ? Color(0xFF165D96) : Colors.black,
+                            //++++++++++++++++++++++++++++++++
+                            color: isSelected ? Color(0xFF165D96) : Theme.of(context).colorScheme.secondary,
                           ),
                         ),
                       ],

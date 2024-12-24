@@ -41,19 +41,16 @@ class _QuizHomeState extends State<QuizHome> {
               RichText(
                 textAlign: TextAlign.center,
                 text: TextSpan(
-                  style: TextStyle(
-                    fontSize: 24,
+                  style: Theme.of(context).textTheme.headlineMedium?.copyWith(
                     fontWeight: FontWeight.bold,
                     fontFamily: 'League Spartan',
-                    color: Colors.black, // Default text color
                   ),
                   children: <TextSpan>[
                     TextSpan(text: 'Ready To Challenge Yourself? \n '),
                     TextSpan(
                       text: 'Lets Create Your Quiz!',
                       style: TextStyle(
-                          color: const Color(
-                              0xFF165D96)), // Blue color for "Abo Layla"
+                          color: const Color(0xFF165D96)), // Blue color for "Abo Layla"
                     ),
                   ],
                 ),

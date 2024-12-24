@@ -117,18 +117,14 @@ class BottomSheetExample extends StatelessWidget {
                       SizedBox(height: 20),
                       Text(
                         'title',
-                        style: TextStyle(
-                          fontSize: 18,
-                          fontWeight: FontWeight.bold,
-                          color: Colors.black,
-                        ),
+                        style: Theme.of(context).textTheme.headlineSmall?.copyWith(),
                         textAlign: TextAlign.center,
+                        
                       ),
                       Text(
                         'message',
-                        style: TextStyle(
+                        style: Theme.of(context).textTheme.titleSmall?.copyWith(
                           fontSize: 15,
-                          color: Colors.black,
                         ),
                         textAlign: TextAlign.center,
                       ),

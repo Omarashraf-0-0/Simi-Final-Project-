@@ -34,19 +34,12 @@ void showFailedPopup(BuildContext context, String title, String message,[String 
             SizedBox(height: 20),
             Text(
               title,
-              style: TextStyle(
-                fontSize: 18,
-                fontWeight: FontWeight.bold,
-                color: Colors.black,
-              ),
+              style: Theme.of(context).textTheme.headlineSmall?.copyWith(),
               textAlign: TextAlign.center,
             ),
             Text(
               message,
-              style: TextStyle(
-                fontSize: 15,
-                color: Colors.black,
-              ),
+              style: Theme.of(context).textTheme.titleSmall?.copyWith(),
               textAlign: TextAlign.center,
             ),
             SizedBox(height: 20), // Space before the button

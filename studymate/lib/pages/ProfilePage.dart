@@ -438,8 +438,8 @@ class _ProfilepageState extends State<Profilepage> {
             SizedBox(height: 20),
             Text(
               'Personal Information',
-              style: TextStyle(
-                fontSize: 24,
+              style: Theme.of(context).textTheme.headlineMedium?.copyWith(
+              //  fontSize: 24,
                 fontWeight: FontWeight.bold,
                 fontFamily: GoogleFonts.leagueSpartan().fontFamily,
               ),
@@ -458,11 +458,11 @@ class _ProfilepageState extends State<Profilepage> {
             SizedBox(height: 1),
             Text(
               "${Hive.box('userBox').get('email')}",
-              style: TextStyle(
-                  fontSize: 15,
+              style: Theme.of(context).textTheme.titleSmall?.copyWith(
+                 // fontSize: 15,
                   fontWeight: FontWeight.bold,
                   fontFamily: GoogleFonts.leagueSpartan().fontFamily,
-                  color: Color.fromARGB(255, 0, 0, 0)
+                 // color: Color.fromARGB(255, 0, 0, 0)
               ),
             ),
             SizedBox(height: 3),
@@ -478,11 +478,11 @@ class _ProfilepageState extends State<Profilepage> {
             SizedBox(height: 1),
             Text(
               "${Hive.box('userBox').get('phone_number')}",
-              style: TextStyle(
-                  fontSize: 15,
+              style: Theme.of(context).textTheme.titleSmall?.copyWith(
+                 // fontSize: 15,
                   fontWeight: FontWeight.bold,
                   fontFamily: GoogleFonts.leagueSpartan().fontFamily,
-                  color: Color.fromARGB(255, 0, 0, 0)
+                //color: Color.fromARGB(255, 0, 0, 0)
               ),
             ),
             SizedBox(height: 3),
@@ -498,18 +498,18 @@ class _ProfilepageState extends State<Profilepage> {
             SizedBox(height: 1),
             Text(
               "${Hive.box('userBox').get('Registration_Number')}",
-              style: TextStyle(
-                  fontSize: 15,
+              style: Theme.of(context).textTheme.titleSmall?.copyWith(
+                //  fontSize: 15,
                   fontWeight: FontWeight.bold,
                   fontFamily: GoogleFonts.leagueSpartan().fontFamily,
-                  color: Color.fromARGB(255, 0, 0, 0)
+                //  color: Color.fromARGB(255, 0, 0, 0)
               ),
             ),
             SizedBox(height: 10),
             Text(
               'College Information',
-              style: TextStyle(
-                fontSize: 24,
+              style: Theme.of(context).textTheme.headlineMedium?.copyWith(
+               // fontSize: 24,
                 fontWeight: FontWeight.bold,
                 fontFamily: GoogleFonts.leagueSpartan().fontFamily,
               ),
@@ -527,11 +527,11 @@ class _ProfilepageState extends State<Profilepage> {
             SizedBox(height: 1),
             Text(
               "${Hive.box('userBox').get('university')}",
-              style: TextStyle(
-                  fontSize: 15,
+              style: Theme.of(context).textTheme.titleSmall?.copyWith(
+                 // fontSize: 15,
                   fontWeight: FontWeight.bold,
                   fontFamily: GoogleFonts.leagueSpartan().fontFamily,
-                  color: Color.fromARGB(255, 0, 0, 0)
+                 // color: Color.fromARGB(255, 0, 0, 0)
               ),
             ),
             SizedBox(height: 3),
@@ -547,11 +547,11 @@ class _ProfilepageState extends State<Profilepage> {
             SizedBox(height: 1),
             Text(
               "${Hive.box('userBox').get('college')}",
-              style: TextStyle(
-                  fontSize: 15,
+              style: Theme.of(context).textTheme.titleSmall?.copyWith(
+                //  fontSize: 15,
                   fontWeight: FontWeight.bold,
                   fontFamily: GoogleFonts.leagueSpartan().fontFamily,
-                  color: Color.fromARGB(255, 0, 0, 0)
+                 // color: Color.fromARGB(255, 0, 0, 0)
               ),
             ),
             SizedBox(height: 3),
@@ -567,11 +567,11 @@ class _ProfilepageState extends State<Profilepage> {
             SizedBox(height: 1),
             Text(
               "${Hive.box('userBox').get('major')}",
-              style: TextStyle(
-                  fontSize: 15,
+              style: Theme.of(context).textTheme.titleSmall?.copyWith(
+                  //fontSize: 15,
                   fontWeight: FontWeight.bold,
                   fontFamily: GoogleFonts.leagueSpartan().fontFamily,
-                  color: Color.fromARGB(255, 0, 0, 0)
+                 // color: Color.fromARGB(255, 0, 0, 0)
               ),
             ),
             SizedBox(height: 3),
@@ -587,18 +587,18 @@ class _ProfilepageState extends State<Profilepage> {
             SizedBox(height: 1),
             Text(
               "${Hive.box('userBox').get('term_level')}",
-              style: TextStyle(
-                  fontSize: 15,
+              style: Theme.of(context).textTheme.titleSmall?.copyWith(
+                //  fontSize: 15,
                   fontWeight: FontWeight.bold,
                   fontFamily: GoogleFonts.leagueSpartan().fontFamily,
-                  color: Color.fromARGB(255, 0, 0, 0)
+                //  color: Color.fromARGB(255, 0, 0, 0)
               ),
             ),
             SizedBox(height: 10),
             Text(
               "Courses",
-              style: TextStyle(
-                fontSize: 24,
+              style: Theme.of(context).textTheme.headlineMedium?.copyWith(
+                //fontSize: 24,
                 fontWeight: FontWeight.bold,
                 fontFamily: GoogleFonts.leagueSpartan().fontFamily,
               ),

@@ -14,7 +14,7 @@ import '../util/TextField.dart';
 import 'Login & Register/Forget_Pass.dart';
 import 'package:http/http.dart' as http;
 import 'dart:convert';
-
+import 'package:studymate/theme/text_theme.dart';
 import 'Login & Register/Register_login.dart';
 
 class LoginPage extends StatefulWidget {
@@ -204,7 +204,7 @@ class _LoginPageState extends State<LoginPage> {
               title: 'Woo Hoo!',
               description: 'Welcome back, ${jsonResponse['name']}!',
               color : const Color(0xff3BBD5E),
-              textColor : Colors.black,
+              textColor : ThemeData().colorScheme.secondary,
               routeName : '/HomePage',
               )
               ),
@@ -280,7 +280,7 @@ class _LoginPageState extends State<LoginPage> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      backgroundColor: Colors.white,
+      backgroundColor: Theme.of(context).scaffoldBackgroundColor,
       body: SingleChildScrollView(
         child: Center(
           child: Column(
@@ -296,12 +296,13 @@ class _LoginPageState extends State<LoginPage> {
               // Title
               SizedBox(height: 0),
               Text(
+                //++++++++++++++++++++
                 'Nawart ya Mate',
-                style: TextStyle(
+                style: Theme.of(context).textTheme.displaySmall?.copyWith(
                   fontSize: 40,
-                  fontWeight: FontWeight.bold,
+                // fontWeight: FontWeight.bold,
                   fontFamily: 'Poppins',
-                  color: Colors.black,
+                 // color: Colors.black,
                 ),
               ),
               // Username
@@ -348,8 +349,8 @@ class _LoginPageState extends State<LoginPage> {
                           ),
                           Text(
                             'Remember Me',
-                            style: TextStyle(
-                              color: Colors.black,
+                            style: Theme.of(context).textTheme.labelLarge?.copyWith(
+                           //   color: Colors.black,
                               fontFamily: 'Poppins',
                             ),
                           ),
@@ -412,11 +413,11 @@ class _LoginPageState extends State<LoginPage> {
               SizedBox(height: 60),
               Text(
                 "Don't have account?",
-                style: TextStyle(
+                style: Theme.of(context).textTheme.titleLarge?.copyWith(
                   fontSize: 20,
-                  fontWeight: FontWeight.bold,
+                 // fontWeight: FontWeight.bold,
                   fontFamily: 'Poppins',
-                  color: Colors.black,
+                 // color: Colors.black,
                 ),
               ),
               // Sign up button

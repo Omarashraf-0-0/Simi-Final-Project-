@@ -28,11 +28,8 @@ class AboLayla extends StatelessWidget {
               RichText(
                 textAlign: TextAlign.center,
                 text: TextSpan(
-                  style: TextStyle(
+                  style: Theme.of(context).textTheme.headlineLarge?.copyWith(
                     fontSize: 30,
-                    fontWeight: FontWeight.bold,
-                    fontFamily: 'League Spartan',
-                    color: Colors.black, // Default text color
                   ),
                   children: <TextSpan>[
                     TextSpan(text: 'Hello, I am \n '),
@@ -47,7 +44,8 @@ class AboLayla extends StatelessWidget {
               Text(
                 'Start chatting with me now. You can ask me anything related to your course.',
                 textAlign: TextAlign.center,
-                style: TextStyle(fontSize: 16, fontFamily: 'League Spartan'),
+                style: Theme.of(context).textTheme.titleLarge?.copyWith(
+                fontFamily: 'League Spartan'),
               ),
               SizedBox(height: 20),
               ElevatedButton(
@@ -59,7 +57,7 @@ class AboLayla extends StatelessWidget {
                 },
                 style: ElevatedButton.styleFrom(
                   backgroundColor: Color(0xFF165D96), // Button color
-                  padding: EdgeInsets.symmetric(horizontal: 90, vertical: 20), // Button size
+                  padding: EdgeInsets.symmetric(horizontal: 90, vertical: 15), // Button size
                   shape: RoundedRectangleBorder(
                     borderRadius: BorderRadius.circular(10), // Button radius
                   ),
