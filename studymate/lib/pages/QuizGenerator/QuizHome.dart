@@ -1,12 +1,5 @@
-import 'dart:convert';
-
 import 'package:flutter/material.dart';
-import 'package:flutter_font_icons/flutter_font_icons.dart';
-import 'package:google_nav_bar/google_nav_bar.dart';
-import 'package:hive/hive.dart';
-import 'package:hive_flutter/hive_flutter.dart';
-import 'package:studymate/pages/HomePage/HomePage.dart';
-import 'package:studymate/pages/QuizGenerator/QuizOptions.dart'; // Ensure this import is correct and the file exists
+import 'package:studymate/pages/QuizGenerator/QuizOptions.dart';
 
 class QuizHome extends StatefulWidget {
   const QuizHome({super.key});
@@ -16,50 +9,60 @@ class QuizHome extends StatefulWidget {
 }
 
 class _QuizHomeState extends State<QuizHome> {
+  // Define branding colors
+  final Color blue1 = Color(0xFF1c74bb);
+  final Color blue2 = Color(0xFF165d96);
+  final Color cyan1 = Color(0xFF18bebc);
+  final Color cyan2 = Color(0xFF139896);
+  final Color black = Color(0xFF000000);
+  final Color white = Color(0xFFFFFFFF);
+
   @override
   Widget build(BuildContext context) {
     return Scaffold(
+      backgroundColor: white, // Set background color to white for a clean look
       appBar: AppBar(
-        backgroundColor: Color(0xFF165D96), // Blue color for the AppBar
+        backgroundColor: blue2, // Use branding blue color
         title: Text(
           'Quiz Generator',
           style: TextStyle(
-              fontFamily: 'League Spartan',
-              fontSize: 25,
-              fontWeight: FontWeight.bold,
-              color: Colors.white),
+            fontFamily: 'League Spartan',
+            fontSize: 24,
+            fontWeight: FontWeight.bold,
+            color: white,
+          ),
         ),
-        centerTitle: true, // Center the title in the AppBar
+        centerTitle: true,
+        elevation: 0, // Remove shadow for a flat design
       ),
       body: Center(
         child: SingleChildScrollView(
+          padding: EdgeInsets.symmetric(horizontal: 20, vertical: 40), // Add padding
           child: Column(
             mainAxisAlignment: MainAxisAlignment.center,
             children: <Widget>[
-              Image.asset('lib/assets/img/QuizTime.png'),
-              SizedBox(height: 15),
-              RichText(
+              // Adjusted image for better scaling
+              Image.asset(
+                'lib/assets/img/QuizTime.png',
+                height: 250,
+                fit: BoxFit.contain,
+              ),
+              SizedBox(height: 30),
+              // Simplified text styling and alignment
+              Text(
+                'Ready To Challenge Yourself?\nLet\'s Create Your Quiz!',
                 textAlign: TextAlign.center,
-                text: TextSpan(
-                  style: TextStyle(
-                    fontSize: 24,
-                    fontWeight: FontWeight.bold,
-                    fontFamily: 'League Spartan',
-                    color: Colors.black, // Default text color
-                  ),
-                  children: <TextSpan>[
-                    TextSpan(text: 'Ready To Challenge Yourself? \n '),
-                    TextSpan(
-                      text: 'Lets Create Your Quiz!',
-                      style: TextStyle(
-                          color: const Color(
-                              0xFF165D96)), // Blue color for "Abo Layla"
-                    ),
-                  ],
+                style: TextStyle(
+                  fontSize: 26,
+                  fontWeight: FontWeight.bold,
+                  fontFamily: 'League Spartan',
+                  color: blue2,
                 ),
               ),
-              SizedBox(height: 150),
-              ElevatedButton(
+              SizedBox(height: 60),
+              // Styled button to match branding
+              Center(
+              child: ElevatedButton(
                 onPressed: () {
                   Navigator.push(
                     context,
@@ -67,23 +70,25 @@ class _QuizHomeState extends State<QuizHome> {
                   );
                 },
                 style: ElevatedButton.styleFrom(
-                  backgroundColor: Color(0xFF165D96), // Button color
-                  padding: EdgeInsets.symmetric(
-                      horizontal: 70, vertical: 10), // Button size
+                  backgroundColor: blue2, // Use branding blue color
+                  padding: const EdgeInsets.symmetric(
+                      horizontal: 50, vertical: 15), // Adjust padding
                   shape: RoundedRectangleBorder(
-                    borderRadius: BorderRadius.circular(10), // Button radius
+                    borderRadius: BorderRadius.circular(30), // Rounded corners
                   ),
+                  elevation: 5, // Add slight shadow
                 ),
                 child: Text(
                   'Start The Fun!',
                   style: TextStyle(
-                    fontSize: 30, // Button text size
-                    fontWeight: FontWeight.bold, // Bold text
-                    color: Colors.white, // Text color
+                    fontSize: 22,
+                    fontWeight: FontWeight.bold,
+                    color: white,
                     fontFamily: 'League Spartan',
                   ),
                 ),
               ),
+            ),
             ],
           ),
         ),

@@ -256,7 +256,7 @@ class _LoginPageState extends State<LoginPage> {
             birthDate: jsonResponse['birthDate'],
           );
 
-          Navigator.pushReplacement(
+          Navigator.pushAndRemoveUntil(
             context,
             MaterialPageRoute(
               builder: (context) => DonePopUp(
@@ -268,6 +268,7 @@ class _LoginPageState extends State<LoginPage> {
                 routeName: '/HomePage',
               ),
             ),
+             (Route<dynamic> route) => false,
           );
         } else {
           // Failed login, show error message

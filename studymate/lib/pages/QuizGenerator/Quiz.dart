@@ -1,5 +1,5 @@
 // Quiz.dart
-
+import 'package:studymate/pages/XPChangePopup.dart';
 import 'dart:async';
 import 'dart:convert';
 import 'package:flutter/material.dart';
@@ -206,21 +206,23 @@ bool isPassed = scorePercentage >= 50; // Assuming 50% is the passing score
 if (isPassed) {
   // User passed the quiz
   xpChange = correctAnswers; // 1 XP for each correct answer
+  showXPChangePopup(context, xpChange , 'Congratulations! You earned $xpChange XP.');
 
   // Check for perfect score bonus
   if (scorePercentage == 100 && totalQuestions >= 10) {
     xpChange += 5; // Add 5 bonus XP
+    showXPChangePopup(context, xpChange , 'Congratulations! You earned $xpChange XP and a 5 XP bonus for a perfect score!');
   }
 } else {
   // User failed the quiz
   xpChange = -5; // Deduct 5 XP
+  showXPChangePopup(context, xpChange , 'You lost 5 XP for failing the quiz.');
 }
 
 // Update XP on the server
 await updateUserXP(xpChange);
 
 // Show a popup indicating the XP gained or lost
-showXPChangePopup(context, xpChange);
   }
 
   Future<int> getUserID() async {
@@ -319,60 +321,72 @@ showXPChangePopup(context, xpChange);
     print("Failed to update XP: ${xpResponse.reasonPhrase}");
   }
 }
-void showXPChangePopup(BuildContext context, int xpChange) {
-  String message;
-  if (xpChange > 0) {
-    message = 'Congratulations! You earned $xpChange XP.';
-  } else if (xpChange < 0) {
-    message = 'You lost ${xpChange.abs()} XP. Better luck next time!';
-  } else {
-    message = 'No XP change.';
+void showXPChangePopup(BuildContext context, int xpChange, String message) {
+    showDialog(
+      context: context,
+      barrierDismissible: false, // Prevent closing the popup by tapping outside
+      builder: (BuildContext context) {
+        return XPChangePopup(
+          xpChange: xpChange,
+          message: message,
+        );
+      },
+    );
   }
+// void showXP(BuildContext context, int xpChange) {
+//   String message;
+//   if (xpChange > 0) {
+//     message = 'Congratulations! You earned $xpChange XP.';
+//   } else if (xpChange < 0) {
+//     message = 'You lost ${xpChange.abs()} XP. Better luck next time!';
+//   } else {
+//     message = 'No XP change.';
+//   }
 
-  showDialog(
-    context: context,
-    builder: (context) => AlertDialog(
-      title: Text(
-        'Quiz Result',
-        style: TextStyle(
-          fontFamily: 'League Spartan',
-          fontWeight: FontWeight.bold,
-        ),
-      ),
-      content: Text(
-        message,
-        style: TextStyle(
-          fontFamily: 'League Spartan',
-        ),
-      ),
-      actions: [
-        TextButton(
-          onPressed: () {
-            Navigator.of(context).pop(); // Close the popup
-            // Navigate to the QuizScore page
-            Navigator.push(
-              context,
-              MaterialPageRoute(
-                builder: (_) => QuizScore(
-                  score: correctAnswers,
-                  total: widget.totalQuestions,
-                  userAnswers: userAnswers,
-                  questions: questions,
-                ),
-              ),
-            );
-          },
-          child: Text(
-            'OK',
-            style: TextStyle(
-              fontFamily: 'League Spartan',
-            ),
-          ),
-        ),
-      ],
-    ),
-  );
-}
+//   showDialog(
+//     context: context,
+//     builder: (context) => AlertDialog(
+//       title: Text(
+//         'Quiz Result',
+//         style: TextStyle(
+//           fontFamily: 'League Spartan',
+//           fontWeight: FontWeight.bold,
+//         ),
+//       ),
+//       content: Text(
+//         message,
+//         style: TextStyle(
+//           fontFamily: 'League Spartan',
+//         ),
+//       ),
+//       actions: [
+//         TextButton(
+//           onPressed: () {
+//             Navigator.of(context).pop(); // Close the popup
+//             // Navigate to the QuizScore page
+//             Navigator.push(
+//               context,
+//               MaterialPageRoute(
+//                 builder: (_) => QuizScore(
+//                   score: correctAnswers,
+//                   total: widget.totalQuestions,
+//                   userAnswers: userAnswers,
+//                   questions: questions,
+//                 ),
+//               ),
+//             );
+//           },
+//           child: Text(
+//             'OK',
+//             style: TextStyle(
+//               fontFamily: 'League Spartan',
+//             ),
+//           ),
+//         ),
+//       ],
+//     ),
+//   );
+// }
 
   void selectOption(int index) {
     setState(() {

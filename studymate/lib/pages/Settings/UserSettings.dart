@@ -1,6 +1,5 @@
 import 'dart:io';
 import 'dart:convert';
-
 import 'package:flutter/material.dart';
 import 'package:google_fonts/google_fonts.dart';
 import 'package:studymate/pages/Settings/Settings.dart';
@@ -15,7 +14,6 @@ import 'package:http/http.dart' as http;
 import '../../Pop-ups/PopUps_Success.dart';
 import '../../Pop-ups/PopUps_Failed.dart';
 import '../../Pop-ups/PopUps_Warning.dart';
-
 import 'package:image_picker/image_picker.dart';
 
 class UserSettings extends StatefulWidget {
