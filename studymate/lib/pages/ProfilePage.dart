@@ -33,14 +33,94 @@ class _ProfilepageState extends State<Profilepage> {
   late String _college;
   late String _major;
   late String _termLevel;
+  // List<String> _courses = [];
   List<String> _courses = [];
+  List<String> coursesIndex = [];
+  bool isLoading = false; // To show a loading indicator
+  bool isError = false; // To track if an error occurred
 
   @override
   void initState() {
     super.initState();
     _loadUserData();
     _fetchAndSaveProfileImage();
+    fetchCourses(); 
   }
+    Future<void> fetchCourses() async {
+    setState(() {
+      isLoading = true;
+      isError = false;
+    });
+
+    const url = 'https://alyibrahim.pythonanywhere.com/TakeCourses';
+    final username = Hive.box('userBox').get('username');
+
+    final Map<String, dynamic> requestBody = {
+      'username': username,
+    };
+
+    try {
+      final response = await http.post(
+        Uri.parse(url),
+        headers: {'Content-Type': 'application/json'},
+        body: jsonEncode(requestBody),
+      );
+
+      if (response.statusCode == 200) {
+        final jsonResponse = jsonDecode(response.body);
+        print("JSON Response: $jsonResponse");
+
+        setState(() {
+          _courses = jsonResponse['courses'].cast<String>();
+          coursesIndex = (jsonResponse['CourseID'] as List)
+              .map((item) => item['COId'].toString())
+              .toList();
+          isLoading = false;
+
+        });
+      } else {
+        print('Request failed with status: ${response.statusCode}.');
+        setState(() {
+          isLoading = false;
+          isError = true;
+        });
+      }
+    } catch (error) {
+      print('An error occurred: $error');
+      setState(() {
+        isLoading = false;
+        isError = true;
+      });
+      _showErrorDialog('An error occurred. Please check your connection and try again.');
+    }
+  }
+  void _showErrorDialog(String message) {
+    showDialog(
+      context: context,
+      builder: (context) {
+        return AlertDialog(
+          title: Text("Error", style: TextStyle(color: black)),
+          content: Text(message, style: TextStyle(color: black)),
+          actions: [
+            TextButton(
+              onPressed: () {
+                Navigator.of(context).pop();
+                fetchCourses(); // Retry fetching courses
+              },
+              child: Text("Retry", style: TextStyle(color: blue2)),
+            ),
+            TextButton(
+              onPressed: () {
+                Navigator.of(context).pop();
+              },
+              child: Text("Cancel", style: TextStyle(color: blue2)),
+            ),
+          ],
+        );
+      },
+    );
+  }
+
 
   void _loadUserData() {
     final userBox = Hive.box('userBox');
@@ -54,7 +134,8 @@ class _ProfilepageState extends State<Profilepage> {
     _college = userBox.get('college') ?? '';
     _major = userBox.get('major') ?? '';
     _termLevel = '${userBox.get('term_level') ?? ''}';
-    _courses = ['Data Structures and Algorithms', 'Software Requirements and Specification'];
+    // _courses = [];
+    // print("This is courses ? $_courses");
   }
 
   Future<void> _fetchAndSaveProfileImage() async {
@@ -304,7 +385,10 @@ class _ProfilepageState extends State<Profilepage> {
                     SizedBox(height: size.height * 0.02),
                     // Courses
                     _buildSectionTitle('Courses'),
-                    _buildCourses(),
+                    Align(
+                      alignment: Alignment.centerLeft,
+                      child: _buildCourses(),
+                    ),
                     SizedBox(height: size.height * 0.02),
                     // Logout Button
                     ElevatedButton(
@@ -422,6 +506,7 @@ class _ProfilepageState extends State<Profilepage> {
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
       children: _courses.map((course) {
+        print(course);
         return Padding(
           padding: const EdgeInsets.symmetric(vertical: 4),
           child: Text(

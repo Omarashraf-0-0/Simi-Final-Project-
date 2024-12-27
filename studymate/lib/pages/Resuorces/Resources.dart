@@ -64,7 +64,6 @@ class _ResourcesState extends State<Resources> {
           isLoading = false;
           isError = true;
         });
-        _showErrorDialog('Failed to load courses. Please try again later.');
       }
     } catch (error) {
       print('An error occurred: $error');
@@ -149,14 +148,43 @@ class _ResourcesState extends State<Resources> {
       body: isLoading
           ? Center(child: CircularProgressIndicator())
           : courses.isEmpty
-              ? Center(
-                  child: Text(
-                    isError ? 'Failed to load courses.' : 'No courses available.',
-                    style: TextStyle(fontSize: 18, color: black),
+              ? Padding(
+                  padding: EdgeInsets.symmetric(
+                      horizontal: size.width * 0.05,
+                      vertical: size.height * 0.02),
+                  child: Center(
+                    child: SizedBox(
+                      width: double.infinity,
+                      child: ElevatedButton(
+                        onPressed: () {
+                          Navigator.push(
+                            context,
+                            MaterialPageRoute(builder: (context) => Courses()),
+                          );
+                        },
+                        style: ElevatedButton.styleFrom(
+                          backgroundColor: blue2,
+                          padding: EdgeInsets.symmetric(vertical: 15),
+                          shape: RoundedRectangleBorder(
+                            borderRadius: BorderRadius.circular(10),
+                          ),
+                        ),
+                        child: Text(
+                          'View All Courses',
+                          style: TextStyle(
+                            color: white,
+                            fontSize: 16,
+                            fontWeight: FontWeight.bold,
+                          ),
+                        ),
+                      ),
+                    ),
                   ),
                 )
               : Padding(
-                  padding: EdgeInsets.symmetric(horizontal: size.width * 0.05, vertical: size.height * 0.02),
+                  padding: EdgeInsets.symmetric(
+                      horizontal: size.width * 0.05,
+                      vertical: size.height * 0.02),
                   child: Column(
                     crossAxisAlignment: CrossAxisAlignment.start,
                     children: [
@@ -175,7 +203,8 @@ class _ResourcesState extends State<Resources> {
                         width: double.infinity,
                         child: ElevatedButton(
                           onPressed: () {
-                            Navigator.push(context, MaterialPageRoute(builder: (context) => Courses()));
+                            Navigator.push(context,
+                                MaterialPageRoute(builder: (context) => Courses()));
                           },
                           style: ElevatedButton.styleFrom(
                             backgroundColor: blue2,

@@ -1,6 +1,10 @@
 import 'dart:convert';
 import 'package:flutter/material.dart';
 import 'package:hive/hive.dart';
+import 'package:hive_flutter/hive_flutter.dart';
+import 'package:studymate/pages/Resuorces/SRS.dart';
+import 'package:studymate/pages/Resuorces/SRS.dart';
+import 'package:studymate/pages/Resuorces/SRS.dart';
 import 'package:studymate/pages/Resuorces/CourseContent.dart';
 import 'package:studymate/pages/Resuorces/Resources.dart';
 import 'package:studymate/pages/ScheduleManager/ScheduleManager.dart';
@@ -8,8 +12,7 @@ import 'package:http/http.dart' as http;
 import 'package:intl/intl.dart';
 
 class Homebody extends StatefulWidget {
-  const Homebody({Key? key}) : super(key: key);
-
+  const Homebody({super.key});
   @override
   State<Homebody> createState() => _HomebodyState();
 }
