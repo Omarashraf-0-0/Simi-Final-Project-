@@ -46,7 +46,8 @@ class _QuizOptionsState extends State<QuizOptions> {
   }
 
   Future<void> takecourses() async {
-    const url = 'https://alyibrahim.pythonanywhere.com/TakeCourses'; // Server URL
+    const url =
+        'https://alyibrahim.pythonanywhere.com/TakeCourses'; // Server URL
     final username = Hive.box('userBox').get('username');
     final Map<String, dynamic> requestBody = {
       'username': username,
@@ -76,7 +77,8 @@ class _QuizOptionsState extends State<QuizOptions> {
   }
 
   Future<void> getLectures(String courseId) async {
-    const url = 'https://alyibrahim.pythonanywhere.com/CourseContent'; // Corrected URL
+    const url =
+        'https://alyibrahim.pythonanywhere.com/CourseContent'; // Corrected URL
     final username = Hive.box('userBox').get('username');
     final Map<String, dynamic> requestBody = {
       'courseIdx': courseId,
@@ -110,101 +112,294 @@ class _QuizOptionsState extends State<QuizOptions> {
   }
 
   void validateQuestions() async {
-    setState(() {
-      isGenerating = true;
-    });
+  // Parse inputs safely, default to -1 to capture invalid inputs
+  int totalQuestions = int.tryParse(questionsController.text) ?? -1;
+  int mcqCount = int.tryParse(mcqController.text) ?? -1;
+  int tfCount = int.tryParse(tfController.text) ?? -1;
+  int lectureFrom = int.tryParse(lectureFromController.text) ?? -1;
+  int lectureTo = int.tryParse(lectureToController.text) ?? -1;
 
-    int totalQuestions = int.tryParse(questionsController.text) ?? 0;
-    int mcqCount = int.tryParse(mcqController.text) ?? 0;
-    int tfCount = int.tryParse(tfController.text) ?? 0;
-    int lectureFrom = int.tryParse(lectureFromController.text) ?? 1;
-    int lectureTo = int.tryParse(lectureToController.text) ?? lectures.length;
+  // Check if a course is selected
+  if (selectedCourse == null) {
+    showDialog(
+      context: context,
+      builder: (BuildContext dialogContext) {
+        return AlertDialog(
+          title: const Text("Error"),
+          content: const Text("Please select a course."),
+          actions: [
+            TextButton(
+              onPressed: () {
+                Navigator.of(dialogContext).pop();
+              },
+              child: const Text("OK"),
+            ),
+          ],
+        );
+      },
+    );
+    return;
+  }
 
-    if (mcqCount + tfCount != totalQuestions) {
-      setState(() {
-        isGenerating = false;
-      });
-      showDialog(
-        context: context,
-        builder: (_) => AlertDialog(
+  // Check if lectures are available
+  if (lectures.isEmpty) {
+    showDialog(
+      context: context,
+      builder: (BuildContext dialogContext) {
+        return AlertDialog(
+          title: const Text("Error"),
+          content: const Text("No lectures available for the selected course."),
+          actions: [
+            TextButton(
+              onPressed: () {
+                Navigator.of(dialogContext).pop();
+              },
+              child: const Text("OK"),
+            ),
+          ],
+        );
+      },
+    );
+    return;
+  }
+
+  // Validate lecture range inputs
+  if (lectureFrom <= 0 || lectureTo <= 0 || lectureFrom > lectureTo) {
+    showDialog(
+      context: context,
+      builder: (BuildContext dialogContext) {
+        return AlertDialog(
+          title: const Text("Error"),
+          content: const Text("Please enter a valid lecture range."),
+          actions: [
+            TextButton(
+              onPressed: () {
+                Navigator.of(dialogContext).pop();
+              },
+              child: const Text("OK"),
+            ),
+          ],
+        );
+      },
+    );
+    return;
+  }
+
+  // Check if lecture numbers exceed available lectures
+  if (lectureFrom > lectures.length || lectureTo > lectures.length) {
+    showDialog(
+      context: context,
+      builder: (BuildContext dialogContext) {
+        return AlertDialog(
+          title: const Text("Error"),
+          content: Text(
+              "Lecture numbers exceed available lectures. Please select between 1 and ${lectures.length}."),
+          actions: [
+            TextButton(
+              onPressed: () {
+                Navigator.of(dialogContext).pop();
+              },
+              child: const Text("OK"),
+            ),
+          ],
+        );
+      },
+    );
+    return;
+  }
+
+  // Validate question numbers
+  if (totalQuestions <= 0) {
+    showDialog(
+      context: context,
+      builder: (BuildContext dialogContext) {
+        return AlertDialog(
+          title: const Text("Error"),
+          content:
+              const Text("Total number of questions must be a positive integer."),
+          actions: [
+            TextButton(
+              onPressed: () {
+                Navigator.of(dialogContext).pop();
+              },
+              child: const Text("OK"),
+            ),
+          ],
+        );
+      },
+    );
+    return;
+  }
+
+  if (mcqCount < 0 || tfCount < 0) {
+    showDialog(
+      context: context,
+      builder: (BuildContext dialogContext) {
+        return AlertDialog(
+          title: const Text("Error"),
+          content:
+              const Text("Number of MCQ and T/F questions cannot be negative."),
+          actions: [
+            TextButton(
+              onPressed: () {
+                Navigator.of(dialogContext).pop();
+              },
+              child: const Text("OK"),
+            ),
+          ],
+        );
+      },
+    );
+    return;
+  }
+
+  if (mcqCount + tfCount != totalQuestions) {
+    showDialog(
+      context: context,
+      builder: (BuildContext dialogContext) {
+        return AlertDialog(
           title: const Text("Error"),
           content: const Text(
               "The total number of MCQs and T/F questions must equal the number of questions."),
           actions: [
             TextButton(
-              onPressed: () => Navigator.pop(context),
+              onPressed: () {
+                Navigator.of(dialogContext).pop();
+              },
               child: const Text("OK"),
             ),
           ],
+        );
+      },
+    );
+    return;
+  }
+
+  // All validations passed, set isGenerating to true
+  setState(() {
+    isGenerating = true;
+    print('isGenerating set to true');
+  });
+
+  // Prepare data to send to the server
+  Map<String, dynamic> requestData = {
+    'course_name': selectedCourse!.replaceAll(' ', ''),
+    'co_id': selectedCourseId,
+    'lecture_start': lectureFrom,
+    'lecture_end': lectureTo,
+    'number_of_questions': totalQuestions,
+    'num_mcq': mcqCount,
+    'num_true_false': tfCount,
+  };
+
+  // Send data to server
+  try {
+    final response = await http.post(
+      Uri.parse('https://alyibrahim.pythonanywhere.com/generate_quiz'),
+      headers: {'Content-Type': 'application/json'},
+      body: jsonEncode(requestData),
+    );
+
+    if (response.statusCode == 200) {
+      var jsonResponse = jsonDecode(response.body);
+
+      setState(() {
+        isGenerating = false;
+        print('isGenerating set to false');
+      });
+
+      // Navigate to the Quiz screen and pass the quiz data and co_id
+      Navigator.push(
+        context,
+        MaterialPageRoute(
+          builder: (context) => Quiz(
+            quizData: jsonResponse,
+            totalQuestions: totalQuestions,
+            mcqCount: mcqCount,
+            tfCount: tfCount,
+            coId: selectedCourseId!,
+          ),
         ),
       );
-      return;
-    }
-
-    if (selectedCourse == null) {
+    } else if (response.statusCode == 400) {
+      // Handle server-side validation errors
       setState(() {
         isGenerating = false;
+        print('isGenerating set to false');
       });
-      print('No course selected.');
-      return;
-    }
-
-    // Prepare data to send to the server
-    Map<String, dynamic> requestData = {
-      'course_name': selectedCourse!.replaceAll(' ', ''),
-      'co_id': selectedCourseId, // Include co_id
-      'lecture_start': lectureFrom,
-      'lecture_end': lectureTo,
-      'number_of_questions': totalQuestions,
-      'num_mcq': mcqCount,
-      'num_true_false': tfCount,
-    };
-
-    // Send data to server
-    try {
-      final response = await http.post(
-        Uri.parse('https://alyibrahim.pythonanywhere.com/generate_quiz'),
-        headers: {'Content-Type': 'application/json'},
-        body: jsonEncode(requestData),
+      var jsonResponse = jsonDecode(response.body);
+      showDialog(
+        context: context,
+        builder: (BuildContext dialogContext) {
+          return AlertDialog(
+            title: const Text("Error"),
+            content: Text(jsonResponse['error'] ?? 'Unknown error occurred.'),
+            actions: [
+              TextButton(
+                onPressed: () {
+                  Navigator.of(dialogContext).pop();
+                },
+                child: const Text("OK"),
+              ),
+            ],
+          );
+        },
       );
-
-      if (response.statusCode == 200) {
-        // Successfully received JSON response from server
-        var jsonResponse = jsonDecode(response.body);
-
-        setState(() {
-          isGenerating = false;
-        });
-
-        // Navigate to the Quiz screen and pass the quiz data and co_id
-        Navigator.push(
-          context,
-          MaterialPageRoute(
-            builder: (context) => Quiz(
-              quizData: jsonResponse, // Pass the quiz data
-              totalQuestions: totalQuestions,
-              mcqCount: mcqCount,
-              tfCount: tfCount,
-              coId: selectedCourseId!, // Pass the co_id
-            ),
-          ),
-        );
-      } else {
-        setState(() {
-          isGenerating = false;
-        });
-        print('Server error: ${response.statusCode}');
-        print('Response body: ${response.body}');
-        // Show error message if needed
-      }
-    } catch (e) {
+    } else {
       setState(() {
         isGenerating = false;
+        print('isGenerating set to false');
       });
-      print('Error: $e');
-      // Show error message if needed
+      print('Server error: ${response.statusCode}');
+      print('Response body: ${response.body}');
+      // Show error message
+      showDialog(
+        context: context,
+        builder: (BuildContext dialogContext) {
+          return AlertDialog(
+            title: const Text("Error"),
+            content: Text(
+                'An unexpected server error occurred. Please try again later.'),
+            actions: [
+              TextButton(
+                onPressed: () {
+                  Navigator.of(dialogContext).pop();
+                },
+                child: const Text("OK"),
+              ),
+            ],
+          );
+        },
+      );
     }
+  } catch (e) {
+    setState(() {
+      isGenerating = false;
+      print('isGenerating set to false');
+    });
+    print('Error: $e');
+    // Show error message
+    showDialog(
+      context: context,
+      builder: (BuildContext dialogContext) {
+        return AlertDialog(
+          title: const Text("Error"),
+          content: Text(
+              'An error occurred while generating the quiz: $e. Please try again.'),
+          actions: [
+            TextButton(
+              onPressed: () {
+                Navigator.of(dialogContext).pop();
+              },
+              child: const Text("OK"),
+            ),
+          ],
+        );
+      },
+    );
   }
+}
+
 
   @override
   Widget build(BuildContext context) {
@@ -249,8 +444,8 @@ class _QuizOptionsState extends State<QuizOptions> {
                   DropdownButtonFormField<String>(
                     value: selectedCourse,
                     decoration: InputDecoration(
-                      contentPadding: EdgeInsets.symmetric(
-                          vertical: 15, horizontal: 17),
+                      contentPadding:
+                          EdgeInsets.symmetric(vertical: 15, horizontal: 17),
                       hintText: 'Choose Course',
                       hintStyle: TextStyle(
                         color: Colors.grey[600],

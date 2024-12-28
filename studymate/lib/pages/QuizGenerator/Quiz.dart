@@ -9,6 +9,7 @@ import 'package:http/http.dart' as http;
 import 'package:hive/hive.dart';
 import 'package:hive_flutter/hive_flutter.dart';
 import 'package:studymate/pages/XPChangePopup.dart';
+
 class Quiz extends StatefulWidget {
   final int totalQuestions;
   final int mcqCount;
@@ -124,7 +125,10 @@ class _QuizState extends State<Quiz> {
   }
 
   void submitQuiz() async {
+    // Stop the timer first
     stopTimer();
+
+    // Calculate correct answers and prepare lists
     correctAnswers = 0;
     List<String> userAnsList = [];
     List<String> quizAnsList = [];
@@ -171,6 +175,7 @@ class _QuizState extends State<Quiz> {
       }
     }
 
+    // Prepare submission data
     Map<String, dynamic> submissionData = {
       'UserID': await getUserID(),
       'UserAns': userAnsList.join(','),
@@ -181,8 +186,45 @@ class _QuizState extends State<Quiz> {
 
     print('Submission Data: $submissionData');
 
-    await submitToServer(submissionData);
+    try {
+      // Submit quiz results to the server
+      await submitToServer(submissionData);
 
+      // Calculate XP changes based on the quiz result
+      int xpChange = 0;
+      int totalQuestions = widget.totalQuestions;
+      double scorePercentage = (correctAnswers / totalQuestions) * 100;
+      bool isPassed =
+          scorePercentage >= 50; // Assuming 50% is the passing score
+
+      if (isPassed) {
+        // User passed the quiz
+        xpChange = correctAnswers; // 1 XP for each correct answer
+
+        // Check for perfect score bonus
+        if (scorePercentage == 100 && totalQuestions >= 10) {
+          xpChange += 5; // Add 5 bonus XP
+          showXPChangePopup(context, xpChange,
+              'Congratulations! You earned $xpChange XP and a 5 XP bonus for a perfect score!');
+        } else {
+          showXPChangePopup(
+              context, xpChange, 'Congratulations! You earned $xpChange XP.');
+        }
+      } else {
+        // User failed the quiz
+        xpChange = -5; // Deduct 5 XP
+        showXPChangePopup(
+            context, xpChange, 'You lost 5 XP for failing the quiz.');
+      }
+
+      // Update XP on the server
+      await updateUserXP(xpChange);
+    } catch (e) {
+      print('Error during quiz submission or XP update: $e');
+      // You can show an error dialog to the user if necessary
+    }
+
+    // Navigate to the QuizScore page after all updates
     Navigator.push(
       context,
       MaterialPageRoute(
@@ -194,35 +236,6 @@ class _QuizState extends State<Quiz> {
         ),
       ),
     );
-    // Calculate XP changes based on the quiz result
-
-int xpChange = 0;
-int totalQuestions = widget.totalQuestions;
-double scorePercentage = (correctAnswers / totalQuestions) * 100;
-
-// Determine if the user passed or failed (you might have a passing criteria)
-bool isPassed = scorePercentage >= 50; // Assuming 50% is the passing score
-
-if (isPassed) {
-  // User passed the quiz
-  xpChange = correctAnswers; // 1 XP for each correct answer
-  showXPChangePopup(context, xpChange , 'Congratulations! You earned $xpChange XP.');
-
-  // Check for perfect score bonus
-  if (scorePercentage == 100 && totalQuestions >= 10) {
-    xpChange += 5; // Add 5 bonus XP
-    showXPChangePopup(context, xpChange , 'Congratulations! You earned $xpChange XP and a 5 XP bonus for a perfect score!');
-  }
-} else {
-  // User failed the quiz
-  xpChange = -5; // Deduct 5 XP
-  showXPChangePopup(context, xpChange , 'You lost 5 XP for failing the quiz.');
-}
-
-// Update XP on the server
-await updateUserXP(xpChange);
-
-// Show a popup indicating the XP gained or lost
   }
 
   Future<int> getUserID() async {
@@ -251,77 +264,79 @@ await updateUserXP(xpChange);
       print('Error submitting quiz results: $e');
     }
   }
+
   Future<void> updateUserXP(int xpChange) async {
-  const xpUrl = 'https://alyibrahim.pythonanywhere.com/set_xp';
-  const titleUrl = 'https://alyibrahim.pythonanywhere.com/set_title';
+    const xpUrl = 'https://alyibrahim.pythonanywhere.com/set_xp';
+    const titleUrl = 'https://alyibrahim.pythonanywhere.com/set_title';
 
-  // Get the current XP from Hive
-  var userBox = Hive.box('userBox');
-  int currentXp = userBox.get('xp', defaultValue: 0);
-  String username = userBox.get('username', defaultValue: '');
+    // Get the current XP from Hive
+    var userBox = Hive.box('userBox');
+    int currentXp = userBox.get('xp', defaultValue: 0);
+    String username = userBox.get('username', defaultValue: '');
 
-  int newXp = currentXp + xpChange;
+    int newXp = currentXp + xpChange;
 
-  // Ensure XP doesn't go below zero
-  if (newXp < 0) {
-    newXp = 0;
-  }
-
-  // Update XP on the server
-  final xpResponse = await http.post(
-    Uri.parse(xpUrl),
-    headers: {'Content-Type': 'application/json'},
-    body: jsonEncode({'username': username, 'xp': newXp}),
-  );
-
-  if (xpResponse.statusCode == 200) {
-    // Update XP locally
-    userBox.put('xp', newXp);
-    print("XP updated successfully to $newXp");
-
-    // Determine new title based on XP
-    String newTitle;
-    if (newXp >= 3000) {
-      newTitle = 'El Batal';
-    } else if (newXp >= 2200) {
-      newTitle = 'Legend';
-    } else if (newXp >= 1500) {
-      newTitle = 'Mentor';
-    } else if (newXp >= 1000) {
-      newTitle = 'Expert';
-    } else if (newXp >= 600) {
-      newTitle = 'Challenger';
-    } else if (newXp >= 300) {
-      newTitle = 'Achiever';
-    } else if (newXp >= 100) {
-      newTitle = 'Explorer';
-    } else {
-      newTitle = 'NewComer';
+    // Ensure XP doesn't go below zero
+    if (newXp < 0) {
+      newXp = 0;
     }
 
-    // Check if the title has changed
-    String currentTitle = userBox.get('title', defaultValue: '');
-    if (currentTitle != newTitle) {
-      // Update title on the server
-      final titleResponse = await http.post(
-        Uri.parse(titleUrl),
-        headers: {'Content-Type': 'application/json'},
-        body: jsonEncode({'username': username, 'title': newTitle}),
-      );
+    // Update XP on the server
+    final xpResponse = await http.post(
+      Uri.parse(xpUrl),
+      headers: {'Content-Type': 'application/json'},
+      body: jsonEncode({'username': username, 'xp': newXp}),
+    );
 
-      if (titleResponse.statusCode == 200) {
-        // Update title locally
-        userBox.put('title', newTitle);
-        print("Title updated successfully to $newTitle");
+    if (xpResponse.statusCode == 200) {
+      // Update XP locally
+      userBox.put('xp', newXp);
+      print("XP updated successfully to $newXp");
+
+      // Determine new title based on XP
+      String newTitle;
+      if (newXp >= 3000) {
+        newTitle = 'El Batal';
+      } else if (newXp >= 2200) {
+        newTitle = 'Legend';
+      } else if (newXp >= 1500) {
+        newTitle = 'Mentor';
+      } else if (newXp >= 1000) {
+        newTitle = 'Expert';
+      } else if (newXp >= 600) {
+        newTitle = 'Challenger';
+      } else if (newXp >= 300) {
+        newTitle = 'Achiever';
+      } else if (newXp >= 100) {
+        newTitle = 'Explorer';
       } else {
-        print("Failed to update title: ${titleResponse.reasonPhrase}");
+        newTitle = 'NewComer';
       }
+
+      // Check if the title has changed
+      String currentTitle = userBox.get('title', defaultValue: '');
+      if (currentTitle != newTitle) {
+        // Update title on the server
+        final titleResponse = await http.post(
+          Uri.parse(titleUrl),
+          headers: {'Content-Type': 'application/json'},
+          body: jsonEncode({'username': username, 'title': newTitle}),
+        );
+
+        if (titleResponse.statusCode == 200) {
+          // Update title locally
+          userBox.put('title', newTitle);
+          print("Title updated successfully to $newTitle");
+        } else {
+          print("Failed to update title: ${titleResponse.reasonPhrase}");
+        }
+      }
+    } else {
+      print("Failed to update XP: ${xpResponse.reasonPhrase}");
     }
-  } else {
-    print("Failed to update XP: ${xpResponse.reasonPhrase}");
   }
-}
-void showXPChangePopup(BuildContext context, int xpChange, String message) {
+
+  void showXPChangePopup(BuildContext context, int xpChange, String message) {
     showDialog(
       context: context,
       barrierDismissible: false, // Prevent closing the popup by tapping outside
@@ -603,9 +618,8 @@ void showXPChangePopup(BuildContext context, int xpChange, String message) {
                               fontFamily: 'League Spartan',
                               fontSize: 16,
                               fontWeight: FontWeight.bold,
-                              color: isSelected
-                                  ? Color(0xFF165D96)
-                                  : Colors.black,
+                              color:
+                                  isSelected ? Color(0xFF165D96) : Colors.black,
                             ),
                           ),
                         ),
