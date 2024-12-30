@@ -39,6 +39,7 @@ dependencies:
   firebase_messaging: any
   fl_chart: ^0.69.2
   flutter_markdown: ^0.6.10
+  firebase_storage_web: ^3.5.0
 google_fonts: any # Uncomment if you want to use Google Fonts
 
 dev_dependencies:

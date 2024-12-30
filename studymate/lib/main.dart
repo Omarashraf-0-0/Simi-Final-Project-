@@ -36,6 +36,7 @@ Future<void> firebaseMessagingBackgroundHandler(RemoteMessage message) async {
   await Firebase.initializeApp();
   print('Handling background message ${message.messageId}');
 }
+
 void main() async {
   WidgetsFlutterBinding.ensureInitialized();
   await Hive.initFlutter();
@@ -57,10 +58,11 @@ void main() async {
   rrequestPermission();
   FirebaseMessaging.onBackgroundMessage(firebaseMessagingBackgroundHandler);
 
-  runApp( MyApp());
+  runApp(MyApp());
 }
+
 class MyApp extends StatefulWidget {
-    const MyApp({super.key});
+  const MyApp({super.key});
   @override
   _MyAppState createState() => _MyAppState();
   @override
@@ -85,6 +87,7 @@ class MyApp extends StatefulWidget {
     );
   }
 }
+
 class _MyAppState extends State<MyApp> {
   final FirebaseMessaging _messaging = FirebaseMessaging.instance;
   final FlutterLocalNotificationsPlugin _flutterLocalNotificationsPlugin =
@@ -93,7 +96,8 @@ class _MyAppState extends State<MyApp> {
   static const AndroidNotificationChannel _channel = AndroidNotificationChannel(
     'high_importance_channel', // id
     'High Importance Notifications', // title
-    description: 'This channel is used for important notifications.', // description
+    description:
+        'This channel is used for important notifications.', // description
     importance: Importance.high,
   );
 
@@ -199,6 +203,10 @@ class _MyAppState extends State<MyApp> {
   @override
   Widget build(BuildContext context) {
     return MaterialApp(
+      themeMode: ThemeMode.dark, // Set dark theme globally
+      theme: ThemeData.light(), // Define your light theme
+      darkTheme: ThemeData.dark(), // Define your dark theme
+      
       navigatorKey: navigatorKey, // Add the global key here
       debugShowCheckedModeBanner: false,
       home: IntroPage(),
@@ -235,11 +243,11 @@ class _MyAppState extends State<MyApp> {
 
 //     // Request notification permissions
 //     requestPermission();
-    
+
 //     // Initialize flutter local notifications
 //     _initializeNotifications();
 //     setupFlutterNotifications();
-    
+
 //     // Handle foreground messages
 //     FirebaseMessaging.onMessage.listen((RemoteMessage message) {
 //       print('Foreground message received: ${message.messageId}');
@@ -273,7 +281,7 @@ class _MyAppState extends State<MyApp> {
 //       // Navigate to a specific screen if needed
 //     });
 //   }
- 
+
 //   Future<void> requestPermission() async {
 //     FirebaseMessaging messaging = FirebaseMessaging.instance;
 
@@ -365,7 +373,7 @@ Future<void> _initializeNotifications() async {
       // التعامل مع النوتيفيكيشن عند الضغط عليها
       if (notificationResponse.payload != null) {
         // navigatorKey.currentState?.push(
-          // MaterialPageRoute(builder: (context) => NotificationPage(notifications: [],)),
+        // MaterialPageRoute(builder: (context) => NotificationPage(notifications: [],)),
         // );
       }
     },
@@ -390,6 +398,7 @@ Future<void> rrequestPermission() async {
     print('User declined or has not accepted permission');
   }
 }
+
 Future<void> _requestPermissions() async {
   if (Platform.isAndroid) {
     if (await Permission.notification.request().isGranted) {
@@ -398,8 +407,8 @@ Future<void> _requestPermissions() async {
       print('Notification permission denied');
     }
   } else if (Platform.isIOS) {
-    final iosImplementation = flutterLocalNotificationsPlugin
-        .resolvePlatformSpecificImplementation<
+    final iosImplementation =
+        flutterLocalNotificationsPlugin.resolvePlatformSpecificImplementation<
             IOSFlutterLocalNotificationsPlugin>();
     if (iosImplementation != null) {
       final granted = await iosImplementation.requestPermissions(
@@ -469,20 +478,19 @@ Future<void> showNotification(String title, String info) async {
   );
 }
 
-
-
 Future<void> scheduleNotification({
   required String title,
   required String body,
   required DateTime scheduledDate,
 }) async {
   // Convert DateTime to TZDateTime for timezone compatibility
-  final tz.TZDateTime tzScheduledDate = tz.TZDateTime.from(scheduledDate, tz.local);
+  final tz.TZDateTime tzScheduledDate =
+      tz.TZDateTime.from(scheduledDate, tz.local);
 
   await flutterLocalNotificationsPlugin.zonedSchedule(
     scheduledDate.millisecondsSinceEpoch ~/ 1000, // Unique notification ID
     title, // Notification title
-    body,  // Notification body
+    body, // Notification body
     tzScheduledDate, // Time to show the notification
     const NotificationDetails(
       android: AndroidNotificationDetails(
