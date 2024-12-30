@@ -114,7 +114,8 @@ class _LoginPageState extends State<LoginPage> {
   }
 
   Future<bool> fetchAndSaveProfileImage() async {
-    final url = 'https://alyibrahim.pythonanywhere.com/get-profile-image'; // Replace with your server URL
+    final url =
+        'https://alyibrahim.pythonanywhere.com/get-profile-image'; // Replace with your server URL
 
     try {
       // Get the username from Hive box
@@ -132,13 +133,15 @@ class _LoginPageState extends State<LoginPage> {
       // Send the username as JSON in the body of a POST request
       final response = await http
           .post(
-        Uri.parse(url),
-        headers: {'Content-Type': 'application/json'}, // Set content type to JSON
-        body: jsonEncode(body), // Encode the body as JSON
-      )
+            Uri.parse(url),
+            headers: {
+              'Content-Type': 'application/json'
+            }, // Set content type to JSON
+            body: jsonEncode(body), // Encode the body as JSON
+          )
           .timeout(
-        Duration(seconds: 30), // Adjust the duration as needed
-      );
+            Duration(seconds: 30), // Adjust the duration as needed
+          );
 
       if (response.statusCode == 200) {
         // Get the image bytes from the response
@@ -154,7 +157,8 @@ class _LoginPageState extends State<LoginPage> {
         return true;
       } else {
         // Handle error if the image is not found or another error occurs
-        print("Failed to load image: ${response.statusCode} ===== ${response.body}");
+        print(
+            "Failed to load image: ${response.statusCode} ===== ${response.body}");
         return false;
       }
     } on TimeoutException catch (_) {
@@ -169,7 +173,8 @@ class _LoginPageState extends State<LoginPage> {
   Future<void> login() async {
     final username = usernameController.text;
     final password = passwordController.text;
-    const url = 'https://alyibrahim.pythonanywhere.com/login'; // Replace with your actual Flask server URL
+    const url =
+        'https://alyibrahim.pythonanywhere.com/login'; // Replace with your actual Flask server URL
 
     try {
       // Ensure the username and password are not empty
@@ -220,19 +225,27 @@ class _LoginPageState extends State<LoginPage> {
           Hive.box('userBox').put('title', jsonResponse['title']);
           Hive.box('userBox').put('Registration_Number', jsonResponse['registrationNumber']);
           Hive.box('userBox').put('birthDate', jsonResponse['birthDate']);
+          Hive.box('userBox').put('day_streak', jsonResponse['day_streak']);
+          Hive.box('userBox').put('max_streak', jsonResponse['max_streak']);
+          Hive.box('userBox').put('last_login', jsonResponse['last_login']);
+
           fetchAndSaveProfileImage();
           if (isRememberMeChecked) {
             // Save the login state to Hive
             Hive.box('userBox').put('isLoggedIn', true);
-            Hive.box('userBox').put('loginTime', DateTime.now().millisecondsSinceEpoch);
+            Hive.box('userBox')
+                .put('loginTime', DateTime.now().millisecondsSinceEpoch);
           } else {
             // Clear the login state from Hive
             Hive.box('userBox').put('isLoggedIn', false);
           }
-
-          int currentXp = jsonResponse['xp'] ?? 0; // Get current XP, default to 0 if null
-          await updateXpAndTitle(currentXp);
-          showXPChangePopup(context, 5, 'You have gained 5 XP!');
+          if (jsonResponse['get_xp'] == true) {
+            // Get current XP and update the title
+            int currentXp =
+                jsonResponse['xp'] ?? 0; // Get current XP, default to 0 if null
+            await updateXpAndTitle(currentXp);
+            showXPChangePopup(context, 5, 'You have gained 5 XP!');
+          }
 
           User? user = User(
             id: jsonResponse['id'],
@@ -268,7 +281,7 @@ class _LoginPageState extends State<LoginPage> {
                 routeName: '/HomePage',
               ),
             ),
-             (Route<dynamic> route) => false,
+            (Route<dynamic> route) => false,
           );
         } else {
           // Failed login, show error message
@@ -283,7 +296,9 @@ class _LoginPageState extends State<LoginPage> {
         showFailedPopup(
           context,
           'Error',
-          response.reasonPhrase == 'UNAUTHORIZED' ? 'Wrong Username Or Password' : '${response.reasonPhrase}',
+          response.reasonPhrase == 'UNAUTHORIZED'
+              ? 'Wrong Username Or Password'
+              : '${response.reasonPhrase}',
         );
       }
     } catch (error) {
@@ -348,7 +363,9 @@ class _LoginPageState extends State<LoginPage> {
                     prefixIcon: Icon(Icons.lock_outline),
                     suffixIcon: IconButton(
                       icon: Icon(
-                        isPasswordVisible ? Icons.visibility : Icons.visibility_off,
+                        isPasswordVisible
+                            ? Icons.visibility
+                            : Icons.visibility_off,
                       ),
                       onPressed: () {
                         setState(() {
@@ -452,7 +469,8 @@ class _LoginPageState extends State<LoginPage> {
                       // Navigate to Sign Up page
                       Navigator.push(
                         context,
-                        MaterialPageRoute(builder: (context) => RegisterLogin()),
+                        MaterialPageRoute(
+                            builder: (context) => RegisterLogin()),
                       );
                     },
                     style: OutlinedButton.styleFrom(

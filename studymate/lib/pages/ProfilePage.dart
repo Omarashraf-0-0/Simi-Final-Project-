@@ -33,6 +33,7 @@ class _ProfilepageState extends State<Profilepage> {
   late String _college;
   late String _major;
   late String _termLevel;
+  late int _dayStreak = 0;
   // List<String> _courses = [];
   List<String> _courses = [];
   List<String> coursesIndex = [];
@@ -68,7 +69,7 @@ class _ProfilepageState extends State<Profilepage> {
 
       if (response.statusCode == 200) {
         final jsonResponse = jsonDecode(response.body);
-        print("JSON Response: $jsonResponse");
+        // print("JSON Response: $jsonResponse");
 
         setState(() {
           _courses = jsonResponse['courses'].cast<String>();
@@ -134,6 +135,8 @@ class _ProfilepageState extends State<Profilepage> {
     _college = userBox.get('college') ?? '';
     _major = userBox.get('major') ?? '';
     _termLevel = '${userBox.get('term_level') ?? ''}';
+    _dayStreak = userBox.get('day_streak') ?? 0;
+
     // _courses = [];
     // print("This is courses ? $_courses");
   }
@@ -364,7 +367,7 @@ class _ProfilepageState extends State<Profilepage> {
                     Row(
                       mainAxisAlignment: MainAxisAlignment.spaceAround,
                       children: [
-                        _buildStatCard('3', 'Day Streak', Icons.flash_on_outlined, const Color(0xFFE0F6FC), cyan1),
+                        _buildStatCard('$_dayStreak', 'Day Streak', Icons.flash_on_outlined, const Color(0xFFE0F6FC), cyan1),
                         _buildStatCard('1', 'Top 5 Finishes', Icons.emoji_events_outlined, const Color(0xFFFDF1CB), const Color(0xFFFDD539)),
                         _buildStatCard('$_xp', 'XP', Icons.star_outline, const Color(0xFFF1D6FC), const Color(0xFFC174FA)), // Changed from 'Gems' to 'XP'
                       ],
