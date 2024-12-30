@@ -3,7 +3,7 @@ import 'package:flutter/material.dart';
 import 'package:lottie/lottie.dart';
 
 import '../Classes/User.dart';
-import '../pages/HomePage.dart';
+import '../pages/HomePage/HomePage.dart';
 import '../pages/LoginPage.dart';
 
 class DonePopUp extends StatefulWidget {

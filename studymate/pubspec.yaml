@@ -8,8 +8,12 @@ environment:
   sdk: ^3.5.3
 
 dependencies:
+  firebase_auth: any
+  cloud_firestore: ^4.0.5
   flutter:
     sdk: flutter
+  image_picker: ^0.8.3
+  firebase_storage: ^11.2.6
   http: any # Add a specific version for the http package, update as needed
   cupertino_icons: any
   flutter_font_icons: any
@@ -19,9 +23,22 @@ dependencies:
   google_fonts: any
   google_nav_bar: any
   dropdown_button2: any
-  
+  flutter_cached_pdfview: any
   lottie: any
-  intl: ^0.20.1
+  percent_indicator: ^4.2.2
+  intl: any
+  google_generative_ai: any
+  permission_handler: any
+  flutter_downloader: any
+  # url_launcher: any
+  url_launcher: ^6.0.9
+  flutter_slidable: any
+  flutter_local_notifications: ^18.0.1
+  timezone: any
+  firebase_core: 2.32.0 # Use the latest version
+  firebase_messaging: any
+  fl_chart: ^0.69.2
+  flutter_markdown: ^0.6.10
 google_fonts: any # Uncomment if you want to use Google Fonts
 
 dev_dependencies:
@@ -37,6 +54,22 @@ flutter:
     - lib/assets/animations/
     - lib/assets/img/AboLayla.jpg
     - lib/assets/img/TheRock.jpg
+    - lib/assets/img/default.jpeg
+    - lib/assets/img/QuizTime.png
+    - lib/assets/img/GameCharacters/ElBatal.png
+    - lib/assets/img/GameCharacters/NewCommer.png
+    - lib/assets/img/GameCharacters/Explorer.png
+    - lib/assets/img/GameCharacters/Achiever.png
+    - lib/assets/img/GameCharacters/Challenger.png
+    - lib/assets/img/GameCharacters/Expert.png
+    - lib/assets/img/GameCharacters/Mentor.png
+    - lib/assets/img/GameCharacters/Legend.png
+    - lib/assets/img/GameCharacters/ElBatal.png
+    - lib/assets/img/Job.png
+    - lib/assets/img/cv.png
+    - lib/assets/img/cv2.png
+    - lib/assets/img/career.png
+    - lib/assets/img/career2.png    
 
   fonts:
     - family: Poppins
