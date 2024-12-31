@@ -15,26 +15,32 @@ class IntroPage extends StatefulWidget {
 }
 
 class _IntroPageState extends State<IntroPage> {
-    @override
+  @override
   void initState() {
     super.initState();
     Future.delayed(Duration(seconds: 2), () {
-      checkLoginStatus();  
+      checkLoginStatus();
     });
   }
+
   void checkLoginStatus() {
     if (!isLoggedIn()) {
-      Navigator.pushReplacement(context, MaterialPageRoute(builder: (context) => LoginPage()));
+      Navigator.pushReplacement(
+          context, MaterialPageRoute(builder: (context) => LoginPage()));
     } else {
       User user = User();
       user.fullName = Hive.box('userBox').get('fullName');
       user.email = Hive.box('userBox').get('email');
       user.password = Hive.box('userBox').get('password');
-      Navigator.pushReplacement(context, MaterialPageRoute(builder: (context) => Homepage(
-        user: user,
-      )));
+      Navigator.pushReplacement(
+          context,
+          MaterialPageRoute(
+              builder: (context) => Homepage(
+                    user: user,
+                  )));
     }
   }
+
   bool isLoggedIn() {
     Box userBox = Hive.box('userBox');
     bool loggedIn = userBox.get('isLoggedIn', defaultValue: false);
@@ -53,6 +59,7 @@ class _IntroPageState extends State<IntroPage> {
     }
     return false;
   }
+
   Future<void> logout() async {
     Box userBox = Hive.box('userBox');
     await userBox.put('isLoggedIn', false);
@@ -61,8 +68,8 @@ class _IntroPageState extends State<IntroPage> {
 
   @override
   Widget build(BuildContext context) {
-    
     return Scaffold(
+      //++++++++++++++++++++++++++++++++++++++++++++++
       backgroundColor: Colors.white,
       body: Center(
         child: Column(
@@ -73,6 +80,5 @@ class _IntroPageState extends State<IntroPage> {
         ),
       ),
     );
-    
   }
 }

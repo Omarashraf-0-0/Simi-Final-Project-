@@ -11,6 +11,8 @@ import '../util/TextField.dart';
 import 'Login & Register/Forget_Pass.dart';
 import 'package:http/http.dart' as http;
 import 'package:studymate/pages/XPChangePopup.dart';
+import 'dart:convert';
+import 'package:studymate/theme/text_theme.dart';
 import 'Login & Register/Register_login.dart';
 
 class LoginPage extends StatefulWidget {
@@ -223,7 +225,8 @@ class _LoginPageState extends State<LoginPage> {
           Hive.box('userBox').put('xp', jsonResponse['xp']);
           Hive.box('userBox').put('level', jsonResponse['level']);
           Hive.box('userBox').put('title', jsonResponse['title']);
-          Hive.box('userBox').put('Registration_Number', jsonResponse['registrationNumber']);
+          Hive.box('userBox')
+              .put('Registration_Number', jsonResponse['registrationNumber']);
           Hive.box('userBox').put('birthDate', jsonResponse['birthDate']);
           Hive.box('userBox').put('day_streak', jsonResponse['day_streak']);
           Hive.box('userBox').put('max_streak', jsonResponse['max_streak']);
@@ -277,7 +280,7 @@ class _LoginPageState extends State<LoginPage> {
                 title: 'Woo Hoo!',
                 description: 'Welcome back, ${jsonResponse['name']}!',
                 color: const Color(0xff3BBD5E),
-                textColor: Colors.black,
+                textColor: Theme.of(context).colorScheme.secondary,
                 routeName: '/HomePage',
               ),
             ),
@@ -313,11 +316,10 @@ class _LoginPageState extends State<LoginPage> {
 
   @override
   Widget build(BuildContext context) {
-    // Get screen size for responsive design
     final size = MediaQuery.of(context).size;
 
     return Scaffold(
-      backgroundColor: white,
+      backgroundColor: Theme.of(context).scaffoldBackgroundColor,
       body: SingleChildScrollView(
         child: Center(
           child: Padding(
@@ -332,18 +334,18 @@ class _LoginPageState extends State<LoginPage> {
                   height: size.height * 0.25,
                 ),
                 SizedBox(height: size.height * 0.02),
-                // Title
+
+                // Welcome Text
                 Text(
-                  'Welcome Back!',
-                  style: TextStyle(
-                    fontSize: 32,
-                    fontWeight: FontWeight.bold,
-                    fontFamily: 'Poppins',
-                    color: black,
-                  ),
+                  'Nawart ya Mate',
+                  style: Theme.of(context).textTheme.displaySmall?.copyWith(
+                        fontSize: 40,
+                        fontFamily: 'Poppins',
+                      ),
                 ),
-                SizedBox(height: size.height * 0.04),
+
                 // Username TextField
+                SizedBox(height: size.height * 0.04),
                 TextField(
                   controller: usernameController,
                   decoration: InputDecoration(
@@ -354,8 +356,9 @@ class _LoginPageState extends State<LoginPage> {
                     ),
                   ),
                 ),
-                SizedBox(height: size.height * 0.025),
+
                 // Password TextField
+                SizedBox(height: size.height * 0.025),
                 TextField(
                   controller: passwordController,
                   decoration: InputDecoration(
@@ -379,14 +382,14 @@ class _LoginPageState extends State<LoginPage> {
                   ),
                   obscureText: !isPasswordVisible,
                 ),
+
+                // Remember Me and Forgot Password Row
                 SizedBox(height: size.height * 0.02),
-                // Remember Me and Forgot Password
                 Row(
                   mainAxisAlignment: MainAxisAlignment.spaceBetween,
                   children: [
                     Row(
                       children: [
-                        // "Remember Me" checkbox
                         Checkbox(
                           value: isRememberMeChecked,
                           activeColor: cyan1,
@@ -398,16 +401,15 @@ class _LoginPageState extends State<LoginPage> {
                         ),
                         Text(
                           'Remember Me',
-                          style: TextStyle(
-                            color: black,
-                            fontFamily: 'Poppins',
-                          ),
+                          style:
+                              Theme.of(context).textTheme.labelLarge?.copyWith(
+                                    fontFamily: 'Poppins',
+                                  ),
                         ),
                       ],
                     ),
                     InkWell(
                       onTap: () {
-                        // Navigate to Forgot Password page
                         Navigator.push(
                           context,
                           MaterialPageRoute(
@@ -426,8 +428,9 @@ class _LoginPageState extends State<LoginPage> {
                     ),
                   ],
                 ),
-                SizedBox(height: size.height * 0.04),
+
                 // Login Button
+                SizedBox(height: size.height * 0.04),
                 SizedBox(
                   width: double.infinity,
                   child: ElevatedButton(
@@ -450,27 +453,26 @@ class _LoginPageState extends State<LoginPage> {
                     ),
                   ),
                 ),
+
+                // Sign Up Section
                 SizedBox(height: size.height * 0.06),
-                // Sign up prompt
                 Text(
                   "Don't have an account?",
-                  style: TextStyle(
-                    fontSize: 18,
-                    fontFamily: 'Poppins',
-                    color: black,
-                  ),
+                  style: Theme.of(context).textTheme.titleLarge?.copyWith(
+                        fontSize: 20,
+                        fontFamily: 'Poppins',
+                      ),
                 ),
                 SizedBox(height: size.height * 0.02),
-                // Sign up button
                 SizedBox(
                   width: double.infinity,
                   child: OutlinedButton(
                     onPressed: () {
-                      // Navigate to Sign Up page
                       Navigator.push(
                         context,
                         MaterialPageRoute(
-                            builder: (context) => RegisterLogin()),
+                          builder: (context) => RegisterLogin(),
+                        ),
                       );
                     },
                     style: OutlinedButton.styleFrom(

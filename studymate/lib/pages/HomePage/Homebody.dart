@@ -474,4 +474,254 @@ class _HomebodyState extends State<Homebody> {
       }).toList(),
     );
   }
+
+  // Widget _buildGreetingSection() {
+  //   final username = Hive.box('userBox').get('username') ?? 'User';
+  //   final currentHour = DateTime.now().hour;
+  //   String greeting = '';
+
+  //   if (currentHour < 12) {
+  //     greeting = 'Good Morning,';
+  //   } else if (currentHour < 17) {
+  //     greeting = 'Good Afternoon,';
+  //   } else {
+  //     greeting = 'Good Evening,';
+  //   }
+
+  //   return Text(
+  //     '$greeting $username!',
+  //     style: TextStyle(
+  //       fontSize: 28,
+  //       fontWeight: FontWeight.bold,
+  //       color: secondaryColor,
+  //     ),
+  //   );
+  // }
+
+  // Widget _buildSectionHeader(String title, {VoidCallback? onViewAll}) {
+  //   return Row(
+  //     mainAxisAlignment: MainAxisAlignment.spaceBetween,
+  //     children: [
+  //       Text(
+  //         title,
+  //         style: TextStyle(
+  //           fontSize: 22,
+  //           color: secondaryColor,
+  //           fontWeight: FontWeight.bold,
+  //         ),
+  //       ),
+  //       TextButton(
+  //         onPressed: onViewAll,
+  //         child: Row(
+  //           children: [
+  //             Text(
+  //               'View All',
+  //               style: TextStyle(
+  //                 fontSize: 16,
+  //                 color: accentColor,
+  //               ),
+  //             ),
+  //             Icon(
+  //               Icons.arrow_forward_ios,
+  //               color: accentColor,
+  //               size: 16,
+  //             ),
+  //           ],
+  //         ),
+  //       ),
+  //     ],
+  //   );
+  // }
+
+  // Widget _buildScheduleCards() {
+  //   return Container(
+  //     height: 120,
+  //     child: ListView.builder(
+  //       scrollDirection: Axis.horizontal,
+  //       itemCount: _events.length,
+  //       itemBuilder: (context, index) {
+  //         final event = _events[index];
+  //         return Padding(
+  //           padding: const EdgeInsets.only(right: 16.0),
+  //           child: Container(
+  //             width: 200,
+  //             decoration: BoxDecoration(
+  //               color: _getEventCardColor(event['Type']),
+  //               borderRadius: BorderRadius.circular(15),
+  //             ),
+  //             child: Padding(
+  //               padding:
+  //                   const EdgeInsets.symmetric(horizontal: 16.0, vertical: 20),
+  //               child: Column(
+  //                 crossAxisAlignment: CrossAxisAlignment.start,
+  //                 children: [
+  //                   Text(
+  //                     event['Title'] ?? 'No Title',
+  //                     style: TextStyle(
+  //                       fontSize: 18,
+  //                       color: Colors.white,
+  //                       fontWeight: FontWeight.bold,
+  //                     ),
+  //                   ),
+  //                   Spacer(),
+  //                   Text(
+  //                     _formatTime(event['StartTime'] ?? 'Unknown Time'),
+  //                     style: TextStyle(
+  //                       fontSize: 16,
+  //                       color: Colors.white70,
+  //                     ),
+  //                   ),
+  //                 ],
+  //               ),
+  //             ),
+  //           ),
+  //         );
+  //       },
+  //     ),
+  //   );
+  // }
+
+  // Color _getEventCardColor(String? type) {
+  //   switch (type) {
+  //     case 'Lecture':
+  //       return primaryColor;
+  //     case 'Assignment':
+  //       return accentColor2;
+  //     case 'Exam':
+  //       return Colors.redAccent;
+  //     default:
+  //       return secondaryColor;
+  //   }
+  // }
+
+  // Widget _buildCoursesList() {
+  //   return Container(
+  //     height: 180,
+  //     child: ListView.builder(
+  //       scrollDirection: Axis.horizontal,
+  //       itemCount: courses.length,
+  //       itemBuilder: (context, index) {
+  //         final courseName = courses[index];
+  //         final courseId = coursesIndex[index];
+  //         return GestureDetector(
+  //           onTap: () {
+  //             Hive.box('userBox').put('COId', courseId);
+  //             Navigator.push(
+  //               context,
+  //               MaterialPageRoute(builder: (context) => CourseContent()),
+  //             );
+  //           },
+  //           child: Padding(
+  //             padding: const EdgeInsets.only(right: 16.0),
+  //             child: Stack(
+  //               children: [
+  //                 Container(
+  //                   width: 250,
+  //                   decoration: BoxDecoration(
+  //                     borderRadius: BorderRadius.circular(15),
+  //                     image: DecorationImage(
+  //                       image: AssetImage(_getCourseBackgroundImage(index)),
+  //                       fit: BoxFit.cover,
+  //                     ),
+  //                   ),
+  //                 ),
+  //                 Container(
+  //                   width: 250,
+  //                   decoration: BoxDecoration(
+  //                     borderRadius: BorderRadius.circular(15),
+  //                     color: Colors.black.withOpacity(0.4),
+  //                   ),
+  //                   child: Padding(
+  //                     padding: const EdgeInsets.all(16.0),
+  //                     child: Align(
+  //                       alignment: Alignment.bottomLeft,
+  //                       child: Text(
+  //                         courseName,
+  //                         style: TextStyle(
+  //                           fontSize: 20,
+  //                           color: Colors.white,
+  //                           fontWeight: FontWeight.bold,
+  //                           shadows: [
+  //                             Shadow(
+  //                               offset: Offset(0, 1),
+  //                               blurRadius: 2,
+  //                               color: Colors.black38,
+  //                             ),
+  //                           ],
+  //                         ),
+  //                       ),
+  //                     ),
+  //                   ),
+  //                 ),
+  //               ],
+  //             ),
+  //           ),
+  //         );
+  //       },
+  //     ),
+  //   );
+  // }
+
+  // String _getCourseBackgroundImage(int index) {
+  //   final List<String> images = [
+  //     'lib/assets/img/bg1.jpg',
+  //     'lib/assets/img/bg2.jpg',
+  //     'lib/assets/img/bg3.jpg',
+  //     'lib/assets/img/bg4.jpg',
+  //     'lib/assets/img/bg5.jpg',
+  //     'lib/assets/img/bg6.jpg',
+  //     'lib/assets/img/bg7.jpg',
+  //     'lib/assets/img/bg8.jpg',
+  //   ];
+  //   return images[index % images.length];
+  // }
+
+  // Widget _buildQuizzesList() {
+  //   return Column(
+  //     children: _recentQuizzes.map((quiz) {
+  //       return Padding(
+  //         padding: const EdgeInsets.only(bottom: 16.0),
+  //         child: Container(
+  //           decoration: BoxDecoration(
+  //             color: secondaryColor,
+  //             borderRadius: BorderRadius.circular(15),
+  //           ),
+  //           child: ListTile(
+  //             leading: Icon(
+  //               Icons.quiz_outlined,
+  //               color: Colors.white,
+  //               size: 40,
+  //             ),
+  //             title: Text(
+  //               quiz['QuizTitle'] ?? 'Quiz ${quiz['QID']}',
+  //               style: TextStyle(
+  //                 fontSize: 18,
+  //                 color: Colors.white,
+  //                 fontWeight: FontWeight.bold,
+  //               ),
+  //             ),
+  //             subtitle: Text(
+  //               '${quiz['Score'] ?? 'N/A'} / ${quiz['TotalScore'] ?? 'N/A'}',
+  //               style: TextStyle(
+  //                 fontSize: 16,
+  //                 color: Colors.white70,
+  //               ),
+  //             ),
+  //             trailing: IconButton(
+  //               icon: Icon(
+  //                 Icons.arrow_forward_ios,
+  //                 color: Colors.white,
+  //               ),
+  //               onPressed: () {
+  //                 // Navigate to quiz details
+  //                 // int quizId = quiz['QID'];
+  //                 // Navigator.pushNamed(context, '/QuizDetail', arguments: {'quizId': quizId});
+  //               },
+  //             ),
+  //           ),
+  //         ),
+  //       );
+  //     }).toList(),
+  //   );
+  // }
 }

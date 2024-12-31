@@ -28,7 +28,9 @@ class CircularWidget extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return Column(
+ return Container(
+    color: Theme.of(context).scaffoldBackgroundColor, // Set the background color here
+    child:  Column(
       mainAxisAlignment: MainAxisAlignment.start,
       children: [
         SizedBox(height: 60),
@@ -56,9 +58,8 @@ class CircularWidget extends StatelessWidget {
         // Text below the circle
         Text(
           "Oooops!!",
-          style: TextStyle(
+          style: Theme.of(context).textTheme.headlineLarge?.copyWith(
             fontSize: 25,
-            fontWeight: FontWeight.bold,
           ),
           textAlign: TextAlign.center,
         ),
@@ -66,9 +67,7 @@ class CircularWidget extends StatelessWidget {
         // Text below the circle
         Text(
           "More text",
-          style: TextStyle(
-            fontSize: 15,
-          ),
+          style: Theme.of(context).textTheme.titleSmall?.copyWith(),
           textAlign: TextAlign.center,
         ),
         SizedBox(height: 30), // Space between text and button
@@ -89,6 +88,7 @@ class CircularWidget extends StatelessWidget {
           ),
         ),
       ],
-    );
+    ),
+ );
   }
 }

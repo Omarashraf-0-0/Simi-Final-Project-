@@ -112,6 +112,7 @@ class _ScheduleViewState extends State<ScheduleView> {
     return Stack(
       children: [
         Scaffold(
+          backgroundColor: Theme.of(context).scaffoldBackgroundColor,
           appBar: AppBar(
             backgroundColor: const Color(0xFF165D96),
             leading: IconButton(
@@ -121,21 +122,20 @@ class _ScheduleViewState extends State<ScheduleView> {
               icon: const Icon(Icons.arrow_back_ios_outlined,
                   color: Colors.white, size: 30),
             ),
-            title: Center(
-                child: Text("Schedule Manager",
-                    style: TextStyle(
-                      color: Colors.white,
-                      fontSize: 28,
-                      fontFamily: GoogleFonts.leagueSpartan().fontFamily,
-                    ))),
+            title: Text(
+              "Schedule Manager",
+              style: Theme.of(context).textTheme.headlineSmall?.copyWith(
+                    color: Theme.of(context).colorScheme.onPrimary,
+                    fontFamily: GoogleFonts.leagueSpartan().fontFamily,
+                  ),
+            ),
             actions: [
               IconButton(
-                icon: const Icon(
+                icon: Icon(
                   Icons.add_circle_outline,
-                  color: Colors.white,
-                  size: 30,
+                  color: Theme.of(context).colorScheme.onPrimary,
                 ),
-                onPressed: _toggleAddEventPopup, // Toggle the popup
+                onPressed: _toggleAddEventPopup,
               ),
             ],
           ),
@@ -168,14 +168,21 @@ class _ScheduleViewState extends State<ScheduleView> {
                             child: Center(
                               child: Text(
                                 _labels[index],
-                                style: TextStyle(
-                                  fontSize: 24,
-                                  color: _selectedIndex == index
-                                      ? Colors.white
-                                      : Colors.black,
-                                  fontFamily:
-                                      GoogleFonts.leagueSpartan().fontFamily,
-                                ),
+                                style: Theme.of(context)
+                                    .textTheme
+                                    .titleMedium
+                                    ?.copyWith(
+                                      color: _selectedIndex == index
+                                          ? Theme.of(context)
+                                              .colorScheme
+                                              .onPrimary
+                                          : Theme.of(context)
+                                              .textTheme
+                                              .bodyLarge
+                                              ?.color,
+                                      fontFamily: GoogleFonts.leagueSpartan()
+                                          .fontFamily,
+                                    ),
                               ),
                             ),
                           ),
@@ -218,7 +225,7 @@ class _ScheduleViewState extends State<ScheduleView> {
                       0.9, // 90% of the screen height
 
                   decoration: BoxDecoration(
-                    color: Colors.white,
+                    color:Theme.of(context).scaffoldBackgroundColor,
                     borderRadius: BorderRadius.circular(15),
                   ),
                   child: Column(
@@ -231,7 +238,7 @@ class _ScheduleViewState extends State<ScheduleView> {
                         decoration: const BoxDecoration(
                           color: Color(
                               0xFF165D96), // New background color for the title
-                          borderRadius: BorderRadius.only(
+                          borderRadius: const BorderRadius.only(
                             topLeft: Radius.circular(15),
                             topRight: Radius.circular(15),
                           ),
@@ -256,11 +263,11 @@ class _ScheduleViewState extends State<ScheduleView> {
                               // Event Title Row
                               Row(
                                 children: [
-                                  const Text(
+                                  Text(
                                     "Title: ",
-                                    style: TextStyle(
+                                    style: Theme.of(context).textTheme.titleLarge?.copyWith(
                                       fontWeight: FontWeight.bold,
-                                      fontSize: 16,
+                                     // fontSize: 16,
                                     ),
                                   ),
                                   const SizedBox(width: 8),
@@ -380,7 +387,7 @@ class _ScheduleViewState extends State<ScheduleView> {
                                           ),
                                         ),
                                         filled: true,
-                                        fillColor: Colors.grey[200],
+                                        fillColor: Colors.grey,
                                       ),
                                       value:
                                           _selectedCategory, // Use the state variable here
@@ -482,7 +489,7 @@ class _ScheduleViewState extends State<ScheduleView> {
                                           ),
                                         ),
                                         filled: true,
-                                        fillColor: Colors.white,
+                                        fillColor: Colors.grey,
                                       ),
                                       value: _selectedRepeat,
                                       onChanged: (String? value) {
@@ -562,14 +569,18 @@ class _ScheduleViewState extends State<ScheduleView> {
                                             controller: descriptionController,
                                             decoration: InputDecoration(
                                               hintText: "Description",
-                                              fillColor: Colors.grey[200],
+                                             fillColor:Theme.of(context).scaffoldBackgroundColor,
                                               filled: true,
                                               border: OutlineInputBorder(
                                                 borderRadius:
                                                     BorderRadius.circular(10),
                                               ),
-                                              hintStyle: const TextStyle(
-                                                  color: Colors.grey),
+                                              hintStyle:
+                                                  Theme.of(context).textTheme.bodyLarge?.copyWith(
+                                                   // color: Colors.grey
+                                             
+                                                    ),
+                                              
                                             ),
                                             keyboardType: TextInputType
                                                 .multiline, // Allow multiple lines
@@ -597,7 +608,9 @@ class _ScheduleViewState extends State<ScheduleView> {
                           children: [
                             TextButton(
                               onPressed: _toggleAddEventPopup,
-                              child: const Text("Cancel"),
+                              child: Text("Cancel",
+                              style: Theme.of(context).textTheme.titleSmall?.copyWith(fontWeight:FontWeight.bold),
+                              ),
                             ),
                             ElevatedButton(
                               onPressed: () {
@@ -751,7 +764,8 @@ class _ScheduleViewState extends State<ScheduleView> {
                                   }
                                 }
                               },
-                              child: const Text("Save"),
+                              child: Text("Save",
+                              style: Theme.of(context).textTheme.titleSmall?.copyWith(fontWeight:FontWeight.bold),),
                             )
                           ],
                         ),

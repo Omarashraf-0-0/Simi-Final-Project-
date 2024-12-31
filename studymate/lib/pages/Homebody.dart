@@ -18,6 +18,7 @@ import 'dart:convert';
 import 'package:intl/intl.dart';
 
 import '../util/TextField.dart';
+
 class Homebody extends StatefulWidget {
   const Homebody({super.key});
 
@@ -26,7 +27,7 @@ class Homebody extends StatefulWidget {
 }
 
 class _HomebodyState extends State<Homebody> {
-   Color _getCardColor(int index) {
+  Color _getCardColor(int index) {
     final List<Color> colors = [
       Color(0xFFF6F5FB), // Light Purple
       Color(0xFFFFF4F4), // Light Pink
@@ -83,8 +84,8 @@ class _HomebodyState extends State<Homebody> {
         setState(() {
           _isLoading = false;
           _events = [];
-          print('Failed to fetch today\'s schedule with status code ${response.statusCode}');
-          
+          print(
+              'Failed to fetch today\'s schedule with status code ${response.statusCode}');
         });
       }
     } catch (e) {
@@ -95,387 +96,397 @@ class _HomebodyState extends State<Homebody> {
       });
     }
   }
-  String _formatTime(String time) {
-  try {
-    // Parse the time string into a DateTime object
-    final parsedTime = DateFormat('HH:mm:ss').parse(time);
 
-    // Format the DateTime object into a 12-hour format
-    return DateFormat('hh:mm a').format(parsedTime);
-  } catch (e) {
-    // Return a fallback value if parsing fails
-    return 'Invalid Time';
+  String _formatTime(String time) {
+    try {
+      // Parse the time string into a DateTime object
+      final parsedTime = DateFormat('HH:mm:ss').parse(time);
+
+      // Format the DateTime object into a 12-hour format
+      return DateFormat('hh:mm a').format(parsedTime);
+    } catch (e) {
+      // Return a fallback value if parsing fails
+      return 'Invalid Time';
+    }
   }
-  }
+
   @override
   Widget build(BuildContext context) {
-    return SingleChildScrollView(
-        
-        padding: const EdgeInsets.only(left: 16.0, right: 16.0),
+return SingleChildScrollView(
+  padding: const EdgeInsets.only(left: 16.0, right: 16.0),
+  child: Column(
+    children: [
+      SingleChildScrollView(
         child: Column(
+          crossAxisAlignment: CrossAxisAlignment.start,
           children: [
-            SingleChildScrollView(
-              child: Column(
-                crossAxisAlignment: CrossAxisAlignment.start,
-                children: [
-                  SizedBox(
-                    height: 15,
+            SizedBox(
+              height: 15,
+            ),
+            Row(
+              mainAxisAlignment: MainAxisAlignment.spaceBetween,
+              children: [
+                Text(
+                  'Today\'s Schedule',
+                  style: Theme.of(context).textTheme.headlineMedium?.copyWith(
+                   // fontSize: 24,
+                    fontFamily: 'Poppins',
+                    // fontWeight: FontWeight.bold,
                   ),
-                  Row(
-                    mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                  textAlign: TextAlign.left,
+                ),
+                TextButton(
+                  onPressed: () {
+                    // navigate to the schedule page
+                    // Navigator.pushNamed(context, '/SchedulePage');
+                    Navigator.push(
+                        context,
+                        MaterialPageRoute(
+                            builder: (context) => ScheduleView()));
+                  },
+                  child: Row(
                     children: [
                       Text(
-                        'Today\'s Schedule',
+                        'View All',
                         style: TextStyle(
-                          fontSize: 24,
-                          fontFamily: 'Poppins',
-                          // fontWeight: FontWeight.bold,
+                          fontSize: 16,
+                          color: Color(0xFF165D96),
                         ),
-                        textAlign: TextAlign.left,
                       ),
-                      TextButton(
-                        onPressed: () {
-                          // navigate to the schedule page
-                          // Navigator.pushNamed(context, '/SchedulePage');
-                          Navigator.push(
-                              context,
-                              MaterialPageRoute(
-                                  builder: (context) => ScheduleView()));
-                        },
-                        child: Row(
-                          children: [
-                            Text(
-                              'View All',
-                              style: TextStyle(
-                                fontSize: 16,
-                                color: Color(0xFF165D96),
-                              ),
-                            ),
-                            Icon(
-                              Icons.arrow_forward_ios,
-                              color: Color(0xFF165D96),
-                            ),
-                          ],
-                        ),
+                      Icon(
+                        Icons.arrow_forward_ios,
+                        color: Color(0xFF165D96),
                       ),
                     ],
                   ),
-                  SizedBox(
-                    height: 15,
-                  ),
-                  _isLoading
-                      ? Center(
-                          child: CircularProgressIndicator(),
-                        )
-                      : _events.isEmpty
-                          ? Center(
-                              child: Text(
-                                'No tasks for today.',
-                                style: TextStyle(fontSize: 18, color: Color(0xFF165D96)),
-                              ),
-                            )
-                          : Column(
-                              children: [
-                                // Schedule Cards
-                                SingleChildScrollView(
-                                  scrollDirection: Axis.horizontal,
-                                  child: Row(
-                                    children: List.generate(
-                                      _events.length,
-                                      (index) => Padding(
-                                        padding: const EdgeInsets.only(right: 14.0),
-                                        child: Container(
-                                          width: 150,
-                                          height: 100,
-                                          decoration: BoxDecoration(
-                                            color: _getCardColor(index),
-                                            borderRadius: BorderRadius.circular(8),
+                ),
+              ],
+            ),
+            SizedBox(
+              height: 15,
+            ),
+            _isLoading
+                ? Center(
+                    child: CircularProgressIndicator(),
+                  )
+                : _events.isEmpty
+                    ? Center(
+                        child: Text(
+                          'No tasks for today.',
+                          style: TextStyle(
+                              fontSize: 18, color: Color(0xFF165D96)),
+                        ),
+                      )
+                    : Column(
+                        children: [
+                          // Schedule Cards
+                          SingleChildScrollView(
+                            scrollDirection: Axis.horizontal,
+                            child: Row(
+                              children: List.generate(
+                                _events.length,
+                                (index) => Padding(
+                                  padding:
+                                      const EdgeInsets.only(right: 14.0),
+                                  child: Container(
+                                    width: 150,
+                                    height: 100,
+                                    decoration: BoxDecoration(
+                                      color: _getCardColor(index),
+                                      borderRadius:
+                                          BorderRadius.circular(8),
+                                    ),
+                                    child: Center(
+                                      child: Column(
+                                        mainAxisAlignment:
+                                            MainAxisAlignment.center,
+                                        children: [
+                                          Text(
+                                            _events[index]['Title'] ??
+                                                'No Title',
+                                            style: TextStyle(
+                                              fontSize: 16,
+                                              fontWeight: FontWeight.bold,
+                                              color: Color(0xFF165D96),
+                                            ),
+                                            textAlign: TextAlign.center,
+                                            overflow: TextOverflow.ellipsis,
                                           ),
-                                          child: Center(
-                                            child: Column(
-                                              mainAxisAlignment:
-                                                  MainAxisAlignment.center,
-                                              children: [
-                                                Text(
-                                                  _events[index]['Title'] ??
-                                                      'No Title',
-                                                  style: TextStyle(
-                                                    fontSize: 16,
-                                                    fontWeight: FontWeight.bold,
-                                                    color: Color(0xFF165D96),
-                                                  ),
-                                                  textAlign: TextAlign.center,
-                                                  overflow: TextOverflow.ellipsis,
-                                                ),
-                                                SizedBox(height: 4),
-                                                Text(
-                                                  _formatTime(_events[index]['StartTime'] ?? 'Unknown Time'),
-                                                  style: TextStyle(
-                                                    fontSize: 14,
-                                                    color: Color(0xFF165D96),
-                                                  ),
-                                                ),
-                                              ],
+                                          SizedBox(height: 4),
+                                          Text(
+                                            _formatTime(_events[index]
+                                                    ['StartTime'] ??
+                                                'Unknown Time'),
+                                            style: TextStyle(
+                                              fontSize: 14,
+                                              color: Color(0xFF165D96),
                                             ),
                                           ),
-                                        ),
+                                        ],
                                       ),
                                     ),
                                   ),
+                                ),
+                              ),
+                            ),
+                          ),
+                        ],
+                      ),
+            SizedBox(
+              height: 30,
+            ),
+            Row(
+              mainAxisAlignment: MainAxisAlignment.spaceBetween,
+              children: [
+                Text(
+                  'Recent Courses',
+                  style: Theme.of(context).textTheme.headlineMedium?.copyWith(
+                    //fontSize: 24,
+                    fontFamily: 'Poppins',
+                   // fontWeight: FontWeight.bold,
+                  ),
+                  textAlign: TextAlign.left,
+                ),
+                TextButton(
+                  onPressed: () {
+                    // navigate to the schedule page
+                    // Navigator.pushNamed(context, '/CoursesPage');
+                  },
+                  child: Row(
+                    children: [
+                      Text(
+                        'View All',
+                        style: TextStyle(
+                          fontSize: 16,
+                          color: Color(0xFF165D96),
+                        ),
+                      ),
+                      Icon(
+                        Icons.arrow_forward_ios,
+                        color: Color(0xFF165D96),
+                      ),
+                    ],
+                  ),
+                ),
+              ],
+            ),
+            SizedBox(
+              height: 15,
+            ),
+            Column(
+              children: [
+                // Add a card for each course
+                SingleChildScrollView(
+                  scrollDirection:
+                      Axis.vertical, // Enable vertical scrolling
+                  child: Column(
+                    children: List.generate(
+                      1, // Limit to 2 courses (you can change this number)
+                      (index) => Padding(
+                        padding: const EdgeInsets.only(
+                          bottom: 14.0, // Spacing between cards
+                        ),
+                        child: Container(
+                          width: 350, // Width of each card
+                          height: 140, // Height of each card
+                          decoration: BoxDecoration(
+                            borderRadius: BorderRadius.circular(
+                                15), // Rounded corners
+                            image: DecorationImage(
+                              image:
+                                  AssetImage(_getCourseBackground(index)),
+                              fit: BoxFit
+                                  .cover, // Make the image cover the entire card
+                            ),
+                          ),
+                          child: Container(
+                            decoration: BoxDecoration(
+                              borderRadius: BorderRadius.circular(15),
+                              color: Colors.black.withOpacity(
+                                  0.5), // Add a semi-transparent overlay for readability
+                            ),
+                            child: Padding(
+                              padding: const EdgeInsets.all(
+                                  16.0), // Padding inside the card
+                              child: Column(
+                                mainAxisAlignment: MainAxisAlignment.center,
+                                crossAxisAlignment: CrossAxisAlignment
+                                    .start, // Align to the left
+                                children: [
+                                  Text(
+                                    'Course ${index + 1}',
+                                    style: TextStyle(
+                                      fontSize: 14,
+                                      color: Colors.grey,
+                                    ),
+                                  ),
+                                  Text(
+                                    'SRS',
+                                    style: TextStyle(
+                                      fontSize: 18,
+                                      color: Colors.white,
+                                      fontWeight: FontWeight.bold,
+                                    ),
+                                  ),
+                                  ElevatedButton(
+                                    onPressed: () {
+                                      // Navigator.pushNamed(context,'/SRS');
+                                      Navigator.push(
+                                          context,
+                                          MaterialPageRoute(
+                                              builder: (context) => SRS()));
+                                    },
+                                    style: ElevatedButton.styleFrom(
+                                      backgroundColor:
+                                          Colors.white, // Button color
+                                      shape: RoundedRectangleBorder(
+                                        borderRadius: BorderRadius.circular(
+                                            15), // Rounded corners
+                                      ),
+                                    ),
+                                    child: Text(
+                                      'Start',
+                                      style: TextStyle(
+                                        color: Colors.black,
+                                        fontSize: 12,
+                                      ),
+                                    ),
+                                  ),
+                                ],
+                              ),
+                            ),
+                          ),
+                        ),
+                      ),
+                    ),
+                  ),
+                ),
+              ],
+            ),
+            Row(
+              mainAxisAlignment: MainAxisAlignment.spaceBetween,
+              children: [
+                Text(
+                  'Recent Quizzes',
+                  style: Theme.of(context).textTheme.headlineMedium?.copyWith(
+                   // fontSize: 24,
+                    fontFamily: 'Poppins',
+                    // fontWeight: FontWeight.bold,
+                  ),
+                  textAlign: TextAlign.left,
+                ),
+                TextButton(
+                  onPressed: () {
+                    // navigate to the schedule page
+                    // Navigator.pushNamed(context, '/QuizzesPage');
+                  },
+                  child: Row(
+                    children: [
+                      Text(
+                        'View All',
+                        style: TextStyle(
+                          fontSize: 16,
+                          color: Color(0xFF165D96),
+                        ),
+                      ),
+                      Icon(
+                        Icons.arrow_forward_ios,
+                        color: Color(0xFF165D96),
+                      ),
+                    ],
+                  ),
+                ),
+              ],
+            ),
+            Column(
+              children: [
+                // Add a card for each course
+                SingleChildScrollView(
+                  // padding: const EdgeInsets.only(left: 16.0),
+                  scrollDirection:
+                      Axis.vertical, // Enable vertical scrolling
+                  child: Column(
+                    children: List.generate(
+                      2, // Limit to 2 courses (you can change this number)
+                      (index) => Padding(
+                        padding: const EdgeInsets.only(
+                          bottom: 14.0, // Spacing between cards
+                        ),
+                        child: Container(
+                          width: 350, // Width of each card
+                          height:
+                              60, // Increased height to make space for the button
+                          decoration: BoxDecoration(
+                            color: _getCardColorCourses(
+                                index), // Assign one of the colors
+                            borderRadius: BorderRadius.circular(
+                                15), // Rounded corners
+                          ),
+                          child: Padding(
+                            padding: const EdgeInsets.all(
+                                16.0), // Padding inside the card
+                            child: Row(
+                              mainAxisAlignment:
+                                  MainAxisAlignment.spaceBetween,
+                              crossAxisAlignment: CrossAxisAlignment
+                                  .start, // Align to the left
+                              children: [
+                                Row(
+                                  children: [
+                                    Icon(Icons.task_outlined,
+                                        color: Colors.white),
+                                    SizedBox(
+                                      width: 10,
+                                    ),
+                                    Text(
+                                      'Quiz ${index + 1}',
+                                      style: TextStyle(
+                                        fontSize: 18,
+                                        color: Colors.white,
+                                        fontWeight: FontWeight.bold,
+                                      ),
+                                    ),
+                                  ],
+                                ),
+                                // SizedBox(
+                                //     height:
+                                //         10), // Space between the text and button
+                                Row(
+                                  children: [
+                                    Text(
+                                      '10 / 10',
+                                      style: TextStyle(
+                                        fontSize: 16,
+                                        // color: Color(0xFF165D96),
+                                        color: Colors.white,
+                                      ),
+                                    ),
+                                    SizedBox(
+                                      width: 10,
+                                    ),
+                                    Icon(
+                                      Icons.arrow_circle_right_outlined,
+                                      // color: Color(0xFF165D96),
+                                      color: Colors.white,
+                                      size: 30,
+                                    ),
+                                  ],
                                 ),
                               ],
                             ),
-                  SizedBox(
-                    height: 30,
-                  ),
-                  Row(
-                    mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                    children: [
-                      Text(
-                        'Recent Courses',
-                        style: TextStyle(
-                          fontSize: 24,
-                          fontFamily: 'Poppins',
-                          // fontWeight: FontWeight.bold,
-                        ),
-                        textAlign: TextAlign.left,
-                      ),
-                      TextButton(
-                        onPressed: () {
-                          // navigate to the schedule page
-                          // Navigator.pushNamed(context, '/CoursesPage');
-                        },
-                        child: Row(
-                          children: [
-                            Text(
-                              'View All',
-                              style: TextStyle(
-                                fontSize: 16,
-                                color: Color(0xFF165D96),
-                              ),
-                            ),
-                            Icon(
-                              Icons.arrow_forward_ios,
-                              color: Color(0xFF165D96),
-                            ),
-                          ],
-                        ),
-                      ),
-                    ],
-                  ),
-                  SizedBox(
-                    height: 15,
-                  ),
-                  Column(
-                    children: [
-                      // Add a card for each course
-                      SingleChildScrollView(
-                        scrollDirection: Axis.vertical, // Enable vertical scrolling
-                        child: Column(
-                          children: List.generate(
-                            1, // Limit to 2 courses (you can change this number)
-                            (index) => Padding(
-                              padding: const EdgeInsets.only(
-                                bottom: 14.0, // Spacing between cards
-                              ),
-                              child: Container(
-                                width: 350, // Width of each card
-                                height: 140, // Height of each card
-                                decoration: BoxDecoration(
-                                  borderRadius:
-                                      BorderRadius.circular(15), // Rounded corners
-                                  image: DecorationImage(
-                                    image: AssetImage(_getCourseBackground(index)),
-                                    fit: BoxFit
-                                        .cover, // Make the image cover the entire card
-                                  ),
-                                ),
-                                child: Container(
-                                  decoration: BoxDecoration(
-                                    borderRadius: BorderRadius.circular(15),
-                                    color: Colors.black.withOpacity(
-                                        0.5), // Add a semi-transparent overlay for readability
-                                  ),
-                                  child: Padding(
-                                    padding: const EdgeInsets.all(
-                                        16.0), // Padding inside the card
-                                    child: Column(
-                                      mainAxisAlignment: MainAxisAlignment.center,
-                                      crossAxisAlignment: CrossAxisAlignment
-                                          .start, // Align to the left
-                                      children: [
-                                        Text(
-                                          'Course ${index + 1}',
-                                          style: TextStyle(
-                                            fontSize: 14,
-                                            color: Colors.grey,
-                                          ),
-                                        ),
-                                        Text(
-                                          'SRS',
-                                          style: TextStyle(
-                                            fontSize: 18,
-                                            color: Colors.white,
-                                            fontWeight: FontWeight.bold,
-                                          ),
-                                        ),
-                                        ElevatedButton(
-                                          onPressed: () {
-                                              // Navigator.pushNamed(context,'/SRS');
-                                              Navigator.push(context, 
-                                              MaterialPageRoute(builder: (context) => SRS())
-                                              );
-                                          },
-                                          style: ElevatedButton.styleFrom(
-                                            backgroundColor:
-                                                Colors.white, // Button color
-                                            shape: RoundedRectangleBorder(
-                                              borderRadius: BorderRadius.circular(
-                                                  15), // Rounded corners
-                                            ),
-                                          ),
-                                          child: Text(
-                                            'Start',
-                                            style: TextStyle(
-                                              color: Colors.black,
-                                              fontSize: 12,
-                                            ),
-                                          ),
-                                        ),
-                                      ],
-                                    ),
-                                  ),
-                                ),
-                              ),
-                            ),
                           ),
                         ),
                       ),
-                    ],
+                    ),
                   ),
-                  Row(
-                    mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                    children: [
-                      Text(
-                        'Recent Quizzes',
-                        style: TextStyle(
-                          fontSize: 24,
-                          fontFamily: 'Poppins',
-                          // fontWeight: FontWeight.bold,
-                        ),
-                        textAlign: TextAlign.left,
-                      ),
-                      TextButton(
-                        onPressed: () {
-                          // navigate to the schedule page
-                          // Navigator.pushNamed(context, '/QuizzesPage');
-                        },
-                        child: Row(
-                          children: [
-                            Text(
-                              'View All',
-                              style: TextStyle(
-                                fontSize: 16,
-                                color: Color(0xFF165D96),
-                              ),
-                            ),
-                            Icon(
-                              Icons.arrow_forward_ios,
-                              color: Color(0xFF165D96),
-                            ),
-                          ],
-                        ),
-                      ),
-                    ],
-                  ),
-                  Column(
-                    children: [
-                      // Add a card for each course
-                      SingleChildScrollView(
-                        // padding: const EdgeInsets.only(left: 16.0),
-                        scrollDirection: Axis.vertical, // Enable vertical scrolling
-                        child: Column(
-                          children: List.generate(
-                            2, // Limit to 2 courses (you can change this number)
-                            (index) => Padding(
-                              padding: const EdgeInsets.only(
-                                bottom: 14.0, // Spacing between cards
-                              ),
-                              child: Container(
-                                width: 350, // Width of each card
-                                height:
-                                    60, // Increased height to make space for the button
-                                decoration: BoxDecoration(
-                                  color: _getCardColorCourses(
-                                      index), // Assign one of the colors
-                                  borderRadius:
-                                      BorderRadius.circular(15), // Rounded corners
-                                ),
-                                child: Padding(
-                                  padding: const EdgeInsets.all(
-                                      16.0), // Padding inside the card
-                                  child: Row(
-                                    mainAxisAlignment:
-                                        MainAxisAlignment.spaceBetween,
-                                    crossAxisAlignment: CrossAxisAlignment
-                                        .start, // Align to the left
-                                    children: [
-                                      Row(
-                                        children: [
-                                          Icon(Icons.task_outlined,
-                                              color: Colors.white),
-                                          SizedBox(
-                                            width: 10,
-                                          ),
-                                          Text(
-                                            'Quiz ${index + 1}',
-                                            style: TextStyle(
-                                              fontSize: 18,
-                                              color: Colors.white,
-                                              fontWeight: FontWeight.bold,
-                                            ),
-                                          ),
-                                        ],
-                                      ),
-                                      // SizedBox(
-                                      //     height:
-                                      //         10), // Space between the text and button
-                                      Row(
-                                        children: [
-                                          Text(
-                                            '10 / 10',
-                                            style: TextStyle(
-                                              fontSize: 16,
-                                              // color: Color(0xFF165D96),
-                                              color: Colors.white,
-                                            ),
-                                          ),
-                                          SizedBox(
-                                            width: 10,
-                                          ),
-                                          Icon(
-                                            Icons.arrow_circle_right_outlined,
-                                            // color: Color(0xFF165D96),
-                                            color: Colors.white,
-                                            size: 30,
-                                          ),
-                                        ],
-                                      ),
-                                    ],
-                                  ),
-                                ),
-                              ),
-                            ),
-                          ),
-                        ),
-                      ),
-                    ],
-                  ),
-                ],
-              ),
+                ),
+              ],
             ),
           ],
         ),
-      );
+      ),
+    ],
+  ),
+);
   }
 }

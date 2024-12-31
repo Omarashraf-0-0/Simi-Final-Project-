@@ -416,6 +416,226 @@ class _ProfilepageState extends State<Profilepage> {
                     ),
                   ],
                 ),
+                SizedBox(width: 20),
+                ClipRRect(
+                  borderRadius: BorderRadius.circular(10),
+                  child: Container(
+                    height: 35,
+                    width: 35,
+                    color: Color(0xFFF1D6FC),
+                    child: Icon(
+                      Ionicons.star,
+                      color: Color(0xFFC174FA),
+                      size: 25,
+                    ),
+                  ),
+                ),
+                SizedBox(width: 10),
+                Column(
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  children: [
+                    Text(
+                      'x6',
+                      style: TextStyle(
+                        fontSize: 16,
+                        fontWeight: FontWeight.bold,
+                        fontFamily: GoogleFonts.leagueSpartan().fontFamily,
+                      ),
+                    ),
+                    Text(
+                      'Gems',
+                      style: TextStyle(
+                        fontSize: 12,
+                        color: Color(0xFF767676),
+                        fontWeight: FontWeight.bold,
+                        fontFamily: GoogleFonts.leagueSpartan().fontFamily,
+                      ),
+                    ),
+                  ],
+                )
+              ],
+            ),
+            SizedBox(height: 20),
+            Text(
+              'Personal Information',
+              style: Theme.of(context).textTheme.headlineMedium?.copyWith(
+              //  fontSize: 24,
+                fontWeight: FontWeight.bold,
+                fontFamily: GoogleFonts.leagueSpartan().fontFamily,
+              ),
+            ),
+            SizedBox(height: 5),
+
+            Text(
+              'Email',
+              style: TextStyle(
+                  fontSize: 15,
+                  fontWeight: FontWeight.bold,
+                  fontFamily: GoogleFonts.leagueSpartan().fontFamily,
+                  color: Color(0xFF1BC0C4)
+              ),
+            ),
+            SizedBox(height: 1),
+            Text(
+              "${Hive.box('userBox').get('email')}",
+              style: Theme.of(context).textTheme.titleSmall?.copyWith(
+                 // fontSize: 15,
+                  fontWeight: FontWeight.bold,
+                  fontFamily: GoogleFonts.leagueSpartan().fontFamily,
+                 // color: Color.fromARGB(255, 0, 0, 0)
+              ),
+            ),
+            SizedBox(height: 3),
+            Text(
+              'Phone Number',
+              style: TextStyle(
+                  fontSize: 15,
+                  fontWeight: FontWeight.bold,
+                  fontFamily: GoogleFonts.leagueSpartan().fontFamily,
+                  color: Color(0xFF1BC0C4)
+              ),
+            ),
+            SizedBox(height: 1),
+            Text(
+              "${Hive.box('userBox').get('phone_number')}",
+              style: Theme.of(context).textTheme.titleSmall?.copyWith(
+                 // fontSize: 15,
+                  fontWeight: FontWeight.bold,
+                  fontFamily: GoogleFonts.leagueSpartan().fontFamily,
+                //color: Color.fromARGB(255, 0, 0, 0)
+              ),
+            ),
+            SizedBox(height: 3),
+            Text(
+              'Registration Number',
+              style: TextStyle(
+                  fontSize: 15,
+                  fontWeight: FontWeight.bold,
+                  fontFamily: GoogleFonts.leagueSpartan().fontFamily,
+                  color: Color(0xFF1BC0C4)
+              ),
+            ),
+            SizedBox(height: 1),
+            Text(
+              "${Hive.box('userBox').get('Registration_Number')}",
+              style: Theme.of(context).textTheme.titleSmall?.copyWith(
+                //  fontSize: 15,
+                  fontWeight: FontWeight.bold,
+                  fontFamily: GoogleFonts.leagueSpartan().fontFamily,
+                //  color: Color.fromARGB(255, 0, 0, 0)
+              ),
+            ),
+            SizedBox(height: 10),
+            Text(
+              'College Information',
+              style: Theme.of(context).textTheme.headlineMedium?.copyWith(
+               // fontSize: 24,
+                fontWeight: FontWeight.bold,
+                fontFamily: GoogleFonts.leagueSpartan().fontFamily,
+              ),
+            ),
+            SizedBox(height: 5),
+            Text(
+              'University',
+              style: TextStyle(
+                  fontSize: 15,
+                  fontWeight: FontWeight.bold,
+                  fontFamily: GoogleFonts.leagueSpartan().fontFamily,
+                  color: Color(0xFF1BC0C4)
+              ),
+            ),
+            SizedBox(height: 1),
+            Text(
+              "${Hive.box('userBox').get('university')}",
+              style: Theme.of(context).textTheme.titleSmall?.copyWith(
+                 // fontSize: 15,
+                  fontWeight: FontWeight.bold,
+                  fontFamily: GoogleFonts.leagueSpartan().fontFamily,
+                 // color: Color.fromARGB(255, 0, 0, 0)
+              ),
+            ),
+            SizedBox(height: 3),
+            Text(
+              'College',
+              style: TextStyle(
+                  fontSize: 15,
+                  fontWeight: FontWeight.bold,
+                  fontFamily: GoogleFonts.leagueSpartan().fontFamily,
+                  color: Color(0xFF1BC0C4)
+              ),
+            ),
+            SizedBox(height: 1),
+            Text(
+              "${Hive.box('userBox').get('college')}",
+              style: Theme.of(context).textTheme.titleSmall?.copyWith(
+                //  fontSize: 15,
+                  fontWeight: FontWeight.bold,
+                  fontFamily: GoogleFonts.leagueSpartan().fontFamily,
+                 // color: Color.fromARGB(255, 0, 0, 0)
+              ),
+            ),
+            SizedBox(height: 3),
+            Text(
+              'Major',
+              style: TextStyle(
+                  fontSize: 15,
+                  fontWeight: FontWeight.bold,
+                  fontFamily: GoogleFonts.leagueSpartan().fontFamily,
+                  color: Color(0xFF1BC0C4)
+              ),
+            ),
+            SizedBox(height: 1),
+            Text(
+              "${Hive.box('userBox').get('major')}",
+              style: Theme.of(context).textTheme.titleSmall?.copyWith(
+                  //fontSize: 15,
+                  fontWeight: FontWeight.bold,
+                  fontFamily: GoogleFonts.leagueSpartan().fontFamily,
+                 // color: Color.fromARGB(255, 0, 0, 0)
+              ),
+            ),
+            SizedBox(height: 3),
+            Text(
+              'Term Level',
+              style: TextStyle(
+                  fontSize: 15,
+                  fontWeight: FontWeight.bold,
+                  fontFamily: GoogleFonts.leagueSpartan().fontFamily,
+                  color: Color(0xFF1BC0C4)
+              ),
+            ),
+            SizedBox(height: 1),
+            Text(
+              "${Hive.box('userBox').get('term_level')}",
+              style: Theme.of(context).textTheme.titleSmall?.copyWith(
+                //  fontSize: 15,
+                  fontWeight: FontWeight.bold,
+                  fontFamily: GoogleFonts.leagueSpartan().fontFamily,
+                //  color: Color.fromARGB(255, 0, 0, 0)
+              ),
+            ),
+            SizedBox(height: 10),
+            Text(
+              "Courses",
+              style: Theme.of(context).textTheme.headlineMedium?.copyWith(
+                //fontSize: 24,
+                fontWeight: FontWeight.bold,
+                fontFamily: GoogleFonts.leagueSpartan().fontFamily,
+              ),
+            ),
+            SizedBox(height: 5),
+            Text(
+              'Data Structures and Algorithms - Software Requirments and Specification',
+              style: TextStyle(
+                  fontSize: 15,
+                  fontWeight: FontWeight.bold,
+                  fontFamily: GoogleFonts.leagueSpartan().fontFamily,
+                  color: Color(0xFF1BC0C4)
+              ),
+            ),
+            SizedBox(height: 1),
+          ],
+        ),
               ),
             ),
     );

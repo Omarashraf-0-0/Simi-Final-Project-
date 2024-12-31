@@ -445,7 +445,7 @@ class _QuizState extends State<Quiz> {
     }
 
     return Scaffold(
-      backgroundColor: Colors.white,
+      backgroundColor: Theme.of(context).scaffoldBackgroundColor,
       appBar: AppBar(
         backgroundColor: Color(0xFF165D96),
         title: Text(
@@ -552,10 +552,8 @@ class _QuizState extends State<Quiz> {
               padding: const EdgeInsets.all(16.0),
               child: Text(
                 questions[currentQuestion]["question"],
-                style: TextStyle(
+                style: Theme.of(context).textTheme.headlineSmall?.copyWith(
                   fontFamily: 'League Spartan',
-                  fontSize: 18,
-                  fontWeight: FontWeight.bold,
                 ),
               ),
             ),
@@ -611,16 +609,14 @@ class _QuizState extends State<Quiz> {
                           ),
                         ),
                         const SizedBox(width: 16),
-                        Expanded(
-                          child: Text(
-                            questions[currentQuestion]["options"][index],
-                            style: TextStyle(
-                              fontFamily: 'League Spartan',
-                              fontSize: 16,
-                              fontWeight: FontWeight.bold,
-                              color:
-                                  isSelected ? Color(0xFF165D96) : Colors.black,
-                            ),
+                        Text(
+                          questions[currentQuestion]["options"][index],
+                          style: Theme.of(context).textTheme.titleLarge?.copyWith(
+                            fontFamily: 'League Spartan',
+                            fontSize: 16,
+                            fontWeight: FontWeight.bold, // Make the options bold
+                            //++++++++++++++++++++++++++++++++
+                            color: isSelected ? Color(0xFF165D96) : Theme.of(context).colorScheme.secondary,
                           ),
                         ),
                       ],

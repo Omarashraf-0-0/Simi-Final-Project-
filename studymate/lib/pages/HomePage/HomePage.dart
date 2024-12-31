@@ -4,6 +4,8 @@ import 'package:flutter/material.dart';
 import 'package:flutter_font_icons/flutter_font_icons.dart';
 import 'package:google_nav_bar/google_nav_bar.dart';
 import 'package:hive/hive.dart';
+import 'package:hive_flutter/hive_flutter.dart';
+import 'package:studymate/main.dart';
 import 'package:studymate/pages/HomePage/Homebody.dart';
 import 'package:studymate/pages/LoginPage.dart';
 import 'package:studymate/pages/Performance/PerformanceHome.dart';
@@ -22,6 +24,12 @@ import 'package:studymate/pages/Career/CareerHome.dart';
 import 'package:http/http.dart' as http;
 import 'dart:convert';
 import 'package:intl/intl.dart';
+
+import '../../util/TextField.dart';
+
+import '../../Pop-ups/PopUps_Success.dart';
+import '../../Pop-ups/PopUps_Failed.dart';
+import '../../Pop-ups/PopUps_Warning.dart';
 import 'package:studymate/pages/Notifications/Notification.dart';
 import '../Resuorces/Resources.dart';
 
@@ -38,7 +46,6 @@ class Homepage extends StatefulWidget {
 
 class _HomepageState extends State<Homepage> {
   int idx = 0;
-
   void navBottom(int index) {
     setState(() {
       idx = index;
@@ -154,6 +161,12 @@ class _HomepageState extends State<Homepage> {
           });
         }
       } else {
+        setState(() {
+          _isLoading = false;
+          _events = [];
+          print(
+              'Failed to fetch today\'s schedule with status code ${response.statusCode}');
+        });
         if (mounted) {
           setState(() {
             _isLoading = false;
@@ -178,9 +191,19 @@ class _HomepageState extends State<Homepage> {
     try {
       // Parse the time string into a DateTime object
       final parsedTime = DateFormat('HH:mm:ss').parse(time);
+    try {
+      // Parse the time string into a DateTime object
+      final parsedTime = DateFormat('HH:mm:ss').parse(time);
 
       // Format the DateTime object into a 12-hour format
       return DateFormat('hh:mm a').format(parsedTime);
+    } catch (e) {
+      // Return a fallback value if parsing fails
+      return 'Invalid Time';
+    }
+  // }
+      // Format the DateTime object into a 12-hour format
+      // return DateFormat('hh:mm a').format(parsedTime);
     } catch (e) {
       // Return a fallback value if parsing fails
       return 'Invalid Time';
@@ -196,7 +219,7 @@ class _HomepageState extends State<Homepage> {
     final Color accentColor2 = Color(0xFF139896); // Cyan 2
 
     return Scaffold(
-      backgroundColor: Colors.white,
+      backgroundColor: Theme.of(context).scaffoldBackgroundColor,
       appBar: AppBar(
         backgroundColor: secondaryColor,
         elevation: 0,

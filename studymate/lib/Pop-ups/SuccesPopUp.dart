@@ -1,7 +1,5 @@
-// ignore_for_file: prefer_const_constructors
 import 'package:flutter/material.dart';
 import 'package:lottie/lottie.dart';
-
 import '../Classes/User.dart';
 import '../pages/HomePage/HomePage.dart';
 import '../pages/LoginPage.dart';
@@ -15,7 +13,8 @@ class DonePopUp extends StatefulWidget {
   final String? routeName;
   User? user = User();
 
-  DonePopUp({super.key, 
+  DonePopUp({
+    super.key,
     this.title,
     this.description,
     this.color,
@@ -32,19 +31,16 @@ class DonePopUp extends StatefulWidget {
 class _DonePopUpState extends State<DonePopUp> {
   @override
   Widget build(BuildContext context) {
-    return MaterialApp(
-      debugShowCheckedModeBanner: false,
-      home: Scaffold(
-        body: SafeArea(
-          child: Center(
-            child: CircularWidget(
-              title: widget.title ?? "Default Title",
-              description: widget.description ?? "Default Description",
-              color: widget.color ?? Color(0xff3BBD5E),
-              textColor: widget.textColor ?? Colors.black,
-              routeName: widget.routeName ?? "/HomePage",
-              user: widget.user,
-            ),
+    return Scaffold(
+      body: SafeArea(
+        child: Center(
+          child: CircularWidget(
+            title: widget.title ?? 'Default Title',
+            description: widget.description ?? 'Default Description',
+            color: widget.color ?? Color(0xff3BBD5E),
+            textColor: widget.textColor ?? Colors.black,
+            routeName: widget.routeName ?? "/HomePage",
+            user: widget.user,
           ),
         ),
       ),
@@ -59,7 +55,8 @@ class CircularWidget extends StatelessWidget {
   final Color textColor;
   final String routeName;
   User? user;
-  CircularWidget({super.key, 
+  CircularWidget({
+    super.key,
     required this.title,
     required this.description,
     required this.color,
@@ -70,68 +67,73 @@ class CircularWidget extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return Column(
-      mainAxisAlignment: MainAxisAlignment.center,
-      children: [
-        SizedBox(height: 60),
-        // Lottie animation
-        Lottie.asset(
-          'lib/assets/animations/SuccesAnimation.json',
-          height: 375,
-          width: 375,
-          fit: BoxFit.fill,
-        ),
-        SizedBox(height: 40), // Space between animation and title
-        // Dynamic title text
-        Text(
-          title,
-          style: TextStyle(
-            fontSize: 35,
-            fontWeight: FontWeight.bold,
-            color: textColor,
-          ),
-          textAlign: TextAlign.center,
-        ),
-        SizedBox(height: 20), // Space between title and description
-        // Dynamic description text
-        Text(
-          description,
-          style: TextStyle(
-            fontSize: 16,
-            color: textColor.withOpacity(0.8),
-          ),
-          textAlign: TextAlign.center,
-        ),
-        SizedBox(height: 30), // Space between text and button
-        // Elevated Button for "Done"
-        ElevatedButton(
-          onPressed: () {
-            // Close the app or perform another action
-            // print("Done button pressed"); // Placeholder action
-            if (routeName == "/HomePage") {
-              Navigator.pushReplacement(context, MaterialPageRoute(builder: (context) => routeName == "/HomePage" ? 
-              Homepage(
-                user: user,
-              ) : LoginPage(
-              )));
-            } else {
-              Navigator.pushReplacementNamed(context, routeName, arguments: routeName);
-            }
-          },
-          style: ElevatedButton.styleFrom(
-            backgroundColor: color, // Button color
-            minimumSize: Size(320, 60),
-          ),
-          child: Text(
-            "Done",
-            style: TextStyle(
-              color: Colors.white,
-              fontSize: 25,
-              fontWeight: FontWeight.w800,
+    return Scaffold(
+      backgroundColor: Theme.of(context).scaffoldBackgroundColor, // This will follow the app theme
+      body: Center(
+        child: Column(
+          mainAxisAlignment: MainAxisAlignment.center,
+          children: [
+            SizedBox(height: 60),
+            // Lottie animation
+            Lottie.asset(
+              'lib/assets/animations/SuccesAnimation.json',
+              height: 375,
+              width: 375,
+              fit: BoxFit.fill,
             ),
-          ),
+            SizedBox(height: 40), // Space between animation and title
+            // Dynamic title text
+            Text(
+              title,
+              style: Theme.of(context).textTheme.displaySmall?.copyWith(
+                    fontSize: 35,
+                    fontWeight: FontWeight.bold,
+                  ),
+              textAlign: TextAlign.center,
+            ),
+            SizedBox(height: 20), // Space between title and description
+            // Dynamic description text
+            Text(
+              description,
+              style: Theme.of(context).textTheme.bodyLarge?.copyWith(
+                    fontSize: 16,
+                  ),
+              textAlign: TextAlign.center,
+            ),
+            SizedBox(height: 30), // Space between text and button
+            // Elevated Button for "Done"
+            ElevatedButton(
+              onPressed: () {
+                // Close the app or perform another action
+                if (routeName == "/HomePage") {
+                  Navigator.pushReplacement(
+                    context,
+                    MaterialPageRoute(
+                      builder: (context) => routeName == "/HomePage"
+                          ? Homepage(user: user)
+                          : LoginPage(),
+                    ),
+                  );
+                } else {
+                  Navigator.pushReplacementNamed(context, routeName, arguments: routeName);
+                }
+              },
+              style: ElevatedButton.styleFrom(
+                backgroundColor: color, // Button color
+                minimumSize: Size(320, 60),
+              ),
+              child: Text(
+                "Done",
+                style: TextStyle(
+                  color: Colors.white,
+                  fontSize: 25,
+                  fontWeight: FontWeight.w800,
+                ),
+              ),
+            ),
+          ],
         ),
-      ],
+      ),
     );
   }
 }

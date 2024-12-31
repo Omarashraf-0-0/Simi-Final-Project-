@@ -47,6 +47,24 @@ class _SettingsState extends State<Settings> {
             Text.rich(
               TextSpan(
                 children: [
+                 Text(
+                        'Select ',
+                        style: Theme.of(context).textTheme.displayLarge?.copyWith(
+                          fontSize: 28,
+                          fontWeight: FontWeight.bold,
+                          fontFamily: GoogleFonts.leagueSpartan().fontFamily,
+                          //color: Color.fromARGB(255, 0, 0, 0)
+                        ),
+                      ),
+                      Text(
+                        'Option!',
+                        style: TextStyle(
+                          fontSize: 28,
+                          fontWeight: FontWeight.bold,
+                          fontFamily: GoogleFonts.leagueSpartan().fontFamily,
+                          color: Color(0xFF1BC0C4)
+                        ),
+                      ),
                   TextSpan(
                     text: 'Select ',
                     style: GoogleFonts.leagueSpartan(
