@@ -396,6 +396,7 @@ class _InsightsPageState extends State<InsightsPage> {
                                 Indicator(
                                   color: colorsList[i % colorsList.length],
                                   text: topCourses[i].key,
+                                  textColor: Theme.of(context).textTheme.bodyMedium!.color!,
                                   isSquare: true,
                                 ),
                               if (otherSum > 0)
@@ -627,12 +628,14 @@ class _CourseInsightsPageState extends State<CourseInsightsPage> {
           color: colorsList[0],
           text: 'Solved Questions',
           isSquare: true,
+          textColor: Theme.of(context).textTheme.bodyMedium!.color!,
         ),
         SizedBox(width: 10),
         Indicator(
           color: colorsList[1],
           text: 'Unsolved Questions',
           isSquare: true,
+          textColor: Theme.of(context).textTheme.bodyMedium!.color!,
         ),
       ],
     );

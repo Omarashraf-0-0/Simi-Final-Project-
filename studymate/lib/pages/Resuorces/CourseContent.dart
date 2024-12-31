@@ -298,9 +298,13 @@ class _CourseContentState extends State<CourseContent> {
 
     return Scaffold(
       appBar: AppBar(
-        title: const Text(
-          'Course Content',
-          style: TextStyle(color: Colors.black),
+      backgroundColor: Color(0xFF165d96),
+
+        title: Center(
+          child: Text(
+            'Course Content',
+            style: TextStyle(color: Theme.of(context).colorScheme.secondary),
+          ),
         ),
       ),
       body: Padding(

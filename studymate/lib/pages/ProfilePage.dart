@@ -5,6 +5,8 @@ import 'package:google_fonts/google_fonts.dart';
 import 'package:hive/hive.dart';
 import 'package:image_picker/image_picker.dart';
 import 'package:http/http.dart' as http;
+import 'package:shimmer/shimmer.dart';
+import 'package:studymate/main.dart';
 
 class Profilepage extends StatefulWidget {
   const Profilepage({Key? key}) : super(key: key);
@@ -22,7 +24,10 @@ class _ProfilepageState extends State<Profilepage> {
   final Color black = const Color(0xFF000000);
   final Color white = const Color(0xFFFFFFFF);
 
-  bool _isImageLoading = false;
+  bool _isImageLoading = true;
+  bool isLoading = true; // For courses loading
+  bool _isDataLoading = true; // Overall loading state
+
   late String _fullName;
   late String _title;
   late int _xp;
@@ -34,10 +39,8 @@ class _ProfilepageState extends State<Profilepage> {
   late String _major;
   late String _termLevel;
   late int _dayStreak = 0;
-  // List<String> _courses = [];
   List<String> _courses = [];
   List<String> coursesIndex = [];
-  bool isLoading = false; // To show a loading indicator
   bool isError = false; // To track if an error occurred
 
   @override
@@ -45,9 +48,17 @@ class _ProfilepageState extends State<Profilepage> {
     super.initState();
     _loadUserData();
     _fetchAndSaveProfileImage();
-    fetchCourses(); 
+    fetchCourses();
   }
-    Future<void> fetchCourses() async {
+
+  @override
+  void dispose() {
+    // Clean up any resources before the widget is disposed
+    super.dispose();
+  }
+
+  Future<void> fetchCourses() async {
+    if (!mounted) return; // Check if the widget is still mounted
     setState(() {
       isLoading = true;
       isError = false;
@@ -67,35 +78,48 @@ class _ProfilepageState extends State<Profilepage> {
         body: jsonEncode(requestBody),
       );
 
+      if (!mounted) return;
+
       if (response.statusCode == 200) {
         final jsonResponse = jsonDecode(response.body);
-        // print("JSON Response: $jsonResponse");
 
-        setState(() {
-          _courses = jsonResponse['courses'].cast<String>();
-          coursesIndex = (jsonResponse['CourseID'] as List)
-              .map((item) => item['COId'].toString())
-              .toList();
-          isLoading = false;
-
-        });
+        if (mounted) {
+          setState(() {
+            _courses = jsonResponse['courses'].cast<String>();
+            coursesIndex = (jsonResponse['CourseID'] as List)
+                .map((item) => item['COId'].toString())
+                .toList();
+            isLoading = false;
+          });
+        }
       } else {
         print('Request failed with status: ${response.statusCode}.');
+        if (mounted) {
+          setState(() {
+            isLoading = false;
+            isError = true;
+          });
+        }
+      }
+    } catch (error) {
+      print('An error occurred: $error');
+      if (!mounted) return;
+      if (mounted) {
         setState(() {
           isLoading = false;
           isError = true;
         });
       }
-    } catch (error) {
-      print('An error occurred: $error');
-      setState(() {
-        isLoading = false;
-        isError = true;
-      });
-      _showErrorDialog('An error occurred. Please check your connection and try again.');
+      _showErrorDialog(
+          'An error occurred. Please check your connection and try again.');
+    } finally {
+      _checkIfDataLoadingComplete();
     }
   }
+
   void _showErrorDialog(String message) {
+    if (!mounted) return; // Ensure the widget is still mounted
+
     showDialog(
       context: context,
       builder: (context) {
@@ -105,14 +129,18 @@ class _ProfilepageState extends State<Profilepage> {
           actions: [
             TextButton(
               onPressed: () {
-                Navigator.of(context).pop();
-                fetchCourses(); // Retry fetching courses
+                if (mounted) {
+                  Navigator.of(context).pop();
+                  fetchCourses(); // Retry fetching courses
+                }
               },
               child: Text("Retry", style: TextStyle(color: blue2)),
             ),
             TextButton(
               onPressed: () {
-                Navigator.of(context).pop();
+                if (mounted) {
+                  Navigator.of(context).pop();
+                }
               },
               child: Text("Cancel", style: TextStyle(color: blue2)),
             ),
@@ -121,7 +149,6 @@ class _ProfilepageState extends State<Profilepage> {
       },
     );
   }
-
 
   void _loadUserData() {
     final userBox = Hive.box('userBox');
@@ -136,12 +163,10 @@ class _ProfilepageState extends State<Profilepage> {
     _major = userBox.get('major') ?? '';
     _termLevel = '${userBox.get('term_level') ?? ''}';
     _dayStreak = userBox.get('day_streak') ?? 0;
-
-    // _courses = [];
-    // print("This is courses ? $_courses");
   }
 
   Future<void> _fetchAndSaveProfileImage() async {
+    if (!mounted) return;
     setState(() {
       _isImageLoading = true;
     });
@@ -154,28 +179,45 @@ class _ProfilepageState extends State<Profilepage> {
     };
 
     try {
-      final response = await http.post(
-        Uri.parse(url),
-        headers: {'Content-Type': 'application/json'},
-        body: jsonEncode(body),
-      ).timeout(
-        const Duration(seconds: 30),
-      );
+      final response = await http
+          .post(
+            Uri.parse(url),
+            headers: {'Content-Type': 'application/json'},
+            body: jsonEncode(body),
+          )
+          .timeout(
+            const Duration(seconds: 30),
+          );
+
+      if (!mounted) return;
 
       if (response.statusCode == 200) {
         final bytes = response.bodyBytes;
         final base64Image = base64Encode(bytes);
         Hive.box('userBox').put('profileImageBase64', base64Image);
       } else {
-        print("Failed to load image: ${response.statusCode} ===== ${response.body}");
+        print(
+            "Failed to load image: ${response.statusCode} ===== ${response.body}");
       }
     } catch (e) {
       print("An error occurred: $e");
+    } finally {
+      if (mounted) {
+        setState(() {
+          _isImageLoading = false;
+        });
+      }
+      _checkIfDataLoadingComplete();
     }
+  }
 
-    setState(() {
-      _isImageLoading = false;
-    });
+  void _checkIfDataLoadingComplete() {
+    if (!_isImageLoading && !isLoading) {
+      if (!mounted) return;
+      setState(() {
+        _isDataLoading = false;
+      });
+    }
   }
 
   Color _getRankColor(String rank) {
@@ -268,6 +310,7 @@ class _ProfilepageState extends State<Profilepage> {
       final base64String = base64Encode(bytes);
       await Hive.box('userBox').put('profileImageBase64', base64String);
       print('Profile image saved successfully!');
+      if (!mounted) return;
       setState(() {}); // Refresh the UI
     } catch (e) {
       print('Error saving profile image: $e');
@@ -277,15 +320,17 @@ class _ProfilepageState extends State<Profilepage> {
   @override
   Widget build(BuildContext context) {
     final size = MediaQuery.of(context).size;
-
+    final theme = Theme.of(context);
     return Scaffold(
-      backgroundColor: white,
+      backgroundColor: theme.scaffoldBackgroundColor,
       appBar: AppBar(
         backgroundColor: blue2,
         leading: IconButton(
           icon: Icon(Icons.arrow_back_ios_new_rounded, color: white),
           onPressed: () {
-            Navigator.pop(context);
+            if (mounted) {
+              Navigator.pop(context);
+            }
           },
         ),
         title: Text(
@@ -296,20 +341,23 @@ class _ProfilepageState extends State<Profilepage> {
           ),
         ),
         centerTitle: true,
-        actions: [
-          IconButton(
-            icon: Icon(Icons.settings_outlined, color: white),
-            onPressed: () {
-              // Navigate to settings page
-            },
-          ),
-        ],
       ),
-      body: _isImageLoading
-          ? Center(child: CircularProgressIndicator())
+      body: _isDataLoading
+          ? SingleChildScrollView(
+              child: Padding(
+                padding: EdgeInsets.symmetric(
+                  horizontal: size.width * 0.08,
+                  vertical: size.height * 0.04,
+                ),
+                child: _buildShimmerContent(size),
+              ),
+            )
           : SingleChildScrollView(
               child: Padding(
-                padding: EdgeInsets.symmetric(horizontal: size.width * 0.08, vertical: size.height * 0.04),
+                padding: EdgeInsets.symmetric(
+                  horizontal: size.width * 0.08,
+                  vertical: size.height * 0.04,
+                ),
                 child: Column(
                   crossAxisAlignment: CrossAxisAlignment.center,
                   children: [
@@ -320,19 +368,20 @@ class _ProfilepageState extends State<Profilepage> {
                         CircleAvatar(
                           radius: 60,
                           backgroundColor: cyan1,
-                          backgroundImage: Hive.box('userBox').get('profileImageBase64') != null
-                              ? MemoryImage(base64Decode(Hive.box('userBox').get('profileImageBase64')))
-                              : AssetImage('assets/images/default_avatar.png') as ImageProvider,
+                          backgroundImage: Hive.box('userBox')
+                                      .get('profileImageBase64') !=
+                                  null
+                              ? MemoryImage(base64Decode(Hive.box('userBox')
+                                  .get('profileImageBase64')))
+                              : AssetImage('assets/images/default_avatar.png')
+                                  as ImageProvider,
                         ),
                         GestureDetector(
                           onTap: _pickImage,
                           child: CircleAvatar(
                             radius: 20,
                             backgroundColor: cyan2,
-                            child: Icon(
-                              Icons.camera_alt,
-                              color: white,
-                            ),
+                            child: Icon(Icons.camera_alt, color: white),
                           ),
                         ),
                       ],
@@ -343,7 +392,7 @@ class _ProfilepageState extends State<Profilepage> {
                       style: GoogleFonts.leagueSpartan(
                         fontSize: 24,
                         fontWeight: FontWeight.bold,
-                        color: black,
+                        color: theme.primaryTextTheme.bodyMedium?.color,
                       ),
                     ),
                     SizedBox(height: size.height * 0.005),
@@ -356,6 +405,7 @@ class _ProfilepageState extends State<Profilepage> {
                       ),
                     ),
                     SizedBox(height: size.height * 0.01),
+
                     // Progress Bar
                     LinearProgressIndicator(
                       value: _getProgressValue(_xp, _title),
@@ -363,36 +413,56 @@ class _ProfilepageState extends State<Profilepage> {
                       color: _getRankColor(_title),
                     ),
                     SizedBox(height: size.height * 0.02),
-                    // Stats
+
+                    // Stats Row
                     Row(
                       mainAxisAlignment: MainAxisAlignment.spaceAround,
                       children: [
-                        _buildStatCard('$_dayStreak', 'Day Streak', Icons.flash_on_outlined, const Color(0xFFE0F6FC), cyan1),
-                        _buildStatCard('1', 'Top 5 Finishes', Icons.emoji_events_outlined, const Color(0xFFFDF1CB), const Color(0xFFFDD539)),
-                        _buildStatCard('$_xp', 'XP', Icons.star_outline, const Color(0xFFF1D6FC), const Color(0xFFC174FA)), // Changed from 'Gems' to 'XP'
+                        _buildStatCard(
+                            '$_dayStreak',
+                            'Day Streak',
+                            Icons.flash_on_outlined,
+                            const Color(0xFFD1F2EB),
+                            cyan1),
+                        _buildStatCard(
+                            '1',
+                            'Top 5 Finishes',
+                            Icons.emoji_events_outlined,
+                            const Color(0xFFFDF1CB),
+                            const Color(0xFFFDD539)),
+                        _buildStatCard('$_xp', 'XP', Icons.star_outline,
+                            const Color(0xFFF1D6FC), const Color(0xFFC174FA)),
                       ],
                     ),
                     SizedBox(height: size.height * 0.03),
-                    // Personal Information
+
+                    // Personal Information Section
                     _buildSectionTitle('Personal Information'),
                     _buildInfoRow('Email', _email),
                     _buildInfoRow('Phone Number', _phoneNumber),
                     _buildInfoRow('Registration Number', _registrationNumber),
                     SizedBox(height: size.height * 0.02),
-                    // College Information
+
+                    // College Information Section
                     _buildSectionTitle('College Information'),
                     _buildInfoRow('University', _university),
                     _buildInfoRow('College', _college),
                     _buildInfoRow('Major', _major),
                     _buildInfoRow('Term Level', _termLevel),
                     SizedBox(height: size.height * 0.02),
-                    // Courses
+
+                    // Courses Section
                     _buildSectionTitle('Courses'),
-                    Align(
-                      alignment: Alignment.centerLeft,
-                      child: _buildCourses(),
-                    ),
+                    isLoading
+                        ? Center(child: CircularProgressIndicator())
+                        : isError
+                            ? Text(
+                                'Failed to load courses',
+                                style: TextStyle(color: Colors.red),
+                              )
+                            : _buildCourses(),
                     SizedBox(height: size.height * 0.02),
+
                     // Logout Button
                     ElevatedButton(
                       onPressed: () {
@@ -400,7 +470,8 @@ class _ProfilepageState extends State<Profilepage> {
                       },
                       style: ElevatedButton.styleFrom(
                         backgroundColor: blue2,
-                        padding: EdgeInsets.symmetric(vertical: 15, horizontal: 40),
+                        padding:
+                            EdgeInsets.symmetric(vertical: 15, horizontal: 40),
                         shape: RoundedRectangleBorder(
                           borderRadius: BorderRadius.circular(15),
                         ),
@@ -416,232 +487,187 @@ class _ProfilepageState extends State<Profilepage> {
                     ),
                   ],
                 ),
-                SizedBox(width: 20),
-                ClipRRect(
-                  borderRadius: BorderRadius.circular(10),
-                  child: Container(
-                    height: 35,
-                    width: 35,
-                    color: Color(0xFFF1D6FC),
-                    child: Icon(
-                      Ionicons.star,
-                      color: Color(0xFFC174FA),
-                      size: 25,
-                    ),
-                  ),
-                ),
-                SizedBox(width: 10),
-                Column(
-                  crossAxisAlignment: CrossAxisAlignment.start,
-                  children: [
-                    Text(
-                      'x6',
-                      style: TextStyle(
-                        fontSize: 16,
-                        fontWeight: FontWeight.bold,
-                        fontFamily: GoogleFonts.leagueSpartan().fontFamily,
-                      ),
-                    ),
-                    Text(
-                      'Gems',
-                      style: TextStyle(
-                        fontSize: 12,
-                        color: Color(0xFF767676),
-                        fontWeight: FontWeight.bold,
-                        fontFamily: GoogleFonts.leagueSpartan().fontFamily,
-                      ),
-                    ),
-                  ],
-                )
-              ],
-            ),
-            SizedBox(height: 20),
-            Text(
-              'Personal Information',
-              style: Theme.of(context).textTheme.headlineMedium?.copyWith(
-              //  fontSize: 24,
-                fontWeight: FontWeight.bold,
-                fontFamily: GoogleFonts.leagueSpartan().fontFamily,
-              ),
-            ),
-            SizedBox(height: 5),
-
-            Text(
-              'Email',
-              style: TextStyle(
-                  fontSize: 15,
-                  fontWeight: FontWeight.bold,
-                  fontFamily: GoogleFonts.leagueSpartan().fontFamily,
-                  color: Color(0xFF1BC0C4)
-              ),
-            ),
-            SizedBox(height: 1),
-            Text(
-              "${Hive.box('userBox').get('email')}",
-              style: Theme.of(context).textTheme.titleSmall?.copyWith(
-                 // fontSize: 15,
-                  fontWeight: FontWeight.bold,
-                  fontFamily: GoogleFonts.leagueSpartan().fontFamily,
-                 // color: Color.fromARGB(255, 0, 0, 0)
-              ),
-            ),
-            SizedBox(height: 3),
-            Text(
-              'Phone Number',
-              style: TextStyle(
-                  fontSize: 15,
-                  fontWeight: FontWeight.bold,
-                  fontFamily: GoogleFonts.leagueSpartan().fontFamily,
-                  color: Color(0xFF1BC0C4)
-              ),
-            ),
-            SizedBox(height: 1),
-            Text(
-              "${Hive.box('userBox').get('phone_number')}",
-              style: Theme.of(context).textTheme.titleSmall?.copyWith(
-                 // fontSize: 15,
-                  fontWeight: FontWeight.bold,
-                  fontFamily: GoogleFonts.leagueSpartan().fontFamily,
-                //color: Color.fromARGB(255, 0, 0, 0)
-              ),
-            ),
-            SizedBox(height: 3),
-            Text(
-              'Registration Number',
-              style: TextStyle(
-                  fontSize: 15,
-                  fontWeight: FontWeight.bold,
-                  fontFamily: GoogleFonts.leagueSpartan().fontFamily,
-                  color: Color(0xFF1BC0C4)
-              ),
-            ),
-            SizedBox(height: 1),
-            Text(
-              "${Hive.box('userBox').get('Registration_Number')}",
-              style: Theme.of(context).textTheme.titleSmall?.copyWith(
-                //  fontSize: 15,
-                  fontWeight: FontWeight.bold,
-                  fontFamily: GoogleFonts.leagueSpartan().fontFamily,
-                //  color: Color.fromARGB(255, 0, 0, 0)
-              ),
-            ),
-            SizedBox(height: 10),
-            Text(
-              'College Information',
-              style: Theme.of(context).textTheme.headlineMedium?.copyWith(
-               // fontSize: 24,
-                fontWeight: FontWeight.bold,
-                fontFamily: GoogleFonts.leagueSpartan().fontFamily,
-              ),
-            ),
-            SizedBox(height: 5),
-            Text(
-              'University',
-              style: TextStyle(
-                  fontSize: 15,
-                  fontWeight: FontWeight.bold,
-                  fontFamily: GoogleFonts.leagueSpartan().fontFamily,
-                  color: Color(0xFF1BC0C4)
-              ),
-            ),
-            SizedBox(height: 1),
-            Text(
-              "${Hive.box('userBox').get('university')}",
-              style: Theme.of(context).textTheme.titleSmall?.copyWith(
-                 // fontSize: 15,
-                  fontWeight: FontWeight.bold,
-                  fontFamily: GoogleFonts.leagueSpartan().fontFamily,
-                 // color: Color.fromARGB(255, 0, 0, 0)
-              ),
-            ),
-            SizedBox(height: 3),
-            Text(
-              'College',
-              style: TextStyle(
-                  fontSize: 15,
-                  fontWeight: FontWeight.bold,
-                  fontFamily: GoogleFonts.leagueSpartan().fontFamily,
-                  color: Color(0xFF1BC0C4)
-              ),
-            ),
-            SizedBox(height: 1),
-            Text(
-              "${Hive.box('userBox').get('college')}",
-              style: Theme.of(context).textTheme.titleSmall?.copyWith(
-                //  fontSize: 15,
-                  fontWeight: FontWeight.bold,
-                  fontFamily: GoogleFonts.leagueSpartan().fontFamily,
-                 // color: Color.fromARGB(255, 0, 0, 0)
-              ),
-            ),
-            SizedBox(height: 3),
-            Text(
-              'Major',
-              style: TextStyle(
-                  fontSize: 15,
-                  fontWeight: FontWeight.bold,
-                  fontFamily: GoogleFonts.leagueSpartan().fontFamily,
-                  color: Color(0xFF1BC0C4)
-              ),
-            ),
-            SizedBox(height: 1),
-            Text(
-              "${Hive.box('userBox').get('major')}",
-              style: Theme.of(context).textTheme.titleSmall?.copyWith(
-                  //fontSize: 15,
-                  fontWeight: FontWeight.bold,
-                  fontFamily: GoogleFonts.leagueSpartan().fontFamily,
-                 // color: Color.fromARGB(255, 0, 0, 0)
-              ),
-            ),
-            SizedBox(height: 3),
-            Text(
-              'Term Level',
-              style: TextStyle(
-                  fontSize: 15,
-                  fontWeight: FontWeight.bold,
-                  fontFamily: GoogleFonts.leagueSpartan().fontFamily,
-                  color: Color(0xFF1BC0C4)
-              ),
-            ),
-            SizedBox(height: 1),
-            Text(
-              "${Hive.box('userBox').get('term_level')}",
-              style: Theme.of(context).textTheme.titleSmall?.copyWith(
-                //  fontSize: 15,
-                  fontWeight: FontWeight.bold,
-                  fontFamily: GoogleFonts.leagueSpartan().fontFamily,
-                //  color: Color.fromARGB(255, 0, 0, 0)
-              ),
-            ),
-            SizedBox(height: 10),
-            Text(
-              "Courses",
-              style: Theme.of(context).textTheme.headlineMedium?.copyWith(
-                //fontSize: 24,
-                fontWeight: FontWeight.bold,
-                fontFamily: GoogleFonts.leagueSpartan().fontFamily,
-              ),
-            ),
-            SizedBox(height: 5),
-            Text(
-              'Data Structures and Algorithms - Software Requirments and Specification',
-              style: TextStyle(
-                  fontSize: 15,
-                  fontWeight: FontWeight.bold,
-                  fontFamily: GoogleFonts.leagueSpartan().fontFamily,
-                  color: Color(0xFF1BC0C4)
-              ),
-            ),
-            SizedBox(height: 1),
-          ],
-        ),
               ),
             ),
     );
   }
 
-  Widget _buildStatCard(String value, String label, IconData icon, Color bgColor, Color iconColor) {
+  Widget _buildShimmerContent(Size size) {
+    return Column(
+      crossAxisAlignment: CrossAxisAlignment.center,
+      children: [
+        // Profile Picture Placeholder
+        Shimmer.fromColors(
+          baseColor: Theme.of(context).colorScheme.primary,
+          highlightColor: Theme.of(context).colorScheme.secondary,
+          child: CircleAvatar(
+            radius: 60,
+            backgroundColor: Colors.white,
+          ),
+        ),
+        SizedBox(height: size.height * 0.02),
+        // Name Placeholder
+        Shimmer.fromColors(
+          baseColor: Theme.of(context).colorScheme.primary,
+          highlightColor: Theme.of(context).colorScheme.secondary,
+          child: Container(
+            width: size.width * 0.6,
+            height: 20.0,
+            color: Colors.white,
+          ),
+        ),
+        SizedBox(height: size.height * 0.01),
+        // Title Placeholder
+        Shimmer.fromColors(
+          baseColor: Theme.of(context).colorScheme.primary,
+          highlightColor: Theme.of(context).colorScheme.secondary,
+          child: Container(
+            width: size.width * 0.4,
+            height: 18.0,
+            color: Colors.white,
+          ),
+        ),
+        SizedBox(height: size.height * 0.02),
+        // Progress Bar Placeholder
+        Shimmer.fromColors(
+          baseColor: Theme.of(context).colorScheme.primary,
+          highlightColor: Theme.of(context).colorScheme.secondary,
+          child: Container(
+            width: double.infinity,
+            height: 10.0,
+            color: Colors.white,
+          ),
+        ),
+        SizedBox(height: size.height * 0.02),
+        // Stats Row Placeholder
+        Row(
+          mainAxisAlignment: MainAxisAlignment.spaceAround,
+          children: [
+            _buildShimmerStatCard(),
+            _buildShimmerStatCard(),
+            _buildShimmerStatCard(),
+          ],
+        ),
+        SizedBox(height: size.height * 0.03),
+        // Personal Information Section Placeholder
+        _buildShimmerSection(size),
+        // College Information Section Placeholder
+        _buildShimmerSection(size),
+        // Courses Section Placeholder
+        _buildShimmerSection(size),
+        SizedBox(height: size.height * 0.02),
+        // Logout Button Placeholder
+        Shimmer.fromColors(
+          baseColor: Colors.grey[300]!,
+          highlightColor: Colors.grey[100]!,
+          child: Container(
+            width: double.infinity,
+            height: 50.0,
+            decoration: BoxDecoration(
+              color: Colors.white,
+              borderRadius: BorderRadius.circular(15),
+            ),
+          ),
+        ),
+      ],
+    );
+  }
+
+  Widget _buildShimmerStatCard() {
+    return Column(
+      children: [
+        Shimmer.fromColors(
+          baseColor: Theme.of(context).colorScheme.primary,
+          highlightColor: Theme.of(context).colorScheme.secondary,
+          child: Container(
+            decoration: BoxDecoration(
+              color: Colors.white,
+              borderRadius: BorderRadius.circular(10),
+            ),
+            width: 50,
+            height: 50,
+          ),
+        ),
+        SizedBox(height: 8),
+        Shimmer.fromColors(
+          baseColor: Theme.of(context).colorScheme.primary,
+          highlightColor: Theme.of(context).colorScheme.secondary,
+          child: Container(
+            width: 40,
+            height: 18,
+            color: Colors.white,
+          ),
+        ),
+        SizedBox(height: 4),
+        Shimmer.fromColors(
+          baseColor: Theme.of(context).colorScheme.primary,
+          highlightColor: Theme.of(context).colorScheme.secondary,
+          child: Container(
+            width: 60,
+            height: 14,
+            color: Colors.white,
+          ),
+        ),
+      ],
+    );
+  }
+
+  Widget _buildShimmerSection(Size size) {
+    return Column(
+      crossAxisAlignment: CrossAxisAlignment.start,
+      children: [
+        // Section Title Placeholder
+        Shimmer.fromColors(
+          baseColor: Theme.of(context).colorScheme.primary,
+          highlightColor: Theme.of(context).colorScheme.secondary,
+          child: Container(
+            width: size.width * 0.5,
+            height: 24.0,
+            color: Colors.white,
+          ),
+        ),
+        SizedBox(height: 8),
+        // Rows Placeholder
+        _buildShimmerInfoRow(),
+        _buildShimmerInfoRow(),
+        _buildShimmerInfoRow(),
+        SizedBox(height: size.height * 0.02),
+      ],
+    );
+  }
+
+  Widget _buildShimmerInfoRow() {
+    return Padding(
+      padding: const EdgeInsets.symmetric(vertical: 6),
+      child: Row(
+        children: [
+          Shimmer.fromColors(
+            baseColor: Theme.of(context).colorScheme.primary,
+            highlightColor: Theme.of(context).colorScheme.secondary,
+            child: Container(
+              width: 120,
+              height: 16.0,
+              color: Colors.white,
+            ),
+          ),
+          SizedBox(width: 8),
+          Expanded(
+            child: Shimmer.fromColors(
+              baseColor: Theme.of(context).colorScheme.primary,
+              highlightColor: Theme.of(context).colorScheme.secondary,
+              child: Container(
+                height: 16.0,
+                color: Colors.white,
+              ),
+            ),
+          ),
+        ],
+      ),
+    );
+  }
+
+  Widget _buildStatCard(String value, String label, IconData icon,
+      Color bgColor, Color iconColor) {
     return Column(
       children: [
         Container(
@@ -662,7 +688,7 @@ class _ProfilepageState extends State<Profilepage> {
           style: GoogleFonts.leagueSpartan(
             fontSize: 18,
             fontWeight: FontWeight.bold,
-            color: black,
+            color: Theme.of(context).colorScheme.onSurface,
           ),
         ),
         const SizedBox(height: 4),
@@ -691,7 +717,7 @@ class _ProfilepageState extends State<Profilepage> {
           style: GoogleFonts.leagueSpartan(
             fontSize: 22,
             fontWeight: FontWeight.bold,
-            color: black,
+            color: Theme.of(context).colorScheme.onSurface,
           ),
         ),
       ),
@@ -702,6 +728,7 @@ class _ProfilepageState extends State<Profilepage> {
     return Padding(
       padding: const EdgeInsets.symmetric(vertical: 6),
       child: Row(
+        crossAxisAlignment: CrossAxisAlignment.start,
         children: [
           Text(
             '$label: ',
@@ -716,7 +743,7 @@ class _ProfilepageState extends State<Profilepage> {
               value,
               style: GoogleFonts.leagueSpartan(
                 fontSize: 16,
-                color: black,
+                color: Theme.of(context).colorScheme.onSurface,
               ),
             ),
           ),
@@ -729,14 +756,13 @@ class _ProfilepageState extends State<Profilepage> {
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
       children: _courses.map((course) {
-        print(course);
         return Padding(
           padding: const EdgeInsets.symmetric(vertical: 4),
           child: Text(
             '- $course',
             style: GoogleFonts.leagueSpartan(
               fontSize: 16,
-              color: black,
+              color: Theme.of(context).colorScheme.onSurface,
             ),
           ),
         );

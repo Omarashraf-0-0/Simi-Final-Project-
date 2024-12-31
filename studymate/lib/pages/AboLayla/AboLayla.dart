@@ -1,74 +1,84 @@
 import 'package:flutter/material.dart';
-import 'package:studymate/pages/AboLayla/AboLaylaCourses.dart'; // Update the import path accordingly
-
+import 'package:studymate/pages/AboLayla/AboLaylaCourses.dart';
 
 class AboLayla extends StatelessWidget {
   const AboLayla({super.key});
 
   @override
   Widget build(BuildContext context) {
+    const Color primaryColor = Color(0xFF165D96);
+    const String fontFamily = 'League Spartan';
+
     return Scaffold(
       appBar: AppBar(
-        backgroundColor: Color(0xFF165D96), // Blue color for the AppBar
-        title: Text(
+        backgroundColor: primaryColor,
+        title: const Text(
           'Abo Layla',
-          style: TextStyle(fontFamily: 'League Spartan', fontSize: 25, fontWeight: FontWeight.bold,
-          color: Colors.white
+          style: TextStyle(
+            fontFamily: fontFamily,
+            fontSize: 25,
+            fontWeight: FontWeight.bold,
+            color: Colors.white,
           ),
         ),
-        centerTitle: true, // Center the title in the AppBar
+        centerTitle: true,
       ),
       body: Center(
         child: SingleChildScrollView(
           child: Column(
             mainAxisAlignment: MainAxisAlignment.center,
-            children: <Widget>[
+            children: [
               Image.asset('lib/assets/img/AboLayla.jpg'),
-              SizedBox(height: 15),
+              const SizedBox(height: 15),
               RichText(
                 textAlign: TextAlign.center,
                 text: TextSpan(
                   style: Theme.of(context).textTheme.headlineLarge?.copyWith(
-                    fontSize: 30,
-                  ),
-                  children: <TextSpan>[
-                    TextSpan(text: 'Hello, I am \n '),
-                    TextSpan(
+                        fontSize: 30,
+                        fontFamily: fontFamily,
+                      ),
+                  children: [
+                    const TextSpan(text: 'Hello, I am\n'),
+                    const TextSpan(
                       text: 'Abo Layla',
-                      style: TextStyle(color: const Color(0xFF165D96)), // Blue color for "Abo Layla"
+                      style: TextStyle(
+                        color: primaryColor,
+                      ),
                     ),
                   ],
                 ),
               ),
-              SizedBox(height: 20),
+              const SizedBox(height: 20),
               Text(
                 'Start chatting with me now. You can ask me anything related to your course.',
                 textAlign: TextAlign.center,
                 style: Theme.of(context).textTheme.titleLarge?.copyWith(
-                fontFamily: 'League Spartan'),
+                      fontFamily: fontFamily,
+                    ),
               ),
-              SizedBox(height: 20),
+              const SizedBox(height: 20),
               ElevatedButton(
                 onPressed: () {
                   Navigator.push(
                     context,
-                    MaterialPageRoute(builder: (context) => AboLaylaCourses()),
+                    MaterialPageRoute(builder: (context) => const AboLaylaCourses()),
                   );
                 },
                 style: ElevatedButton.styleFrom(
-                  backgroundColor: Color(0xFF165D96), // Button color
-                  padding: EdgeInsets.symmetric(horizontal: 90, vertical: 15), // Button size
+                  backgroundColor: primaryColor,
+                  padding:
+                      const EdgeInsets.symmetric(horizontal: 90, vertical: 15),
                   shape: RoundedRectangleBorder(
-                    borderRadius: BorderRadius.circular(10), // Button radius
+                    borderRadius: BorderRadius.circular(10),
                   ),
                 ),
-                child: Text(
+                child: const Text(
                   'Start Chat',
                   style: TextStyle(
-                    fontSize: 30, // Button text size
-                    fontWeight: FontWeight.bold, // Bold text
-                    color: Colors.white, // Text color
-                    fontFamily: 'League Spartan',
+                    fontSize: 30,
+                    fontWeight: FontWeight.bold,
+                    color: Colors.white,
+                    fontFamily: fontFamily,
                   ),
                 ),
               ),

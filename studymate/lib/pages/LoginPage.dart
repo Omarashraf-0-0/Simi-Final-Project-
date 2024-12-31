@@ -317,7 +317,7 @@ class _LoginPageState extends State<LoginPage> {
   @override
   Widget build(BuildContext context) {
     final size = MediaQuery.of(context).size;
-
+    final theme = Theme.of(context);
     return Scaffold(
       backgroundColor: Theme.of(context).scaffoldBackgroundColor,
       body: SingleChildScrollView(
@@ -354,6 +354,11 @@ class _LoginPageState extends State<LoginPage> {
                     border: OutlineInputBorder(
                       borderRadius: BorderRadius.circular(15),
                     ),
+                    floatingLabelStyle: TextStyle(color: theme.primaryColor),
+                    focusedBorder: OutlineInputBorder(
+                      borderRadius: BorderRadius.circular(15),
+                      borderSide: BorderSide(color: theme.primaryColor),
+                    ),
                   ),
                 ),
 
@@ -378,6 +383,11 @@ class _LoginPageState extends State<LoginPage> {
                     ),
                     border: OutlineInputBorder(
                       borderRadius: BorderRadius.circular(15),
+                    ),
+                    floatingLabelStyle: TextStyle(color: theme.primaryColor),
+                    focusedBorder: OutlineInputBorder(
+                      borderRadius: BorderRadius.circular(15),
+                      borderSide: BorderSide(color: theme.primaryColor),
                     ),
                   ),
                   obscureText: !isPasswordVisible,

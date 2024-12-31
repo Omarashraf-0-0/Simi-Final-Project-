@@ -38,6 +38,9 @@ Future<void> firebaseMessagingBackgroundHandler(RemoteMessage message) async {
   await Firebase.initializeApp();
   print('Handling background message ${message.messageId}');
 }
+
+ThemeManager themeManager = ThemeManager();
+
 void main() async {
   WidgetsFlutterBinding.ensureInitialized();
   await Hive.initFlutter();
@@ -48,21 +51,22 @@ void main() async {
   await Firebase.initializeApp(
     options: DefaultFirebaseOptions.currentPlatform,
   );
-  // تهيئة المنطقة الزمنية
+// تهيئة المنطقة الزمنية
   tz.initializeTimeZones();
 
-  // إعدادات التهيئة للنوتيفيكيشن
+// إعدادات التهيئة للنوتيفيكيشن
   await _initializeNotifications();
 
-  // طلب الأذونات للنوتيفيكيشن
+// طلب الأذونات للنوتيفيكيشن
   await _requestPermissions();
   rrequestPermission();
   FirebaseMessaging.onBackgroundMessage(firebaseMessagingBackgroundHandler);
 
-  runApp( MyApp());
+  runApp(MyApp());
 }
+
 class MyApp extends StatefulWidget {
-    const MyApp({super.key});
+  const MyApp({super.key});
   @override
   _MyAppState createState() => _MyAppState();
   @override
@@ -87,6 +91,7 @@ class MyApp extends StatefulWidget {
     );
   }
 }
+
 class _MyAppState extends State<MyApp> {
   final FirebaseMessaging _messaging = FirebaseMessaging.instance;
   final FlutterLocalNotificationsPlugin _flutterLocalNotificationsPlugin =
@@ -95,23 +100,23 @@ class _MyAppState extends State<MyApp> {
   static const AndroidNotificationChannel _channel = AndroidNotificationChannel(
     'high_importance_channel', // id
     'High Importance Notifications', // title
-    description: 'This channel is used for important notifications.', // description
+    description:
+        'This channel is used for important notifications.', // description
     importance: Importance.high,
   );
-
-  String? _deviceToken;
+  String? _deviceToken = '';
 
   @override
   void initState() {
-    super.initState();
-    // Call the asynchronous methods
+    themeManager.addListener(themeListner);
     _requestPermission();
     _getToken();
     _initializeFlutterNotifications();
     _setupForegroundMessageHandler();
+    super.initState();
   }
 
-  // Separate method to request permissions
+// Separate method to request permissions
   Future<void> _requestPermission() async {
     NotificationSettings settings = await _messaging.requestPermission(
       alert: true,
@@ -129,7 +134,7 @@ class _MyAppState extends State<MyApp> {
     }
   }
 
-  // Separate method to get the device token
+// Separate method to get the device token
   Future<void> _getToken() async {
     _deviceToken = await _messaging.getToken();
     print('Device Token: $_deviceToken');
@@ -190,27 +195,11 @@ class _MyAppState extends State<MyApp> {
         );
       }
     });
-
     // Handle notification taps when the app is in background or terminated
     FirebaseMessaging.onMessageOpenedApp.listen((RemoteMessage message) {
       print('Notification opened!');
       // Navigate to a specific screen if needed
     });
-  }
-
-ThemeManager themeManager = ThemeManager();
-
-class MyApp extends StatefulWidget {
-  const MyApp({super.key});
-  @override
-  MyAppState createState() => MyAppState();
-}
-
-class MyAppState extends State<MyApp> {
-  @override
-  void initState() {
-    themeManager.addListener(themeListner);
-    super.initState();
   }
 
   void dispose() {
@@ -227,7 +216,7 @@ class MyAppState extends State<MyApp> {
   Widget build(BuildContext context) {
     return MaterialApp(
       navigatorKey: navigatorKey, // Add the global key here
-     themeMode: themeManager.themeData,
+      themeMode: themeManager.themeData,
       theme: TAppTheme.lightTheme,
       darkTheme: TAppTheme.darkTheme,
       debugShowCheckedModeBanner: false,
@@ -248,125 +237,6 @@ class MyAppState extends State<MyApp> {
     );
   }
 }
-// class _MyAppState extends State<MyApp> {
-//   final FlutterLocalNotificationsPlugin flutterLocalNotificationsPlugin =
-//       FlutterLocalNotificationsPlugin();
-
-//   static const AndroidNotificationChannel channel = AndroidNotificationChannel(
-//     'high_importance_channel', // id
-//     'High Importance Notifications', // name
-//     description: 'This channel is used for important notifications.', // description
-//     importance: Importance.high,
-//   );
-
-//   @override
-//   Future<void> initState()  {
-//     super.initState();
-
-//     // Request notification permissions
-//     requestPermission();
-    
-//     // Initialize flutter local notifications
-//     _initializeNotifications();
-//     setupFlutterNotifications();
-    
-//     // Handle foreground messages
-//     FirebaseMessaging.onMessage.listen((RemoteMessage message) {
-//       print('Foreground message received: ${message.messageId}');
-
-//       RemoteNotification? notification = message.notification;
-//       AndroidNotification? android = message.notification?.android;
-
-//       if (notification != null && android != null) {
-//         // Show a notification
-//         flutterLocalNotificationsPlugin.show(
-//           notification.hashCode,
-//           notification.title,
-//           notification.body,
-//           NotificationDetails(
-//             android: AndroidNotificationDetails(
-//               channel.id,
-//               channel.name,
-//               channelDescription: channel.description,
-//               importance: Importance.max,
-//               priority: Priority.high,
-//               icon: '@mipmap/ic_launcher',
-//             ),
-//           ),
-//         );
-//       }
-//     });
-
-//     // Handle when a user clicks on a notification and the app is opened
-//     FirebaseMessaging.onMessageOpenedApp.listen((RemoteMessage message) {
-//       print('Notification clicked!');
-//       // Navigate to a specific screen if needed
-//     });
-//   }
- 
-//   Future<void> requestPermission() async {
-//     FirebaseMessaging messaging = FirebaseMessaging.instance;
-
-//     NotificationSettings settings = await messaging.requestPermission(
-//       alert: true,
-//       announcement: false, // Set to true if your app uses SiriKit
-//       badge: true,
-//       carPlay: false,
-//       criticalAlert: false,
-//       provisional: false,
-//       sound: true,
-//     );
-
-//     if (settings.authorizationStatus == AuthorizationStatus.authorized) {
-//       print('User granted permission.');
-//     } else if (settings.authorizationStatus ==
-//         AuthorizationStatus.provisional) {
-//       print('User granted provisional permission.');
-//     } else {
-//       print('User declined or has not accepted permission.');
-//     }
-//   }
-// Future<void> _initializeNotifications() async {
-//   FirebaseMessaging messaging = FirebaseMessaging.instance;
-
-//       String? token = await messaging.getToken();
-
-//       print('Device Token: $token');
-// }
-//   Future<void> setupFlutterNotifications() async {
-//     // Initialize the flutter local notifications plugin
-//     const AndroidInitializationSettings initializationSettingsAndroid =
-//         AndroidInitializationSettings('@mipmap/ic_launcher');
-
-//     final InitializationSettings initializationSettings =
-//         InitializationSettings(
-//       android: initializationSettingsAndroid,
-//     );
-
-//     await flutterLocalNotificationsPlugin.initialize(initializationSettings);
-
-//     // Create the channel for Android devices
-//     await flutterLocalNotificationsPlugin
-//         .resolvePlatformSpecificImplementation<
-//             AndroidFlutterLocalNotificationsPlugin>()
-//         ?.createNotificationChannel(channel);
-//   }
-
-//   @override
-//   Widget build(BuildContext context) {
-//     return MaterialApp(
-//       title: 'Flutter Push Notifications',
-//       home: Scaffold(
-//         appBar: AppBar(
-//           title: Text('Push Notifications Example'),
-//         ),
-//         body: Center(
-//           child: Text('Welcome to My App!'),
-//         ),
-//       ),
-//     );
-//   }
-// }
 // // دالة لتهيئة النوتيفيكيشن
 Future<void> _initializeNotifications() async {
   // إعدادات Android
@@ -420,6 +290,7 @@ Future<void> rrequestPermission() async {
     print('User declined or has not accepted permission');
   }
 }
+
 Future<void> _requestPermissions() async {
   if (Platform.isAndroid) {
     if (await Permission.notification.request().isGranted) {
@@ -447,32 +318,6 @@ Future<void> _requestPermissions() async {
     }
   }
 }
-
-// class MyApp extends StatelessWidget {
-//   const MyApp({super.key});
-
-//   @override
-//   Widget build(BuildContext context) {
-//     return MaterialApp(
-//       navigatorKey: navigatorKey, // Add the global key here
-//       debugShowCheckedModeBanner: false,
-//       home: IntroPage(),
-//       routes: {
-//         '/RegisterPage': (context) => RegisterLogin(),
-//         '/IntroPage': (context) => IntroPage(),
-//         '/HomePage': (context) => Homepage(),
-//         '/LoginPage': (context) => LoginPage(),
-//         '/ProfilePage': (context) => Profilepage(),
-//         '/CoursesPage': (context) => Courses(),
-//         '/Material': (context) => Materialcourses(),
-//         '/SRS': (context) => SRS(),
-//         '/CourseContent': (context) => CourseContent(),
-//         '/Resources': (context) => Resources(),
-//       },
-//     );
-//   }
-// }
-
 // دوال لإظهار وجدولة النوتيفيكيشن
 
 Future<void> showNotification(String title, String info) async {
@@ -498,7 +343,6 @@ Future<void> showNotification(String title, String info) async {
     payload: 'What is this?',
   );
 }
-
 
 
 Future<void> scheduleNotification({

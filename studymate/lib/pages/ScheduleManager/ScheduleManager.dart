@@ -108,6 +108,7 @@ class _ScheduleViewState extends State<ScheduleView> {
 
   @override
   Widget build(BuildContext context) {
+    final theme = Theme.of(context);
     // print(Hive.box('userBox').get('id'));
     return Stack(
       children: [
@@ -119,14 +120,15 @@ class _ScheduleViewState extends State<ScheduleView> {
               onPressed: () {
                 Navigator.pop(context);
               },
-              icon: const Icon(Icons.arrow_back_ios_outlined,
-                  color: Colors.white, size: 30),
+              icon: Icon(Icons.arrow_back_ios_outlined,
+                  color: theme.colorScheme.onPrimary, size: 30),
             ),
             title: Text(
               "Schedule Manager",
               style: Theme.of(context).textTheme.headlineSmall?.copyWith(
                     color: Theme.of(context).colorScheme.onPrimary,
                     fontFamily: GoogleFonts.leagueSpartan().fontFamily,
+                    
                   ),
             ),
             actions: [
@@ -177,9 +179,7 @@ class _ScheduleViewState extends State<ScheduleView> {
                                               .colorScheme
                                               .onPrimary
                                           : Theme.of(context)
-                                              .textTheme
-                                              .bodyLarge
-                                              ?.color,
+                                              .colorScheme.primary,
                                       fontFamily: GoogleFonts.leagueSpartan()
                                           .fontFamily,
                                     ),

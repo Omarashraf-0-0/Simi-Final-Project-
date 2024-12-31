@@ -119,7 +119,7 @@ class _PersonalSettingsState extends State<PersonalSettings> {
                   style: GoogleFonts.leagueSpartan(
                     fontSize: 24,
                     fontWeight: FontWeight.bold,
-                    color: black,
+                    color: Theme.of(context).colorScheme.onSurface,
                   ),
                 ),
               ),

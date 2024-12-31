@@ -113,7 +113,7 @@ class _UniversitysettingsState extends State<Universitysettings> {
                   style: GoogleFonts.leagueSpartan(
                     fontSize: 24,
                     fontWeight: FontWeight.bold,
-                    color: black,
+                    color: Theme.of(context).colorScheme.onSurface,
                   ),
                 ),
               ),

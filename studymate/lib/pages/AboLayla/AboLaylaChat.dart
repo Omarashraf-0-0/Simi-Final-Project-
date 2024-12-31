@@ -15,7 +15,7 @@ class AboLaylaChat extends StatefulWidget {
   final String selectedCourse;
   final String selectedCourseId;
 
-  @override 
+  @override
   _AboLaylaChatState createState() => _AboLaylaChatState();
 }
 
@@ -46,7 +46,7 @@ class _AboLaylaChatState extends State<AboLaylaChat> {
     WidgetsBinding.instance.addPostFrameCallback((_) {
       _scrollController.animateTo(
         _scrollController.position.maxScrollExtent,
-        duration: Duration(milliseconds: 300),
+        duration: const Duration(milliseconds: 300),
         curve: Curves.easeOut,
       );
     });
@@ -88,7 +88,7 @@ class _AboLaylaChatState extends State<AboLaylaChat> {
       WidgetsBinding.instance.addPostFrameCallback((_) {
         _scrollController.animateTo(
           _scrollController.position.maxScrollExtent,
-          duration: Duration(milliseconds: 300),
+          duration: const Duration(milliseconds: 300),
           curve: Curves.easeOut,
         );
       });
@@ -108,7 +108,7 @@ class _AboLaylaChatState extends State<AboLaylaChat> {
         if (_scrollController.hasClients) {
           _scrollController.animateTo(
             _scrollController.position.maxScrollExtent,
-            duration: Duration(milliseconds: 300),
+            duration: const Duration(milliseconds: 300),
             curve: Curves.easeOut,
           );
         }
@@ -130,7 +130,7 @@ class _AboLaylaChatState extends State<AboLaylaChat> {
         if (_scrollController.hasClients) {
           _scrollController.animateTo(
             _scrollController.position.maxScrollExtent,
-            duration: Duration(milliseconds: 300),
+            duration: const Duration(milliseconds: 300),
             curve: Curves.easeOut,
           );
         }
@@ -147,15 +147,21 @@ class _AboLaylaChatState extends State<AboLaylaChat> {
 
   @override
   Widget build(BuildContext context) {
+    const Color primaryColor = Color(0xFF165D96);
+    const String fontFamily = 'League Spartan';
+
     return Scaffold(
       appBar: AppBar(
-        title: Text('AboLayla Chat',
-            style: TextStyle(
-                fontFamily: 'League Spartan',
-                fontSize: 25,
-                fontWeight: FontWeight.bold,
-                color: Colors.white)),
-        backgroundColor: Color(0xFF165D96),
+        title: const Text(
+          'AboLayla Chat',
+          style: TextStyle(
+            fontFamily: fontFamily,
+            fontSize: 25,
+            fontWeight: FontWeight.bold,
+            color: Colors.white,
+          ),
+        ),
+        backgroundColor: primaryColor,
       ),
       body: Stack(
         children: [
@@ -175,10 +181,10 @@ class _AboLaylaChatState extends State<AboLaylaChat> {
                           ? "إزاي أقدر أساعدك في ${widget.selectedCourse}؟"
                           : "Hey there!\nWhat can I help you with in ${widget.selectedCourse}?",
                       textAlign: TextAlign.center,
-                      style: TextStyle(
+                      style: const TextStyle(
                         fontSize: 28,
                         fontWeight: FontWeight.bold,
-                        color: Color(0xFF165D96),
+                        color: primaryColor,
                       ),
                     ),
                   ),
@@ -210,7 +216,7 @@ class _AboLaylaChatState extends State<AboLaylaChat> {
                                   color: Colors.grey[300],
                                   borderRadius: BorderRadius.circular(12),
                                 ),
-                                child: TypingIndicator(),
+                                child: const TypingIndicator(),
                               ),
                             ],
                           ),
@@ -294,7 +300,7 @@ class _AboLaylaChatState extends State<AboLaylaChat> {
                       ),
                     ),
                     IconButton(
-                      icon: Icon(Icons.send),
+                      icon: const Icon(Icons.send),
                       onPressed: _sendMessage,
                       color: Colors.blue,
                     ),
@@ -318,33 +324,34 @@ class TypingIndicator extends StatefulWidget {
 
 class _TypingIndicatorState extends State<TypingIndicator>
     with SingleTickerProviderStateMixin {
-  AnimationController? _dotController;
-  int _dotCount = 3;
+  late AnimationController _dotController;
+  final int _dotCount = 3;
 
   @override
   void initState() {
     super.initState();
-    _dotController =
-        AnimationController(vsync: this, duration: Duration(milliseconds: 500))
-          ..repeat();
+    _dotController = AnimationController(
+      vsync: this,
+      duration: const Duration(milliseconds: 500),
+    )..repeat();
   }
 
   @override
   void dispose() {
-    _dotController?.dispose();
+    _dotController.dispose();
     super.dispose();
   }
 
   @override
   Widget build(BuildContext context) {
     return AnimatedBuilder(
-      animation: _dotController!,
+      animation: _dotController,
       builder: (context, child) {
         int dots =
-            1 + (_dotController!.value * (_dotCount - 1)).floor().toInt();
+            1 + (_dotController.value * (_dotCount - 1)).floor().toInt();
         return Text(
           '.' * dots,
-          style: TextStyle(fontSize: 30, color: Colors.grey),
+          style: const TextStyle(fontSize: 30, color: Colors.grey),
         );
       },
     );

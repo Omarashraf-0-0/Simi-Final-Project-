@@ -70,9 +70,9 @@ class _RegisterLoginState extends State<RegisterLogin> {
   Widget build(BuildContext context) {
     // Screen size for responsive design
     final size = MediaQuery.of(context).size;
-
+    ThemeData theme = Theme.of(context);
     return Scaffold(
-      backgroundColor: white,
+      backgroundColor: theme.scaffoldBackgroundColor,
       body: SingleChildScrollView(
         child: Padding(
           padding: EdgeInsets.symmetric(horizontal: size.width * 0.08, vertical: size.height * 0.05),
@@ -81,7 +81,7 @@ class _RegisterLoginState extends State<RegisterLogin> {
             children: [
               // Back Button
               IconButton(
-                icon: Icon(Icons.arrow_back_ios_new, color: black),
+                icon: Icon(Icons.arrow_back_ios_new, color: blue2),
                 onPressed: () {
                   Navigator.pop(context);
                 },
@@ -96,7 +96,7 @@ class _RegisterLoginState extends State<RegisterLogin> {
                       style: GoogleFonts.leagueSpartan(
                         fontSize: 32,
                         fontWeight: FontWeight.bold,
-                        color: black,
+                        color: theme.primaryColor,
                       ),
                     ),
                     SizedBox(height: 8),
@@ -125,6 +125,11 @@ class _RegisterLoginState extends State<RegisterLogin> {
                         border: OutlineInputBorder(
                           borderRadius: BorderRadius.circular(15),
                         ),
+                        floatingLabelStyle:  TextStyle(color: theme.primaryColor),
+                        focusedBorder: OutlineInputBorder(
+                          borderRadius: BorderRadius.circular(15),
+                          borderSide: BorderSide(color: theme.primaryColor),
+                        ),
                       ),
                       keyboardType: TextInputType.emailAddress,
                       validator: (value) {
@@ -146,6 +151,11 @@ class _RegisterLoginState extends State<RegisterLogin> {
                         border: OutlineInputBorder(
                           borderRadius: BorderRadius.circular(15),
                         ),
+                        floatingLabelStyle:  TextStyle(color: theme.primaryColor),
+                        focusedBorder: OutlineInputBorder(
+                          borderRadius: BorderRadius.circular(15),
+                          borderSide: BorderSide(color: theme.primaryColor),
+                        ),
                       ),
                       validator: (value) {
                         if (value == null || value.isEmpty) {
@@ -165,6 +175,11 @@ class _RegisterLoginState extends State<RegisterLogin> {
                         prefixIcon: Icon(Icons.lock_outline),
                         border: OutlineInputBorder(
                           borderRadius: BorderRadius.circular(15),
+                        ),
+                        floatingLabelStyle:  TextStyle(color: theme.primaryColor),
+                        focusedBorder: OutlineInputBorder(
+                          borderRadius: BorderRadius.circular(15),
+                          borderSide: BorderSide(color: theme.primaryColor),
                         ),
                       ),
                       obscureText: true,
@@ -190,6 +205,11 @@ class _RegisterLoginState extends State<RegisterLogin> {
                         border: OutlineInputBorder(
                           borderRadius: BorderRadius.circular(15),
                         ),
+                        floatingLabelStyle:  TextStyle(color: theme.primaryColor),
+                        focusedBorder: OutlineInputBorder(
+                          borderRadius: BorderRadius.circular(15),
+                          borderSide: BorderSide(color: theme.primaryColor),
+                        ),
                       ),
                       obscureText: true,
                       validator: (value) {
@@ -210,7 +230,7 @@ class _RegisterLoginState extends State<RegisterLogin> {
                         style: GoogleFonts.leagueSpartan(
                           fontSize: 18,
                           fontWeight: FontWeight.bold,
-                          color: black,
+                          color: theme.primaryColor,
                         ),
                       ),
                     ),
@@ -278,7 +298,7 @@ class _RegisterLoginState extends State<RegisterLogin> {
                       'Already have an account?',
                       style: GoogleFonts.leagueSpartan(
                         fontSize: 16,
-                        color: black,
+                        color: theme.primaryColor,
                       ),
                     ),
                     SizedBox(height: 8),

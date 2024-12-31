@@ -111,7 +111,7 @@ class _CoursesState extends State<Courses> {
     final size = MediaQuery.of(context).size;
 
     return Scaffold(
-      backgroundColor: white,
+      backgroundColor: Theme.of(context).scaffoldBackgroundColor,
       appBar: AppBar(
         backgroundColor: blue2,
         title: Text(
@@ -124,7 +124,8 @@ class _CoursesState extends State<Courses> {
         centerTitle: true,
       ),
       body: Padding(
-        padding: EdgeInsets.symmetric(horizontal: size.width * 0.05, vertical: size.height * 0.02),
+        padding: EdgeInsets.symmetric(
+            horizontal: size.width * 0.05, vertical: size.height * 0.02),
         child: ListView(
           children: [
             // Terms and Courses
@@ -237,20 +238,21 @@ class _CoursesState extends State<Courses> {
       padding: const EdgeInsets.only(bottom: 16.0),
       child: Container(
         decoration: BoxDecoration(
-          color: cyan1.withOpacity(0.1),
+          color: Theme.of(context).cardColor,
           borderRadius: BorderRadius.circular(8),
+          border: Border.all(color: Colors.grey),
         ),
         child: ExpansionTile(
           title: Row(
             children: [
-              const Icon(Icons.menu_book_outlined, color: Colors.black), // Icon
+              Icon(Icons.menu_book_outlined, color: Theme.of(context).textTheme.bodyMedium!.color), // Icon
               const SizedBox(width: 15),
               Text(
                 term,
                 style: GoogleFonts.leagueSpartan(
                   fontSize: 18,
                   fontWeight: FontWeight.bold,
-                  color: black,
+                  color: Theme.of(context).textTheme.bodyMedium!.color,
                 ),
               ),
             ],
@@ -262,13 +264,14 @@ class _CoursesState extends State<Courses> {
                     selectedCourses.contains(subject)
                         ? Icons.check_circle
                         : Icons.check_circle_outline,
-                    color: selectedCourses.contains(subject) ? blue2 : Colors.grey,
+                    color:
+                        selectedCourses.contains(subject) ? blue2 : Colors.grey,
                   ),
                   title: Text(
                     subject,
                     style: TextStyle(
                       fontSize: 16,
-                      color: black,
+                      color: Theme.of(context).textTheme.bodyMedium!.color,
                     ),
                   ),
                   onTap: () {
@@ -283,8 +286,10 @@ class _CoursesState extends State<Courses> {
   }
 
   // API function to register courses
-  Future<http.Response> registerCoursesApi(String username, List<String> selectedCourses) async {
-    final url = 'https://alyibrahim.pythonanywhere.com/register_courses'; // URL for your Flask API
+  Future<http.Response> registerCoursesApi(
+      String username, List<String> selectedCourses) async {
+    final url =
+        'https://alyibrahim.pythonanywhere.com/register_courses'; // URL for your Flask API
 
     final Map<String, dynamic> requestBody = {
       'username': username,

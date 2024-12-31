@@ -356,6 +356,7 @@ class _DayViewState extends State<DayView> {
 
   @override
   Widget build(BuildContext context) {
+    final theme = Theme.of(context);
     return Padding(
       padding: const EdgeInsets.symmetric(horizontal: 16),
       child: Column(
@@ -366,8 +367,8 @@ class _DayViewState extends State<DayView> {
             children: [
               IconButton(
                 onPressed: _previousDay,
-                icon: const Icon(Icons.arrow_back_ios,
-                    size: 25, color: Colors.black),
+                icon:  Icon(Icons.arrow_back_ios,
+                    size: 25, color: theme.primaryColor),
               ),
               GestureDetector(
                 onTap: _pickDate,
@@ -391,8 +392,8 @@ class _DayViewState extends State<DayView> {
               ),
               IconButton(
                 onPressed: _nextDay,
-                icon: const Icon(Icons.arrow_forward_ios,
-                    size: 25, color: Colors.black),
+                icon: Icon(Icons.arrow_forward_ios,
+                    size: 25, color: theme.primaryColor),
               ),
             ],
           ),

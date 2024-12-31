@@ -2,6 +2,7 @@ import 'dart:convert';
 import 'package:flutter/material.dart';
 import 'package:hive_flutter/hive_flutter.dart';
 import 'package:http/http.dart' as http;
+import 'package:shimmer/shimmer.dart';
 import 'package:studymate/main.dart';
 import 'package:studymate/pages/Resuorces/CourseContent.dart';
 import 'package:studymate/pages/Resuorces/Courses.dart';
@@ -27,7 +28,22 @@ class _ResourcesState extends State<Resources> {
   final Color black = const Color(0xFF000000);
   final Color white = const Color(0xFFFFFFFF);
 
+  @override
+  void initState() {
+    super.initState();
+    fetchCourses();
+  }
+
+  @override
+  void dispose() {
+    // Perform any necessary cleanup before the widget is disposed
+    super.dispose();
+  }
+
   Future<void> fetchCourses() async {
+    // Check if the widget is still mounted before starting
+    if (!mounted) return;
+
     setState(() {
       isLoading = true;
       isError = false;
@@ -47,38 +63,47 @@ class _ResourcesState extends State<Resources> {
         body: jsonEncode(requestBody),
       );
 
+      if (!mounted) return; // Check if the widget is still mounted
+
       if (response.statusCode == 200) {
         final jsonResponse = jsonDecode(response.body);
         print("JSON Response: $jsonResponse");
-
-        setState(() {
-          courses = jsonResponse['courses'].cast<String>();
-          coursesIndex = (jsonResponse['CourseID'] as List)
-              .map((item) => item['COId'].toString())
-              .toList();
-          isLoading = false;
-        });
+        if(jsonResponse['error'] != null) {
+          if (mounted) {
+            setState(() {
+              isLoading = false;
+              courses = [];
+            });
+          }
+          return;
+        }
+        if (mounted) {
+          setState(() {
+            courses = jsonResponse['courses'].cast<String>();
+            coursesIndex = (jsonResponse['CourseID'] as List)
+                .map((item) => item['COId'].toString())
+                .toList();
+            isLoading = false;
+          });
+        }
       } else {
-        print('Request failed with status: ${response.statusCode}.');
-        setState(() {
-          isLoading = false;
-          isError = true;
-        });
+        print('Request failed with status: ${response.statusCode}. Error: ${response.body}');
+        if (mounted) {
+          setState(() {
+            isLoading = false;
+            isError = true;
+          });
+        }
       }
     } catch (error) {
       print('An error occurred: $error');
+      if (!mounted) return; // Check if the widget is still mounted
       setState(() {
         isLoading = false;
         isError = true;
       });
       _showErrorDialog('An error occurred. Please check your connection and try again.');
     }
-  }
-
-  @override
-  void initState() {
-    super.initState();
-    fetchCourses();
   }
 
   String _getCourseBackground(int index) {
@@ -96,6 +121,9 @@ class _ResourcesState extends State<Resources> {
   }
 
   void _showErrorDialog(String message) {
+    // Check if the widget is still mounted before showing the dialog
+    if (!mounted) return;
+
     showDialog(
       context: context,
       builder: (context) {
@@ -105,14 +133,18 @@ class _ResourcesState extends State<Resources> {
           actions: [
             TextButton(
               onPressed: () {
-                Navigator.of(context).pop();
-                fetchCourses(); // Retry fetching courses
+                if (mounted) {
+                  Navigator.of(context).pop();
+                  fetchCourses(); // Retry fetching courses
+                }
               },
               child: Text("Retry", style: TextStyle(color: blue2)),
             ),
             TextButton(
               onPressed: () {
-                Navigator.of(context).pop();
+                if (mounted) {
+                  Navigator.of(context).pop();
+                }
               },
               child: Text("Cancel", style: TextStyle(color: blue2)),
             ),
@@ -124,7 +156,6 @@ class _ResourcesState extends State<Resources> {
 
   @override
   Widget build(BuildContext context) {
-    // Screen size for responsive design
     final size = MediaQuery.of(context).size;
 
     return Scaffold(
@@ -146,86 +177,156 @@ class _ResourcesState extends State<Resources> {
         ],
       ),
       body: isLoading
-          ? Center(child: CircularProgressIndicator())
-          : courses.isEmpty
-              ? Padding(
-                  padding: EdgeInsets.symmetric(
-                      horizontal: size.width * 0.05,
-                      vertical: size.height * 0.02),
-                  child: Center(
-                    child: SizedBox(
-                      width: double.infinity,
-                      child: ElevatedButton(
-                        onPressed: () {
-                          Navigator.push(
-                            context,
-                            MaterialPageRoute(builder: (context) => Courses()),
-                          );
-                        },
-                        style: ElevatedButton.styleFrom(
-                          backgroundColor: blue2,
-                          padding: EdgeInsets.symmetric(vertical: 15),
-                          shape: RoundedRectangleBorder(
-                            borderRadius: BorderRadius.circular(10),
+          ? Padding(
+              padding: EdgeInsets.symmetric(
+                  horizontal: size.width * 0.05,
+                  vertical: size.height * 0.02),
+              child: Column(
+                crossAxisAlignment: CrossAxisAlignment.start,
+                children: [
+                  Expanded(
+                    child: ListView.builder(
+                      itemCount: 4, // Number of placeholders
+                      itemBuilder: (context, index) {
+                        return Shimmer.fromColors(
+                          baseColor: Colors.grey[300]!,
+                          highlightColor: Colors.grey[100]!,
+                          child: Container(
+                            margin: EdgeInsets.only(bottom: size.height * 0.02),
+                            height: size.height * 0.2,
+                            decoration: BoxDecoration(
+                              color: Colors.grey[300],
+                              borderRadius: BorderRadius.circular(15),
+                            ),
                           ),
+                        );
+                      },
+                    ),
+                  ),
+                  SizedBox(height: size.height * 0.02),
+                  SizedBox(
+                    width: double.infinity,
+                    child: ElevatedButton(
+                      onPressed: null, // Disable button during loading
+                      style: ElevatedButton.styleFrom(
+                        backgroundColor: Colors.grey[300],
+                        padding: EdgeInsets.symmetric(vertical: 15),
+                        shape: RoundedRectangleBorder(
+                          borderRadius: BorderRadius.circular(10),
                         ),
-                        child: Text(
-                          'View All Courses',
-                          style: TextStyle(
-                            color: white,
-                            fontSize: 16,
-                            fontWeight: FontWeight.bold,
-                          ),
+                      ),
+                      child: Text(
+                        'View All Courses',
+                        style: TextStyle(
+                          color: Colors.grey[500],
+                          fontSize: 16,
+                          fontWeight: FontWeight.bold,
                         ),
                       ),
                     ),
                   ),
-                )
-              : Padding(
-                  padding: EdgeInsets.symmetric(
-                      horizontal: size.width * 0.05,
-                      vertical: size.height * 0.02),
-                  child: Column(
-                    crossAxisAlignment: CrossAxisAlignment.start,
-                    children: [
-                      // Course Cards
-                      Expanded(
-                        child: ListView.builder(
-                          itemCount: courses.length,
-                          itemBuilder: (context, index) {
-                            return _buildCourseCard(index);
-                          },
-                        ),
-                      ),
-                      SizedBox(height: size.height * 0.02),
-                      // View All Courses Button
-                      SizedBox(
-                        width: double.infinity,
-                        child: ElevatedButton(
-                          onPressed: () {
-                            Navigator.push(context,
-                                MaterialPageRoute(builder: (context) => Courses()));
-                          },
-                          style: ElevatedButton.styleFrom(
-                            backgroundColor: blue2,
-                            padding: EdgeInsets.symmetric(vertical: 15),
-                            shape: RoundedRectangleBorder(
-                              borderRadius: BorderRadius.circular(10),
-                            ),
-                          ),
-                          child: Text(
-                            'View All Courses',
-                            style: TextStyle(
-                              color: white,
-                              fontSize: 16,
-                              fontWeight: FontWeight.bold,
-                            ),
-                          ),
-                        ),
-                      ),
-                    ],
+                ],
+              ),
+            )
+          : isError
+              ? Center(
+                  child: Text(
+                    'An error occurred. Please try again.',
+                    style: TextStyle(color: black),
                   ),
-                ),
+                )
+              : courses.isEmpty
+                  ? Padding(
+                      padding: EdgeInsets.symmetric(
+                          horizontal: size.width * 0.05,
+                          vertical: size.height * 0.02),
+                      child: Center(
+                        child: Column(
+                          mainAxisAlignment: MainAxisAlignment.center,
+                          children: [
+                            Text(
+                              'No courses assigned yet',
+                              style: TextStyle(
+                                color: Theme.of(context).colorScheme.error,
+                                fontSize: 18,
+                                fontWeight: FontWeight.bold,
+                              ),
+                            ),
+                            SizedBox(
+                              width: double.infinity,
+                              child: ElevatedButton(
+                                onPressed: () {
+                                  Navigator.push(
+                                    context,
+                                    MaterialPageRoute(builder: (context) => Courses()),
+                                  );
+                                },
+                                style: ElevatedButton.styleFrom(
+                                  backgroundColor: blue2,
+                                  padding: EdgeInsets.symmetric(vertical: 15),
+                                  shape: RoundedRectangleBorder(
+                                    borderRadius: BorderRadius.circular(10),
+                                  ),
+                                ),
+                                child: Text(
+                                  'View All Courses',
+                                  style: TextStyle(
+                                    color: white,
+                                    fontSize: 16,
+                                    fontWeight: FontWeight.bold,
+                                  ),
+                                ),
+                              ),
+                            ),
+                          ],
+                        ),
+                      ),
+                    )
+                  : Padding(
+                      padding: EdgeInsets.symmetric(
+                          horizontal: size.width * 0.05,
+                          vertical: size.height * 0.02),
+                      child: Column(
+                        crossAxisAlignment: CrossAxisAlignment.start,
+                        children: [
+                          // Course Cards
+                          Expanded(
+                            child: ListView.builder(
+                              itemCount: courses.length,
+                              itemBuilder: (context, index) {
+                                return _buildCourseCard(index);
+                              },
+                            ),
+                          ),
+                          SizedBox(height: size.height * 0.02),
+                          // View All Courses Button
+                          SizedBox(
+                            width: double.infinity,
+                            child: ElevatedButton(
+                              onPressed: () {
+                                Navigator.push(context,
+                                    MaterialPageRoute(builder: (context) => Courses()));
+                              },
+                              style: ElevatedButton.styleFrom(
+                                backgroundColor: blue2,
+                                padding: EdgeInsets.symmetric(vertical: 15),
+                                shape: RoundedRectangleBorder(
+                                  borderRadius: BorderRadius.circular(10),
+                                ),
+                              ),
+                              child: Text(
+                                'View All Courses',
+                                style: TextStyle(
+                                  color: white,
+                                  fontSize: 16,
+                                  fontWeight: FontWeight.bold,
+                                ),
+                              ),
+                            ),
+                          ),
+                        ],
+                      ),
+                    ),
     );
   }
 
@@ -235,6 +336,7 @@ class _ResourcesState extends State<Resources> {
 
     return GestureDetector(
       onTap: () {
+        if (!mounted) return; // Ensure widget is still mounted
         // Handle course card tap
         String title = "Welcome to ${courses[index]}";
         String body = "Get started with the course content";

@@ -12,7 +12,6 @@ class Settings extends StatefulWidget {
 }
 
 class _SettingsState extends State<Settings> {
-  // تعريف ألوان البراندينج
   final Color blue1 = Color(0xFF1c74bb);
   final Color blue2 = Color(0xFF165d96);
   final Color cyan1 = Color(0xFF18bebc);
@@ -26,7 +25,7 @@ class _SettingsState extends State<Settings> {
       appBar: AppBar(
         backgroundColor: blue2,
         leading: IconButton(
-          icon: Icon(Icons.arrow_back_ios_new_rounded, color: white),
+          icon: Icon(Icons.arrow_back_ios_new_rounded, color: Theme.of(context).colorScheme.onPrimary),
           onPressed: () {
             Navigator.pop(context);
           },
@@ -34,8 +33,9 @@ class _SettingsState extends State<Settings> {
         title: Text(
           'Settings',
           style: GoogleFonts.leagueSpartan(
-            color: white,
+            color: Theme.of(context).colorScheme.onPrimary,
             fontWeight: FontWeight.bold,
+            fontSize: 24,
           ),
         ),
         centerTitle: true,
@@ -44,33 +44,17 @@ class _SettingsState extends State<Settings> {
         padding: const EdgeInsets.all(16.0),
         child: Column(
           children: [
-            Text.rich(
-              TextSpan(
+            // Header text with styled segments
+            RichText(
+              textAlign: TextAlign.center,
+              text: TextSpan(
                 children: [
-                 Text(
-                        'Select ',
-                        style: Theme.of(context).textTheme.displayLarge?.copyWith(
-                          fontSize: 28,
-                          fontWeight: FontWeight.bold,
-                          fontFamily: GoogleFonts.leagueSpartan().fontFamily,
-                          //color: Color.fromARGB(255, 0, 0, 0)
-                        ),
-                      ),
-                      Text(
-                        'Option!',
-                        style: TextStyle(
-                          fontSize: 28,
-                          fontWeight: FontWeight.bold,
-                          fontFamily: GoogleFonts.leagueSpartan().fontFamily,
-                          color: Color(0xFF1BC0C4)
-                        ),
-                      ),
                   TextSpan(
                     text: 'Select ',
                     style: GoogleFonts.leagueSpartan(
                       fontSize: 28,
                       fontWeight: FontWeight.bold,
-                      color: black,
+                      color: Theme.of(context).textTheme.displayLarge?.color ?? black,
                     ),
                   ),
                   TextSpan(
@@ -83,7 +67,6 @@ class _SettingsState extends State<Settings> {
                   ),
                 ],
               ),
-              textAlign: TextAlign.center,
             ),
             SizedBox(height: 20),
             Expanded(
@@ -125,21 +108,6 @@ class _SettingsState extends State<Settings> {
                       );
                     },
                   ),
-                  // إذا كنت ترغب في إضافة إعدادات الدورات، قم بإلغاء التعليق على الكود التالي:
-                  /*
-                  _buildSettingsOption(
-                    context,
-                    icon: Icons.book_outlined,
-                    title: 'Courses Settings',
-                    subtitle: 'Manage your courses',
-                    onTap: () {
-                      Navigator.push(
-                        context,
-                        MaterialPageRoute(builder: (context) => Rcoursessettings()),
-                      );
-                    },
-                  ),
-                  */
                 ],
               ),
             ),
@@ -150,18 +118,20 @@ class _SettingsState extends State<Settings> {
   }
 
   Widget _buildSettingsOption(
-      BuildContext context, {
-        required IconData icon,
-        required String title,
-        String? subtitle,
-        required VoidCallback onTap,
-      }) {
+    BuildContext context, {
+    required IconData icon,
+    required String title,
+    String? subtitle,
+    required VoidCallback onTap,
+  }) {
     return Card(
       elevation: 3,
       margin: EdgeInsets.symmetric(vertical: 10),
       shape: RoundedRectangleBorder(
         borderRadius: BorderRadius.circular(15),
       ),
+      shadowColor: Theme.of(context).colorScheme.onSurface,
+      surfaceTintColor: Theme.of(context).colorScheme.onSurface,
       child: ListTile(
         leading: CircleAvatar(
           backgroundColor: cyan1,
@@ -175,7 +145,7 @@ class _SettingsState extends State<Settings> {
           style: GoogleFonts.leagueSpartan(
             fontSize: 18,
             fontWeight: FontWeight.bold,
-            color: black,
+            color: Theme.of(context).colorScheme.onSurface,
           ),
         ),
         subtitle: subtitle != null
@@ -187,7 +157,7 @@ class _SettingsState extends State<Settings> {
                 ),
               )
             : null,
-        trailing: Icon(Icons.arrow_forward_ios, color: black),
+        trailing: Icon(Icons.arrow_forward_ios, color: Theme.of(context).colorScheme.onSurface),
         onTap: onTap,
       ),
     );

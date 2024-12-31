@@ -459,8 +459,8 @@ class _MonthViewState extends State<MonthView> {
                   });
                   _fetchTasksForMonth();
                 },
-                icon: const Icon(Icons.arrow_back_ios,
-                    size: 25, color: Colors.black),
+                icon: Icon(Icons.arrow_back_ios,
+                    size: 25, color: Theme.of(context).primaryColor),
               ),
               GestureDetector(
                 onTap: () => _showScrollableMonthYearPicker(context),
@@ -491,8 +491,8 @@ class _MonthViewState extends State<MonthView> {
                   });
                   _fetchTasksForMonth();
                 },
-                icon: const Icon(Icons.arrow_forward_ios,
-                    size: 25, color: Colors.black),
+                icon: Icon(Icons.arrow_forward_ios,
+                    size: 25, color: Theme.of(context).primaryColor),
               ),
             ],
           ),

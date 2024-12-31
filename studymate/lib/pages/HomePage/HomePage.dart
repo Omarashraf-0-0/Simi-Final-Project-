@@ -4,7 +4,6 @@ import 'package:flutter/material.dart';
 import 'package:flutter_font_icons/flutter_font_icons.dart';
 import 'package:google_nav_bar/google_nav_bar.dart';
 import 'package:hive/hive.dart';
-import 'package:hive_flutter/hive_flutter.dart';
 import 'package:studymate/main.dart';
 import 'package:studymate/pages/HomePage/Homebody.dart';
 import 'package:studymate/pages/LoginPage.dart';
@@ -24,12 +23,6 @@ import 'package:studymate/pages/Career/CareerHome.dart';
 import 'package:http/http.dart' as http;
 import 'dart:convert';
 import 'package:intl/intl.dart';
-
-import '../../util/TextField.dart';
-
-import '../../Pop-ups/PopUps_Success.dart';
-import '../../Pop-ups/PopUps_Failed.dart';
-import '../../Pop-ups/PopUps_Warning.dart';
 import 'package:studymate/pages/Notifications/Notification.dart';
 import '../Resuorces/Resources.dart';
 
@@ -46,6 +39,7 @@ class Homepage extends StatefulWidget {
 
 class _HomepageState extends State<Homepage> {
   int idx = 0;
+
   void navBottom(int index) {
     setState(() {
       idx = index;
@@ -97,9 +91,8 @@ class _HomepageState extends State<Homepage> {
             child: _notifications.isNotEmpty
                 ? ListView.builder(
                     shrinkWrap: true,
-                    itemCount: _notifications.length > 3
-                        ? 3
-                        : _notifications.length,
+                    itemCount:
+                        _notifications.length > 3 ? 3 : _notifications.length,
                     itemBuilder: (context, index) {
                       final notification = _notifications[index];
                       return ListTile(
@@ -161,12 +154,6 @@ class _HomepageState extends State<Homepage> {
           });
         }
       } else {
-        setState(() {
-          _isLoading = false;
-          _events = [];
-          print(
-              'Failed to fetch today\'s schedule with status code ${response.statusCode}');
-        });
         if (mounted) {
           setState(() {
             _isLoading = false;
@@ -191,19 +178,9 @@ class _HomepageState extends State<Homepage> {
     try {
       // Parse the time string into a DateTime object
       final parsedTime = DateFormat('HH:mm:ss').parse(time);
-    try {
-      // Parse the time string into a DateTime object
-      final parsedTime = DateFormat('HH:mm:ss').parse(time);
 
       // Format the DateTime object into a 12-hour format
       return DateFormat('hh:mm a').format(parsedTime);
-    } catch (e) {
-      // Return a fallback value if parsing fails
-      return 'Invalid Time';
-    }
-  // }
-      // Format the DateTime object into a 12-hour format
-      // return DateFormat('hh:mm a').format(parsedTime);
     } catch (e) {
       // Return a fallback value if parsing fails
       return 'Invalid Time';
@@ -228,7 +205,7 @@ class _HomepageState extends State<Homepage> {
             icon: Icon(
               Icons.menu,
               size: 28,
-              color: Colors.white,
+              color: Theme.of(context).colorScheme.onPrimaryContainer,
             ),
             onPressed: () {
               Scaffold.of(context).openDrawer();
@@ -238,7 +215,7 @@ class _HomepageState extends State<Homepage> {
         title: Text(
           'Study Mate',
           style: TextStyle(
-            color: Colors.white,
+            color: Theme.of(context).colorScheme.onPrimaryContainer,
             fontSize: 20,
             fontWeight: FontWeight.bold,
           ),
@@ -249,7 +226,7 @@ class _HomepageState extends State<Homepage> {
           IconButton(
             icon: Icon(
               Icons.notifications_outlined,
-              color: Colors.white,
+              color: Theme.of(context).colorScheme.onPrimaryContainer,
               size: 28,
             ),
             onPressed: () {
@@ -294,7 +271,8 @@ class _HomepageState extends State<Homepage> {
     );
   }
 
-  Widget _buildDrawer(BuildContext context, Color headerColor, Color accentColor) {
+  Widget _buildDrawer(
+      BuildContext context, Color headerColor, Color accentColor) {
     return Drawer(
       child: Column(
         children: [
@@ -371,13 +349,14 @@ class _HomepageState extends State<Homepage> {
                   onTap: () {
                     Navigator.push(
                       context,
-                      MaterialPageRoute(builder: (context) => GameLeaderBoard()),
+                      MaterialPageRoute(
+                          builder: (context) => GameLeaderBoard()),
                     );
                   },
                 ),
                 _buildDrawerItem(
                   icon: Icons.description_outlined,
-                  text: 'CV Maker',
+                  text: 'Career Mode',
                   onTap: () {
                     Navigator.push(
                       context,
@@ -425,6 +404,14 @@ class _HomepageState extends State<Homepage> {
                     );
                   },
                 ),
+                _buildDrawerItem(
+                  icon: Icons.nightlight_outlined,
+                  text: 'Dark Mode',
+                  onTap: () {
+                    final isDarkMode = themeManager.themeData == ThemeMode.dark;
+                    themeManager.toggleTheme(!isDarkMode);
+                  },
+                ),
                 Divider(),
                 _buildDrawerItem(
                   icon: Icons.logout,
@@ -461,48 +448,54 @@ class _HomepageState extends State<Homepage> {
   }
 
   Widget _buildBottomNavigationBar() {
-    return Container(
-      decoration: BoxDecoration(
-        color: Color(0xFF165d96),
-        borderRadius: BorderRadius.only(
-          topLeft: Radius.circular(30),
-          topRight: Radius.circular(30),
-        ),
-        boxShadow: [
-          BoxShadow(
-            color: Colors.black.withOpacity(0.2),
-            spreadRadius: 0,
-            blurRadius: 10,
+    return Padding(
+      padding: const EdgeInsets.symmetric(horizontal: 15.0, vertical: 6),
+      child: Container(
+        decoration: BoxDecoration(
+          color: Theme.of(context).primaryColor,
+          borderRadius: BorderRadius.only(
+            topLeft: Radius.circular(35),
+            topRight: Radius.circular(35),
+            bottomLeft: Radius.circular(35),
+            bottomRight: Radius.circular(35),
           ),
-        ],
-      ),
-      child: Padding(
-        padding:
-            const EdgeInsets.symmetric(horizontal: 20.0, vertical: 10), // Adjust padding
-        child: GNav(
-          gap: 8,
-          activeColor: Color(0xFF165d96),
-          color: Colors.white,
-          iconSize: 24,
-          padding: EdgeInsets.symmetric(horizontal: 20, vertical: 12),
-          duration: Duration(milliseconds: 400),
-          tabBackgroundColor: Colors.white,
-          tabs: [
-            GButton(icon: Ionicons.home_outline, text: 'Home'),
-            GButton(icon: Ionicons.book_outline, text: 'Courses'),
-            GButton(icon: Ionicons.chatbubble_ellipses_outline, text: 'Abo Layla'),
-            GButton(icon: Ionicons.trophy_outline, text: 'Leaderboard'),
+          boxShadow: [
+            BoxShadow(
+              color: Theme.of(context).colorScheme.surface.withOpacity(0.2),
+              spreadRadius: 0,
+              blurRadius: 10,
+            ),
           ],
-          selectedIndex: idx,
-          onTabChange: (index) {
-            setState(() {
-              idx = index;
-            });
-            if (index == 0) {
-              fetchNotifications();
-              _fetchTodaysSchedule();
-            }
-          },
+        ),
+        child: Padding(
+          padding: const EdgeInsets.symmetric(
+              horizontal: 12.0, vertical: 10), // Adjust padding
+          child: GNav(
+            gap: 8,
+            activeColor: Theme.of(context).colorScheme.secondary,
+            color: Theme.of(context).colorScheme.surface,
+            iconSize: 24,
+            padding: EdgeInsets.symmetric(horizontal: 20, vertical: 12),
+            duration: Duration(milliseconds: 400),
+            tabBackgroundColor: Theme.of(context).colorScheme.surface,
+            tabs: [
+              GButton(icon: Ionicons.home_outline, text: 'Home'),
+              GButton(icon: Ionicons.book_outline, text: 'Courses'),
+              GButton(
+                  icon: Ionicons.chatbubble_ellipses_outline, text: 'Abo Layla'),
+              GButton(icon: Ionicons.trophy_outline, text: 'Leaderboard'),
+            ],
+            selectedIndex: idx,
+            onTabChange: (index) {
+              setState(() {
+                idx = index;
+              });
+              if (index == 0) {
+                fetchNotifications();
+                _fetchTodaysSchedule();
+              }
+            },
+          ),
         ),
       ),
     );

@@ -122,7 +122,7 @@ class _UserSettingsState extends State<UserSettings> {
                   style: GoogleFonts.leagueSpartan(
                     fontSize: 24,
                     fontWeight: FontWeight.bold,
-                    color: black,
+                    color: Theme.of(context).colorScheme.onSurface,
                   ),
                 ),
               ),
@@ -165,7 +165,7 @@ class _UserSettingsState extends State<UserSettings> {
                   style: GoogleFonts.leagueSpartan(
                     fontSize: 24,
                     fontWeight: FontWeight.bold,
-                    color: black,
+                    color: Theme.of(context).colorScheme.onSurface,
                   ),
                 ),
               ),

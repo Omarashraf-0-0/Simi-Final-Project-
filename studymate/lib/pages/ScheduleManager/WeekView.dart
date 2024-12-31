@@ -294,7 +294,7 @@ class _WeekViewState extends State<WeekView> {
                         },
                       );
                     },
-                    icon: const Icon(
+                    icon: Icon(
                       Icons.arrow_circle_right_outlined,
                       color: Colors.white,
                       size: 30,
@@ -404,8 +404,8 @@ class _WeekViewState extends State<WeekView> {
             children: [
               IconButton(
                 onPressed: _previousWeek,
-                icon: const Icon(Icons.arrow_back_ios,
-                    size: 25, color: Colors.black),
+                icon: Icon(Icons.arrow_back_ios,
+                    size: 25, color: Theme.of(context).primaryColor),
               ),
               GestureDetector(
                 onTap: _pickDate,
@@ -414,21 +414,21 @@ class _WeekViewState extends State<WeekView> {
                     Text(
                       _formatDateShort(weekStart),
                       style: const TextStyle(
-                        fontSize: 20,
+                        fontSize: 24,
                         fontWeight: FontWeight.bold,
                       ),
                     ),
                     const Text(
                       " - ",
                       style: TextStyle(
-                        fontSize: 20,
+                        fontSize: 24,
                         fontWeight: FontWeight.bold,
                       ),
                     ),
                     Text(
                       _formatDateShort(weekEnd),
                       style: const TextStyle(
-                        fontSize: 20,
+                        fontSize: 24,
                         fontWeight: FontWeight.bold,
                         color: Color(0xFF1BC0C4),
                       ),
@@ -438,8 +438,8 @@ class _WeekViewState extends State<WeekView> {
               ),
               IconButton(
                 onPressed: _nextWeek,
-                icon: const Icon(Icons.arrow_forward_ios,
-                    size: 25, color: Colors.black),
+                icon: Icon(Icons.arrow_forward_ios,
+                    size: 25, color: Theme.of(context).primaryColor),
               ),
             ],
           ),
