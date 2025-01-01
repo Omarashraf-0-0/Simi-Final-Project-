@@ -4,9 +4,11 @@ import 'package:studymate/pages/LoginPage.dart';
 import 'package:studymate/pages/Login%20&%20Register/RegisterPage.dart';
 import '../../Classes/User.dart';
 import '../../Pop-ups/PopUps_Warning.dart';
+import 'dart:convert';
+import 'package:http/http.dart' as http;
 
 class RegisterLogin extends StatefulWidget {
-  RegisterLogin({Key? key}) : super(key: key);
+  const RegisterLogin({super.key});
 
   @override
   State<RegisterLogin> createState() => _RegisterLoginState();
@@ -40,11 +42,17 @@ class _RegisterLoginState extends State<RegisterLogin> {
     super.dispose();
   }
 
-  void validateAndProceed() {
+  Future<void> validateAndProceed() async {
+
     if (_formKey.currentState!.validate()) {
       if (gender == null) {
         showWarningPopup(context, 'Error', 'Please select your gender.', 'OK');
         return;
+      }
+      bool isEmailAlreadyUsed = await is_email_already_used(emailController.text);
+      if(isEmailAlreadyUsed==true){
+        showWarningPopup(context,'Email already used',"The email address \"${emailController.text}\" is already associated with an account. Please use a different email.");
+        return ;
       }
       // Create a new User object with the entered data
       User user = User(
@@ -65,6 +73,38 @@ class _RegisterLoginState extends State<RegisterLogin> {
       );
     }
   }
+
+  Future<bool> is_email_already_used(String email) async {
+    // Define your backend API endpoint
+    const String url = 'https://alyibrahim.pythonanywhere.com/check-email';
+
+    try {
+      // Create the HTTP POST request body
+      final Map<String, dynamic> requestBody = {'email': email};
+
+      // Send the request to the backend
+      final response = await http.post(
+        Uri.parse(url),
+        headers: {'Content-Type': 'application/json'},
+        body: jsonEncode(requestBody),
+      );
+
+      // Check for a successful response
+      if (response.statusCode == 200) {
+        // Parse the response body
+        final Map<String, dynamic> responseBody = jsonDecode(response.body);
+
+        // Assume the backend sends a boolean field `isUsed`
+        return responseBody['isUsed'];
+      } else {
+        throw Exception(
+            'Failed to check email. Status code: ${response.statusCode}');
+      }
+    } catch (e) {
+      throw Exception('Error checking email: $e');
+    }
+  }
+
 
   @override
   Widget build(BuildContext context) {

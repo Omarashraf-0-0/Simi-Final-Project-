@@ -3,7 +3,7 @@ import 'package:google_fonts/google_fonts.dart';
 import 'GameRanks.dart';
 
 class GameHome extends StatefulWidget {
-  const GameHome({Key? key}) : super(key: key);
+  const GameHome({super.key});
 
   @override
   State<GameHome> createState() => _GameHomeState();

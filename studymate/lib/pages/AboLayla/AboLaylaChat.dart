@@ -310,7 +310,7 @@ class _AboLaylaChatState extends State<AboLaylaChat> {
 }
 
 class TypingIndicator extends StatefulWidget {
-  const TypingIndicator({Key? key}) : super(key: key);
+  const TypingIndicator({super.key});
 
   @override
   _TypingIndicatorState createState() => _TypingIndicatorState();
@@ -319,7 +319,7 @@ class TypingIndicator extends StatefulWidget {
 class _TypingIndicatorState extends State<TypingIndicator>
     with SingleTickerProviderStateMixin {
   AnimationController? _dotController;
-  int _dotCount = 3;
+  final int _dotCount = 3;
 
   @override
   void initState() {

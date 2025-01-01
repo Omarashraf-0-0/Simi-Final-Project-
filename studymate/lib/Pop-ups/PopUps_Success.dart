@@ -16,7 +16,7 @@ void showSuccessPopup(BuildContext context, String title, String message,[String
     backgroundColor: Colors.grey[250],
 
     builder: (BuildContext context) {
-      return Container(
+      return SizedBox(
         width: 320,
         child: Column(
           mainAxisSize: MainAxisSize.min, // Prevent expanding unnecessarily

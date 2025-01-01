@@ -7,7 +7,7 @@ import 'package:studymate/pages/Resuorces/CourseContent.dart';
 import 'package:studymate/pages/Resuorces/Courses.dart';
 
 class Resources extends StatefulWidget {
-  const Resources({Key? key}) : super(key: key);
+  const Resources({super.key});
 
   @override
   State<Resources> createState() => _ResourcesState();

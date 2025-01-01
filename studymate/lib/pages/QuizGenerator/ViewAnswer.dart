@@ -1,17 +1,16 @@
 // ViewAnswer.dart
 
 import 'package:flutter/material.dart';
-import 'package:google_fonts/google_fonts.dart';
 
 class ViewAnswer extends StatefulWidget {
   final List<Map<String, dynamic>> questions;
   final List<int> userAnswers;
 
   const ViewAnswer({
-    Key? key,
+    super.key,
     required this.questions,
     required this.userAnswers,
-  }) : super(key: key);
+  });
 
   @override
   State<ViewAnswer> createState() => _ViewAnswerState();

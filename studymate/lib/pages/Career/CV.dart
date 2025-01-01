@@ -1,7 +1,16 @@
+import 'dart:convert';
+import 'dart:io';
+
 import 'package:flutter/material.dart';
 import 'package:hive/hive.dart';
 import 'package:intl/intl.dart';
 import 'package:google_fonts/google_fonts.dart';
+import 'package:http/http.dart' as http;
+import 'package:path_provider/path_provider.dart';
+
+import 'PDFViewerPage.dart';
+
+
 
 class CV extends StatefulWidget {
   const CV({super.key});
@@ -46,6 +55,148 @@ class _CVState extends State<CV> {
   // Experience
   int experienceCount = 1;
   List<Experience> experiences = [Experience()];
+
+
+
+
+  Future<void> generateCV() async {
+    // Validate the form before proceeding
+    if (!_formKey.currentState!.validate()) {
+      return; // If the form is invalid, stop execution
+    }
+    _formKey.currentState!.save(); // Save the form fields
+
+    // Build the CV data as before
+    Map<String, dynamic> cvData = {
+      // Flattened personal information
+      'name': name,
+      'birth': birthdate != null
+          ? DateFormat('MMMM d, yyyy').format(birthdate!)
+          : '',
+      'address': Hive.box('userBox').get('address'),
+      'phone': phoneNumber,
+      'email': email,
+
+      // LinkedIn section (if applicable)
+      'linkedin': addLinkedIn
+          ? {
+        'name': linkedInUsername==null?"No linkedin yet":linkedInUsername,
+        'linkedinURL': linkedInLink==null?"":linkedInLink,
+      }
+          : {
+        'name': "No linkedin yet",
+        'linkedinURL':"",
+      },
+
+      // GitHub section (if applicable)
+      'github': addGitHub
+          ? {
+        'name': gitHubUsername==null?"No github yet":gitHubUsername,
+        'githubURL': gitHubLink==null?"":gitHubLink,
+      }
+          : {
+        'name': "No github yet",
+        'githubURL': "",
+      },
+
+      // Objective
+      'objective': objective,
+
+      // Updated education section
+      'education': educations.map((edu) {
+        return {
+          'degree': edu.degree,
+          'years': "${edu.from} - ${edu.to}",
+          'institution': edu.universityName,
+          'descriptions': edu.description != null
+              ? edu.description.split('\n').map((desc) => desc.trim()).toList()
+              : [],
+        };
+      }).toList(),
+
+      // Adjusted skills structure
+      'skills': Map.fromEntries(
+        skills.map((sk) => MapEntry(
+          sk.head,
+          sk.skills.split(',').map((s) => s.trim()).toList(),
+        )),
+      ),
+
+      // Modified projects structure
+      'projects': projects.map((proj) {
+        return {
+          proj.head: proj.description,
+        };
+      }).toList(),
+
+      // Experience
+      'experience': experiences.map((exp) {
+        return exp.description;
+      }).toList(),
+    };
+
+    const url = 'https://alyibrahim.pythonanywhere.com/create_cv';
+
+    // Show a loading indicator while generating the CV
+    showDialog(
+      context: context,
+      barrierDismissible: false,
+      builder: (context) => Center(child: CircularProgressIndicator()),
+    );
+
+    try {
+      print("Generating CV ...");
+      final response = await http.post(
+        Uri.parse(url),
+        headers: {'Content-Type': 'application/json'},
+        body: jsonEncode(cvData),
+      );
+
+      // Dismiss the loading indicator
+      Navigator.of(context).pop();
+
+      if (response.statusCode == 200) {
+        print("CV generated successfully");
+
+        // Get the PDF file bytes
+        final bytes = response.bodyBytes;
+
+        // Save the PDF file locally
+        final dir = await getApplicationDocumentsDirectory();
+        final file = File('${dir.path}/cv.pdf');
+        await file.writeAsBytes(bytes);
+
+        // Navigate to PDF viewer page
+        Navigator.push(
+          context,
+          MaterialPageRoute(
+            builder: (context) => PDFViewerPage(filePath: file.path),
+          ),
+        );
+      } else {
+        print("Failed to generate CV: ${response.body}");
+
+        // Show an error message to the user
+        ScaffoldMessenger.of(context).showSnackBar(
+          SnackBar(content: Text('Failed to generate CV')),
+        );
+      }
+    } catch (e) {
+      // Dismiss the loading indicator in case of an exception
+      Navigator.of(context).pop();
+
+      print('Error during making CV: $e');
+
+      // Show an error message to the user
+      ScaffoldMessenger.of(context).showSnackBar(
+        SnackBar(content: Text('Error generating CV')),
+      );
+    }
+  }
+
+
+
+
 
   @override
   void initState() {
@@ -92,22 +243,22 @@ class _CVState extends State<CV> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-appBar: AppBar(
-      title: Text(
-        'CV Maker',
-        style: GoogleFonts.leagueSpartan(
-          textStyle: TextStyle(
-            color: Colors.white, // Change title color to white
-            fontWeight: FontWeight.bold, // Make the font bold
+      appBar: AppBar(
+        title: Text(
+          'CV Maker',
+          style: GoogleFonts.leagueSpartan(
+            textStyle: TextStyle(
+              color: Colors.white, // Change title color to white
+              fontWeight: FontWeight.bold, // Make the font bold
+            ),
           ),
         ),
+        centerTitle: true,
+        backgroundColor: Color(0xFF165D96),
+        iconTheme: IconThemeData(
+          color: Colors.white, // Change back arrow color to white
+        ),
       ),
-      centerTitle: true,
-      backgroundColor: Color(0xFF165D96),
-      iconTheme: IconThemeData(
-        color: Colors.white, // Change back arrow color to white
-      ),
-    ),
       body: SingleChildScrollView(
         padding: EdgeInsets.all(16.0),
         child: Form(
@@ -123,7 +274,7 @@ appBar: AppBar(
                   border: OutlineInputBorder(),
                 ),
                 validator: (value) =>
-                    value == null || value.isEmpty ? 'Required' : null,
+                value == null || value.isEmpty ? 'Required' : null,
                 onSaved: (value) => name = value!,
               ),
               SizedBox(height: 10),
@@ -134,9 +285,7 @@ appBar: AppBar(
                 fieldLabelText: 'Birthdate',
                 onDateSaved: (date) => birthdate = date,
                 onDateSubmitted: (date) {
-                  if (date == null) {
-                    // Handle the case where the date is null
-                  }
+                  
                 },
               ),
               SizedBox(height: 10),
@@ -148,7 +297,7 @@ appBar: AppBar(
                 ),
                 keyboardType: TextInputType.phone,
                 validator: (value) =>
-                    value == null || value.isEmpty ? 'Required' : null,
+                value == null || value.isEmpty ? 'Required' : null,
                 onSaved: (value) => phoneNumber = value!,
               ),
               SizedBox(height: 10),
@@ -190,9 +339,9 @@ appBar: AppBar(
                         border: OutlineInputBorder(),
                       ),
                       validator: (value) =>
-                          addLinkedIn && (value == null || value.isEmpty)
-                              ? 'Required'
-                              : null,
+                      addLinkedIn && (value == null || value.isEmpty)
+                          ? 'Required'
+                          : null,
                       onSaved: (value) => linkedInUsername = value!,
                     ),
                     SizedBox(height: 10),
@@ -202,10 +351,10 @@ appBar: AppBar(
                         border: OutlineInputBorder(),
                       ),
                       initialValue: linkedInLink,
-                      validator: (value) => addLinkedIn && 
-                                  (value == null || value.isEmpty) 
-                              ? 'Required'
-                              : null,
+                      validator: (value) => addLinkedIn &&
+                          (value == null || value.isEmpty)
+                          ? 'Required'
+                          : null,
                       onSaved: (value) => linkedInLink = value!,
                     ),
                   ],
@@ -230,9 +379,9 @@ appBar: AppBar(
                         border: OutlineInputBorder(),
                       ),
                       validator: (value) =>
-                          addGitHub && (value == null || value.isEmpty)
-                              ? 'Required'
-                              : null,
+                      addGitHub && (value == null || value.isEmpty)
+                          ? 'Required'
+                          : null,
                       onSaved: (value) => gitHubUsername = value!,
                     ),
                     SizedBox(height: 10),
@@ -242,10 +391,10 @@ appBar: AppBar(
                         border: OutlineInputBorder(),
                       ),
                       initialValue: gitHubLink,
-                      validator: (value) => addGitHub && 
-                                  (value == null || value.isEmpty) 
-                              ? 'Required'
-                              : null,
+                      validator: (value) => addGitHub &&
+                          (value == null || value.isEmpty)
+                          ? 'Required'
+                          : null,
                       onSaved: (value) => gitHubLink = value!,
                     ),
                   ],
@@ -262,7 +411,7 @@ appBar: AppBar(
                 ),
                 maxLines: 3,
                 validator: (value) =>
-                    value == null || value.isEmpty ? 'Required' : null,
+                value == null || value.isEmpty ? 'Required' : null,
                 onSaved: (value) => objective = value!,
               ),
               SizedBox(height: 20),
@@ -278,9 +427,9 @@ appBar: AppBar(
                 value: educationCount,
                 items: List.generate(
                   3,
-                  (index) => DropdownMenuItem(
-                    child: Text('${index + 1}'),
+                      (index) => DropdownMenuItem(
                     value: index + 1,
+                    child: Text('${index + 1}'),
                   ),
                 ),
                 onChanged: (value) {
@@ -290,7 +439,7 @@ appBar: AppBar(
                   });
                 },
                 validator: (value) =>
-                    value == null || value < 1 ? 'At least 1 required' : null,
+                value == null || value < 1 ? 'At least 1 required' : null,
               ),
               SizedBox(height: 10),
               ListView.builder(
@@ -317,9 +466,9 @@ appBar: AppBar(
                 value: skillsCount,
                 items: List.generate(
                   5,
-                  (index) => DropdownMenuItem(
-                    child: Text('${index + 1}'),
+                      (index) => DropdownMenuItem(
                     value: index + 1,
+                    child: Text('${index + 1}'),
                   ),
                 ),
                 onChanged: (value) {
@@ -329,7 +478,7 @@ appBar: AppBar(
                   });
                 },
                 validator: (value) =>
-                    value == null || value < 1 ? 'At least 1 required' : null,
+                value == null || value < 1 ? 'At least 1 required' : null,
               ),
               SizedBox(height: 10),
               ListView.builder(
@@ -356,9 +505,9 @@ appBar: AppBar(
                 value: projectsCount,
                 items: List.generate(
                   3,
-                  (index) => DropdownMenuItem(
-                    child: Text('${index + 1}'),
+                      (index) => DropdownMenuItem(
                     value: index + 1,
+                    child: Text('${index + 1}'),
                   ),
                 ),
                 onChanged: (value) {
@@ -368,7 +517,7 @@ appBar: AppBar(
                   });
                 },
                 validator: (value) =>
-                    value == null || value < 1 ? 'At least 1 required' : null,
+                value == null || value < 1 ? 'At least 1 required' : null,
               ),
               SizedBox(height: 10),
               ListView.builder(
@@ -395,9 +544,9 @@ appBar: AppBar(
                 value: experienceCount,
                 items: List.generate(
                   5,
-                  (index) => DropdownMenuItem(
-                    child: Text('${index + 1}'),
+                      (index) => DropdownMenuItem(
                     value: index + 1,
+                    child: Text('${index + 1}'),
                   ),
                 ),
                 onChanged: (value) {
@@ -407,7 +556,7 @@ appBar: AppBar(
                   });
                 },
                 validator: (value) =>
-                    value == null || value < 1 ? 'At least 1 required' : null,
+                value == null || value < 1 ? 'At least 1 required' : null,
               ),
               SizedBox(height: 10),
               ListView.builder(
@@ -424,8 +573,15 @@ appBar: AppBar(
               SizedBox(height: 20),
 
               // Submit Button
-               ElevatedButton(
+              ElevatedButton(
                 onPressed: _submitForm,
+                style: ElevatedButton.styleFrom(
+                  padding: EdgeInsets.symmetric(horizontal: 50.0, vertical: 15.0),
+                  backgroundColor: Color(0xFF165D96), // Use backgroundColor instead of primary
+                  shape: RoundedRectangleBorder(
+                    borderRadius: BorderRadius.circular(10),
+                  ),
+                ),
                 child: Text(
                   'Generate CV',
                   style: GoogleFonts.leagueSpartan(
@@ -434,13 +590,6 @@ appBar: AppBar(
                       fontWeight: FontWeight.bold, // Make the font bold
                       fontSize: 18,
                     ),
-                  ),
-                ),
-                style: ElevatedButton.styleFrom(
-                  padding: EdgeInsets.symmetric(horizontal: 50.0, vertical: 15.0),
-                  backgroundColor: Color(0xFF165D96), // Use backgroundColor instead of primary
-                  shape: RoundedRectangleBorder(
-                    borderRadius: BorderRadius.circular(10),
                   ),
                 ),
               ),
@@ -452,6 +601,7 @@ appBar: AppBar(
   }
 
   void _submitForm() {
+    generateCV();
     if (_formKey.currentState!.validate()) {
       _formKey.currentState!.save();
 
@@ -465,11 +615,11 @@ appBar: AppBar(
           title: Text('CV Data'),
           content: SingleChildScrollView(
             child: Text(
-              'Name: $name\n'
-              'Birthdate: ${birthdate != null ? DateFormat('yyyy-MM-dd').format(birthdate!) : ''}\n'
-              'Phone: $phoneNumber\n'
-              'Email: $email\n'
-              'Objective: $objective\n'
+                'Name: $name\n'
+                    'Birthdate: ${birthdate != null ? DateFormat('yyyy-MM-dd').format(birthdate!) : ''}\n'
+                    'Phone: $phoneNumber\n'
+                    'Email: $email\n'
+                    'Objective: $objective\n'
               // يمكنك إضافة بقية البيانات هنا
             ),
           ),
@@ -513,16 +663,16 @@ class Experience {
 class SectionHeader extends StatelessWidget {
   final String title;
 
-  const SectionHeader({required this.title});
+  const SectionHeader({super.key, required this.title});
 
-    @override
+  @override
   Widget build(BuildContext context) {
     return Align(
       alignment: Alignment.centerLeft,
       child: Text(
         title,
         style: TextStyle(
-          fontSize: 20.0, 
+          fontSize: 20.0,
           fontWeight: FontWeight.bold,
           color: Color(0xFF165D96),
         ),
@@ -536,7 +686,7 @@ class EducationForm extends StatelessWidget {
   final int index;
   final Education education;
 
-  const EducationForm({required this.index, required this.education});
+  const EducationForm({super.key, required this.index, required this.education});
 
   @override
   Widget build(BuildContext context) {
@@ -554,7 +704,7 @@ class EducationForm extends StatelessWidget {
             border: OutlineInputBorder(),
           ),
           validator: (value) =>
-              value == null || value.isEmpty ? 'Required' : null,
+          value == null || value.isEmpty ? 'Required' : null,
           onSaved: (value) => education.universityName = value!,
         ),
         SizedBox(height: 10),
@@ -564,7 +714,7 @@ class EducationForm extends StatelessWidget {
             border: OutlineInputBorder(),
           ),
           validator: (value) =>
-              value == null || value.isEmpty ? 'Required' : null,
+          value == null || value.isEmpty ? 'Required' : null,
           onSaved: (value) => education.degree = value!,
         ),
         SizedBox(height: 10),
@@ -577,7 +727,7 @@ class EducationForm extends StatelessWidget {
                   border: OutlineInputBorder(),
                 ),
                 validator: (value) =>
-                    value == null || value.isEmpty ? 'Required' : null,
+                value == null || value.isEmpty ? 'Required' : null,
                 onSaved: (value) => education.from = value!,
               ),
             ),
@@ -589,7 +739,7 @@ class EducationForm extends StatelessWidget {
                   border: OutlineInputBorder(),
                 ),
                 validator: (value) =>
-                    value == null || value.isEmpty ? 'Required' : null,
+                value == null || value.isEmpty ? 'Required' : null,
                 onSaved: (value) => education.to = value!,
               ),
             ),
@@ -603,7 +753,7 @@ class EducationForm extends StatelessWidget {
           ),
           maxLines: 3,
           validator: (value) =>
-              value == null || value.isEmpty ? 'Required' : null,
+          value == null || value.isEmpty ? 'Required' : null,
           onSaved: (value) => education.description = value!,
         ),
         SizedBox(height: 20),
@@ -617,7 +767,7 @@ class SkillForm extends StatelessWidget {
   final int index;
   final Skill skill;
 
-  const SkillForm({required this.index, required this.skill});
+  const SkillForm({super.key, required this.index, required this.skill});
 
   @override
   Widget build(BuildContext context) {
@@ -635,7 +785,7 @@ class SkillForm extends StatelessWidget {
             border: OutlineInputBorder(),
           ),
           validator: (value) =>
-              value == null || value.isEmpty ? 'Required' : null,
+          value == null || value.isEmpty ? 'Required' : null,
           onSaved: (value) => skill.head = value!,
         ),
         SizedBox(height: 10),
@@ -645,7 +795,7 @@ class SkillForm extends StatelessWidget {
             border: OutlineInputBorder(),
           ),
           validator: (value) =>
-              value == null || value.isEmpty ? 'Required' : null,
+          value == null || value.isEmpty ? 'Required' : null,
           onSaved: (value) => skill.skills = value!,
         ),
         SizedBox(height: 20),
@@ -659,7 +809,7 @@ class ProjectForm extends StatelessWidget {
   final int index;
   final Project project;
 
-  const ProjectForm({required this.index, required this.project});
+  const ProjectForm({super.key, required this.index, required this.project});
 
   @override
   Widget build(BuildContext context) {
@@ -677,7 +827,7 @@ class ProjectForm extends StatelessWidget {
             border: OutlineInputBorder(),
           ),
           validator: (value) =>
-              value == null || value.isEmpty ? 'Required' : null,
+          value == null || value.isEmpty ? 'Required' : null,
           onSaved: (value) => project.head = value!,
         ),
         SizedBox(height: 10),
@@ -688,7 +838,7 @@ class ProjectForm extends StatelessWidget {
           ),
           maxLines: 3,
           validator: (value) =>
-              value == null || value.isEmpty ? 'Required' : null,
+          value == null || value.isEmpty ? 'Required' : null,
           onSaved: (value) => project.description = value!,
         ),
         SizedBox(height: 20),
@@ -702,7 +852,7 @@ class ExperienceForm extends StatelessWidget {
   final int index;
   final Experience experience;
 
-  const ExperienceForm({required this.index, required this.experience});
+  const ExperienceForm({super.key, required this.index, required this.experience});
 
   @override
   Widget build(BuildContext context) {
@@ -721,7 +871,7 @@ class ExperienceForm extends StatelessWidget {
           ),
           maxLines: 3,
           validator: (value) =>
-              value == null || value.isEmpty ? 'Required' : null,
+          value == null || value.isEmpty ? 'Required' : null,
           onSaved: (value) => experience.description = value!,
         ),
         SizedBox(height: 20),

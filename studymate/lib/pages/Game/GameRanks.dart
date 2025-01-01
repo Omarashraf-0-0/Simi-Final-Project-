@@ -2,7 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:google_fonts/google_fonts.dart';
 
 class GameRanks extends StatefulWidget {
-  const GameRanks({Key? key}) : super(key: key);
+  const GameRanks({super.key});
 
   @override
   State<GameRanks> createState() => _GameRanksState();

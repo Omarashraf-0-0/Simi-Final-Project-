@@ -7,7 +7,6 @@ import 'package:studymate/Pop-ups/PopUps_Failed.dart';
 import 'package:studymate/Pop-ups/PopUps_Warning.dart';
 import '../Classes/User.dart';
 import '../Pop-ups/SuccesPopUp.dart';
-import '../util/TextField.dart';
 import 'Login & Register/Forget_Pass.dart';
 import 'package:http/http.dart' as http;
 import 'package:studymate/pages/XPChangePopup.dart';

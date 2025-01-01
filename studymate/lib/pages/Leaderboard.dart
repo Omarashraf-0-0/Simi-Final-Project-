@@ -5,6 +5,8 @@ void main() {
 }
 
 class LeaderboardApp extends StatelessWidget {
+  const LeaderboardApp({super.key});
+
   @override
   Widget build(BuildContext context) {
     return MaterialApp(
@@ -15,6 +17,8 @@ class LeaderboardApp extends StatelessWidget {
 }
 
 class LeaderboardPage extends StatelessWidget {
+  const LeaderboardPage({super.key});
+
   @override
   Widget build(BuildContext context) {
     return Scaffold(

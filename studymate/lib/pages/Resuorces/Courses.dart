@@ -5,7 +5,7 @@ import 'package:http/http.dart' as http;
 import 'package:google_fonts/google_fonts.dart';
 
 class Courses extends StatefulWidget {
-  const Courses({Key? key}) : super(key: key);
+  const Courses({super.key});
 
   @override
   _CoursesState createState() => _CoursesState();

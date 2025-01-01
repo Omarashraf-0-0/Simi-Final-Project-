@@ -2,9 +2,6 @@ import 'dart:convert';
 import 'package:flutter/material.dart';
 import 'package:hive/hive.dart';
 import 'package:hive_flutter/hive_flutter.dart';
-import 'package:studymate/pages/Resuorces/SRS.dart';
-import 'package:studymate/pages/Resuorces/SRS.dart';
-import 'package:studymate/pages/Resuorces/SRS.dart';
 import 'package:studymate/pages/Resuorces/CourseContent.dart';
 import 'package:studymate/pages/Resuorces/Resources.dart';
 import 'package:studymate/pages/ScheduleManager/ScheduleManager.dart';
@@ -287,7 +284,7 @@ class _HomebodyState extends State<Homebody> {
   }
 
   Widget _buildScheduleCards() {
-    return Container(
+    return SizedBox(
       height: 120,
       child: ListView.builder(
         scrollDirection: Axis.horizontal,
@@ -348,7 +345,7 @@ class _HomebodyState extends State<Homebody> {
   }
 
   Widget _buildCoursesList() {
-    return Container(
+    return SizedBox(
       height: 180,
       child: ListView.builder(
         scrollDirection: Axis.horizontal,

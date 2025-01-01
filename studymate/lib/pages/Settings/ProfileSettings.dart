@@ -1,6 +1,4 @@
 import 'package:flutter/material.dart';
-import 'package:flutter_font_icons/flutter_font_icons.dart';
-import 'package:google_fonts/google_fonts.dart';
 
 class ProfileSettings extends StatefulWidget {
   const ProfileSettings({super.key});

@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:google_fonts/google_fonts.dart';
 import 'package:studymate/Classes/User.dart';
 import 'package:studymate/pages/LoginPage.dart';
+import 'package:studymate/pages/OTP.dart';
 import '../Pop-ups/PopUps_Failed.dart';
 import '../Pop-ups/PopUps_Warning.dart';
 import 'package:http/http.dart' as http;
@@ -9,10 +10,10 @@ import 'dart:convert'; // For jsonEncode
 
 class CollageInformation extends StatefulWidget {
   final User? user;
-  CollageInformation({
-    Key? key,
+  const CollageInformation({
+    super.key,
     this.user,
-  }) : super(key: key);
+  });
 
   @override
   State<CollageInformation> createState() => _CollageInformationState();
@@ -46,6 +47,33 @@ class _CollageInformationState extends State<CollageInformation> {
     registrationNumberController.dispose();
     super.dispose();
   }
+
+
+  User createUser() {
+    User user = User(
+      username: widget.user?.username,
+      password: widget.user?.password,
+      fullName: widget.user?.fullName,
+      role: widget.user?.role,
+      email: widget.user?.email,
+      phoneNumber: widget.user?.phoneNumber,
+      address: widget.user?.address,
+      gender: widget.user?.gender,
+      collage: selectedCollege,
+      university: selectedUniversity,
+      major: selectedMajor,
+      term_level: 1,
+      pfp: widget.user?.pfp,
+      xp: 0,
+      level: 1,
+      title: 'newbie',
+      registrationNumber: registrationNumberController.text,
+      birthDate: widget.user?.birthDate,
+    );
+
+    return user;
+  }
+
 
   Future<void> registerCollegeInfo() async {
     final String url = 'https://alyibrahim.pythonanywhere.com/register';
@@ -121,7 +149,12 @@ class _CollageInformationState extends State<CollageInformation> {
           'OK',
         );
       } else {
-        registerCollegeInfo();
+        User user = createUser();
+        Navigator.pushAndRemoveUntil(
+          context,
+          MaterialPageRoute(builder: (context) => OTP(user:user)),
+              (route) => false,
+        );
       }
     }
   }

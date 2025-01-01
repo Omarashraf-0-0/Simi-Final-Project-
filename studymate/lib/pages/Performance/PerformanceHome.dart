@@ -8,7 +8,7 @@ class InsightsPage extends StatefulWidget {
   // Retrieve the user's name from Hive
   final String userName = Hive.box('userBox').get('username') ?? 'User';
 
-  InsightsPage({Key? key}) : super(key: key);
+  InsightsPage({super.key});
 
   @override
   _InsightsPageState createState() => _InsightsPageState();
@@ -460,7 +460,7 @@ class CourseInsightsPage extends StatefulWidget {
   final String courseID;
   final int? totalQuizzesTaken;
 
-  CourseInsightsPage({
+  const CourseInsightsPage({super.key, 
     required this.courseName,
     required this.courseID,
     required this.totalQuizzesTaken,
@@ -755,13 +755,13 @@ class Indicator extends StatelessWidget {
   final Color textColor;
 
   const Indicator({
-    Key? key,
+    super.key,
     required this.color,
     required this.text,
     this.isSquare = true,
     this.size = 16,
     this.textColor = Colors.black,
-  }) : super(key: key);
+  });
 
   @override
   Widget build(BuildContext context) {

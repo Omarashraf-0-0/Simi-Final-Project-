@@ -2,9 +2,6 @@
 
 import 'package:flutter/material.dart';
 import 'package:percent_indicator/circular_percent_indicator.dart';
-import 'package:flutter/material.dart';
-import 'package:percent_indicator/circular_percent_indicator.dart';
-import 'package:google_fonts/google_fonts.dart';
 import 'package:studymate/pages/HomePage/HomePage.dart';
 import 'ViewAnswer.dart'; // Import the ViewAnswer screen
 
@@ -15,12 +12,12 @@ class QuizScore extends StatefulWidget {
   final List<Map<String, dynamic>> questions;
 
   const QuizScore({
-    Key? key,
+    super.key,
     required this.score,
     required this.total,
     required this.userAnswers,
     required this.questions,
-  }) : super(key: key);
+  });
 
   @override
   State<QuizScore> createState() => _QuizScoreState();

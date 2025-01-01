@@ -7,7 +7,7 @@ import 'package:image_picker/image_picker.dart';
 import 'package:http/http.dart' as http;
 
 class Profilepage extends StatefulWidget {
-  const Profilepage({Key? key}) : super(key: key);
+  const Profilepage({super.key});
 
   @override
   _ProfilepageState createState() => _ProfilepageState();
