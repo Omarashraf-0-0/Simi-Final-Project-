@@ -377,21 +377,21 @@ class _HomebodyState extends State<Homebody> {
     );
   }
 
-  Color _getEventCardColor(String? type) {
-    switch (type) {
-      case 'Lecture':
-        return primaryColor;
-      case 'Assignment':
-        return accentColor2;
-      case 'Exam':
-        return Colors.redAccent;
-      default:
-        return secondaryColor;
-    }
-  }
+  // Color _getEventCardColor(String? type) {
+  //   switch (type) {
+  //     case 'Lecture':
+  //       return primaryColor;
+  //     case 'Assignment':
+  //       return accentColor2;
+  //     case 'Exam':
+  //       return Colors.redAccent;
+  //     default:
+  //       return secondaryColor;
+  //   }
+  // }
 
-  Widget _buildCoursesList() {
-    return SizedBox(
+  // Widget _buildCoursesList() {
+  //   return SizedBox(
   Widget _buildCoursesSection() {
     if (courses.isEmpty) {
       return Center(

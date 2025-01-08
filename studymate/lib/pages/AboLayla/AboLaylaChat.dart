@@ -324,7 +324,8 @@ class TypingIndicator extends StatefulWidget {
 
 class _TypingIndicatorState extends State<TypingIndicator>
     with SingleTickerProviderStateMixin {
-  AnimationController? _dotController;
+  late AnimationController _dotController;
+
   final int _dotCount = 3;
 
   @override
