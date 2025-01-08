@@ -9,7 +9,7 @@ import 'package:shimmer/shimmer.dart';
 import 'package:studymate/main.dart';
 
 class Profilepage extends StatefulWidget {
-  const Profilepage({Key? key}) : super(key: key);
+  const Profilepage({super.key});
 
   @override
   _ProfilepageState createState() => _ProfilepageState();

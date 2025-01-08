@@ -110,7 +110,7 @@ class UserUpdater {
         // Update only the fields provided in the request body to the Hive box
         final userBox = Hive.box('userBox');
         requestBody.forEach((key, value) {
-          if (value != null && !value.toString().isEmpty) {
+          if (value != null && value.toString().isNotEmpty) {
             userBox.put(key, value);
           }
         });

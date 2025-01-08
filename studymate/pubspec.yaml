@@ -1,6 +1,6 @@
 name: studymate
 description: "Study Mate Project"
-publish_to: "none" # Remove this line if you wish to publish to pub.dev
+publish_to: "none"  # Remove this line if you wish to publish to pub.dev
 
 version: 1.0.0+1
 
@@ -8,13 +8,15 @@ environment:
   sdk: ^3.5.3
 
 dependencies:
-  firebase_auth: any
-  cloud_firestore: ^4.0.5
   flutter:
     sdk: flutter
-  image_picker: ^0.8.3
-  firebase_storage: ^11.2.6
-  http: any # Add a specific version for the http package, update as needed
+  # Existing dependencies with 'any' versions remain unchanged
+  firebase_auth: any
+  cloud_firestore: any
+  image_picker: any
+  firebase_storage: any
+  firebase_core: any
+  http: any
   cupertino_icons: any
   flutter_font_icons: any
   hive: any
@@ -25,27 +27,32 @@ dependencies:
   dropdown_button2: any
   flutter_cached_pdfview: any
   lottie: any
-  percent_indicator: ^4.2.2
   intl: any
   google_generative_ai: any
   permission_handler: any
   flutter_downloader: any
-  # url_launcher: any
-  url_launcher: ^6.0.9
   flutter_slidable: any
-  flutter_local_notifications: ^18.0.1
   timezone: any
-  firebase_core: 2.32.0 # Use the latest version
   firebase_messaging: any
+
+  # Packages that require specific versions
+  share_plus: any
+  syncfusion_flutter_pdfviewer: any
+  flutter_pdfview: ^1.3.4
   fl_chart: ^0.69.2
   flutter_markdown: ^0.6.10
   shimmer: ^3.0.0
-google_fonts: any # Uncomment if you want to use Google Fonts
+  percent_indicator: ^4.2.2
+  flutter_local_notifications: ^18.0.1
+
+  # Updated url_launcher dependencies
+  url_launcher: ^6.1.7  # Updated to the latest version compatible with Dart SDK 3.5.3
+  url_launcher_linux: ^3.0.0  # Added with a compatible version
 
 dev_dependencies:
+  flutter_lints: ^2.0.0  # Updated to a version compatible with Dart SDK 3.5.3
   flutter_test:
     sdk: flutter
-  flutter_lints: ^5.0.0 # Update to the latest version
 
 flutter:
   uses-material-design: true
@@ -65,12 +72,11 @@ flutter:
     - lib/assets/img/GameCharacters/Expert.png
     - lib/assets/img/GameCharacters/Mentor.png
     - lib/assets/img/GameCharacters/Legend.png
-    - lib/assets/img/GameCharacters/ElBatal.png
     - lib/assets/img/Job.png
     - lib/assets/img/cv.png
     - lib/assets/img/cv2.png
     - lib/assets/img/career.png
-    - lib/assets/img/career2.png    
+    - lib/assets/img/career2.png
 
   fonts:
     - family: Poppins

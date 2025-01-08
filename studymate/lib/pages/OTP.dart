@@ -1,8 +1,16 @@
 import 'package:flutter/material.dart';
 import 'package:google_fonts/google_fonts.dart';
+import 'package:http/http.dart' as http; // Import the http package
+import 'dart:async'; // Import for Timer
+import 'dart:convert'; // Import for JSON decoding if needed
+import '../Classes/User.dart';
+import '../Pop-ups/PopUps_Failed.dart';
+import '../Pop-ups/PopUps_Success.dart';
+import '../pages/LoginPage.dart';
 
 class OTP extends StatefulWidget {
-  const OTP({Key? key}) : super(key: key);
+  User? user;
+  OTP({super.key, this.user});
 
   @override
   State<OTP> createState() => _OTPState();
@@ -20,7 +28,20 @@ class _OTPState extends State<OTP> {
   final _formKey = GlobalKey<FormState>();
   final List<FocusNode> _focusNodes = List.generate(6, (index) => FocusNode());
   final List<TextEditingController> _controllers =
-      List.generate(6, (index) => TextEditingController());
+  List.generate(6, (index) => TextEditingController());
+
+  String _serverOTP = ''; // Variable to store the OTP from the server
+  Timer? _timer;
+  int _start = 60; // Timer start value in seconds
+  bool _isOTPLoaded = false; // Flag to check if OTP is loaded
+  bool _isTimerRunning = false; // Flag to check if timer is running
+  bool _isResendEnabled = false; // Flag to enable/disable resend button
+
+  @override
+  void initState() {
+    super.initState();
+    _fetchOTP(); // Fetch OTP when the page loads
+  }
 
   @override
   void dispose() {
@@ -31,25 +52,190 @@ class _OTPState extends State<OTP> {
     for (var focusNode in _focusNodes) {
       focusNode.dispose();
     }
+    _timer?.cancel(); // Cancel the timer
     super.dispose();
   }
 
-  void _submitOTP() {
+  // Modified _submitOTP function
+  void _submitOTP() async {
     if (_formKey.currentState!.validate()) {
       String otpCode = _controllers.map((controller) => controller.text).join();
-      // نفذ عملية التحقق من OTP هنا
-      // على سبيل المثال، إرسال OTP إلى الخادم للتحقق
-      print('OTP Entered: $otpCode');
+      // Check if the entered OTP matches the server OTP
+      if (otpCode == _serverOTP) {
+        // OTP is correct
+        ScaffoldMessenger.of(context).showSnackBar(
+          SnackBar(
+            content: Text('OTP Verified Successfully!'),
+            backgroundColor: Colors.green,
+          ),
+        );
+        // Call registerCollegeInfo() to register the user
+        await registerCollegeInfo();
+        // The registration function handles navigation and popups
+      } else {
+        // OTP is incorrect
+        ScaffoldMessenger.of(context).showSnackBar(
+          SnackBar(
+            content: Text('The OTP is wrong. Try resending it.'),
+            backgroundColor: Colors.red,
+          ),
+        );
+      }
+    }
+  }
 
-      // لإظهار رسالة نجاح أو الانتقال إلى الصفحة التالية
+  Future<void> registerCollegeInfo() async {
+    final String url = 'https://alyibrahim.pythonanywhere.com/register';
+
+    final Map<String, dynamic> data = {
+      'username': widget.user?.username,
+      'password': widget.user?.password,
+      'fullName': widget.user?.fullName,
+      'role': widget.user?.role,
+      'email': widget.user?.email,
+      'phoneNumber': widget.user?.phoneNumber,
+      'address': widget.user?.address,
+      'gender': widget.user?.gender,
+      'college': widget.user?.collage, // Ensure correct field name
+      'university': widget.user?.university,
+      'major': widget.user?.major,
+      'term_level': 1,
+      'pfp': widget.user?.pfp,
+      'xp': 0,
+      'level': 1,
+      'title': 'newbie',
+      'registrationNumber': widget.user?.registrationNumber,
+      'birthDate': widget.user?.birthDate,
+    };
+    final body = jsonEncode(data);
+    print(body);
+
+    try {
+      final response = await http.post(
+        Uri.parse(url),
+        headers: {'Content-Type': 'application/json'},
+        body: body,
+      );
+
+      if (response.statusCode == 200) {
+        final responseData = json.decode(response.body);
+        ScaffoldMessenger.of(context).showSnackBar(
+          SnackBar(content: Text(responseData['message'])),
+        );
+        // Navigate back to login page
+        Navigator.pushAndRemoveUntil(
+          context,
+          MaterialPageRoute(builder: (context) => LoginPage()),
+              (route) => false,
+        );
+        // Optionally, you can show a success popup
+        showSuccessPopup(
+          context,
+          'Registration Successful',
+          'Your account has been created successfully!',
+          'Continue',
+        );
+      } else {
+        final responseData = json.decode(response.body);
+        showFailedPopup(
+          context,
+          'Registration Failed',
+          responseData['message'],
+          'Continue',
+        );
+      }
+    } catch (error) {
+      print(error);
+      showFailedPopup(
+        context,
+        'Registration Failed',
+        'Failed to register: $error',
+        'Continue',
+      );
+    }
+  }
+
+  void _fetchOTP() async {
+    try {
+      final Map<String, dynamic> requestBody = {
+        'fullname': widget.user?.fullName,
+        'email': widget.user?.email,
+      };
+      final response =
+      await http.post(
+          Uri.parse('https://alyibrahim.pythonanywhere.com/Send_OTP'),
+          headers: {'Content-Type': 'application/json'},
+          body: jsonEncode(requestBody),
+      );
+
+      if (response.statusCode == 200) {
+        // Parse the JSON response
+        Map<String, dynamic> jsonResponse = json.decode(response.body);
+        // Extract the OTP from the JSON response
+        setState(() {
+          _serverOTP = jsonResponse['OTP']; // Store the OTP from the server
+          _isOTPLoaded = true;
+          _startTimer(); // Start the timer after OTP is received
+          _isResendEnabled = false; // Disable resend button while timer is running
+        });
+        print('OTP Received from Server: $_serverOTP');
+      } else {
+        print('Failed to fetch OTP. Status code: ${response.statusCode}');
+        // Handle error accordingly
+        ScaffoldMessenger.of(context).showSnackBar(
+          SnackBar(
+            content: Text('Failed to receive OTP from server.'),
+            backgroundColor: Colors.red,
+          ),
+        );
+      }
+    } catch (e) {
+      print('Error fetching OTP: $e');
+      // Handle error accordingly
       ScaffoldMessenger.of(context).showSnackBar(
         SnackBar(
-          content: Text('OTP Verified Successfully!'),
-          backgroundColor: Colors.green,
+          content: Text('An error occurred while fetching OTP.'),
+          backgroundColor: Colors.red,
         ),
       );
-      // يمكنك توجيه المستخدم إلى الصفحة التالية هنا
     }
+  }
+
+  void _startTimer() {
+    _start = 180;
+    _isTimerRunning = true;
+    const oneSec = Duration(seconds: 1);
+    _timer = Timer.periodic(
+      oneSec,
+          (Timer timer) {
+        if (mounted) {
+          setState(() {
+            if (_start == 0) {
+              _timer?.cancel();
+              _isTimerRunning = false;
+              _isResendEnabled = true; // Enable resend button
+            } else {
+              _start--;
+            }
+          });
+        }
+      },
+    );
+  }
+
+  void _resendOTP() {
+    // Clear the OTP fields
+    for (var controller in _controllers) {
+      controller.clear();
+    }
+    // Fetch OTP again
+    _fetchOTP();
+    ScaffoldMessenger.of(context).showSnackBar(
+      SnackBar(
+        content: Text('OTP Resent Successfully!'),
+        backgroundColor: blue2,
+      ),
+    );
   }
 
   @override
@@ -78,7 +264,7 @@ class _OTPState extends State<OTP> {
       ),
       body: Padding(
         padding:
-            EdgeInsets.symmetric(horizontal: size.width * 0.08, vertical: size.height * 0.05),
+        EdgeInsets.symmetric(horizontal: size.width * 0.08, vertical: size.height * 0.05),
         child: Form(
           key: _formKey,
           child: Column(
@@ -92,7 +278,18 @@ class _OTPState extends State<OTP> {
                 ),
                 textAlign: TextAlign.center,
               ),
-              SizedBox(height: size.height * 0.04),
+              SizedBox(height: size.height * 0.02),
+              // Timer display
+              _isTimerRunning
+                  ? Text(
+                'Time remaining: $_start secs',
+                style: GoogleFonts.leagueSpartan(
+                  fontSize: 16,
+                  color: Colors.red,
+                ),
+              )
+                  : SizedBox.shrink(),
+              SizedBox(height: size.height * 0.02),
               // حقول إدخال OTP
               Row(
                 mainAxisAlignment: MainAxisAlignment.spaceBetween,
@@ -105,7 +302,7 @@ class _OTPState extends State<OTP> {
               SizedBox(
                 width: double.infinity,
                 child: ElevatedButton(
-                  onPressed: _submitOTP,
+                  onPressed: _isOTPLoaded ? _submitOTP : null,
                   style: ElevatedButton.styleFrom(
                     backgroundColor: blue2,
                     padding: EdgeInsets.symmetric(vertical: 15),
@@ -126,21 +323,18 @@ class _OTPState extends State<OTP> {
               SizedBox(height: size.height * 0.02),
               // رابط لإعادة إرسال OTP
               TextButton(
-                onPressed: () {
-                  // نفذ عملية إعادة إرسال OTP هنا
-                  ScaffoldMessenger.of(context).showSnackBar(
-                    SnackBar(
-                      content: Text('OTP Resent Successfully!'),
-                      backgroundColor: blue2,
-                    ),
-                  );
-                },
+                onPressed: _isResendEnabled
+                    ? () {
+                  _resendOTP();
+                }
+                    : null,
                 child: Text(
                   'Resend Code',
                   style: GoogleFonts.leagueSpartan(
                     fontSize: 16,
-                    color: blue2,
-                    decoration: TextDecoration.underline,
+                    color: _isResendEnabled ? blue2 : Colors.grey,
+                    decoration:
+                    _isResendEnabled ? TextDecoration.underline : TextDecoration.none,
                   ),
                 ),
               ),
@@ -172,6 +366,7 @@ class _OTPState extends State<OTP> {
         textAlign: TextAlign.center,
         keyboardType: TextInputType.number,
         maxLength: 1,
+        enabled: _isOTPLoaded, // Disable input fields until OTP is loaded
         validator: (value) {
           if (value == null || value.isEmpty) {
             return '';

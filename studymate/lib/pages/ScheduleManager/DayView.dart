@@ -4,7 +4,6 @@ import 'package:hive/hive.dart';
 import 'package:http/http.dart' as http;
 import 'package:studymate/Pop-ups/PopUps_Failed.dart';
 import 'package:studymate/Pop-ups/PopUps_Success.dart';
-import 'package:studymate/Pop-ups/PopUps_Warning.dart';
 import 'dart:convert';
 
 class DayView extends StatefulWidget {

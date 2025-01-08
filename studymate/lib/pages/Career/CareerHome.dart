@@ -5,6 +5,8 @@ import 'CareerJob.dart'; // Import the CareerJob page
 import 'CV.dart';
 
 class CareerHome extends StatefulWidget {
+  const CareerHome({super.key});
+
   @override
   _CareerHomeState createState() => _CareerHomeState();
 }
@@ -37,7 +39,7 @@ class _CareerHomeState extends State<CareerHome> {
           crossAxisAlignment: CrossAxisAlignment.center,
           children: [
             // Big picture at the top
-            Container(
+            SizedBox(
               height: size.height * 0.33,
               width: double.infinity,
               child: Image.asset(

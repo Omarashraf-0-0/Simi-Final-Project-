@@ -16,7 +16,6 @@ import 'package:studymate/pages/AboLayla/AboLayla.dart';
 import 'package:studymate/pages/QuizGenerator/QuizHome.dart';
 import 'package:studymate/pages/Game/GameHome.dart';
 import 'package:studymate/pages/Game/GameLeaderBoard.dart';
-import 'package:studymate/pages/Leaderboard.dart';
 import 'package:studymate/pages/OTP.dart';
 import 'package:studymate/pages/Career/CareerHome.dart';
 
@@ -29,9 +28,9 @@ import '../Resuorces/Resources.dart';
 class Homepage extends StatefulWidget {
   User.User? user = User.User();
   Homepage({
-    Key? key,
+    super.key,
     this.user,
-  }) : super(key: key);
+  });
 
   @override
   State<Homepage> createState() => _HomepageState();
@@ -86,7 +85,7 @@ class _HomepageState extends State<Homepage> {
               fontWeight: FontWeight.bold,
             ),
           ),
-          content: Container(
+          content: SizedBox(
             width: double.maxFinite,
             child: _notifications.isNotEmpty
                 ? ListView.builder(

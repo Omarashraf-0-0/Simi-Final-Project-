@@ -26,6 +26,8 @@ class Job {
 }
 
 class CareerJob extends StatefulWidget {
+  const CareerJob({super.key});
+
   @override
   _CareerJobState createState() => _CareerJobState();
 }

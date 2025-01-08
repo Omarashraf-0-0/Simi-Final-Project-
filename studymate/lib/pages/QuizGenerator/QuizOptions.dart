@@ -5,7 +5,6 @@ import 'package:flutter/material.dart';
 import 'package:http/http.dart' as http; // For HTTP requests
 import 'package:hive_flutter/hive_flutter.dart'; // For Hive storage
 import 'package:hive/hive.dart';
-import 'package:google_fonts/google_fonts.dart';
 import 'Quiz.dart'; // Import the Quiz screen
 
 class QuizOptions extends StatefulWidget {

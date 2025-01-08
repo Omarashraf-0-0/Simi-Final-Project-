@@ -5,7 +5,7 @@ import 'dart:convert';
 class NotificationPage extends StatefulWidget {
   final List<Map<String, String>> notifications;
 
-  NotificationPage({required this.notifications});
+  const NotificationPage({super.key, required this.notifications});
 
   @override
   _NotificationPageState createState() => _NotificationPageState();
@@ -246,17 +246,17 @@ class NotificationTile extends StatelessWidget {
   final String body;
 
   const NotificationTile({
-    Key? key,
+    super.key,
     required this.id,
     required this.title,
     required this.body,
-  }) : super(key: key);
+  });
 
   @override
   Widget build(BuildContext context) {
     // Limit the message to show only the first 100 characters
     String previewBody =
-        body.length > 100 ? body.substring(0, 100) + '...' : body;
+        body.length > 100 ? '${body.substring(0, 100)}...' : body;
 
     return Card(
       margin: const EdgeInsets.symmetric(horizontal: 10, vertical: 5),

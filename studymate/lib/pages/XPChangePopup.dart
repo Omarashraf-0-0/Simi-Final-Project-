@@ -5,8 +5,7 @@ class XPChangePopup extends StatefulWidget {
   final int xpChange; // Positive for gain, negative for loss
   final String message;
 
-  const XPChangePopup({Key? key, required this.xpChange, required this.message})
-      : super(key: key);
+  const XPChangePopup({super.key, required this.xpChange, required this.message});
 
   @override
   _XPChangePopupState createState() => _XPChangePopupState();

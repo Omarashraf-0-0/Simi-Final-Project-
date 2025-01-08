@@ -9,7 +9,6 @@ import 'package:flutter_downloader/flutter_downloader.dart';
 import 'package:permission_handler/permission_handler.dart';
 import 'package:path_provider/path_provider.dart';
 import 'package:studymate/pages/Resuorces/SRS.dart';
-import 'package:studymate/pages/Resuorces/urlLuncher.dart';
 
 class CourseContent extends StatefulWidget {
   const CourseContent({super.key});
@@ -25,7 +24,7 @@ class _CourseContentState extends State<CourseContent> {
   ////////////////////////////////////////////////////////////
   String? taskId; // Store taskId as a class member
   String userRole = '';
-  ReceivePort _port = ReceivePort();
+  final ReceivePort _port = ReceivePort();
 
   @override
   void initState() {
@@ -466,7 +465,7 @@ class _CourseContentState extends State<CourseContent> {
                 child: Tooltip(
                   message: subject,
                   child: Text(
-                    '$subject',
+                    subject,
                     style: const TextStyle(fontSize: 18),
                     overflow:
                         TextOverflow.ellipsis, // Truncate text if it overflows

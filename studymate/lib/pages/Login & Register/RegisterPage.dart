@@ -2,16 +2,14 @@ import 'package:flutter/material.dart';
 import 'package:google_fonts/google_fonts.dart';
 import 'package:studymate/pages/LoginPage.dart';
 import '../../Classes/User.dart';
-import '../../Pop-ups/PopUps_Warning.dart';
-import '../../util/TextField.dart';
 import '../CollageInformatio.dart';
 
 class RegisterPage extends StatefulWidget {
   final User user;
-  RegisterPage({
-    Key? key,
+  const RegisterPage({
+    super.key,
     required this.user,
-  }) : super(key: key);
+  });
 
   @override
   State<RegisterPage> createState() => _RegisterPageState();

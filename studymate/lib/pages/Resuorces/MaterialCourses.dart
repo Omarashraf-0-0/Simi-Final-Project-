@@ -12,7 +12,7 @@ class _MaterialcoursesState extends State<Materialcourses> {
   @override
   Widget build(BuildContext context) {
     final args = ModalRoute.of(context)?.settings.arguments as Map<String, dynamic>;
-        final String link = args?['link']; // Get the course ID
+        final String link = args['link']; // Get the course ID
     return Scaffold(
       appBar: AppBar(
         title: Text('Material Courses'),

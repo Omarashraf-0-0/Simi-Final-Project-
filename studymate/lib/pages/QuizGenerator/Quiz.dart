@@ -8,7 +8,6 @@ import '../../Pop-ups/ConfirmationPopUp.dart'; // Import the ConfirmationPopUp
 import 'package:http/http.dart' as http;
 import 'package:hive/hive.dart';
 import 'package:hive_flutter/hive_flutter.dart';
-import 'package:studymate/pages/XPChangePopup.dart';
 
 class Quiz extends StatefulWidget {
   final int totalQuestions;
@@ -18,13 +17,13 @@ class Quiz extends StatefulWidget {
   final String coId;
 
   const Quiz({
-    Key? key,
+    super.key,
     required this.totalQuestions,
     required this.mcqCount,
     required this.tfCount,
     required this.quizData,
     required this.coId,
-  }) : super(key: key);
+  });
 
   @override
   State<Quiz> createState() => _QuizState();
