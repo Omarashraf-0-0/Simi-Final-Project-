@@ -2,6 +2,7 @@ import 'dart:convert';
 import 'dart:io';
 
 import 'package:flutter/material.dart';
+import 'package:flutter_downloader/flutter_downloader.dart';
 import 'package:hive/hive.dart';
 import 'package:intl/intl.dart';
 import 'package:google_fonts/google_fonts.dart';
@@ -165,6 +166,7 @@ class _CVState extends State<CV> {
         final dir = await getApplicationDocumentsDirectory();
         final file = File('${dir.path}/cv.pdf');
         await file.writeAsBytes(bytes);
+        
 
         // Navigate to PDF viewer page
         Navigator.push(
@@ -173,6 +175,7 @@ class _CVState extends State<CV> {
             builder: (context) => PDFViewerPage(filePath: file.path),
           ),
         );
+
       } else {
         print("Failed to generate CV: ${response.body}");
 

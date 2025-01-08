@@ -1,7 +1,6 @@
-import 'dart:io' as io;
-
+import 'dart:io';
 import 'package:flutter/material.dart';
-import 'package:syncfusion_flutter_pdfviewer/pdfviewer.dart' as sfpdf;
+import 'package:flutter_pdfview/flutter_pdfview.dart';
 import 'package:share_plus/share_plus.dart' as share;
 
 class PDFViewerPage extends StatefulWidget {
@@ -14,7 +13,10 @@ class PDFViewerPage extends StatefulWidget {
 }
 
 class _PDFViewerPageState extends State<PDFViewerPage> {
-  final GlobalKey<sfpdf.SfPdfViewerState> _pdfViewerKey = GlobalKey();
+  late PDFViewController controller;
+  int pages = 0;
+  int currentPage = 0;
+  bool isReady = false;
 
   @override
   Widget build(BuildContext context) {
@@ -24,20 +26,74 @@ class _PDFViewerPageState extends State<PDFViewerPage> {
         backgroundColor: const Color(0xFF165D96),
         actions: [
           IconButton(
-            icon: const Icon(Icons.download),
+            icon: const Icon(Icons.share),
             onPressed: () async {
-              // Share the PDF file using the alias
               await share.Share.shareXFiles(
                 [share.XFile(widget.filePath)],
                 text: 'My Generated CV',
               );
             },
           ),
+          if (pages > 0)
+            Text(
+              "${currentPage + 1} of $pages",
+              style: const TextStyle(color: Colors.white),
+            ),
         ],
       ),
-      body: sfpdf.SfPdfViewer.file(
-        io.File(widget.filePath),
-        key: _pdfViewerKey,
+      body: Stack(
+        children: [
+          PDFView(
+            filePath: widget.filePath,
+            enableSwipe: true,
+            swipeHorizontal: true,
+            autoSpacing: false,
+            pageFling: false,
+            onRender: (_pages) {
+              setState(() {
+                pages = _pages!;
+                isReady = true;
+              });
+            },
+            onViewCreated: (PDFViewController pdfViewController) {
+              controller = pdfViewController;
+            },
+            onPageChanged: (int? page, int? total) {
+              setState(() {
+                currentPage = page!;
+              });
+            },
+          ),
+          !isReady
+              ? const Center(
+                  child: CircularProgressIndicator(),
+                )
+              : Container(),
+        ],
+      ),
+      floatingActionButton: Row(
+        mainAxisAlignment: MainAxisAlignment.end,
+        children: <Widget>[
+          FloatingActionButton(
+            backgroundColor: const Color(0xFF165D96),
+            child: const Icon(Icons.chevron_left),
+            onPressed: currentPage == 0
+                ? null
+                : () async {
+                    await controller.setPage(currentPage - 1);
+                  },
+          ),
+          const SizedBox(width: 10),
+          FloatingActionButton(
+            backgroundColor: const Color(0xFF165D96),
+            child: const Icon(Icons.chevron_right),
+            onPressed: currentPage == pages - 1
+                ? null
+                : () async {
+                    await controller.setPage(currentPage + 1);
+                  },
+          ),
+        ],
       ),
     );
   }
