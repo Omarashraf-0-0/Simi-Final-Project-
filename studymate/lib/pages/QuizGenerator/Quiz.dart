@@ -1,10 +1,11 @@
 // Quiz.dart
+
 import 'package:studymate/pages/XPChangePopup.dart';
 import 'dart:async';
 import 'dart:convert';
 import 'package:flutter/material.dart';
 import 'QuizScore.dart';
-import '../../Pop-ups/ConfirmationPopUp.dart'; // Import the ConfirmationPopUp
+import '../../Pop-ups/ConfirmationPopUp.dart';
 import 'package:http/http.dart' as http;
 import 'package:hive/hive.dart';
 import 'package:hive_flutter/hive_flutter.dart';
@@ -17,13 +18,13 @@ class Quiz extends StatefulWidget {
   final String coId;
 
   const Quiz({
-    super.key,
+    Key? key,
     required this.totalQuestions,
     required this.mcqCount,
     required this.tfCount,
     required this.quizData,
     required this.coId,
-  });
+  }) : super(key: key);
 
   @override
   State<Quiz> createState() => _QuizState();
@@ -196,6 +197,8 @@ class _QuizState extends State<Quiz> {
       bool isPassed =
           scorePercentage >= 50; // Assuming 50% is the passing score
 
+      String message = ''; // Initialize message variable
+
       if (isPassed) {
         // User passed the quiz
         xpChange = correctAnswers; // 1 XP for each correct answer
@@ -203,38 +206,38 @@ class _QuizState extends State<Quiz> {
         // Check for perfect score bonus
         if (scorePercentage == 100 && totalQuestions >= 10) {
           xpChange += 5; // Add 5 bonus XP
-          showXPChangePopup(context, xpChange,
-              'Congratulations! You earned $xpChange XP and a 5 XP bonus for a perfect score!');
+          message =
+              'Congratulations! You earned $xpChange XP and a 5 XP bonus for a perfect score!';
         } else {
-          showXPChangePopup(
-              context, xpChange, 'Congratulations! You earned $xpChange XP.');
+          message = 'Congratulations! You earned $xpChange XP.';
         }
       } else {
         // User failed the quiz
         xpChange = -5; // Deduct 5 XP
-        showXPChangePopup(
-            context, xpChange, 'You lost 5 XP for failing the quiz.');
+        message = 'You lost 5 XP for failing the quiz.';
       }
 
       // Update XP on the server
       await updateUserXP(xpChange);
+
+      // Navigate to the QuizScore page and pass xpChange and message
+      Navigator.push(
+        context,
+        MaterialPageRoute(
+          builder: (_) => QuizScore(
+            score: correctAnswers,
+            total: widget.totalQuestions,
+            userAnswers: userAnswers,
+            questions: questions,
+            xpChange: xpChange,
+            xpMessage: message,
+          ),
+        ),
+      );
     } catch (e) {
       print('Error during quiz submission or XP update: $e');
       // You can show an error dialog to the user if necessary
     }
-
-    // Navigate to the QuizScore page after all updates
-    Navigator.push(
-      context,
-      MaterialPageRoute(
-        builder: (_) => QuizScore(
-          score: correctAnswers,
-          total: widget.totalQuestions,
-          userAnswers: userAnswers,
-          questions: questions,
-        ),
-      ),
-    );
   }
 
   Future<int> getUserID() async {
@@ -334,73 +337,6 @@ class _QuizState extends State<Quiz> {
       print("Failed to update XP: ${xpResponse.reasonPhrase}");
     }
   }
-
-  void showXPChangePopup(BuildContext context, int xpChange, String message) {
-    showDialog(
-      context: context,
-      barrierDismissible: false, // Prevent closing the popup by tapping outside
-      builder: (BuildContext context) {
-        return XPChangePopup(
-          xpChange: xpChange,
-          message: message,
-        );
-      },
-    );
-  }
-// void showXP(BuildContext context, int xpChange) {
-//   String message;
-//   if (xpChange > 0) {
-//     message = 'Congratulations! You earned $xpChange XP.';
-//   } else if (xpChange < 0) {
-//     message = 'You lost ${xpChange.abs()} XP. Better luck next time!';
-//   } else {
-//     message = 'No XP change.';
-//   }
-
-//   showDialog(
-//     context: context,
-//     builder: (context) => AlertDialog(
-//       title: Text(
-//         'Quiz Result',
-//         style: TextStyle(
-//           fontFamily: 'League Spartan',
-//           fontWeight: FontWeight.bold,
-//         ),
-//       ),
-//       content: Text(
-//         message,
-//         style: TextStyle(
-//           fontFamily: 'League Spartan',
-//         ),
-//       ),
-//       actions: [
-//         TextButton(
-//           onPressed: () {
-//             Navigator.of(context).pop(); // Close the popup
-//             // Navigate to the QuizScore page
-//             Navigator.push(
-//               context,
-//               MaterialPageRoute(
-//                 builder: (_) => QuizScore(
-//                   score: correctAnswers,
-//                   total: widget.totalQuestions,
-//                   userAnswers: userAnswers,
-//                   questions: questions,
-//                 ),
-//               ),
-//             );
-//           },
-//           child: Text(
-//             'OK',
-//             style: TextStyle(
-//               fontFamily: 'League Spartan',
-//             ),
-//           ),
-//         ),
-//       ],
-//     ),
-//   );
-// }
 
   void selectOption(int index) {
     setState(() {
@@ -552,8 +488,8 @@ class _QuizState extends State<Quiz> {
               child: Text(
                 questions[currentQuestion]["question"],
                 style: Theme.of(context).textTheme.headlineSmall?.copyWith(
-                  fontFamily: 'League Spartan',
-                ),
+                      fontFamily: 'League Spartan',
+                    ),
               ),
             ),
             // Options
@@ -564,6 +500,13 @@ class _QuizState extends State<Quiz> {
               (index) {
                 bool isSelected =
                     questions[currentQuestion]["selectedOption"] == index;
+
+                // Process the option text to remove leading letters and dots
+                String optionText =
+                    questions[currentQuestion]["options"][index];
+                // Remove leading 'A. ', 'B. ', 'C. ', or 'D. '
+                optionText = optionText.replaceFirst(
+                    RegExp(r'^[A-D]\.\s*', caseSensitive: false), '');
 
                 return GestureDetector(
                   onTap: () => selectOption(index),
@@ -582,6 +525,8 @@ class _QuizState extends State<Quiz> {
                       ),
                     ),
                     child: Row(
+                      crossAxisAlignment:
+                          CrossAxisAlignment.start, // Align at the top
                       children: [
                         Container(
                           width: 50,
@@ -608,14 +553,20 @@ class _QuizState extends State<Quiz> {
                           ),
                         ),
                         const SizedBox(width: 16),
-                        Text(
-                          questions[currentQuestion]["options"][index],
-                          style: Theme.of(context).textTheme.titleLarge?.copyWith(
-                            fontFamily: 'League Spartan',
-                            fontSize: 16,
-                            fontWeight: FontWeight.bold, // Make the options bold
-                            //++++++++++++++++++++++++++++++++
-                            color: isSelected ? Color(0xFF165D96) : Theme.of(context).colorScheme.secondary,
+                        Expanded(
+                          child: Text(
+                            optionText,
+                            style: Theme.of(context)
+                                .textTheme
+                                .titleLarge
+                                ?.copyWith(
+                                  fontFamily: 'League Spartan',
+                                  fontSize: 16,
+                                  fontWeight: FontWeight.bold,
+                                  color: isSelected
+                                      ? Color(0xFF165D96)
+                                      : Theme.of(context).colorScheme.secondary,
+                                ),
                           ),
                         ),
                       ],

@@ -7,10 +7,10 @@ class ViewAnswer extends StatefulWidget {
   final List<int> userAnswers;
 
   const ViewAnswer({
-    super.key,
+    Key? key,
     required this.questions,
     required this.userAnswers,
-  });
+  }) : super(key: key);
 
   @override
   State<ViewAnswer> createState() => _ViewAnswerState();
@@ -49,7 +49,7 @@ class _ViewAnswerState extends State<ViewAnswer> {
     return Scaffold(
       appBar: AppBar(
         backgroundColor: const Color(0xFF165D96),
-        title: Text(
+        title: const Text(
           'Review Answers',
           style: TextStyle(
             fontFamily: 'League Spartan',
@@ -103,8 +103,7 @@ class _ViewAnswerState extends State<ViewAnswer> {
                         children: [
                           Container(
                             width: 50,
-                            margin:
-                                const EdgeInsets.symmetric(horizontal: 4),
+                            margin: const EdgeInsets.symmetric(horizontal: 4),
                             padding: const EdgeInsets.all(10),
                             decoration: BoxDecoration(
                               color: currentQuestion == index
@@ -117,7 +116,7 @@ class _ViewAnswerState extends State<ViewAnswer> {
                             child: Center(
                               child: Text(
                                 (index + 1).toString(),
-                                style: TextStyle(
+                                style: const TextStyle(
                                   fontFamily: 'League Spartan',
                                   color: Colors.white,
                                   fontWeight: FontWeight.bold,
@@ -148,7 +147,7 @@ class _ViewAnswerState extends State<ViewAnswer> {
               padding: const EdgeInsets.all(16.0),
               child: Text(
                 questionText,
-                style: TextStyle(
+                style: const TextStyle(
                   fontFamily: 'League Spartan',
                   fontSize: 18,
                   fontWeight: FontWeight.bold,
@@ -178,6 +177,8 @@ class _ViewAnswerState extends State<ViewAnswer> {
                     borderRadius: BorderRadius.circular(12),
                   ),
                   child: Row(
+                    crossAxisAlignment:
+                        CrossAxisAlignment.start, // Align at the top
                     children: [
                       Container(
                         width: 50,
@@ -197,7 +198,7 @@ class _ViewAnswerState extends State<ViewAnswer> {
                                 : options[index].toLowerCase() == 'true'
                                     ? 'T'
                                     : 'F',
-                            style: TextStyle(
+                            style: const TextStyle(
                               fontFamily: 'League Spartan',
                               color: Colors.white,
                               fontWeight: FontWeight.bold,
@@ -227,25 +228,26 @@ class _ViewAnswerState extends State<ViewAnswer> {
               padding: const EdgeInsets.symmetric(horizontal: 16.0),
               child: Text(
                 'Explanation:',
-                style: TextStyle(
+                style: const TextStyle(
                   fontFamily: 'League Spartan',
                   fontSize: 18,
                   fontWeight: FontWeight.bold,
-                  color: const Color(0xFF165D96),
+                  color: Color(0xFF165D96),
                 ),
               ),
             ),
-            Padding(
-              padding: const EdgeInsets.symmetric(horizontal: 16.0),
-              child: Text(
-                explanation,
-                style: TextStyle(
-                  fontFamily: 'League Spartan',
-                  fontSize: 16,
+            Expanded(
+              child: SingleChildScrollView(
+                padding: const EdgeInsets.symmetric(horizontal: 16.0),
+                child: Text(
+                  explanation,
+                  style: const TextStyle(
+                    fontFamily: 'League Spartan',
+                    fontSize: 16,
+                  ),
                 ),
               ),
             ),
-            const Spacer(),
             // Navigation buttons
             Padding(
               padding: const EdgeInsets.symmetric(horizontal: 16.0),

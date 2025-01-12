@@ -3,77 +3,56 @@
 import 'package:flutter/material.dart';
 import 'package:percent_indicator/circular_percent_indicator.dart';
 import 'package:studymate/pages/HomePage/HomePage.dart';
-import 'ViewAnswer.dart'; // Import the ViewAnswer screen
+import 'package:studymate/pages/XPChangePopup.dart';
+import 'ViewAnswer.dart';
 
 class QuizScore extends StatefulWidget {
   final int score;
   final int total;
   final List<int> userAnswers;
   final List<Map<String, dynamic>> questions;
+  final int xpChange;
+  final String xpMessage;
 
   const QuizScore({
-    super.key,
+    Key? key,
     required this.score,
     required this.total,
     required this.userAnswers,
     required this.questions,
-  });
+    required this.xpChange,
+    required this.xpMessage,
+  }) : super(key: key);
 
   @override
   State<QuizScore> createState() => _QuizScoreState();
 }
 
 class _QuizScoreState extends State<QuizScore> {
-  Future<bool> _onWillPop() async {
-    bool shouldLeave = false;
+  @override
+  void initState() {
+    super.initState();
+    WidgetsBinding.instance.addPostFrameCallback((_) {
+      showXPChangePopup(context, widget.xpChange, widget.xpMessage);
+    });
+  }
 
-    await showDialog(
+  void showXPChangePopup(BuildContext context, int xpChange, String message) {
+    showDialog(
       context: context,
-      builder: (context) => AlertDialog(
-        title: const Text(
-          "Are you sure?",
-          style: TextStyle(
-            fontSize: 24,
-            fontWeight: FontWeight.bold,
-          ),
-        ),
-        content: const Text(
-          "You won't be able to see the score again.",
-          style: TextStyle(fontSize: 18),
-        ),
-        actions: [
-          TextButton(
-            onPressed: () {
-              Navigator.of(context).pop(); // Close dialog
-            },
-            child: const Text(
-              "No",
-              style: TextStyle(fontSize: 18),
-            ),
-          ),
-          ElevatedButton(
-            onPressed: () {
-              Navigator.of(context).pop(); // Close dialog
-              // Navigate to Home Page
-              Navigator.pushAndRemoveUntil(
-                context,
-                MaterialPageRoute(builder: (context) => Homepage()),
-                (Route<dynamic> route) => false,
-              );
-            },
-            style: ElevatedButton.styleFrom(
-              backgroundColor: Colors.red,
-            ),
-            child: const Text(
-              "Yes",
-              style: TextStyle(fontSize: 18, color: Colors.white),
-            ),
-          ),
-        ],
-      ),
+      barrierDismissible: false, // Prevent closing the popup by tapping outside
+      builder: (BuildContext context) {
+        return XPChangePopup(
+          xpChange: xpChange,
+          message: message,
+        );
+      },
     );
+  }
 
-    return false; // Prevent default back navigation
+  Future<bool> _onWillPop() async {
+    // Prevent back button
+    return false;
   }
 
   @override
@@ -82,7 +61,7 @@ class _QuizScoreState extends State<QuizScore> {
     bool isPass = percentage >= 0.5;
 
     return WillPopScope(
-      onWillPop: _onWillPop,
+      onWillPop: _onWillPop, // Disable back navigation
       child: Scaffold(
         appBar: AppBar(
           automaticallyImplyLeading: false, // Hides the back button
@@ -102,7 +81,9 @@ class _QuizScoreState extends State<QuizScore> {
           child: Column(
             mainAxisAlignment: MainAxisAlignment.center,
             children: [
-              SizedBox(height: 20),
+              SizedBox(
+                height: 20,
+              ),
               Text(
                 'Your Score is',
                 style: TextStyle(
@@ -112,7 +93,9 @@ class _QuizScoreState extends State<QuizScore> {
                   color: Colors.black,
                 ),
               ),
-              SizedBox(height: 120),
+              SizedBox(
+                height: 120,
+              ),
               CircularPercentIndicator(
                 radius: 100.0,
                 lineWidth: 13.0,
