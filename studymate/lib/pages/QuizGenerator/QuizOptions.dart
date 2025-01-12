@@ -111,228 +111,21 @@ class _QuizOptionsState extends State<QuizOptions> {
   }
 
   void validateQuestions() async {
-  // Parse inputs safely, default to -1 to capture invalid inputs
-  int totalQuestions = int.tryParse(questionsController.text) ?? -1;
-  int mcqCount = int.tryParse(mcqController.text) ?? -1;
-  int tfCount = int.tryParse(tfController.text) ?? -1;
-  int lectureFrom = int.tryParse(lectureFromController.text) ?? -1;
-  int lectureTo = int.tryParse(lectureToController.text) ?? -1;
+    // Parse inputs safely, default to -1 to capture invalid inputs
+    int totalQuestions = int.tryParse(questionsController.text) ?? -1;
+    int mcqCount = int.tryParse(mcqController.text) ?? -1;
+    int tfCount = int.tryParse(tfController.text) ?? -1;
+    int lectureFrom = int.tryParse(lectureFromController.text) ?? -1;
+    int lectureTo = int.tryParse(lectureToController.text) ?? -1;
 
-  // Check if a course is selected
-  if (selectedCourse == null) {
-    showDialog(
-      context: context,
-      builder: (BuildContext dialogContext) {
-        return AlertDialog(
-          title: const Text("Error"),
-          content: const Text("Please select a course."),
-          actions: [
-            TextButton(
-              onPressed: () {
-                Navigator.of(dialogContext).pop();
-              },
-              child: const Text("OK"),
-            ),
-          ],
-        );
-      },
-    );
-    return;
-  }
-
-  // Check if lectures are available
-  if (lectures.isEmpty) {
-    showDialog(
-      context: context,
-      builder: (BuildContext dialogContext) {
-        return AlertDialog(
-          title: const Text("Error"),
-          content: const Text("No lectures available for the selected course."),
-          actions: [
-            TextButton(
-              onPressed: () {
-                Navigator.of(dialogContext).pop();
-              },
-              child: const Text("OK"),
-            ),
-          ],
-        );
-      },
-    );
-    return;
-  }
-
-  // Validate lecture range inputs
-  if (lectureFrom <= 0 || lectureTo <= 0 || lectureFrom > lectureTo) {
-    showDialog(
-      context: context,
-      builder: (BuildContext dialogContext) {
-        return AlertDialog(
-          title: const Text("Error"),
-          content: const Text("Please enter a valid lecture range."),
-          actions: [
-            TextButton(
-              onPressed: () {
-                Navigator.of(dialogContext).pop();
-              },
-              child: const Text("OK"),
-            ),
-          ],
-        );
-      },
-    );
-    return;
-  }
-
-  // Check if lecture numbers exceed available lectures
-  if (lectureFrom > lectures.length || lectureTo > lectures.length) {
-    showDialog(
-      context: context,
-      builder: (BuildContext dialogContext) {
-        return AlertDialog(
-          title: const Text("Error"),
-          content: Text(
-              "Lecture numbers exceed available lectures. Please select between 1 and ${lectures.length}."),
-          actions: [
-            TextButton(
-              onPressed: () {
-                Navigator.of(dialogContext).pop();
-              },
-              child: const Text("OK"),
-            ),
-          ],
-        );
-      },
-    );
-    return;
-  }
-
-  // Validate question numbers
-  if (totalQuestions <= 0) {
-    showDialog(
-      context: context,
-      builder: (BuildContext dialogContext) {
-        return AlertDialog(
-          title: const Text("Error"),
-          content:
-              const Text("Total number of questions must be a positive integer."),
-          actions: [
-            TextButton(
-              onPressed: () {
-                Navigator.of(dialogContext).pop();
-              },
-              child: const Text("OK"),
-            ),
-          ],
-        );
-      },
-    );
-    return;
-  }
-
-  if (mcqCount < 0 || tfCount < 0) {
-    showDialog(
-      context: context,
-      builder: (BuildContext dialogContext) {
-        return AlertDialog(
-          title: const Text("Error"),
-          content:
-              const Text("Number of MCQ and T/F questions cannot be negative."),
-          actions: [
-            TextButton(
-              onPressed: () {
-                Navigator.of(dialogContext).pop();
-              },
-              child: const Text("OK"),
-            ),
-          ],
-        );
-      },
-    );
-    return;
-  }
-
-  if (mcqCount + tfCount != totalQuestions) {
-    showDialog(
-      context: context,
-      builder: (BuildContext dialogContext) {
-        return AlertDialog(
-          title: const Text("Error"),
-          content: const Text(
-              "The total number of MCQs and T/F questions must equal the number of questions."),
-          actions: [
-            TextButton(
-              onPressed: () {
-                Navigator.of(dialogContext).pop();
-              },
-              child: const Text("OK"),
-            ),
-          ],
-        );
-      },
-    );
-    return;
-  }
-
-  // All validations passed, set isGenerating to true
-  setState(() {
-    isGenerating = true;
-    print('isGenerating set to true');
-  });
-
-  // Prepare data to send to the server
-  Map<String, dynamic> requestData = {
-    'course_name': selectedCourse!.replaceAll(' ', ''),
-    'co_id': selectedCourseId,
-    'lecture_start': lectureFrom,
-    'lecture_end': lectureTo,
-    'number_of_questions': totalQuestions,
-    'num_mcq': mcqCount,
-    'num_true_false': tfCount,
-  };
-
-  // Send data to server
-  try {
-    final response = await http.post(
-      Uri.parse('https://alyibrahim.pythonanywhere.com/generate_quiz'),
-      headers: {'Content-Type': 'application/json'},
-      body: jsonEncode(requestData),
-    );
-
-    if (response.statusCode == 200) {
-      var jsonResponse = jsonDecode(response.body);
-
-      setState(() {
-        isGenerating = false;
-        print('isGenerating set to false');
-      });
-
-      // Navigate to the Quiz screen and pass the quiz data and co_id
-      Navigator.push(
-        context,
-        MaterialPageRoute(
-          builder: (context) => Quiz(
-            quizData: jsonResponse,
-            totalQuestions: totalQuestions,
-            mcqCount: mcqCount,
-            tfCount: tfCount,
-            coId: selectedCourseId!,
-          ),
-        ),
-      );
-    } else if (response.statusCode == 400) {
-      // Handle server-side validation errors
-      setState(() {
-        isGenerating = false;
-        print('isGenerating set to false');
-      });
-      var jsonResponse = jsonDecode(response.body);
+    // Check if a course is selected
+    if (selectedCourse == null) {
       showDialog(
         context: context,
         builder: (BuildContext dialogContext) {
           return AlertDialog(
             title: const Text("Error"),
-            content: Text(jsonResponse['error'] ?? 'Unknown error occurred.'),
+            content: const Text("Please select a course."),
             actions: [
               TextButton(
                 onPressed: () {
@@ -344,13 +137,247 @@ class _QuizOptionsState extends State<QuizOptions> {
           );
         },
       );
-    } else {
+      return;
+    }
+
+    // Check if lectures are available
+    if (lectures.isEmpty) {
+      showDialog(
+        context: context,
+        builder: (BuildContext dialogContext) {
+          return AlertDialog(
+            title: const Text("Error"),
+            content:
+                const Text("No lectures available for the selected course."),
+            actions: [
+              TextButton(
+                onPressed: () {
+                  Navigator.of(dialogContext).pop();
+                },
+                child: const Text("OK"),
+              ),
+            ],
+          );
+        },
+      );
+      return;
+    }
+
+    // Validate lecture range inputs
+    if (lectureFrom <= 0 || lectureTo <= 0 || lectureFrom > lectureTo) {
+      showDialog(
+        context: context,
+        builder: (BuildContext dialogContext) {
+          return AlertDialog(
+            title: const Text("Error"),
+            content: const Text("Please enter a valid lecture range."),
+            actions: [
+              TextButton(
+                onPressed: () {
+                  Navigator.of(dialogContext).pop();
+                },
+                child: const Text("OK"),
+              ),
+            ],
+          );
+        },
+      );
+      return;
+    }
+
+    // Check if lecture numbers exceed available lectures
+    if (lectureFrom > lectures.length || lectureTo > lectures.length) {
+      showDialog(
+        context: context,
+        builder: (BuildContext dialogContext) {
+          return AlertDialog(
+            title: const Text("Error"),
+            content: Text(
+                "Lecture numbers exceed available lectures. Please select between 1 and ${lectures.length}."),
+            actions: [
+              TextButton(
+                onPressed: () {
+                  Navigator.of(dialogContext).pop();
+                },
+                child: const Text("OK"),
+              ),
+            ],
+          );
+        },
+      );
+      return;
+    }
+
+    // Validate question numbers
+    if (totalQuestions <= 0) {
+      showDialog(
+        context: context,
+        builder: (BuildContext dialogContext) {
+          return AlertDialog(
+            title: const Text("Error"),
+            content: const Text(
+                "Total number of questions must be a positive integer."),
+            actions: [
+              TextButton(
+                onPressed: () {
+                  Navigator.of(dialogContext).pop();
+                },
+                child: const Text("OK"),
+              ),
+            ],
+          );
+        },
+      );
+      return;
+    }
+
+    if (mcqCount < 0 || tfCount < 0) {
+      showDialog(
+        context: context,
+        builder: (BuildContext dialogContext) {
+          return AlertDialog(
+            title: const Text("Error"),
+            content: const Text(
+                "Number of MCQ and T/F questions cannot be negative."),
+            actions: [
+              TextButton(
+                onPressed: () {
+                  Navigator.of(dialogContext).pop();
+                },
+                child: const Text("OK"),
+              ),
+            ],
+          );
+        },
+      );
+      return;
+    }
+
+    if (mcqCount + tfCount != totalQuestions) {
+      showDialog(
+        context: context,
+        builder: (BuildContext dialogContext) {
+          return AlertDialog(
+            title: const Text("Error"),
+            content: const Text(
+                "The total number of MCQs and T/F questions must equal the number of questions."),
+            actions: [
+              TextButton(
+                onPressed: () {
+                  Navigator.of(dialogContext).pop();
+                },
+                child: const Text("OK"),
+              ),
+            ],
+          );
+        },
+      );
+      return;
+    }
+
+    // All validations passed, set isGenerating to true
+    setState(() {
+      isGenerating = true;
+      print('isGenerating set to true');
+    });
+
+    // Prepare data to send to the server
+    Map<String, dynamic> requestData = {
+      'course_name': selectedCourse!.replaceAll(' ', ''),
+      'co_id': selectedCourseId,
+      'lecture_start': lectureFrom,
+      'lecture_end': lectureTo,
+      'number_of_questions': totalQuestions,
+      'num_mcq': mcqCount,
+      'num_true_false': tfCount,
+    };
+
+    // Send data to server
+    try {
+      final response = await http.post(
+        Uri.parse('https://alyibrahim.pythonanywhere.com/generate_quiz'),
+        headers: {'Content-Type': 'application/json'},
+        body: jsonEncode(requestData),
+      );
+
+      if (response.statusCode == 200) {
+        var jsonResponse = jsonDecode(response.body);
+
+        setState(() {
+          isGenerating = false;
+          print('isGenerating set to false');
+        });
+
+        // Navigate to the Quiz screen and pass the quiz data and co_id
+        Navigator.push(
+          context,
+          MaterialPageRoute(
+            builder: (context) => Quiz(
+              quizData: jsonResponse,
+              totalQuestions: totalQuestions,
+              mcqCount: mcqCount,
+              tfCount: tfCount,
+              coId: selectedCourseId!,
+            ),
+          ),
+        );
+      } else if (response.statusCode == 400) {
+        // Handle server-side validation errors
+        setState(() {
+          isGenerating = false;
+          print('isGenerating set to false');
+        });
+        var jsonResponse = jsonDecode(response.body);
+        showDialog(
+          context: context,
+          builder: (BuildContext dialogContext) {
+            return AlertDialog(
+              title: const Text("Error"),
+              content: Text(jsonResponse['error'] ?? 'Unknown error occurred.'),
+              actions: [
+                TextButton(
+                  onPressed: () {
+                    Navigator.of(dialogContext).pop();
+                  },
+                  child: const Text("OK"),
+                ),
+              ],
+            );
+          },
+        );
+      } else {
+        setState(() {
+          isGenerating = false;
+          print('isGenerating set to false');
+        });
+        print('Server error: ${response.statusCode}');
+        print('Response body: ${response.body}');
+        // Show error message
+        showDialog(
+          context: context,
+          builder: (BuildContext dialogContext) {
+            return AlertDialog(
+              title: const Text("Error"),
+              content: Text(
+                  'An unexpected server error occurred. Please try again later.'),
+              actions: [
+                TextButton(
+                  onPressed: () {
+                    Navigator.of(dialogContext).pop();
+                  },
+                  child: const Text("OK"),
+                ),
+              ],
+            );
+          },
+        );
+      }
+    } catch (e) {
       setState(() {
         isGenerating = false;
         print('isGenerating set to false');
       });
-      print('Server error: ${response.statusCode}');
-      print('Response body: ${response.body}');
+      print('Error: $e');
       // Show error message
       showDialog(
         context: context,
@@ -358,7 +385,7 @@ class _QuizOptionsState extends State<QuizOptions> {
           return AlertDialog(
             title: const Text("Error"),
             content: Text(
-                'An unexpected server error occurred. Please try again later.'),
+                'An error occurred while generating the quiz: $e. Please try again.'),
             actions: [
               TextButton(
                 onPressed: () {
@@ -371,39 +398,13 @@ class _QuizOptionsState extends State<QuizOptions> {
         },
       );
     }
-  } catch (e) {
-    setState(() {
-      isGenerating = false;
-      print('isGenerating set to false');
-    });
-    print('Error: $e');
-    // Show error message
-    showDialog(
-      context: context,
-      builder: (BuildContext dialogContext) {
-        return AlertDialog(
-          title: const Text("Error"),
-          content: Text(
-              'An error occurred while generating the quiz: $e. Please try again.'),
-          actions: [
-            TextButton(
-              onPressed: () {
-                Navigator.of(dialogContext).pop();
-              },
-              child: const Text("OK"),
-            ),
-          ],
-        );
-      },
-    );
   }
-}
-
 
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      backgroundColor: white, // Set background color to white
+      backgroundColor: Theme.of(context)
+          .scaffoldBackgroundColor, // Set background color to white
       appBar: AppBar(
         title: Text(
           'Make Your Quiz!',
@@ -436,7 +437,7 @@ class _QuizOptionsState extends State<QuizOptions> {
                       fontSize: 24,
                       fontWeight: FontWeight.bold,
                       fontFamily: 'League Spartan',
-                      color: black,
+                      color: Theme.of(context).colorScheme.onSurface,
                     ),
                   ),
                   const SizedBox(height: 15),
@@ -466,7 +467,7 @@ class _QuizOptionsState extends State<QuizOptions> {
                         child: Text(
                           value,
                           style: TextStyle(
-                            color: black,
+                            color: Theme.of(context).colorScheme.primary,
                             fontFamily: 'League Spartan',
                           ),
                         ),
@@ -494,7 +495,7 @@ class _QuizOptionsState extends State<QuizOptions> {
                         fontSize: 20,
                         fontWeight: FontWeight.bold,
                         fontFamily: 'League Spartan',
-                        color: black,
+                        color: Theme.of(context).colorScheme.onSurface,
                       ),
                     ),
                     const SizedBox(height: 10),
@@ -531,7 +532,7 @@ class _QuizOptionsState extends State<QuizOptions> {
                       fontSize: 24,
                       fontWeight: FontWeight.bold,
                       fontFamily: 'League Spartan',
-                      color: black,
+                      color: Theme.of(context).colorScheme.onSurface,
                     ),
                   ),
                   const SizedBox(height: 15),
@@ -559,6 +560,7 @@ class _QuizOptionsState extends State<QuizOptions> {
                           style: TextStyle(
                             fontWeight: FontWeight.bold,
                             fontFamily: 'League Spartan',
+                            color: Theme.of(context).scaffoldBackgroundColor,
                           ),
                         ),
                       ),
@@ -585,6 +587,7 @@ class _QuizOptionsState extends State<QuizOptions> {
                           style: TextStyle(
                             fontWeight: FontWeight.bold,
                             fontFamily: 'League Spartan',
+                            color: Theme.of(context).scaffoldBackgroundColor,
                           ),
                         ),
                       ),
@@ -598,7 +601,7 @@ class _QuizOptionsState extends State<QuizOptions> {
                       fontSize: 24,
                       fontWeight: FontWeight.bold,
                       fontFamily: 'League Spartan',
-                      color: black,
+                      color: Theme.of(context).colorScheme.onSurface,
                     ),
                   ),
                   const SizedBox(height: 15),
@@ -608,7 +611,7 @@ class _QuizOptionsState extends State<QuizOptions> {
                     decoration: InputDecoration(
                       hintText: 'Enter total number of questions',
                       hintStyle: TextStyle(
-                        color: Colors.grey[600],
+                        color: Theme.of(context).scaffoldBackgroundColor,
                         fontFamily: 'League Spartan',
                       ),
                       contentPadding:
@@ -623,6 +626,7 @@ class _QuizOptionsState extends State<QuizOptions> {
                     style: TextStyle(
                       fontWeight: FontWeight.bold,
                       fontFamily: 'League Spartan',
+                      color: Theme.of(context).scaffoldBackgroundColor,
                     ),
                   ),
                   const SizedBox(height: 30),
@@ -633,7 +637,7 @@ class _QuizOptionsState extends State<QuizOptions> {
                       fontSize: 24,
                       fontWeight: FontWeight.bold,
                       fontFamily: 'League Spartan',
-                      color: black,
+                      color: Theme.of(context).colorScheme.onSurface,
                     ),
                   ),
                   const SizedBox(height: 15),
@@ -661,6 +665,7 @@ class _QuizOptionsState extends State<QuizOptions> {
                           style: TextStyle(
                             fontWeight: FontWeight.bold,
                             fontFamily: 'League Spartan',
+                            color: Theme.of(context).scaffoldBackgroundColor,
                           ),
                         ),
                       ),
@@ -687,6 +692,7 @@ class _QuizOptionsState extends State<QuizOptions> {
                           style: TextStyle(
                             fontWeight: FontWeight.bold,
                             fontFamily: 'League Spartan',
+                            color: Theme.of(context).scaffoldBackgroundColor,
                           ),
                         ),
                       ),

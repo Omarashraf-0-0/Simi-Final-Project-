@@ -147,10 +147,11 @@ class _ViewAnswerState extends State<ViewAnswer> {
               padding: const EdgeInsets.all(16.0),
               child: Text(
                 questionText,
-                style: const TextStyle(
+                style: TextStyle(
                   fontFamily: 'League Spartan',
                   fontSize: 18,
                   fontWeight: FontWeight.bold,
+                  color: Theme.of(context).colorScheme.onSurface,
                 ),
               ),
             ),
@@ -161,7 +162,7 @@ class _ViewAnswerState extends State<ViewAnswer> {
                 bool isUserSelected = userSelectedIndex == index;
                 bool isCorrectOption = index == correctOptionIndex;
 
-                Color textColor = Colors.black;
+                Color textColor = Theme.of(context).colorScheme.onSurface;
                 if (isUserSelected && !isCorrectOption) {
                   textColor = Colors.red;
                 } else if (isCorrectOption) {

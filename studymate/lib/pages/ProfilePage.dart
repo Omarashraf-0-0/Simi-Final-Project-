@@ -392,7 +392,7 @@ class _ProfilepageState extends State<Profilepage> {
                       style: GoogleFonts.leagueSpartan(
                         fontSize: 24,
                         fontWeight: FontWeight.bold,
-                        color: theme.primaryTextTheme.bodyMedium?.color,
+                        color: Theme.of(context).colorScheme.onSurface,
                       ),
                     ),
                     SizedBox(height: size.height * 0.005),

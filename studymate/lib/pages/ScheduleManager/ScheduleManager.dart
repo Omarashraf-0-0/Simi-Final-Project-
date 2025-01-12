@@ -673,9 +673,7 @@ class _ScheduleViewState extends State<ScheduleView> {
                                     "Please enter a description for the event",
                                   );
                                 } else {
-                                  // Parse the date and times into DateTime objects
                                   try {
-                                    // Ensure the date format is correct (YYYY-MM-DD)
                                     final String eventDateText =
                                         dateController.text.trim();
                                     if (!RegExp(r'^\d{4}-\d{2}-\d{2}$')
@@ -728,7 +726,14 @@ class _ScheduleViewState extends State<ScheduleView> {
                                         "Error",
                                         "The reminder time cannot be after the start time.",
                                       );
-                                    } else if (_selectedRepeat != "None" &&
+                                    }else if (reminderTime.isBefore(DateTime.now())) {
+                                      showWarningPopup(
+                                        context,
+                                        "Error",
+                                        "The reminder time cannot be in the past.",
+                                      );
+                                    } 
+                                    else if (_selectedRepeat != "None" &&
                                         repeatUntil.isBefore(eventDate)) {
                                       showWarningPopup(
                                         context,

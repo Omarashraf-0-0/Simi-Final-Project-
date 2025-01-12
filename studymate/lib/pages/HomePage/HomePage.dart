@@ -470,11 +470,11 @@ class _HomepageState extends State<Homepage> {
           padding: const EdgeInsets.symmetric(
               horizontal: 12.0, vertical: 10), // Adjust padding
           child: GNav(
-            gap: 8,
+            gap: 5,
             activeColor: Theme.of(context).colorScheme.secondary,
             color: Theme.of(context).colorScheme.surface,
             iconSize: 24,
-            padding: EdgeInsets.symmetric(horizontal: 20, vertical: 12),
+            padding: EdgeInsets.symmetric(horizontal: 10, vertical: 10),
             duration: Duration(milliseconds: 400),
             tabBackgroundColor: Theme.of(context).colorScheme.surface,
             tabs: [

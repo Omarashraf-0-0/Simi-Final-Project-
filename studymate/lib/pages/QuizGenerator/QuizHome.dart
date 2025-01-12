@@ -20,7 +20,7 @@ class _QuizHomeState extends State<QuizHome> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      backgroundColor: white, // Set background color to white for a clean look
+      backgroundColor: Theme.of(context).scaffoldBackgroundColor, // Set background color to white for a clean look
       appBar: AppBar(
         backgroundColor: blue2, // Use branding blue color
         title: Text(

@@ -102,6 +102,7 @@ class AboLaylaCoursesState extends State<AboLaylaCourses> {
                               course,
                               overflow: TextOverflow.visible,
                               softWrap: true,
+                              selectionColor: Theme.of(context).colorScheme.onSurface,
                             ),
                           );
                         }).toList(),
