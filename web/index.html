@@ -1,0 +1,344 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="utf-8">
+    <!-- <title>DarkPan - Bootstrap 5 Admin Template</title> -->
+    <meta content="width=device-width, initial-scale=1.0" name="viewport">
+    <meta content="" name="keywords">   
+    <meta content="" name="description">
+
+    <!-- Favicon -->
+    <!-- <link href="img/favicon.ico" rel="icon"> -->
+
+    <!-- Google Web Fonts -->
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Open+Sans:wght@400;600&family=Roboto:wght@500;700&display=swap" rel="stylesheet"> 
+    
+    <!-- Icon Font Stylesheet -->
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.10.0/css/all.min.css" rel="stylesheet">
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.4.1/font/bootstrap-icons.css" rel="stylesheet">
+
+    <!-- Libraries Stylesheet -->
+    <link href="lib/owlcarousel/assets/owl.carousel.min.css" rel="stylesheet">
+    <link href="lib/tempusdominus/css/tempusdominus-bootstrap-4.min.css" rel="stylesheet" />
+
+    <!-- Customized Bootstrap Stylesheet -->
+    <link href="css/bootstrap.min.css" rel="stylesheet">
+
+    <!-- Template Stylesheet -->
+    <link href="css/style.css" rel="stylesheet">
+</head>
+
+<body>
+    <div class="container-fluid position-relative d-flex p-0">
+        <!-- Spinner Start -->
+        <div id="spinner" class="show bg-dark position-fixed translate-middle w-100 vh-100 top-50 start-50 d-flex align-items-center justify-content-center">
+            <div class="spinner-border text-primary" style="width: 3rem; height: 3rem;" role="status">
+                <span class="sr-only">Loading...</span>
+            </div>
+        </div>
+        <!-- Spinner End -->
+
+
+        <!-- Sidebar Start -->
+        <div class="sidebar pe-4 pb-3">
+            <nav class="navbar bg-secondary navbar-dark">
+                <a href="index.html" class="navbar-brand mx-4 mb-3"> 
+                    <h3 class=""> <img class="rounded-circle" src="img/El Batal Study Mate Light Mode.png" alt="" style="width: 40px; height: 40px;">   Study Mate</h3>
+                </a>
+                <div class="d-flex align-items-center ms-4 mb-4">
+                    <div class="position-relative">
+                        <img class="rounded-circle" src="img/image.png" alt="" style="width: 40px; height: 40px;">
+                        <div class="bg-success rounded-circle border border-2 border-white position-absolute end-0 bottom-0 p-1"></div>
+                    </div>
+                    <div class="ms-3">
+                        <h6 class="mb-0">Abdo motaa</h6>
+                        <span>Admin</span>
+                    </div>
+                </div>
+                <div class="navbar-nav w-100">
+                    <a href="index.html" class="nav-item nav-link active"><i class="fa fa-tachometer-alt me-2"></i>Dashboard</a>
+                    <!-- Other menu items can go here -->
+                </div>
+            </nav>
+        </div>
+        <!-- Sidebar End -->
+
+
+        <!-- Content Start -->
+        <div class="content">
+            <!-- Navbar Start -->
+            <nav class="navbar navbar-expand bg-secondary navbar-dark sticky-top px-4 py-0">
+                <!-- Navbar content goes here -->
+            </nav>
+            <!-- Navbar End -->
+
+            <!-- Charts Start -->
+            <div class="container-fluid pt-4 px-4">
+                <div class="row g-4">
+                    <!-- Line Chart -->
+                    <div class="col-sm-12 col-xl-6">
+                        <div class="bg-secondary rounded h-100 p-4">
+                            <h6 class="mb-4">Quizzes per Day</h6>
+                            <canvas id="line-chart"></canvas>
+                        </div>
+                    </div>
+                    <!-- Doughnut Chart -->
+                    <div class="col-sm-12 col-xl-6">
+                        <div class="bg-secondary rounded h-100 p-4">
+                            <h6 class="mb-4">Quizzes per Lecture</h6>
+                            <canvas id="doughnut-chart"></canvas>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <!-- Charts End -->
+
+            <!-- List of Names Start -->
+            <div class="container-fluid pt-4 px-4">
+                <div class="bg-secondary text-center rounded p-4">
+                    <div class="d-flex align-items-center justify-content-between mb-4">
+                        <h6 class="mb-0">Recent Users</h6>
+                        <!-- <a href="#">Show All</a> -->
+                    </div>
+                    <div class="table-responsive">
+                        <table class="table text-start align-middle table-bordered table-hover mb-0">
+                            <thead>
+                                <tr class="text-white">
+                                    <th scope="col">#</th>
+                                    <th scope="col">Name</th>
+                                    <th scope="col">Email</th>
+                                    <th scope="col">XP</th>
+                                    <th scope="col">Action</th> <!-- Added Action column -->
+                                </tr>
+                            </thead>
+                            <tbody id="user-table"> <!-- Added id here -->
+                                <!-- Existing Rows (These will be replaced dynamically) -->
+                                <!-- Sample static rows (if needed) -->
+                                <!--
+                                <tr>
+                                    <td>1</td>
+                                    <td>Abdo motaaa</td>
+                                    <td>john@example.com</td>
+                                    <td>200</td>
+                                    <td><button class="btn btn-sm btn-danger delete-user" data-username="Abdo motaaa">Delete</button></td>
+                                </tr>
+                                <tr>
+                                    <td>2</td>
+                                    <td>Jane Smith</td>
+                                    <td>jane@example.com</td>
+                                    <td>2300</td>
+                                    <td><button class="btn btn-sm btn-danger delete-user" data-username="Jane Smith">Delete</button></td>
+                                </tr>
+                                -->
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+            </div>
+            <!-- List of Names End -->
+            
+            <!-- Chart.js Library -->
+            <script src="lib/chart/chart.min.js"></script>
+            
+            <!-- Custom Chart Scripts -->
+            <script>
+                document.addEventListener('DOMContentLoaded', () => {
+                    // Fetch data from /getInsightsWeb
+                    fetch('https://AlyIbrahim.pythonanywhere.com/getInsightsWeb', {
+                        method: 'POST',
+                        headers: {
+                            'Content-Type': 'application/json',
+                        },
+                        body: JSON.stringify({}) // Send an empty JSON body, if necessary
+                    })
+                    .then(response => response.json())
+                    .then(data => {
+                        if (data.error) {
+                            console.error('Error from server:', data.error);
+                            return;
+                        }
+        
+                        // Extract data for the charts
+                        const lineLabels = data.line_chart.labels;
+                        const lineCounts = data.line_chart.counts;
+        
+                        const doughnutLabels = data.doughnut_chart.labels;
+                        const doughnutCounts = data.doughnut_chart.counts;
+        
+                        // Create Line Chart
+                        const lineChartCanvas = document.getElementById("line-chart");
+                        const ctxLine = lineChartCanvas.getContext('2d');
+                        new Chart(ctxLine, {
+                            type: "line",
+                            data: {
+                                labels: lineLabels,
+                                datasets: [{
+                                    label: "Quizzes",
+                                    data: lineCounts,
+                                    backgroundColor: "rgba(28, 170, 255, 0.5)",
+                                    borderColor: "rgba(28, 170, 255, 1)",
+                                    fill: true
+                                }]
+                            },
+                            options: {
+                                responsive: true,
+                                scales: {
+                                    x: {
+                                        title: {
+                                            display: true,
+                                            text: 'Lecture Number for OS'
+                                        }
+                                    },
+                                    y: {
+                                        title: {
+                                            display: true,
+                                            text: 'Number of Quizzes'
+                                        },
+                                        beginAtZero: true
+                                    }
+                                }
+                            }
+                        });
+        
+                        // Generate Dynamic Colors for Doughnut Chart
+                        const backgroundColors = doughnutLabels.map((_, index) => {
+                            // Array of colors
+                            const colors = [
+                                "rgba(255, 99, 132, 0.7)",
+                                "rgba(54, 162, 235, 0.7)",
+                                "rgba(255, 206, 86, 0.7)",
+                                "rgba(75, 192, 192, 0.7)",
+                                "rgba(153, 102, 255, 0.7)",
+                                "rgba(255, 159, 64, 0.7)"
+                            ];
+                            return colors[index % colors.length];
+                        });
+        
+                        // Create Doughnut Chart
+                        const doughnutChartCanvas = document.getElementById("doughnut-chart");
+                        const ctxDoughnut = doughnutChartCanvas.getContext('2d');
+                        new Chart(ctxDoughnut, {
+                            type: "doughnut",
+                            data: {
+                                labels: doughnutLabels,
+                                datasets: [{
+                                    data: doughnutCounts,
+                                    backgroundColor: backgroundColors,
+                                    borderWidth: 1
+                                }]
+                            },
+                            options: {
+                                responsive: true
+                            }
+                        });
+        
+                        // Existing code for fetching user data (leave this unchanged)
+                        fetch('https://AlyIbrahim.pythonanywhere.com/getUsersWeb', {
+                            method: 'POST',
+                            headers: {
+                                'Content-Type': 'application/json',
+                            },
+                            body: JSON.stringify({})
+                        })
+                        .then(response => response.json())
+                        .then(data => {
+                            console.log(data); // Logs the response data to the console
+        
+                            // Update the UI to display the list of users
+                            const userTable = document.getElementById('user-table');
+                            // Clear existing rows
+                            userTable.innerHTML = '';
+                            // Access the users array
+                            data.users.forEach((user, index) => {
+                                const row = document.createElement('tr');
+                                row.innerHTML = `
+                                    <td>${index + 1}</td>
+                                    <td>${user.username || 'N/A'}</td>
+                                    <td>${user.email || 'N/A'}</td>
+                                    <td>${user.experience_points || 'N/A'}</td>
+                                    <td><button class="btn btn-sm btn-danger delete-user" data-username="${user.username || ''}">Delete</button></td>
+                                `;
+                                userTable.appendChild(row);
+                            });
+
+                            // Add event listeners to delete buttons
+                            const deleteButtons = document.querySelectorAll('.delete-user');
+                            deleteButtons.forEach(button => {
+                                button.addEventListener('click', function() {
+                                    const username = this.getAttribute('data-username');
+                                    if (confirm(`Are you sure you want to delete user ${username}?`)) {
+                                        // Send DELETE request to the server
+                                        fetch('https://AlyIbrahim.pythonanywhere.com/deleteUserWeb', {
+                                            method: 'POST',
+                                            headers: {
+                                                'Content-Type': 'application/json',
+                                            },
+                                            body: JSON.stringify({ username: username })
+                                        })
+                                        .then(response => response.json())
+                                        .then(data => {
+                                            if (data.success) {
+                                                alert(`User ${username} deleted successfully.`);
+                                                // Remove the row from the table
+                                                this.closest('tr').remove();
+                                            } else {
+                                                alert(` ${username}: deleted successfully.`);
+                                            }
+                                        })
+                                        .catch(error => {
+                                            console.error('Error during deleting user:', error);
+                                            alert(`Error deleting user ${username}: ${error}`);
+                                        });
+                                    }
+                                });
+                            });
+                        })
+                        .catch(error => {
+                            console.error('Error during fetching:', error);  // Logs the error
+                        });
+                    })
+                    .catch(error => {
+                        console.error('Error during fetching insights:', error);  // Logs the error
+                    });
+                });
+            </script>
+            <!-- End of Custom Chart Scripts -->
+
+            <!-- Footer Start -->
+            <div class="container-fluid pt-4 px-4">
+                <div class="bg-secondary rounded-top p-4">
+                    <!-- Footer content goes here -->
+                </div>
+            </div>
+            <!-- Footer End -->
+        </div>
+        <!-- Content End -->
+
+        <!-- Back to Top -->
+        <a href="#" class="btn btn-lg btn-primary btn-lg-square back-to-top"><i class="bi bi-arrow-up"></i></a>
+    </div>
+
+    <!-- JavaScript Libraries -->
+    <!-- Include necessary JS libraries here -->
+    <script src="https://code.jquery.com/jquery-3.4.1.min.js"></script>
+    <!-- Bootstrap JS -->
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.0.0/dist/js/bootstrap.bundle.min.js"></script>
+    <!-- Easing JS -->
+    <script src="lib/easing/easing.min.js"></script>
+    <!-- Waypoints JS -->
+    <script src="lib/waypoints/waypoints.min.js"></script>
+    <!-- Owl Carousel JS -->
+    <script src="lib/owlcarousel/owl.carousel.min.js"></script>
+    <!-- Tempus Dominus JS -->
+    <script src="lib/tempusdominus/js/moment.min.js"></script>
+    <script src="lib/tempusdominus/js/moment-timezone.min.js"></script>
+    <script src="lib/tempusdominus/js/tempusdominus-bootstrap-4.min.js"></script>
+
+    <!-- Template Javascript -->
+    <script src="js/main.js"></script>
+</body>
+
+</html>
