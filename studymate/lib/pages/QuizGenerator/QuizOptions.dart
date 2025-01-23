@@ -443,14 +443,21 @@ class _QuizOptionsState extends State<QuizOptions> {
                   const SizedBox(height: 15),
                   DropdownButtonFormField<String>(
                     value: selectedCourse,
+                    isExpanded: true, // Ensures the dropdown fills the width
+                    hint: Align(
+                      alignment: Alignment.centerLeft,
+                      child: Text(
+                        'Choose Course',
+                        style: TextStyle(
+                          color:
+                              blue2, // Set the placeholder text color to blue
+                          fontFamily: 'League Spartan',
+                        ),
+                      ),
+                    ),
                     decoration: InputDecoration(
                       contentPadding:
                           EdgeInsets.symmetric(vertical: 15, horizontal: 17),
-                      hintText: 'Choose Course',
-                      hintStyle: TextStyle(
-                        color: Colors.grey[600],
-                        fontFamily: 'League Spartan',
-                      ),
                       filled: true,
                       fillColor: Colors.grey[200],
                       border: OutlineInputBorder(
@@ -487,113 +494,6 @@ class _QuizOptionsState extends State<QuizOptions> {
                     },
                   ),
                   const SizedBox(height: 30),
-                  // Display Lectures
-                  if (lectures.isNotEmpty) ...[
-                    Text(
-                      'Lectures (${lectures.length}):',
-                      style: TextStyle(
-                        fontSize: 20,
-                        fontWeight: FontWeight.bold,
-                        fontFamily: 'League Spartan',
-                        color: Theme.of(context).colorScheme.onSurface,
-                      ),
-                    ),
-                    const SizedBox(height: 10),
-                    Container(
-                      height: 150,
-                      decoration: BoxDecoration(
-                        color: white,
-                        borderRadius: BorderRadius.circular(15),
-                        border: Border.all(color: Colors.grey[300]!),
-                      ),
-                      child: ListView.builder(
-                        itemCount: lectures.length,
-                        itemBuilder: (context, index) {
-                          return ListTile(
-                            leading: Icon(Icons.book, color: blue2),
-                            title: Text(
-                              lectures[index]['name']!,
-                              style: TextStyle(
-                                fontSize: 16,
-                                fontFamily: 'League Spartan',
-                                color: black,
-                              ),
-                            ),
-                          );
-                        },
-                      ),
-                    ),
-                    const SizedBox(height: 30),
-                  ],
-                  // Section: Lecture Range
-                  Text(
-                    'Lecture Range',
-                    style: TextStyle(
-                      fontSize: 24,
-                      fontWeight: FontWeight.bold,
-                      fontFamily: 'League Spartan',
-                      color: Theme.of(context).colorScheme.onSurface,
-                    ),
-                  ),
-                  const SizedBox(height: 15),
-                  Row(
-                    children: [
-                      Expanded(
-                        child: TextField(
-                          controller: lectureFromController,
-                          keyboardType: TextInputType.number,
-                          decoration: InputDecoration(
-                            labelText: 'From',
-                            labelStyle: TextStyle(
-                              color: blue2,
-                              fontFamily: 'League Spartan',
-                            ),
-                            contentPadding: EdgeInsets.symmetric(
-                                vertical: 15, horizontal: 20),
-                            filled: true,
-                            fillColor: Colors.grey[200],
-                            border: OutlineInputBorder(
-                              borderRadius: BorderRadius.circular(15),
-                              borderSide: BorderSide.none,
-                            ),
-                          ),
-                          style: TextStyle(
-                            fontWeight: FontWeight.bold,
-                            fontFamily: 'League Spartan',
-                            color: Theme.of(context).scaffoldBackgroundColor,
-                          ),
-                        ),
-                      ),
-                      const SizedBox(width: 20),
-                      Expanded(
-                        child: TextField(
-                          controller: lectureToController,
-                          keyboardType: TextInputType.number,
-                          decoration: InputDecoration(
-                            labelText: 'To',
-                            labelStyle: TextStyle(
-                              color: blue2,
-                              fontFamily: 'League Spartan',
-                            ),
-                            contentPadding: EdgeInsets.symmetric(
-                                vertical: 15, horizontal: 20),
-                            filled: true,
-                            fillColor: Colors.grey[200],
-                            border: OutlineInputBorder(
-                              borderRadius: BorderRadius.circular(15),
-                              borderSide: BorderSide.none,
-                            ),
-                          ),
-                          style: TextStyle(
-                            fontWeight: FontWeight.bold,
-                            fontFamily: 'League Spartan',
-                            color: Theme.of(context).scaffoldBackgroundColor,
-                          ),
-                        ),
-                      ),
-                    ],
-                  ),
-                  const SizedBox(height: 30),
                   // Section: Questions Number
                   Text(
                     'Questions Number',
@@ -609,9 +509,10 @@ class _QuizOptionsState extends State<QuizOptions> {
                     controller: questionsController,
                     keyboardType: TextInputType.number,
                     decoration: InputDecoration(
-                      hintText: 'Enter total number of questions',
-                      hintStyle: TextStyle(
-                        color: Theme.of(context).scaffoldBackgroundColor,
+                      labelText:
+                          'Total Questions', // Changed from hintText to labelText
+                      labelStyle: TextStyle(
+                        color: blue2, // Set the label text color to blue
                         fontFamily: 'League Spartan',
                       ),
                       contentPadding:
@@ -626,7 +527,7 @@ class _QuizOptionsState extends State<QuizOptions> {
                     style: TextStyle(
                       fontWeight: FontWeight.bold,
                       fontFamily: 'League Spartan',
-                      color: Theme.of(context).scaffoldBackgroundColor,
+                      color: Theme.of(context).colorScheme.onSurface,
                     ),
                   ),
                   const SizedBox(height: 30),
@@ -665,7 +566,7 @@ class _QuizOptionsState extends State<QuizOptions> {
                           style: TextStyle(
                             fontWeight: FontWeight.bold,
                             fontFamily: 'League Spartan',
-                            color: Theme.of(context).scaffoldBackgroundColor,
+                            color: Colors.black, // Set the text color to black
                           ),
                         ),
                       ),
@@ -692,7 +593,7 @@ class _QuizOptionsState extends State<QuizOptions> {
                           style: TextStyle(
                             fontWeight: FontWeight.bold,
                             fontFamily: 'League Spartan',
-                            color: Theme.of(context).scaffoldBackgroundColor,
+                            color: Colors.black, // Set the text color to black
                           ),
                         ),
                       ),
