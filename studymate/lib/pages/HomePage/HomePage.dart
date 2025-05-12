@@ -18,7 +18,12 @@ import 'package:studymate/pages/Game/GameHome.dart';
 import 'package:studymate/pages/Game/GameLeaderBoard.dart';
 import 'package:studymate/pages/OTP.dart';
 import 'package:studymate/pages/Career/CareerHome.dart';
-
+import 'package:studymate/theme/theme.dart';
+import 'package:studymate/theme/theme_manager.dart';
+import 'package:studymate/theme/bridge_theme.dart';
+import 'package:studymate/theme/dark_app_theme.dart';
+import 'package:studymate/theme/light_app_theme.dart';
+import 'package:provider/provider.dart';
 import 'package:http/http.dart' as http;
 import 'dart:convert';
 import 'package:intl/intl.dart';
@@ -407,8 +412,9 @@ class _HomepageState extends State<Homepage> {
                   icon: Icons.nightlight_outlined,
                   text: 'Dark Mode',
                   onTap: () {
-                    final isDarkMode = themeManager.themeData == ThemeMode.dark;
-                    themeManager.toggleTheme(!isDarkMode);
+                     final isDarkMode = Provider.of<ThemeManager>(context, listen: false).theme.brightness == Brightness.dark;
+                      // Toggle theme when tapped
+                    Provider.of<ThemeManager>(context, listen: false).toggleTheme(); 
                   },
                 ),
                 Divider(),
