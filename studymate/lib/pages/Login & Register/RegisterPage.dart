@@ -22,12 +22,12 @@ class _RegisterPageState extends State<RegisterPage> {
   final TextEditingController birthDateController = TextEditingController();
 
   // ألوان البراندينج
-  final Color blue1 = Color(0xFF1c74bb);
-  final Color blue2 = Color(0xFF165d96);
-  final Color cyan1 = Color(0xFF18bebc);
-  final Color cyan2 = Color(0xFF139896);
-  final Color black = Color(0xFF000000);
-  final Color white = Color(0xFFFFFFFF);
+  const Color blue1 = Color(0xFF1c74bb);
+  const Color blue2 = Color(0xFF165d96);
+  const Color cyan1 = Color(0xFF18bebc);
+  const Color cyan2 = Color(0xFF139896);
+  const Color black = Color(0xFF000000);
+  const Color white = Color(0xFFFFFFFF);
 
   final _formKey = GlobalKey<FormState>(); // مفتاح النموذج للتحقق
 
@@ -93,7 +93,7 @@ class _RegisterPageState extends State<RegisterPage> {
             children: [
               // زر العودة
               IconButton(
-                icon: Icon(Icons.arrow_back_ios_new, color: black),
+                icon: const Icon(Icons.arrow_back_ios_new, color: black),
                 onPressed: () {
                   Navigator.pop(context);
                 },
@@ -111,7 +111,7 @@ class _RegisterPageState extends State<RegisterPage> {
                         color: black,
                       ),
                     ),
-                    SizedBox(height: 8),
+                    const SizedBox(height: 8),
                     Text(
                       'Personal Information',
                       style: GoogleFonts.leagueSpartan(
@@ -133,7 +133,7 @@ class _RegisterPageState extends State<RegisterPage> {
                       controller: fullNameController,
                       decoration: InputDecoration(
                         labelText: 'Full Name',
-                        prefixIcon: Icon(Icons.person_outline),
+                        prefixIcon: const Icon(Icons.person_outline),
                         border: OutlineInputBorder(
                           borderRadius: BorderRadius.circular(15),
                         ),
@@ -151,7 +151,7 @@ class _RegisterPageState extends State<RegisterPage> {
                       controller: phoneController,
                       decoration: InputDecoration(
                         labelText: 'Phone Number',
-                        prefixIcon: Icon(Icons.phone_outlined),
+                        prefixIcon: const Icon(Icons.phone_outlined),
                         border: OutlineInputBorder(
                           borderRadius: BorderRadius.circular(15),
                         ),
@@ -172,7 +172,7 @@ class _RegisterPageState extends State<RegisterPage> {
                       controller: birthDateController,
                       decoration: InputDecoration(
                         labelText: 'Date of Birth',
-                        prefixIcon: Icon(Icons.calendar_today_outlined),
+                        prefixIcon: const Icon(Icons.calendar_today_outlined),
                         border: OutlineInputBorder(
                           borderRadius: BorderRadius.circular(15),
                         ),
@@ -196,7 +196,7 @@ class _RegisterPageState extends State<RegisterPage> {
                       controller: addressController,
                       decoration: InputDecoration(
                         labelText: 'Address',
-                        prefixIcon: Icon(Icons.home_outlined),
+                        prefixIcon: const Icon(Icons.home_outlined),
                         border: OutlineInputBorder(
                           borderRadius: BorderRadius.circular(15),
                         ),
@@ -216,7 +216,7 @@ class _RegisterPageState extends State<RegisterPage> {
                         onPressed: validateAndProceed,
                         style: ElevatedButton.styleFrom(
                           backgroundColor: blue2,
-                          padding: EdgeInsets.symmetric(vertical: 15),
+                          padding: const EdgeInsets.symmetric(vertical: 15),
                           shape: RoundedRectangleBorder(
                             borderRadius: BorderRadius.circular(15),
                           ),
@@ -246,18 +246,18 @@ class _RegisterPageState extends State<RegisterPage> {
                         color: black,
                       ),
                     ),
-                    SizedBox(height: 8),
+                    const SizedBox(height: 8),
                     OutlinedButton(
                       onPressed: () {
                         // الرجوع إلى صفحة تسجيل الدخول
                         Navigator.pushReplacement(
                           context,
-                          MaterialPageRoute(builder: (context) => LoginPage()),
+                          MaterialPageRoute(builder: (context) => const LoginPage()),
                         );
                       },
                       style: OutlinedButton.styleFrom(
-                        side: BorderSide(color: blue2, width: 2),
-                        padding: EdgeInsets.symmetric(horizontal: 40, vertical: 12),
+                        side: const BorderSide(color: blue2, width: 2),
+                        padding: const EdgeInsets.symmetric(horizontal: 40, vertical: 12),
                         shape: RoundedRectangleBorder(
                           borderRadius: BorderRadius.circular(15),
                         ),

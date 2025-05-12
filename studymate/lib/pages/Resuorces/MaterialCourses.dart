@@ -15,20 +15,20 @@ class _MaterialcoursesState extends State<Materialcourses> {
         final String link = args['link']; // Get the course ID
     return Scaffold(
       appBar: AppBar(
-        title: Text('Material Courses'),
+        title: const Text('Material Courses'),
       ),
       body: FutureBuilder(
         future: _loadPdf(),
         builder: (context, snapshot) {
           if (snapshot.connectionState == ConnectionState.waiting) {
-            return Center(child: CircularProgressIndicator());
+            return const Center(child: CircularProgressIndicator());
           } else if (snapshot.hasError) {
             return Center(child: Text('Error: ${snapshot.error}'));
           } else {
-            return PDF().cachedFromUrl(
+            return const PDF().cachedFromUrl(
               link,
               placeholder: (progress) => Center(child: Text('$progress %')),
-              errorWidget: (error) => Center(child: Text('Error loading PDF')),
+              errorWidget: (error) => const Center(child: Text('Error loading PDF')),
             );
           }
         },
@@ -38,7 +38,7 @@ class _MaterialcoursesState extends State<Materialcourses> {
 
   Future<void> _loadPdf() async {
     try {
-      await Future.delayed(Duration(seconds: 5));
+      await Future.delayed(const Duration(seconds: 5));
     } catch (e) {
       print('Error loading PDF: $e');
       rethrow;

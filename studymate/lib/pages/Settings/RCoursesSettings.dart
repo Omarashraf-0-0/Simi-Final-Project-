@@ -16,14 +16,14 @@ class _RcoursessettingsState extends State<Rcoursessettings> {
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
-        backgroundColor: Color(0xFF165D96),
+        backgroundColor: const Color(0xFF165D96),
         leading: IconButton(
-          icon: Icon(Icons.arrow_back_ios_new_rounded, color: Colors.white),
+          icon: const Icon(Icons.arrow_back_ios_new_rounded, color: Colors.white),
           onPressed: () {
             Navigator.pop(context);
           },
         ),
-        title: Center(child: Text('Courses Settings')),
+        title: const Center(child: Text('Courses Settings')),
         titleTextStyle: TextStyle(
           color: Colors.white,
           fontSize: 20,
@@ -35,7 +35,7 @@ class _RcoursessettingsState extends State<Rcoursessettings> {
           padding: const EdgeInsets.all(16.0),
           child: Column(
             children: [
-              SizedBox(height: 20),
+              const SizedBox(height: 20),
               Center(
                 child: Container(
                   width: 200,

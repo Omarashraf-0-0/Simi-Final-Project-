@@ -212,7 +212,7 @@ class _CoursesState extends State<Courses> {
                   onPressed: _registerCourses,
                   style: ElevatedButton.styleFrom(
                     backgroundColor: blue2,
-                    padding: EdgeInsets.symmetric(vertical: 15),
+                    padding: const EdgeInsets.symmetric(vertical: 15),
                     shape: RoundedRectangleBorder(
                       borderRadius: BorderRadius.circular(10),
                     ),
@@ -288,7 +288,7 @@ class _CoursesState extends State<Courses> {
   // API function to register courses
   Future<http.Response> registerCoursesApi(
       String username, List<String> selectedCourses) async {
-    final url =
+    const url =
         'https://alyibrahim.pythonanywhere.com/register_courses'; // URL for your Flask API
 
     final Map<String, dynamic> requestBody = {

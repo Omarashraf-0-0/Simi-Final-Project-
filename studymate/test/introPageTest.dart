@@ -6,13 +6,13 @@ import 'package:studymate/pages/LoginPage.dart';
 void main() {
   testWidgets('IntroPage navigates to LoginPage after delay', (WidgetTester tester) async {
     // Build the IntroPage widget.
-    await tester.pumpWidget(MaterialApp(home: IntroPage()));
+    await tester.pumpWidget(const MaterialApp(home: IntroPage()));
 
     // Verify that the image is being shown.
     expect(find.byType(Image), findsOneWidget);
 
     // Fast-forward until the delayed task is triggered (after 2 seconds).
-    await tester.pumpAndSettle(Duration(seconds: 2));
+    await tester.pumpAndSettle(const Duration(seconds: 2));
 
     // Verify that the app navigates to the LoginPage.
     expect(find.byType(LoginPage), findsOneWidget);

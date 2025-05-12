@@ -25,12 +25,12 @@ class _UserSettingsState extends State<UserSettings> {
   final _userUpdater = UserUpdater(url: 'https://alyibrahim.pythonanywhere.com/update_user');
 
   // Colors according to your branding
-  final Color blue1 = Color(0xFF1c74bb);
-  final Color blue2 = Color(0xFF165d96);
-  final Color cyan1 = Color(0xFF18bebc);
-  final Color cyan2 = Color(0xFF139896);
-  final Color black = Color(0xFF000000);
-  final Color white = Color(0xFFFFFFFF);
+  const Color blue1 = Color(0xFF1c74bb);
+  const Color blue2 = Color(0xFF165d96);
+  const Color cyan1 = Color(0xFF18bebc);
+  const Color cyan2 = Color(0xFF139896);
+  const Color black = Color(0xFF000000);
+  const Color white = Color(0xFFFFFFFF);
 
   @override
   void initState() {
@@ -85,7 +85,7 @@ class _UserSettingsState extends State<UserSettings> {
       appBar: AppBar(
         backgroundColor: blue2,
         leading: IconButton(
-          icon: Icon(Icons.arrow_back_ios_new_rounded, color: white),
+          icon: const Icon(Icons.arrow_back_ios_new_rounded, color: white),
           onPressed: () {
             Navigator.pop(context);
           },
@@ -116,7 +116,7 @@ class _UserSettingsState extends State<UserSettings> {
                   ),
                 ),
               ),
-              SizedBox(height: 20),
+              const SizedBox(height: 20),
               Center(
                 child: Stack(
                   alignment: Alignment.bottomRight,
@@ -126,14 +126,14 @@ class _UserSettingsState extends State<UserSettings> {
                       backgroundColor: cyan1,
                       backgroundImage: profileImageBase64 != null
                           ? MemoryImage(base64Decode(profileImageBase64))
-                          : AssetImage('assets/images/default_avatar.png') as ImageProvider,
+                          : const AssetImage('assets/images/default_avatar.png') as ImageProvider,
                     ),
                     Positioned(
                       bottom: 0,
                       right: 4,
                       child: GestureDetector(
                         onTap: _pickImage,
-                        child: CircleAvatar(
+                        child: const CircleAvatar(
                           radius: 20,
                           backgroundColor: cyan2,
                           child: Icon(
@@ -146,7 +146,7 @@ class _UserSettingsState extends State<UserSettings> {
                   ],
                 ),
               ),
-              SizedBox(height: 40),
+              const SizedBox(height: 40),
               // User Information Section
               Align(
                 alignment: Alignment.centerLeft,
@@ -159,38 +159,38 @@ class _UserSettingsState extends State<UserSettings> {
                   ),
                 ),
               ),
-              SizedBox(height: 20),
+              const SizedBox(height: 20),
               // Username TextField
               TextField(
                 controller: usernameController,
                 decoration: InputDecoration(
                   labelText: 'Full Name',
-                  prefixIcon: Icon(Icons.person),
+                  prefixIcon: const Icon(Icons.person),
                   border: OutlineInputBorder(
                     borderRadius: BorderRadius.circular(15),
                   ),
                 ),
               ),
-              SizedBox(height: 20),
+              const SizedBox(height: 20),
               // Email TextField
               TextField(
                 controller: emailController,
                 decoration: InputDecoration(
                   labelText: 'Email',
-                  prefixIcon: Icon(Icons.email),
+                  prefixIcon: const Icon(Icons.email),
                   border: OutlineInputBorder(
                     borderRadius: BorderRadius.circular(15),
                   ),
                 ),
                 keyboardType: TextInputType.emailAddress,
               ),
-              SizedBox(height: 20),
+              const SizedBox(height: 20),
               // Password TextField
               TextField(
                 controller: passwordController,
                 decoration: InputDecoration(
                   labelText: 'New Password',
-                  prefixIcon: Icon(Icons.lock),
+                  prefixIcon: const Icon(Icons.lock),
                   suffixIcon: IconButton(
                     icon: Icon(
                       _isPasswordVisible ? Icons.visibility : Icons.visibility_off,
@@ -207,13 +207,13 @@ class _UserSettingsState extends State<UserSettings> {
                 ),
                 obscureText: !_isPasswordVisible,
               ),
-              SizedBox(height: 20),
+              const SizedBox(height: 20),
               // Confirm Password TextField
               TextField(
                 controller: confirmPasswordController,
                 decoration: InputDecoration(
                   labelText: 'Confirm Password',
-                  prefixIcon: Icon(Icons.lock),
+                  prefixIcon: const Icon(Icons.lock),
                   suffixIcon: IconButton(
                     icon: Icon(
                       _isConfirmPasswordVisible ? Icons.visibility : Icons.visibility_off,
@@ -230,7 +230,7 @@ class _UserSettingsState extends State<UserSettings> {
                 ),
                 obscureText: !_isConfirmPasswordVisible,
               ),
-              SizedBox(height: 30),
+              const SizedBox(height: 30),
               // Save Changes Button
               SizedBox(
                 width: double.infinity,
@@ -238,7 +238,7 @@ class _UserSettingsState extends State<UserSettings> {
                   onPressed: updateData,
                   style: ElevatedButton.styleFrom(
                     backgroundColor: blue2,
-                    padding: EdgeInsets.symmetric(vertical: 15),
+                    padding: const EdgeInsets.symmetric(vertical: 15),
                     shape: RoundedRectangleBorder(
                       borderRadius: BorderRadius.circular(15),
                     ),

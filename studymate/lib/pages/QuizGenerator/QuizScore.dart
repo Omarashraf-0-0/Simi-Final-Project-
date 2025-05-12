@@ -81,10 +81,10 @@ class _QuizScoreState extends State<QuizScore> {
           child: Column(
             mainAxisAlignment: MainAxisAlignment.center,
             children: [
-              SizedBox(
+              const SizedBox(
                 height: 20,
               ),
-              Text(
+              const Text(
                 'Your Score is',
                 style: TextStyle(
                   fontSize: 24,
@@ -93,7 +93,7 @@ class _QuizScoreState extends State<QuizScore> {
                   color: Colors.black,
                 ),
               ),
-              SizedBox(
+              const SizedBox(
                 height: 120,
               ),
               CircularPercentIndicator(
@@ -114,7 +114,7 @@ class _QuizScoreState extends State<QuizScore> {
                 progressColor: isPass ? Colors.green : Colors.red,
                 backgroundColor: Colors.grey.shade300,
               ),
-              SizedBox(height: 20),
+              const SizedBox(height: 20),
               Text(
                 isPass
                     ? 'Congratulations!\nYou Nailed It! Keep Up The Amazing Work'
@@ -127,7 +127,7 @@ class _QuizScoreState extends State<QuizScore> {
                   fontFamily: 'League Spartan',
                 ),
               ),
-              Spacer(),
+              const Spacer(),
               ElevatedButton(
                 onPressed: () {
                   // Navigate to ViewAnswer screen
@@ -160,7 +160,7 @@ class _QuizScoreState extends State<QuizScore> {
                   ),
                 ),
               ),
-              SizedBox(height: 20),
+              const SizedBox(height: 20),
               ElevatedButton(
                 onPressed: () {
                   // Navigate to the home page
@@ -189,7 +189,7 @@ class _QuizScoreState extends State<QuizScore> {
                   ),
                 ),
               ),
-              SizedBox(height: 20),
+              const SizedBox(height: 20),
             ],
           ),
         ),

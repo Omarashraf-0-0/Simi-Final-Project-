@@ -12,12 +12,12 @@ class Settings extends StatefulWidget {
 }
 
 class _SettingsState extends State<Settings> {
-  final Color blue1 = Color(0xFF1c74bb);
-  final Color blue2 = Color(0xFF165d96);
-  final Color cyan1 = Color(0xFF18bebc);
-  final Color cyan2 = Color(0xFF139896);
-  final Color black = Color(0xFF000000);
-  final Color white = Color(0xFFFFFFFF);
+  const Color blue1 = Color(0xFF1c74bb);
+  const Color blue2 = Color(0xFF165d96);
+  const Color cyan1 = Color(0xFF18bebc);
+  const Color cyan2 = Color(0xFF139896);
+  const Color black = Color(0xFF000000);
+  const Color white = Color(0xFFFFFFFF);
 
   @override
   Widget build(BuildContext context) {
@@ -68,7 +68,7 @@ class _SettingsState extends State<Settings> {
                 ],
               ),
             ),
-            SizedBox(height: 20),
+            const SizedBox(height: 20),
             Expanded(
               child: ListView(
                 children: [
@@ -80,7 +80,7 @@ class _SettingsState extends State<Settings> {
                     onTap: () {
                       Navigator.push(
                         context,
-                        MaterialPageRoute(builder: (context) => UserSettings()),
+                        MaterialPageRoute(builder: (context) => const UserSettings()),
                       );
                     },
                   ),
@@ -92,7 +92,7 @@ class _SettingsState extends State<Settings> {
                     onTap: () {
                       Navigator.push(
                         context,
-                        MaterialPageRoute(builder: (context) => PersonalSettings()),
+                        MaterialPageRoute(builder: (context) => const PersonalSettings()),
                       );
                     },
                   ),
@@ -104,7 +104,7 @@ class _SettingsState extends State<Settings> {
                     onTap: () {
                       Navigator.push(
                         context,
-                        MaterialPageRoute(builder: (context) => Universitysettings()),
+                        MaterialPageRoute(builder: (context) => const Universitysettings()),
                       );
                     },
                   ),
@@ -126,7 +126,7 @@ class _SettingsState extends State<Settings> {
   }) {
     return Card(
       elevation: 3,
-      margin: EdgeInsets.symmetric(vertical: 10),
+      margin: const EdgeInsets.symmetric(vertical: 10),
       shape: RoundedRectangleBorder(
         borderRadius: BorderRadius.circular(15),
       ),

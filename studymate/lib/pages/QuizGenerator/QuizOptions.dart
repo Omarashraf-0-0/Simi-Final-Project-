@@ -16,12 +16,12 @@ class QuizOptions extends StatefulWidget {
 
 class _QuizOptionsState extends State<QuizOptions> {
   // Define your branding colors
-  final Color blue1 = Color(0xFF1c74bb);
-  final Color blue2 = Color(0xFF165d96);
-  final Color cyan1 = Color(0xFF18bebc);
-  final Color cyan2 = Color(0xFF139896);
-  final Color black = Color(0xFF000000);
-  final Color white = Color(0xFFFFFFFF);
+  const Color blue1 = Color(0xFF1c74bb);
+  const Color blue2 = Color(0xFF165d96);
+  const Color cyan1 = Color(0xFF18bebc);
+  const Color cyan2 = Color(0xFF139896);
+  const Color black = Color(0xFF000000);
+  const Color white = Color(0xFFFFFFFF);
 
   String? selectedCourse;
   String? selectedCourseId;
@@ -358,7 +358,7 @@ class _QuizOptionsState extends State<QuizOptions> {
           builder: (BuildContext dialogContext) {
             return AlertDialog(
               title: const Text("Error"),
-              content: Text(
+              content: const Text(
                   'An unexpected server error occurred. Please try again later.'),
               actions: [
                 TextButton(
@@ -406,7 +406,7 @@ class _QuizOptionsState extends State<QuizOptions> {
       backgroundColor: Theme.of(context)
           .scaffoldBackgroundColor, // Set background color to white
       appBar: AppBar(
-        title: Text(
+        title: const Text(
           'Make Your Quiz!',
           style: TextStyle(
             fontFamily: 'League Spartan',
@@ -420,7 +420,7 @@ class _QuizOptionsState extends State<QuizOptions> {
         elevation: 0,
       ),
       body: isLoading || isGenerating
-          ? Center(
+          ? const Center(
               child: CircularProgressIndicator(
                 color: blue2,
               ),
@@ -444,7 +444,7 @@ class _QuizOptionsState extends State<QuizOptions> {
                   DropdownButtonFormField<String>(
                     value: selectedCourse,
                     isExpanded: true, // Ensures the dropdown fills the width
-                    hint: Align(
+                    hint: const Align(
                       alignment: Alignment.centerLeft,
                       child: Text(
                         'Choose Course',
@@ -457,7 +457,7 @@ class _QuizOptionsState extends State<QuizOptions> {
                     ),
                     decoration: InputDecoration(
                       contentPadding:
-                          EdgeInsets.symmetric(vertical: 15, horizontal: 17),
+                          const EdgeInsets.symmetric(vertical: 15, horizontal: 17),
                       filled: true,
                       fillColor: Colors.grey[200],
                       border: OutlineInputBorder(
@@ -517,10 +517,10 @@ class _QuizOptionsState extends State<QuizOptions> {
                         itemCount: lectures.length,
                         itemBuilder: (context, index) {
                           return ListTile(
-                            leading: Icon(Icons.book, color: blue2),
+                            leading: const Icon(Icons.book, color: blue2),
                             title: Text(
                               lectures[index]['name']!,
-                              style: TextStyle(
+                              style: const TextStyle(
                                 fontSize: 16,
                                 fontFamily: 'League Spartan',
                                 color: black,
@@ -552,12 +552,12 @@ class _QuizOptionsState extends State<QuizOptions> {
                           keyboardType: TextInputType.number,
                           decoration: InputDecoration(
                             labelText: 'From',
-                            labelStyle: TextStyle(
+                            labelStyle: const TextStyle(
                               color:
                                   blue2, // Placeholder text color set to blue
                               fontFamily: 'League Spartan',
                             ),
-                            contentPadding: EdgeInsets.symmetric(
+                            contentPadding: const EdgeInsets.symmetric(
                                 vertical: 15, horizontal: 20),
                             filled: true,
                             fillColor: Colors.grey[200],
@@ -566,7 +566,7 @@ class _QuizOptionsState extends State<QuizOptions> {
                               borderSide: BorderSide.none,
                             ),
                           ),
-                          style: TextStyle(
+                          style: const TextStyle(
                             fontWeight: FontWeight.bold,
                             fontFamily: 'League Spartan',
                             color: Colors
@@ -581,12 +581,12 @@ class _QuizOptionsState extends State<QuizOptions> {
                           keyboardType: TextInputType.number,
                           decoration: InputDecoration(
                             labelText: 'To',
-                            labelStyle: TextStyle(
+                            labelStyle: const TextStyle(
                               color:
                                   blue2, // Placeholder text color set to blue
                               fontFamily: 'League Spartan',
                             ),
-                            contentPadding: EdgeInsets.symmetric(
+                            contentPadding: const EdgeInsets.symmetric(
                                 vertical: 15, horizontal: 20),
                             filled: true,
                             fillColor: Colors.grey[200],
@@ -595,7 +595,7 @@ class _QuizOptionsState extends State<QuizOptions> {
                               borderSide: BorderSide.none,
                             ),
                           ),
-                          style: TextStyle(
+                          style: const TextStyle(
                             fontWeight: FontWeight.bold,
                             fontFamily: 'League Spartan',
                             color: Colors
@@ -623,12 +623,12 @@ class _QuizOptionsState extends State<QuizOptions> {
                     decoration: InputDecoration(
                       labelText:
                           'Total Questions', // Changed from hintText to labelText
-                      labelStyle: TextStyle(
+                      labelStyle: const TextStyle(
                         color: blue2, // Set the label text color to blue
                         fontFamily: 'League Spartan',
                       ),
                       contentPadding:
-                          EdgeInsets.symmetric(vertical: 15, horizontal: 20),
+                          const EdgeInsets.symmetric(vertical: 15, horizontal: 20),
                       filled: true,
                       fillColor: Colors.grey[200],
                       border: OutlineInputBorder(
@@ -636,7 +636,7 @@ class _QuizOptionsState extends State<QuizOptions> {
                         borderSide: BorderSide.none,
                       ),
                     ),
-                    style: TextStyle(
+                    style: const TextStyle(
                       fontWeight: FontWeight.bold,
                       fontFamily: 'League Spartan',
                       color: Colors.black, // Ensure typed text is black
@@ -662,12 +662,12 @@ class _QuizOptionsState extends State<QuizOptions> {
                           keyboardType: TextInputType.number,
                           decoration: InputDecoration(
                             labelText: 'MCQ',
-                            labelStyle: TextStyle(
+                            labelStyle: const TextStyle(
                               color:
                                   blue2, // Placeholder text color set to blue
                               fontFamily: 'League Spartan',
                             ),
-                            contentPadding: EdgeInsets.symmetric(
+                            contentPadding: const EdgeInsets.symmetric(
                                 vertical: 15, horizontal: 20),
                             filled: true,
                             fillColor: Colors.grey[200],
@@ -676,7 +676,7 @@ class _QuizOptionsState extends State<QuizOptions> {
                               borderSide: BorderSide.none,
                             ),
                           ),
-                          style: TextStyle(
+                          style: const TextStyle(
                             fontWeight: FontWeight.bold,
                             fontFamily: 'League Spartan',
                             color: Colors
@@ -691,12 +691,12 @@ class _QuizOptionsState extends State<QuizOptions> {
                           keyboardType: TextInputType.number,
                           decoration: InputDecoration(
                             labelText: 'T/F',
-                            labelStyle: TextStyle(
+                            labelStyle: const TextStyle(
                               color:
                                   blue2, // Placeholder text color set to blue
                               fontFamily: 'League Spartan',
                             ),
-                            contentPadding: EdgeInsets.symmetric(
+                            contentPadding: const EdgeInsets.symmetric(
                                 vertical: 15, horizontal: 20),
                             filled: true,
                             fillColor: Colors.grey[200],
@@ -705,7 +705,7 @@ class _QuizOptionsState extends State<QuizOptions> {
                               borderSide: BorderSide.none,
                             ),
                           ),
-                          style: TextStyle(
+                          style: const TextStyle(
                             fontWeight: FontWeight.bold,
                             fontFamily: 'League Spartan',
                             color: Colors
@@ -729,7 +729,7 @@ class _QuizOptionsState extends State<QuizOptions> {
                         ),
                         elevation: 5,
                       ),
-                      child: Text(
+                      child: const Text(
                         'Generate Quiz',
                         style: TextStyle(
                           fontSize: 22,

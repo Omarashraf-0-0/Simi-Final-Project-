@@ -64,20 +64,20 @@ class _NotificationPageState extends State<NotificationPage> {
           notifications.clear();
         });
         ScaffoldMessenger.of(context).showSnackBar(
-          SnackBar(
+          const SnackBar(
             content: Text('All notifications deleted successfully'),
           ),
         );
       } else {
         ScaffoldMessenger.of(context).showSnackBar(
-          SnackBar(
+          const SnackBar(
             content: Text('Failed to delete notifications'),
           ),
         );
       }
     } catch (error) {
       ScaffoldMessenger.of(context).showSnackBar(
-        SnackBar(
+        const SnackBar(
           content: Text('An error occurred'),
         ),
       );
@@ -93,22 +93,22 @@ class _NotificationPageState extends State<NotificationPage> {
       context: context,
       builder: (BuildContext dialogContext) {
         return AlertDialog(
-          title: Text('Delete All Notifications'),
+          title: const Text('Delete All Notifications'),
           content:
-              Text('Are you sure you want to delete all notifications?'),
+              const Text('Are you sure you want to delete all notifications?'),
           actions: [
             TextButton(
               onPressed: () {
                 Navigator.of(dialogContext).pop(); // Dismiss the dialog
               },
-              child: Text('Cancel'),
+              child: const Text('Cancel'),
             ),
             TextButton(
               onPressed: () {
                 Navigator.of(dialogContext).pop(); // Dismiss the dialog
                 deleteAllNotifications();
               },
-              child: Text(
+              child: const Text(
                 'Delete',
                 style: TextStyle(color: Colors.red),
               ),
@@ -125,21 +125,21 @@ class _NotificationPageState extends State<NotificationPage> {
           context: context,
           builder: (BuildContext dialogContext) {
             return AlertDialog(
-              title: Text('Delete Notification'),
-              content: Text(
+              title: const Text('Delete Notification'),
+              content: const Text(
                   'Are you sure you want to delete this notification?'),
               actions: [
                 TextButton(
                   onPressed: () {
                     Navigator.of(dialogContext).pop(false); // Return false
                   },
-                  child: Text('Cancel'),
+                  child: const Text('Cancel'),
                 ),
                 TextButton(
                   onPressed: () {
                     Navigator.of(dialogContext).pop(true); // Return true
                   },
-                  child: Text(
+                  child: const Text(
                     'Delete',
                     style: TextStyle(color: Colors.red),
                   ),
@@ -156,7 +156,7 @@ class _NotificationPageState extends State<NotificationPage> {
     return Scaffold(
       appBar: AppBar(
         title: const Text('Notifications'),
-        backgroundColor: Color(0xFF165D96),
+        backgroundColor: const Color(0xFF165D96),
       ),
       body: Column(
         children: [
@@ -172,8 +172,8 @@ class _NotificationPageState extends State<NotificationPage> {
                         background: Container(
                           color: Colors.red,
                           alignment: Alignment.centerRight,
-                          padding: EdgeInsets.symmetric(horizontal: 20.0),
-                          child: Icon(Icons.delete, color: Colors.white),
+                          padding: const EdgeInsets.symmetric(horizontal: 20.0),
+                          child: const Icon(Icons.delete, color: Colors.white),
                         ),
                         confirmDismiss: (DismissDirection direction) async {
                           bool confirm =
@@ -200,7 +200,7 @@ class _NotificationPageState extends State<NotificationPage> {
                       );
                     },
                   )
-                : Center(
+                : const Center(
                     child: Text('No notifications'),
                   ),
           ),
@@ -215,7 +215,7 @@ class _NotificationPageState extends State<NotificationPage> {
                 foregroundColor: Colors.white,
               ),
               child: isDeletingAll
-                  ? SizedBox(
+                  ? const SizedBox(
                       height: 20,
                       width: 20,
                       child: CircularProgressIndicator(
@@ -224,7 +224,7 @@ class _NotificationPageState extends State<NotificationPage> {
                         strokeWidth: 2,
                       ),
                     )
-                  : Row(
+                  : const Row(
                       mainAxisSize: MainAxisSize.min,
                       children: [
                         Icon(Icons.delete),

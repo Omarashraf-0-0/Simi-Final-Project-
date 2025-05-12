@@ -2,7 +2,6 @@ import 'dart:convert';
 import 'dart:io';
 
 import 'package:flutter/material.dart';
-import 'package:flutter_downloader/flutter_downloader.dart';
 import 'package:hive/hive.dart';
 import 'package:intl/intl.dart';
 import 'package:google_fonts/google_fonts.dart';
@@ -81,8 +80,8 @@ class _CVState extends State<CV> {
       // LinkedIn section (if applicable)
       'linkedin': addLinkedIn
           ? {
-        'name': linkedInUsername==null?"No linkedin yet":linkedInUsername,
-        'linkedinURL': linkedInLink==null?"":linkedInLink,
+        'name': linkedInUsername ?? "No linkedin yet",
+        'linkedinURL': linkedInLink ?? "",
       }
           : {
         'name': "No linkedin yet",
@@ -92,8 +91,8 @@ class _CVState extends State<CV> {
       // GitHub section (if applicable)
       'github': addGitHub
           ? {
-        'name': gitHubUsername==null?"No github yet":gitHubUsername,
-        'githubURL': gitHubLink==null?"":gitHubLink,
+        'name': gitHubUsername ?? "No github yet",
+        'githubURL': gitHubLink ?? "",
       }
           : {
         'name': "No github yet",
@@ -142,7 +141,7 @@ class _CVState extends State<CV> {
     showDialog(
       context: context,
       barrierDismissible: false,
-      builder: (context) => Center(child: CircularProgressIndicator()),
+      builder: (context) => const Center(child: CircularProgressIndicator()),
     );
 
     try {
@@ -181,7 +180,7 @@ class _CVState extends State<CV> {
 
         // Show an error message to the user
         ScaffoldMessenger.of(context).showSnackBar(
-          SnackBar(content: Text('Failed to generate CV')),
+          const SnackBar(content: Text('Failed to generate CV')),
         );
       }
     } catch (e) {
@@ -192,7 +191,7 @@ class _CVState extends State<CV> {
 
       // Show an error message to the user
       ScaffoldMessenger.of(context).showSnackBar(
-        SnackBar(content: Text('Error generating CV')),
+        const SnackBar(content: Text('Error generating CV')),
       );
     }
   }
@@ -250,29 +249,29 @@ class _CVState extends State<CV> {
         title: Text(
           'CV Maker',
           style: GoogleFonts.leagueSpartan(
-            textStyle: TextStyle(
+            textStyle: const TextStyle(
               color: Colors.white, // Change title color to white
               fontWeight: FontWeight.bold, // Make the font bold
             ),
           ),
         ),
         centerTitle: true,
-        backgroundColor: Color(0xFF165D96),
-        iconTheme: IconThemeData(
+        backgroundColor: const Color(0xFF165D96),
+        iconTheme: const IconThemeData(
           color: Colors.white, // Change back arrow color to white
         ),
       ),
       body: SingleChildScrollView(
-        padding: EdgeInsets.all(16.0),
+        padding: const EdgeInsets.all(16.0),
         child: Form(
           key: _formKey,
           child: Column(
             children: [
               // Personal Information
-              SectionHeader(title: 'Personal Information'),
+              const SectionHeader(title: 'Personal Information'),
               TextFormField(
                 initialValue: name,
-                decoration: InputDecoration(
+                decoration: const InputDecoration(
                   labelText: 'Name',
                   border: OutlineInputBorder(),
                 ),
@@ -280,7 +279,7 @@ class _CVState extends State<CV> {
                 value == null || value.isEmpty ? 'Required' : null,
                 onSaved: (value) => name = value!,
               ),
-              SizedBox(height: 10),
+              const SizedBox(height: 10),
               InputDatePickerFormField(
                 firstDate: DateTime(1900),
                 lastDate: DateTime.now(),
@@ -291,10 +290,10 @@ class _CVState extends State<CV> {
                   
                 },
               ),
-              SizedBox(height: 10),
+              const SizedBox(height: 10),
               TextFormField(
                 initialValue: phoneNumber,
-                decoration: InputDecoration(
+                decoration: const InputDecoration(
                   labelText: 'Phone Number',
                   border: OutlineInputBorder(),
                 ),
@@ -303,10 +302,10 @@ class _CVState extends State<CV> {
                 value == null || value.isEmpty ? 'Required' : null,
                 onSaved: (value) => phoneNumber = value!,
               ),
-              SizedBox(height: 10),
+              const SizedBox(height: 10),
               TextFormField(
                 initialValue: email,
-                decoration: InputDecoration(
+                decoration: const InputDecoration(
                   labelText: 'Email',
                   border: OutlineInputBorder(),
                 ),
@@ -319,12 +318,12 @@ class _CVState extends State<CV> {
                 },
                 onSaved: (value) => email = value!,
               ),
-              SizedBox(height: 20),
+              const SizedBox(height: 20),
 
               // LinkedIn & GitHub
-              SectionHeader(title: 'LinkedIn & GitHub'),
+              const SectionHeader(title: 'LinkedIn & GitHub'),
               CheckboxListTile(
-                title: Text('Add LinkedIn'),
+                title: const Text('Add LinkedIn'),
                 value: addLinkedIn,
                 onChanged: (value) {
                   setState(() {
@@ -337,7 +336,7 @@ class _CVState extends State<CV> {
                 Column(
                   children: [
                     TextFormField(
-                      decoration: InputDecoration(
+                      decoration: const InputDecoration(
                         labelText: 'LinkedIn Username',
                         border: OutlineInputBorder(),
                       ),
@@ -347,9 +346,9 @@ class _CVState extends State<CV> {
                           : null,
                       onSaved: (value) => linkedInUsername = value!,
                     ),
-                    SizedBox(height: 10),
+                    const SizedBox(height: 10),
                     TextFormField(
-                      decoration: InputDecoration(
+                      decoration: const InputDecoration(
                         labelText: 'LinkedIn Profile URL',
                         border: OutlineInputBorder(),
                       ),
@@ -362,9 +361,9 @@ class _CVState extends State<CV> {
                     ),
                   ],
                 ),
-              SizedBox(height: 10),
+              const SizedBox(height: 10),
               CheckboxListTile(
-                title: Text('Add GitHub'),
+                title: const Text('Add GitHub'),
                 value: addGitHub,
                 onChanged: (value) {
                   setState(() {
@@ -377,7 +376,7 @@ class _CVState extends State<CV> {
                 Column(
                   children: [
                     TextFormField(
-                      decoration: InputDecoration(
+                      decoration: const InputDecoration(
                         labelText: 'GitHub Username',
                         border: OutlineInputBorder(),
                       ),
@@ -387,9 +386,9 @@ class _CVState extends State<CV> {
                           : null,
                       onSaved: (value) => gitHubUsername = value!,
                     ),
-                    SizedBox(height: 10),
+                    const SizedBox(height: 10),
                     TextFormField(
-                      decoration: InputDecoration(
+                      decoration: const InputDecoration(
                         labelText: 'GitHub Profile URL',
                         border: OutlineInputBorder(),
                       ),
@@ -402,13 +401,13 @@ class _CVState extends State<CV> {
                     ),
                   ],
                 ),
-              SizedBox(height: 20),
+              const SizedBox(height: 20),
 
               // Objective
-              SectionHeader(title: 'Objective'),
-              SizedBox(height: 10),
+              const SectionHeader(title: 'Objective'),
+              const SizedBox(height: 10),
               TextFormField(
-                decoration: InputDecoration(
+                decoration: const InputDecoration(
                   labelText: 'Objective',
                   border: OutlineInputBorder(),
                 ),
@@ -417,13 +416,13 @@ class _CVState extends State<CV> {
                 value == null || value.isEmpty ? 'Required' : null,
                 onSaved: (value) => objective = value!,
               ),
-              SizedBox(height: 20),
+              const SizedBox(height: 20),
 
               // Education
-              SectionHeader(title: 'Education'),
-              SizedBox(height: 10),
+              const SectionHeader(title: 'Education'),
+              const SizedBox(height: 10),
               DropdownButtonFormField<int>(
-                decoration: InputDecoration(
+                decoration: const InputDecoration(
                   labelText: 'Number of Education Entries',
                   border: OutlineInputBorder(),
                 ),
@@ -444,10 +443,10 @@ class _CVState extends State<CV> {
                 validator: (value) =>
                 value == null || value < 1 ? 'At least 1 required' : null,
               ),
-              SizedBox(height: 10),
+              const SizedBox(height: 10),
               ListView.builder(
                 shrinkWrap: true,
-                physics: NeverScrollableScrollPhysics(),
+                physics: const NeverScrollableScrollPhysics(),
                 itemCount: educationCount,
                 itemBuilder: (context, index) {
                   return EducationForm(
@@ -456,13 +455,13 @@ class _CVState extends State<CV> {
                   );
                 },
               ),
-              SizedBox(height: 20),
+              const SizedBox(height: 20),
 
               // Skills
-              SectionHeader(title: 'Skills'),
-              SizedBox(height: 10),
+              const SectionHeader(title: 'Skills'),
+              const SizedBox(height: 10),
               DropdownButtonFormField<int>(
-                decoration: InputDecoration(
+                decoration: const InputDecoration(
                   labelText: 'Number of Skill Sections',
                   border: OutlineInputBorder(),
                 ),
@@ -483,10 +482,10 @@ class _CVState extends State<CV> {
                 validator: (value) =>
                 value == null || value < 1 ? 'At least 1 required' : null,
               ),
-              SizedBox(height: 10),
+              const SizedBox(height: 10),
               ListView.builder(
                 shrinkWrap: true,
-                physics: NeverScrollableScrollPhysics(),
+                physics: const NeverScrollableScrollPhysics(),
                 itemCount: skillsCount,
                 itemBuilder: (context, index) {
                   return SkillForm(
@@ -495,13 +494,13 @@ class _CVState extends State<CV> {
                   );
                 },
               ),
-              SizedBox(height: 20),
+              const SizedBox(height: 20),
 
               // Projects
-              SectionHeader(title: 'Projects'),
-              SizedBox(height: 20),
+              const SectionHeader(title: 'Projects'),
+              const SizedBox(height: 20),
               DropdownButtonFormField<int>(
-                decoration: InputDecoration(
+                decoration: const InputDecoration(
                   labelText: 'Number of Projects',
                   border: OutlineInputBorder(),
                 ),
@@ -522,10 +521,10 @@ class _CVState extends State<CV> {
                 validator: (value) =>
                 value == null || value < 1 ? 'At least 1 required' : null,
               ),
-              SizedBox(height: 10),
+              const SizedBox(height: 10),
               ListView.builder(
                 shrinkWrap: true,
-                physics: NeverScrollableScrollPhysics(),
+                physics: const NeverScrollableScrollPhysics(),
                 itemCount: projectsCount,
                 itemBuilder: (context, index) {
                   return ProjectForm(
@@ -534,13 +533,13 @@ class _CVState extends State<CV> {
                   );
                 },
               ),
-              SizedBox(height: 20),
+              const SizedBox(height: 20),
 
               // Experience
-              SectionHeader(title: 'Experience'),
-              SizedBox(height: 10),
+              const SectionHeader(title: 'Experience'),
+              const SizedBox(height: 10),
               DropdownButtonFormField<int>(
-                decoration: InputDecoration(
+                decoration: const InputDecoration(
                   labelText: 'Number of Experiences',
                   border: OutlineInputBorder(),
                 ),
@@ -561,10 +560,10 @@ class _CVState extends State<CV> {
                 validator: (value) =>
                 value == null || value < 1 ? 'At least 1 required' : null,
               ),
-              SizedBox(height: 10),
+              const SizedBox(height: 10),
               ListView.builder(
                 shrinkWrap: true,
-                physics: NeverScrollableScrollPhysics(),
+                physics: const NeverScrollableScrollPhysics(),
                 itemCount: experienceCount,
                 itemBuilder: (context, index) {
                   return ExperienceForm(
@@ -573,14 +572,14 @@ class _CVState extends State<CV> {
                   );
                 },
               ),
-              SizedBox(height: 20),
+              const SizedBox(height: 20),
 
               // Submit Button
               ElevatedButton(
                 onPressed: _submitForm,
                 style: ElevatedButton.styleFrom(
-                  padding: EdgeInsets.symmetric(horizontal: 50.0, vertical: 15.0),
-                  backgroundColor: Color(0xFF165D96), // Use backgroundColor instead of primary
+                  padding: const EdgeInsets.symmetric(horizontal: 50.0, vertical: 15.0),
+                  backgroundColor: const Color(0xFF165D96), // Use backgroundColor instead of primary
                   shape: RoundedRectangleBorder(
                     borderRadius: BorderRadius.circular(10),
                   ),
@@ -588,7 +587,7 @@ class _CVState extends State<CV> {
                 child: Text(
                   'Generate CV',
                   style: GoogleFonts.leagueSpartan(
-                    textStyle: TextStyle(
+                    textStyle: const TextStyle(
                       color: Colors.white, // Change text color to white
                       fontWeight: FontWeight.bold, // Make the font bold
                       fontSize: 18,
@@ -615,7 +614,7 @@ class _CVState extends State<CV> {
       showDialog(
         context: context,
         builder: (context) => AlertDialog(
-          title: Text('CV Data'),
+          title: const Text('CV Data'),
           content: SingleChildScrollView(
             child: Text(
                 'Name: $name\n'
@@ -629,7 +628,7 @@ class _CVState extends State<CV> {
           actions: [
             TextButton(
               onPressed: () => Navigator.pop(context),
-              child: Text('OK'),
+              child: const Text('OK'),
             ),
           ],
         ),
@@ -674,7 +673,7 @@ class SectionHeader extends StatelessWidget {
       alignment: Alignment.centerLeft,
       child: Text(
         title,
-        style: TextStyle(
+        style: const TextStyle(
           fontSize: 20.0,
           fontWeight: FontWeight.bold,
           color: Color(0xFF165D96),
@@ -698,11 +697,11 @@ class EducationForm extends StatelessWidget {
       children: [
         Text(
           'Education $index',
-          style: TextStyle(fontSize: 16, fontWeight: FontWeight.w600),
+          style: const TextStyle(fontSize: 16, fontWeight: FontWeight.w600),
         ),
-        SizedBox(height: 5),
+        const SizedBox(height: 5),
         TextFormField(
-          decoration: InputDecoration(
+          decoration: const InputDecoration(
             labelText: 'University Name',
             border: OutlineInputBorder(),
           ),
@@ -710,9 +709,9 @@ class EducationForm extends StatelessWidget {
           value == null || value.isEmpty ? 'Required' : null,
           onSaved: (value) => education.universityName = value!,
         ),
-        SizedBox(height: 10),
+        const SizedBox(height: 10),
         TextFormField(
-          decoration: InputDecoration(
+          decoration: const InputDecoration(
             labelText: 'Degree',
             border: OutlineInputBorder(),
           ),
@@ -720,12 +719,12 @@ class EducationForm extends StatelessWidget {
           value == null || value.isEmpty ? 'Required' : null,
           onSaved: (value) => education.degree = value!,
         ),
-        SizedBox(height: 10),
+        const SizedBox(height: 10),
         Row(
           children: [
             Expanded(
               child: TextFormField(
-                decoration: InputDecoration(
+                decoration: const InputDecoration(
                   labelText: 'From',
                   border: OutlineInputBorder(),
                 ),
@@ -734,10 +733,10 @@ class EducationForm extends StatelessWidget {
                 onSaved: (value) => education.from = value!,
               ),
             ),
-            SizedBox(width: 10),
+            const SizedBox(width: 10),
             Expanded(
               child: TextFormField(
-                decoration: InputDecoration(
+                decoration: const InputDecoration(
                   labelText: 'To',
                   border: OutlineInputBorder(),
                 ),
@@ -748,9 +747,9 @@ class EducationForm extends StatelessWidget {
             ),
           ],
         ),
-        SizedBox(height: 10),
+        const SizedBox(height: 10),
         TextFormField(
-          decoration: InputDecoration(
+          decoration: const InputDecoration(
             labelText: 'Description',
             border: OutlineInputBorder(),
           ),
@@ -759,7 +758,7 @@ class EducationForm extends StatelessWidget {
           value == null || value.isEmpty ? 'Required' : null,
           onSaved: (value) => education.description = value!,
         ),
-        SizedBox(height: 20),
+        const SizedBox(height: 20),
       ],
     );
   }
@@ -779,11 +778,11 @@ class SkillForm extends StatelessWidget {
       children: [
         Text(
           'Skill Section $index',
-          style: TextStyle(fontSize: 16, fontWeight: FontWeight.w600),
+          style: const TextStyle(fontSize: 16, fontWeight: FontWeight.w600),
         ),
-        SizedBox(height: 5),
+        const SizedBox(height: 5),
         TextFormField(
-          decoration: InputDecoration(
+          decoration: const InputDecoration(
             labelText: 'Head',
             border: OutlineInputBorder(),
           ),
@@ -791,9 +790,9 @@ class SkillForm extends StatelessWidget {
           value == null || value.isEmpty ? 'Required' : null,
           onSaved: (value) => skill.head = value!,
         ),
-        SizedBox(height: 10),
+        const SizedBox(height: 10),
         TextFormField(
-          decoration: InputDecoration(
+          decoration: const InputDecoration(
             labelText: 'Skills (separated by comma)',
             border: OutlineInputBorder(),
           ),
@@ -801,7 +800,7 @@ class SkillForm extends StatelessWidget {
           value == null || value.isEmpty ? 'Required' : null,
           onSaved: (value) => skill.skills = value!,
         ),
-        SizedBox(height: 20),
+        const SizedBox(height: 20),
       ],
     );
   }
@@ -821,11 +820,11 @@ class ProjectForm extends StatelessWidget {
       children: [
         Text(
           'Project $index',
-          style: TextStyle(fontSize: 16, fontWeight: FontWeight.w600),
+          style: const TextStyle(fontSize: 16, fontWeight: FontWeight.w600),
         ),
-        SizedBox(height: 5),
+        const SizedBox(height: 5),
         TextFormField(
-          decoration: InputDecoration(
+          decoration: const InputDecoration(
             labelText: 'Head',
             border: OutlineInputBorder(),
           ),
@@ -833,9 +832,9 @@ class ProjectForm extends StatelessWidget {
           value == null || value.isEmpty ? 'Required' : null,
           onSaved: (value) => project.head = value!,
         ),
-        SizedBox(height: 10),
+        const SizedBox(height: 10),
         TextFormField(
-          decoration: InputDecoration(
+          decoration: const InputDecoration(
             labelText: 'Description',
             border: OutlineInputBorder(),
           ),
@@ -844,7 +843,7 @@ class ProjectForm extends StatelessWidget {
           value == null || value.isEmpty ? 'Required' : null,
           onSaved: (value) => project.description = value!,
         ),
-        SizedBox(height: 20),
+        const SizedBox(height: 20),
       ],
     );
   }
@@ -864,11 +863,11 @@ class ExperienceForm extends StatelessWidget {
       children: [
         Text(
           'Experience $index',
-          style: TextStyle(fontSize: 16, fontWeight: FontWeight.w600),
+          style: const TextStyle(fontSize: 16, fontWeight: FontWeight.w600),
         ),
-        SizedBox(height: 5),
+        const SizedBox(height: 5),
         TextFormField(
-          decoration: InputDecoration(
+          decoration: const InputDecoration(
             labelText: 'Description',
             border: OutlineInputBorder(),
           ),
@@ -877,7 +876,7 @@ class ExperienceForm extends StatelessWidget {
           value == null || value.isEmpty ? 'Required' : null,
           onSaved: (value) => experience.description = value!,
         ),
-        SizedBox(height: 20),
+        const SizedBox(height: 20),
       ],
     );
   }

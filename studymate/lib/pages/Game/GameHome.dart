@@ -83,7 +83,7 @@ class _GameHomeState extends State<GameHome> {
                     color: redAccent,
                     shadows: [
                       Shadow(
-                        offset: Offset(2.0, 2.0),
+                        offset: const Offset(2.0, 2.0),
                         blurRadius: 4.0,
                         color: black.withOpacity(0.5),
                       ),
@@ -96,7 +96,7 @@ class _GameHomeState extends State<GameHome> {
                   child: Container(
                     width: size.width * 0.8,
                     height: size.height * 0.4,
-                    decoration: BoxDecoration(
+                    decoration: const BoxDecoration(
                       image: DecorationImage(
                         image: AssetImage('lib/assets/img/GameCharacters/ElBatal.png'),
                         fit: BoxFit.contain,
@@ -111,12 +111,12 @@ class _GameHomeState extends State<GameHome> {
                     onPressed: () {
                       Navigator.push(
                         context,
-                        MaterialPageRoute(builder: (context) => GameRanks()),
+                        MaterialPageRoute(builder: (context) => const GameRanks()),
                       );
                     },
                     style: ElevatedButton.styleFrom(
                       backgroundColor: redAccent,
-                      padding: EdgeInsets.symmetric(vertical: 15, horizontal: 50),
+                      padding: const EdgeInsets.symmetric(vertical: 15, horizontal: 50),
                       shape: RoundedRectangleBorder(
                         borderRadius: BorderRadius.circular(30),
                       ),

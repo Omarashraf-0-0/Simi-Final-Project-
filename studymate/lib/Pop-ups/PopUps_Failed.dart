@@ -1,14 +1,14 @@
 import 'package:flutter/material.dart';
 
 void main() {
-  runApp(MaterialApp(home: BottomSheetExample()));
+  runApp(const MaterialApp(home: BottomSheetExample()));
 }
 
 
 
 void showFailedPopup(BuildContext context, String title, String message,[String buttonMessage="Continue"]){
   showModalBottomSheet(
-    shape: RoundedRectangleBorder(borderRadius: BorderRadius.vertical(
+    shape: const RoundedRectangleBorder(borderRadius: BorderRadius.vertical(
         top: Radius.circular(30),
         bottom: Radius.circular(30)
     )),
@@ -21,17 +21,17 @@ void showFailedPopup(BuildContext context, String title, String message,[String 
           mainAxisSize: MainAxisSize.min, // Prevent expanding unnecessarily
           crossAxisAlignment: CrossAxisAlignment.center,
           children: [
-            SizedBox(height: 20),
+            const SizedBox(height: 20),
             Container(
               width: 60,
               height: 60,
-              decoration: BoxDecoration(
+              decoration: const BoxDecoration(
                 color: Color(0xffE30000), // Background color of the circle
                 shape: BoxShape.circle,
               ),
-              child: Icon(Icons.close_rounded, size: 50, color: Colors.white),
+              child: const Icon(Icons.close_rounded, size: 50, color: Colors.white),
             ),
-            SizedBox(height: 20),
+            const SizedBox(height: 20),
             Text(
               title,
               style: Theme.of(context).textTheme.headlineSmall?.copyWith(),
@@ -42,7 +42,7 @@ void showFailedPopup(BuildContext context, String title, String message,[String 
               style: Theme.of(context).textTheme.titleSmall?.copyWith(),
               textAlign: TextAlign.center,
             ),
-            SizedBox(height: 20), // Space before the button
+            const SizedBox(height: 20), // Space before the button
             ElevatedButton(
               onPressed: () {
                 Navigator.of(context).pop(); // Close the dialog
@@ -51,19 +51,19 @@ void showFailedPopup(BuildContext context, String title, String message,[String 
                 shape: RoundedRectangleBorder(
                   borderRadius: BorderRadius.circular(15), // Adjust the corner radius here
                 ),
-                backgroundColor: Color(0xffE30000), // Button color
-                minimumSize: Size(260, 50), // Set custom width and height
+                backgroundColor: const Color(0xffE30000), // Button color
+                minimumSize: const Size(260, 50), // Set custom width and height
               ),
               child: Text(
                 buttonMessage,
-                style: TextStyle(
+                style: const TextStyle(
                   color: Colors.white,
                   fontSize: 16,
                   fontWeight: FontWeight.w600,
                 ),
               ),
             ),
-            SizedBox(height: 20),
+            const SizedBox(height: 20),
           ],
         ),
       );
@@ -79,12 +79,12 @@ class BottomSheetExample extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      appBar: AppBar(title: Text('Modal Bottom Sheet Example')),
+      appBar: AppBar(title: const Text('Modal Bottom Sheet Example')),
       body: Center(
         child: ElevatedButton(
           onPressed: () {
             showModalBottomSheet(
-              shape: RoundedRectangleBorder(borderRadius: BorderRadius.vertical(
+              shape: const RoundedRectangleBorder(borderRadius: BorderRadius.vertical(
                   top: Radius.circular(30)
               )),
               context: context,
@@ -96,19 +96,19 @@ class BottomSheetExample extends StatelessWidget {
                     mainAxisSize: MainAxisSize.min, // Prevent expanding unnecessarily
                     crossAxisAlignment: CrossAxisAlignment.center,
                     children: [
-                      SizedBox(height: 10),
+                      const SizedBox(height: 10),
                       Container(
                         width: 60,
                         height: 60,
-                        decoration: BoxDecoration(
+                        decoration: const BoxDecoration(
                           color: Color(0xff3BBD5E), // Background color of the circle
                           shape: BoxShape.rectangle,
                           borderRadius: BorderRadius.all(Radius.circular(20)),
                         ),
-                        child: Icon(Icons.check_rounded, size: 50, color: Colors.white),
+                        child: const Icon(Icons.check_rounded, size: 50, color: Colors.white),
                       ),
-                      SizedBox(height: 20),
-                      Text(
+                      const SizedBox(height: 20),
+                      const Text(
                         'title',
                         style: TextStyle(
                           fontSize: 18,
@@ -117,7 +117,7 @@ class BottomSheetExample extends StatelessWidget {
                         ),
                         textAlign: TextAlign.center,
                       ),
-                      Text(
+                      const Text(
                         'message',
                         style: TextStyle(
                           fontSize: 15,
@@ -125,7 +125,7 @@ class BottomSheetExample extends StatelessWidget {
                         ),
                         textAlign: TextAlign.center,
                       ),
-                      SizedBox(height: 20), // Space before the button
+                      const SizedBox(height: 20), // Space before the button
                       ElevatedButton(
                         onPressed: () {
                           Navigator.of(context).pop(); // Close the dialog
@@ -134,10 +134,10 @@ class BottomSheetExample extends StatelessWidget {
                           shape: RoundedRectangleBorder(
                             borderRadius: BorderRadius.circular(15), // Adjust the corner radius here
                           ),
-                          backgroundColor: Color(0xff3BBD5E), // Button color
-                          minimumSize: Size(260, 50), // Set custom width and height
+                          backgroundColor: const Color(0xff3BBD5E), // Button color
+                          minimumSize: const Size(260, 50), // Set custom width and height
                         ),
-                        child: Text(
+                        child: const Text(
                           "Continue",
                           style: TextStyle(
                             color: Colors.white,
@@ -154,7 +154,7 @@ class BottomSheetExample extends StatelessWidget {
               },
             );
           },
-          child: Text('Show Bottom Sheet'),
+          child: const Text('Show Bottom Sheet'),
         ),
       ),
     );

@@ -19,12 +19,12 @@ class _PersonalSettingsState extends State<PersonalSettings> {
   final _userUpdater = UserUpdater(url: 'https://alyibrahim.pythonanywhere.com/update_user');
 
   // ألوان البراندينج
-  final Color blue1 = Color(0xFF1c74bb);
-  final Color blue2 = Color(0xFF165d96);
-  final Color cyan1 = Color(0xFF18bebc);
-  final Color cyan2 = Color(0xFF139896);
-  final Color black = Color(0xFF000000);
-  final Color white = Color(0xFFFFFFFF);
+  const Color blue1 = Color(0xFF1c74bb);
+  const Color blue2 = Color(0xFF165d96);
+  const Color cyan1 = Color(0xFF18bebc);
+  const Color cyan2 = Color(0xFF139896);
+  const Color black = Color(0xFF000000);
+  const Color white = Color(0xFFFFFFFF);
 
   @override
   void initState() {
@@ -92,7 +92,7 @@ class _PersonalSettingsState extends State<PersonalSettings> {
       appBar: AppBar(
         backgroundColor: blue2,
         leading: IconButton(
-          icon: Icon(Icons.arrow_back_ios_new_rounded, color: white),
+          icon: const Icon(Icons.arrow_back_ios_new_rounded, color: white),
           onPressed: () {
             Navigator.pop(context);
           },
@@ -123,38 +123,38 @@ class _PersonalSettingsState extends State<PersonalSettings> {
                   ),
                 ),
               ),
-              SizedBox(height: 20),
+              const SizedBox(height: 20),
               // حقل الاسم الكامل
               TextField(
                 controller: fullNameController,
                 decoration: InputDecoration(
                   labelText: 'Full Name',
-                  prefixIcon: Icon(Icons.person),
+                  prefixIcon: const Icon(Icons.person),
                   border: OutlineInputBorder(
                     borderRadius: BorderRadius.circular(15),
                   ),
                 ),
               ),
-              SizedBox(height: 20),
+              const SizedBox(height: 20),
               // حقل رقم الهاتف
               TextField(
                 controller: phoneNumberController,
                 decoration: InputDecoration(
                   labelText: 'Phone Number',
-                  prefixIcon: Icon(Icons.phone),
+                  prefixIcon: const Icon(Icons.phone),
                   border: OutlineInputBorder(
                     borderRadius: BorderRadius.circular(15),
                   ),
                 ),
                 keyboardType: TextInputType.phone,
               ),
-              SizedBox(height: 20),
+              const SizedBox(height: 20),
               // حقل تاريخ الميلاد مع منتقي التاريخ
               TextField(
                 controller: dateOfBirthController,
                 decoration: InputDecoration(
                   labelText: 'Date of Birth',
-                  prefixIcon: Icon(Icons.calendar_today),
+                  prefixIcon: const Icon(Icons.calendar_today),
                   border: OutlineInputBorder(
                     borderRadius: BorderRadius.circular(15),
                   ),
@@ -162,19 +162,19 @@ class _PersonalSettingsState extends State<PersonalSettings> {
                 readOnly: true,
                 onTap: () => _selectDate(context),
               ),
-              SizedBox(height: 20),
+              const SizedBox(height: 20),
               // حقل العنوان
               TextField(
                 controller: addressController,
                 decoration: InputDecoration(
                   labelText: 'Address',
-                  prefixIcon: Icon(Icons.home),
+                  prefixIcon: const Icon(Icons.home),
                   border: OutlineInputBorder(
                     borderRadius: BorderRadius.circular(15),
                   ),
                 ),
               ),
-              SizedBox(height: 30),
+              const SizedBox(height: 30),
               // زر حفظ التغييرات
               SizedBox(
                 width: double.infinity,
@@ -182,7 +182,7 @@ class _PersonalSettingsState extends State<PersonalSettings> {
                   onPressed: updateData,
                   style: ElevatedButton.styleFrom(
                     backgroundColor: blue2,
-                    padding: EdgeInsets.symmetric(vertical: 15),
+                    padding: const EdgeInsets.symmetric(vertical: 15),
                     shape: RoundedRectangleBorder(
                       borderRadius: BorderRadius.circular(15),
                     ),

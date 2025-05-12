@@ -5,13 +5,14 @@ publish_to: "none" # Remove this line if you wish to publish to pub.dev
 version: 1.0.0+1
 
 environment:
-  sdk: ^3.5.3
+  sdk: ^3.7.2
 
 dependencies:
   flutter:
     sdk: flutter
   # Existing dependencies with 'any' versions remain unchanged
-  firebase_auth: any
+  firebase_auth: ^5.5.3
+  provider: ^6.0.0
   cloud_firestore: any
   image_picker: any
   firebase_storage: any

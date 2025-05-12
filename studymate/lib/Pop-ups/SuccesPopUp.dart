@@ -37,7 +37,7 @@ class _DonePopUpState extends State<DonePopUp> {
           child: CircularWidget(
             title: widget.title ?? 'Default Title',
             description: widget.description ?? 'Default Description',
-            color: widget.color ?? Color(0xff3BBD5E),
+            color: widget.color ?? const Color(0xff3BBD5E),
             textColor: widget.textColor ?? Colors.black,
             routeName: widget.routeName ?? "/HomePage",
             user: widget.user,
@@ -73,7 +73,7 @@ class CircularWidget extends StatelessWidget {
         child: Column(
           mainAxisAlignment: MainAxisAlignment.center,
           children: [
-            SizedBox(height: 60),
+            const SizedBox(height: 60),
             // Lottie animation
             Lottie.asset(
               'lib/assets/animations/SuccesAnimation.json',
@@ -81,7 +81,7 @@ class CircularWidget extends StatelessWidget {
               width: 375,
               fit: BoxFit.fill,
             ),
-            SizedBox(height: 40), // Space between animation and title
+            const SizedBox(height: 40), // Space between animation and title
             // Dynamic title text
             Text(
               title,
@@ -91,7 +91,7 @@ class CircularWidget extends StatelessWidget {
                   ),
               textAlign: TextAlign.center,
             ),
-            SizedBox(height: 20), // Space between title and description
+            const SizedBox(height: 20), // Space between title and description
             // Dynamic description text
             Text(
               description,
@@ -100,7 +100,7 @@ class CircularWidget extends StatelessWidget {
                   ),
               textAlign: TextAlign.center,
             ),
-            SizedBox(height: 30), // Space between text and button
+            const SizedBox(height: 30), // Space between text and button
             // Elevated Button for "Done"
             ElevatedButton(
               onPressed: () {
@@ -111,7 +111,7 @@ class CircularWidget extends StatelessWidget {
                     MaterialPageRoute(
                       builder: (context) => routeName == "/HomePage"
                           ? Homepage(user: user)
-                          : LoginPage(),
+                          : const LoginPage(),
                     ),
                   );
                 } else {
@@ -120,9 +120,9 @@ class CircularWidget extends StatelessWidget {
               },
               style: ElevatedButton.styleFrom(
                 backgroundColor: color, // Button color
-                minimumSize: Size(320, 60),
+                minimumSize: const Size(320, 60),
               ),
-              child: Text(
+              child: const Text(
                 "Done",
                 style: TextStyle(
                   color: Colors.white,

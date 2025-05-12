@@ -19,16 +19,16 @@ class Homebody extends StatefulWidget {
 class _HomebodyState extends State<Homebody> {
    Color _getCardColor(int index) {
     final List<Color> colors = [
-      Color(0xFFF6F5FB), // Light Purple
-      Color(0xFFFFF4F4), // Light Pink
-      Color(0xFFF5F9F9), // White or another fallback color
+      const Color(0xFFF6F5FB), // Light Purple
+      const Color(0xFFFFF4F4), // Light Pink
+      const Color(0xFFF5F9F9), // White or another fallback color
     ];
     return colors[index % colors.length]; // Cycle through these colors
   }
 
   Color _getCardColorCourses(int index) {
     final List<Color> colors = [
-      Color(0xFF165D96),
+      const Color(0xFF165D96),
     ];
     return colors[index % colors.length]; // Cycle through these colors
   }
@@ -109,13 +109,13 @@ class _HomebodyState extends State<Homebody> {
               child: Column(
                 crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
-                  SizedBox(
+                  const SizedBox(
                     height: 15,
                   ),
                   Row(
                     mainAxisAlignment: MainAxisAlignment.spaceBetween,
                     children: [
-                      Text(
+                      const Text(
                         'Today\'s Schedule',
                         style: TextStyle(
                           fontSize: 24,
@@ -131,9 +131,9 @@ class _HomebodyState extends State<Homebody> {
                           Navigator.push(
                               context,
                               MaterialPageRoute(
-                                  builder: (context) => ScheduleView()));
+                                  builder: (context) => const ScheduleView()));
                         },
-                        child: Row(
+                        child: const Row(
                           children: [
                             Text(
                               'View All',
@@ -151,15 +151,15 @@ class _HomebodyState extends State<Homebody> {
                       ),
                     ],
                   ),
-                  SizedBox(
+                  const SizedBox(
                     height: 15,
                   ),
                   _isLoading
-                      ? Center(
+                      ? const Center(
                           child: CircularProgressIndicator(),
                         )
                       : _events.isEmpty
-                          ? Center(
+                          ? const Center(
                               child: Text(
                                 'No tasks for today.',
                                 style: TextStyle(fontSize: 18, color: Color(0xFF165D96)),
@@ -190,7 +190,7 @@ class _HomebodyState extends State<Homebody> {
                                                 Text(
                                                   _events[index]['Title'] ??
                                                       'No Title',
-                                                  style: TextStyle(
+                                                  style: const TextStyle(
                                                     fontSize: 16,
                                                     fontWeight: FontWeight.bold,
                                                     color: Color(0xFF165D96),
@@ -198,10 +198,10 @@ class _HomebodyState extends State<Homebody> {
                                                   textAlign: TextAlign.center,
                                                   overflow: TextOverflow.ellipsis,
                                                 ),
-                                                SizedBox(height: 4),
+                                                const SizedBox(height: 4),
                                                 Text(
                                                   _formatTime(_events[index]['StartTime'] ?? 'Unknown Time'),
-                                                  style: TextStyle(
+                                                  style: const TextStyle(
                                                     fontSize: 14,
                                                     color: Color(0xFF165D96),
                                                   ),
@@ -216,13 +216,13 @@ class _HomebodyState extends State<Homebody> {
                                 ),
                               ],
                             ),
-                  SizedBox(
+                  const SizedBox(
                     height: 30,
                   ),
                   Row(
                     mainAxisAlignment: MainAxisAlignment.spaceBetween,
                     children: [
-                      Text(
+                      const Text(
                         'Recent Courses',
                         style: TextStyle(
                           fontSize: 24,
@@ -236,7 +236,7 @@ class _HomebodyState extends State<Homebody> {
                           // navigate to the schedule page
                           // Navigator.pushNamed(context, '/CoursesPage');
                         },
-                        child: Row(
+                        child: const Row(
                           children: [
                             Text(
                               'View All',
@@ -254,7 +254,7 @@ class _HomebodyState extends State<Homebody> {
                       ),
                     ],
                   ),
-                  SizedBox(
+                  const SizedBox(
                     height: 15,
                   ),
                   Column(
@@ -297,12 +297,12 @@ class _HomebodyState extends State<Homebody> {
                                       children: [
                                         Text(
                                           'Course ${index + 1}',
-                                          style: TextStyle(
+                                          style: const TextStyle(
                                             fontSize: 14,
                                             color: Colors.grey,
                                           ),
                                         ),
-                                        Text(
+                                        const Text(
                                           'SRS',
                                           style: TextStyle(
                                             fontSize: 18,
@@ -314,7 +314,7 @@ class _HomebodyState extends State<Homebody> {
                                           onPressed: () {
                                               // Navigator.pushNamed(context,'/SRS');
                                               Navigator.push(context, 
-                                              MaterialPageRoute(builder: (context) => SRS())
+                                              MaterialPageRoute(builder: (context) => const SRS())
                                               );
                                           },
                                           style: ElevatedButton.styleFrom(
@@ -325,7 +325,7 @@ class _HomebodyState extends State<Homebody> {
                                                   15), // Rounded corners
                                             ),
                                           ),
-                                          child: Text(
+                                          child: const Text(
                                             'Start',
                                             style: TextStyle(
                                               color: Colors.black,
@@ -347,7 +347,7 @@ class _HomebodyState extends State<Homebody> {
                   Row(
                     mainAxisAlignment: MainAxisAlignment.spaceBetween,
                     children: [
-                      Text(
+                      const Text(
                         'Recent Quizzes',
                         style: TextStyle(
                           fontSize: 24,
@@ -361,7 +361,7 @@ class _HomebodyState extends State<Homebody> {
                           // navigate to the schedule page
                           // Navigator.pushNamed(context, '/QuizzesPage');
                         },
-                        child: Row(
+                        child: const Row(
                           children: [
                             Text(
                               'View All',
@@ -413,14 +413,14 @@ class _HomebodyState extends State<Homebody> {
                                     children: [
                                       Row(
                                         children: [
-                                          Icon(Icons.task_outlined,
+                                          const Icon(Icons.task_outlined,
                                               color: Colors.white),
-                                          SizedBox(
+                                          const SizedBox(
                                             width: 10,
                                           ),
                                           Text(
                                             'Quiz ${index + 1}',
-                                            style: TextStyle(
+                                            style: const TextStyle(
                                               fontSize: 18,
                                               color: Colors.white,
                                               fontWeight: FontWeight.bold,
@@ -431,7 +431,7 @@ class _HomebodyState extends State<Homebody> {
                                       // SizedBox(
                                       //     height:
                                       //         10), // Space between the text and button
-                                      Row(
+                                      const Row(
                                         children: [
                                           Text(
                                             '10 / 10',

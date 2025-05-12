@@ -210,7 +210,7 @@ class _ResourcesState extends State<Resources> {
                       onPressed: null, // Disable button during loading
                       style: ElevatedButton.styleFrom(
                         backgroundColor: Colors.grey[300],
-                        padding: EdgeInsets.symmetric(vertical: 15),
+                        padding: const EdgeInsets.symmetric(vertical: 15),
                         shape: RoundedRectangleBorder(
                           borderRadius: BorderRadius.circular(10),
                         ),
@@ -258,12 +258,12 @@ class _ResourcesState extends State<Resources> {
                                 onPressed: () {
                                   Navigator.push(
                                     context,
-                                    MaterialPageRoute(builder: (context) => Courses()),
+                                    MaterialPageRoute(builder: (context) => const Courses()),
                                   );
                                 },
                                 style: ElevatedButton.styleFrom(
                                   backgroundColor: blue2,
-                                  padding: EdgeInsets.symmetric(vertical: 15),
+                                  padding: const EdgeInsets.symmetric(vertical: 15),
                                   shape: RoundedRectangleBorder(
                                     borderRadius: BorderRadius.circular(10),
                                   ),
@@ -305,11 +305,11 @@ class _ResourcesState extends State<Resources> {
                             child: ElevatedButton(
                               onPressed: () {
                                 Navigator.push(context,
-                                    MaterialPageRoute(builder: (context) => Courses()));
+                                    MaterialPageRoute(builder: (context) => const Courses()));
                               },
                               style: ElevatedButton.styleFrom(
                                 backgroundColor: blue2,
-                                padding: EdgeInsets.symmetric(vertical: 15),
+                                padding: const EdgeInsets.symmetric(vertical: 15),
                                 shape: RoundedRectangleBorder(
                                   borderRadius: BorderRadius.circular(10),
                                 ),
@@ -343,7 +343,7 @@ class _ResourcesState extends State<Resources> {
         showNotification(title, body);
         Hive.box('userBox').put('COId', coursesIndex[index]);
         print("Course: ${courses[index]}, ${coursesIndex[index]}");
-        Navigator.push(context, MaterialPageRoute(builder: (context) => CourseContent()));
+        Navigator.push(context, MaterialPageRoute(builder: (context) => const CourseContent()));
       },
       child: Container(
         margin: EdgeInsets.only(bottom: size.height * 0.02),
@@ -358,7 +358,7 @@ class _ResourcesState extends State<Resources> {
             BoxShadow(
               color: Colors.black.withOpacity(0.1),
               blurRadius: 10,
-              offset: Offset(0, 5),
+              offset: const Offset(0, 5),
             ),
           ],
         ),
@@ -387,7 +387,7 @@ class _ResourcesState extends State<Resources> {
                     color: cyan1,
                     borderRadius: BorderRadius.circular(8),
                   ),
-                  padding: EdgeInsets.symmetric(vertical: 8, horizontal: 16),
+                  padding: const EdgeInsets.symmetric(vertical: 8, horizontal: 16),
                   child: Text(
                     'Start',
                     style: TextStyle(

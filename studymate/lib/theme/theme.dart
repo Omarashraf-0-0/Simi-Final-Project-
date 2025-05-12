@@ -1,12 +1,15 @@
-import 'package:flutter/material.dart';
+ /* import 'package:flutter/material.dart';
 import 'package:studymate/Theme/Custom_themes/text_field_theme.dart';
 import 'package:studymate/theme/Custom_themes/checkbox_theme.dart';
 import 'package:studymate/theme/text_theme.dart';
 
-class TAppTheme {
-  TAppTheme._();
+abstract class AppTheme {
+ThemeData get themeData;
+
+
 
   // Define the branding colors
+  TAppTheme._();
   static const Color cyan1 = Color(0xFF18bebc); // Cyan 1
   static const Color cyan2 = Color(0xFF139896); // Cyan 2
   static const Color blue1 = Color(0xFF1c74bb); // Blue 1
@@ -20,7 +23,7 @@ class TAppTheme {
     brightness: Brightness.light,
     scaffoldBackgroundColor: white,
     primaryColor: blue1,
-    colorScheme: ColorScheme(
+    colorScheme: const ColorScheme(
       brightness: Brightness.light,
       primary: cyan1,
       onPrimary: white,
@@ -30,8 +33,6 @@ class TAppTheme {
       onSecondary: white,
       secondaryContainer: blue2,
       onSecondaryContainer: white,
-      background: white,
-      onBackground: black,
       surface: white,
       onSurface: black,
       error: Colors.red,
@@ -48,7 +49,7 @@ class TAppTheme {
     brightness: Brightness.dark,
     primaryColor: blue1,
     scaffoldBackgroundColor: black,
-    colorScheme: ColorScheme(
+    colorScheme: const ColorScheme(
       brightness: Brightness.dark,
       primary: blue1,
       onPrimary: black,
@@ -69,4 +70,4 @@ class TAppTheme {
     inputDecorationTheme: TTextFormFieldTheme.darkInputDecoration,
     checkboxTheme: TcheckboxTheme.darkCheckboxTheme,
   );
-}
+}*/

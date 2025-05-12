@@ -204,7 +204,7 @@ class _AboLaylaChatState extends State<AboLaylaChat> {
                               vertical: 10.0, horizontal: 10.0),
                           child: Row(
                             children: [
-                              CircleAvatar(
+                              const CircleAvatar(
                                 backgroundImage:
                                     AssetImage('lib/assets/img/AboLayla.jpg'),
                                 radius: 16,
@@ -231,7 +231,7 @@ class _AboLaylaChatState extends State<AboLaylaChat> {
                               : MainAxisAlignment.start,
                           children: [
                             if (!isUser)
-                              CircleAvatar(
+                              const CircleAvatar(
                                 backgroundImage:
                                     AssetImage('lib/assets/img/AboLayla.jpg'),
                                 radius: 16,

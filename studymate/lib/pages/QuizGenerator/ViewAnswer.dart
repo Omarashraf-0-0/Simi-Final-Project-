@@ -225,11 +225,11 @@ class _ViewAnswerState extends State<ViewAnswer> {
               },
             ),
             // Display explanation
-            Padding(
-              padding: const EdgeInsets.symmetric(horizontal: 16.0),
+            const Padding(
+              padding: EdgeInsets.symmetric(horizontal: 16.0),
               child: Text(
                 'Explanation:',
-                style: const TextStyle(
+                style: TextStyle(
                   fontFamily: 'League Spartan',
                   fontSize: 18,
                   fontWeight: FontWeight.bold,

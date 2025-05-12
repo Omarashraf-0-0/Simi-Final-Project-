@@ -141,7 +141,7 @@ class _HomebodyState extends State<Homebody> {
               height: 16,
               color: Colors.white,
             ),
-            trailing: Icon(
+            trailing: const Icon(
               Icons.arrow_forward_ios,
               color: Colors.white,
             ),
@@ -178,7 +178,7 @@ class _HomebodyState extends State<Homebody> {
           // Schedule section
           _buildSectionHeader('Today\'s Schedule',
               onViewAll: () => Navigator.push(
-                  context, MaterialPageRoute(builder: (_) => ScheduleView()))),
+                  context, MaterialPageRoute(builder: (_) => const ScheduleView()))),
           const SizedBox(height: 15),
           _isLoading
               ? SizedBox(
@@ -195,7 +195,7 @@ class _HomebodyState extends State<Homebody> {
           // Courses section
           _buildSectionHeader('Recent Courses',
               onViewAll: () => Navigator.push(
-                  context, MaterialPageRoute(builder: (_) => Resources()))),
+                  context, MaterialPageRoute(builder: (_) => const Resources()))),
           const SizedBox(height: 15),
           _isLoadingCourses
               ? SizedBox(
@@ -413,7 +413,7 @@ class _HomebodyState extends State<Homebody> {
               Hive.box('userBox').put('COId', coursesIndex[index]);
               Navigator.push(
                 context,
-                MaterialPageRoute(builder: (_) => CourseContent()),
+                MaterialPageRoute(builder: (_) => const CourseContent()),
               );
             },
             child: Padding(

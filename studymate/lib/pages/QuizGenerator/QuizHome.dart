@@ -10,12 +10,12 @@ class QuizHome extends StatefulWidget {
 
 class _QuizHomeState extends State<QuizHome> {
   // Define branding colors
-  final Color blue1 = Color(0xFF1c74bb);
-  final Color blue2 = Color(0xFF165d96);
-  final Color cyan1 = Color(0xFF18bebc);
-  final Color cyan2 = Color(0xFF139896);
-  final Color black = Color(0xFF000000);
-  final Color white = Color(0xFFFFFFFF);
+  const Color blue1 = Color(0xFF1c74bb);
+  const Color blue2 = Color(0xFF165d96);
+  const Color cyan1 = Color(0xFF18bebc);
+  const Color cyan2 = Color(0xFF139896);
+  const Color black = Color(0xFF000000);
+  const Color white = Color(0xFFFFFFFF);
 
   @override
   Widget build(BuildContext context) {
@@ -23,7 +23,7 @@ class _QuizHomeState extends State<QuizHome> {
       backgroundColor: Theme.of(context).scaffoldBackgroundColor, // Set background color to white for a clean look
       appBar: AppBar(
         backgroundColor: blue2, // Use branding blue color
-        title: Text(
+        title: const Text(
           'Quiz Generator',
           style: TextStyle(
             fontFamily: 'League Spartan',
@@ -37,7 +37,7 @@ class _QuizHomeState extends State<QuizHome> {
       ),
       body: Center(
         child: SingleChildScrollView(
-          padding: EdgeInsets.symmetric(horizontal: 20, vertical: 40), // Add padding
+          padding: const EdgeInsets.symmetric(horizontal: 20, vertical: 40), // Add padding
           child: Column(
             mainAxisAlignment: MainAxisAlignment.center,
             children: <Widget>[
@@ -47,9 +47,9 @@ class _QuizHomeState extends State<QuizHome> {
                 height: 250,
                 fit: BoxFit.contain,
               ),
-              SizedBox(height: 30),
+              const SizedBox(height: 30),
               // Simplified text styling and alignment
-              Text(
+              const Text(
                 'Ready To Challenge Yourself?\nLet\'s Create Your Quiz!',
                 textAlign: TextAlign.center,
                 style: TextStyle(
@@ -59,14 +59,14 @@ class _QuizHomeState extends State<QuizHome> {
                   color: blue2,
                 ),
               ),
-              SizedBox(height: 60),
+              const SizedBox(height: 60),
               // Styled button to match branding
               Center(
               child: ElevatedButton(
                 onPressed: () {
                   Navigator.push(
                     context,
-                    MaterialPageRoute(builder: (context) => QuizOptions()),
+                    MaterialPageRoute(builder: (context) => const QuizOptions()),
                   );
                 },
                 style: ElevatedButton.styleFrom(
@@ -78,7 +78,7 @@ class _QuizHomeState extends State<QuizHome> {
                   ),
                   elevation: 5, // Add slight shadow
                 ),
-                child: Text(
+                child: const Text(
                   'Start The Fun!',
                   style: TextStyle(
                     fontSize: 22,

@@ -21,7 +21,7 @@ class _CareerHomeState extends State<CareerHome> {
 
     return Scaffold(
       appBar: AppBar(
-        title: Text(
+        title: const Text(
           'Career Options',
           style: TextStyle(
             fontFamily: 'League Spartan',
@@ -59,7 +59,7 @@ class _CareerHomeState extends State<CareerHome> {
                       fontFamily: GoogleFonts.leagueSpartan().fontFamily,
                       color: Colors.black,
                     ),
-                    children: [
+                    children: const [
                       TextSpan(text: 'Choose your '),
                       TextSpan(
                         text: 'career path',
@@ -86,7 +86,7 @@ class _CareerHomeState extends State<CareerHome> {
                     },
                     child: Container(
                       height: 270, // Set a fixed height
-                      padding: EdgeInsets.all(16),
+                      padding: const EdgeInsets.all(16),
                       decoration: BoxDecoration(
                         border: Border.all(
                           color: selectedBox == 'Find a Job'
@@ -108,7 +108,7 @@ class _CareerHomeState extends State<CareerHome> {
                               fit: BoxFit.cover,
                             ),
                           ),
-                          SizedBox(height: 16),
+                          const SizedBox(height: 16),
                           Text(
                             'Find a Job',
                             style: TextStyle(
@@ -118,7 +118,7 @@ class _CareerHomeState extends State<CareerHome> {
                                   GoogleFonts.leagueSpartan().fontFamily,
                             ),
                           ),
-                          SizedBox(height: 8),
+                          const SizedBox(height: 8),
                           Text(
                             'Search and apply\nfor jobs',
                             textAlign: TextAlign.center,
@@ -133,7 +133,7 @@ class _CareerHomeState extends State<CareerHome> {
                     ),
                   ),
                 ),
-                SizedBox(width: 16),
+                const SizedBox(width: 16),
                 // Second box: Create a CV
                 Expanded(
                   child: GestureDetector(
@@ -144,7 +144,7 @@ class _CareerHomeState extends State<CareerHome> {
                     },
                     child: Container(
                       height: 270, // Set a fixed height
-                      padding: EdgeInsets.all(16),
+                      padding: const EdgeInsets.all(16),
                       decoration: BoxDecoration(
                         border: Border.all(
                           color: selectedBox == 'Create a CV'
@@ -166,7 +166,7 @@ class _CareerHomeState extends State<CareerHome> {
                               fit: BoxFit.cover,
                             ),
                           ),
-                          SizedBox(height: 16),
+                          const SizedBox(height: 16),
                           Text(
                             'Create a CV',
                             style: TextStyle(
@@ -176,7 +176,7 @@ class _CareerHomeState extends State<CareerHome> {
                                   GoogleFonts.leagueSpartan().fontFamily,
                             ),
                           ),
-                          SizedBox(height: 8),
+                          const SizedBox(height: 8),
                           Text(
                             'Build your\nprofessional CV',
                             textAlign: TextAlign.center,
@@ -204,14 +204,14 @@ class _CareerHomeState extends State<CareerHome> {
                         Navigator.push(
                           context,
                           MaterialPageRoute(
-                              builder: (context) => CareerJob()),
+                              builder: (context) => const CareerJob()),
                         );
                       } else if (selectedBox == 'Create a CV') {
                         // Navigate to CreateCVPage (implement this page)
                         Navigator.push(
                           context,
                           MaterialPageRoute(
-                              builder: (context) => CV()),
+                              builder: (context) => const CV()),
                         );
                       }
                     }

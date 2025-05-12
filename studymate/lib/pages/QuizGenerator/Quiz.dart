@@ -1,6 +1,5 @@
 // Quiz.dart
 
-import 'package:studymate/pages/XPChangePopup.dart';
 import 'dart:async';
 import 'dart:convert';
 import 'package:flutter/material.dart';
@@ -370,10 +369,10 @@ class _QuizState extends State<Quiz> {
     if (questions.isEmpty) {
       return Scaffold(
         appBar: AppBar(
-          backgroundColor: Color(0xFF165D96),
-          title: Text('Quiz'),
+          backgroundColor: const Color(0xFF165D96),
+          title: const Text('Quiz'),
         ),
-        body: Center(
+        body: const Center(
           child: Text('No questions available.'),
         ),
       );
@@ -382,8 +381,8 @@ class _QuizState extends State<Quiz> {
     return Scaffold(
       backgroundColor: Theme.of(context).scaffoldBackgroundColor,
       appBar: AppBar(
-        backgroundColor: Color(0xFF165D96),
-        title: Text(
+        backgroundColor: const Color(0xFF165D96),
+        title: const Text(
           'Quiz',
           style: TextStyle(
             fontFamily: 'League Spartan',
@@ -403,15 +402,15 @@ class _QuizState extends State<Quiz> {
             child: Row(
               mainAxisSize: MainAxisSize.min,
               children: [
-                Icon(
+                const Icon(
                   Icons.watch_later,
                   color: Color(0xFF165D96),
                   size: 24,
                 ),
-                SizedBox(width: 5),
+                const SizedBox(width: 5),
                 Text(
                   '${totalSecondsRemaining ~/ 60}:${(totalSecondsRemaining % 60).toString().padLeft(2, '0')}',
-                  style: TextStyle(
+                  style: const TextStyle(
                     fontFamily: 'League Spartan',
                     fontSize: 14,
                     fontWeight: FontWeight.bold,
@@ -451,14 +450,14 @@ class _QuizState extends State<Quiz> {
                             padding: const EdgeInsets.all(10),
                             decoration: BoxDecoration(
                               color: currentQuestion == index
-                                  ? Color(0xFF165D96)
+                                  ? const Color(0xFF165D96)
                                   : Colors.grey.shade400,
                               shape: BoxShape.circle,
                             ),
                             child: Center(
                               child: Text(
                                 (index + 1).toString(),
-                                style: TextStyle(
+                                style: const TextStyle(
                                   fontFamily: 'League Spartan',
                                   color: Colors.white,
                                   fontWeight: FontWeight.bold,
@@ -466,12 +465,12 @@ class _QuizState extends State<Quiz> {
                               ),
                             ),
                           ),
-                          SizedBox(height: 4),
+                          const SizedBox(height: 4),
                           Container(
                             width: 50,
                             height: 2,
                             color: currentQuestion == index
-                                ? Color(0xFF165D96)
+                                ? const Color(0xFF165D96)
                                 : Colors.grey.shade400,
                           ),
                         ],
@@ -519,7 +518,7 @@ class _QuizState extends State<Quiz> {
                       borderRadius: BorderRadius.circular(12),
                       border: Border.all(
                         color: isSelected
-                            ? Color(0xFF165D96)
+                            ? const Color(0xFF165D96)
                             : Colors.grey.shade400,
                         width: 2,
                       ),
@@ -533,7 +532,7 @@ class _QuizState extends State<Quiz> {
                           height: 50,
                           decoration: BoxDecoration(
                             color: isSelected
-                                ? Color(0xFF165D96)
+                                ? const Color(0xFF165D96)
                                 : Colors.grey.shade400,
                             shape: BoxShape.circle,
                           ),
@@ -544,7 +543,7 @@ class _QuizState extends State<Quiz> {
                                   : questions[currentQuestion]["options"][index]
                                       .substring(0, 1)
                                       .toUpperCase(),
-                              style: TextStyle(
+                              style: const TextStyle(
                                 fontFamily: 'League Spartan',
                                 color: Colors.white,
                                 fontWeight: FontWeight.bold,
@@ -564,7 +563,7 @@ class _QuizState extends State<Quiz> {
                                   fontSize: 16,
                                   fontWeight: FontWeight.bold,
                                   color: isSelected
-                                      ? Color(0xFF165D96)
+                                      ? const Color(0xFF165D96)
                                       : Theme.of(context).colorScheme.secondary,
                                 ),
                           ),
@@ -590,11 +589,11 @@ class _QuizState extends State<Quiz> {
                       height: 50,
                       decoration: BoxDecoration(
                         color: currentQuestion > 0
-                            ? Color(0xFF165D96)
+                            ? const Color(0xFF165D96)
                             : Colors.grey.shade400,
                         shape: BoxShape.circle,
                       ),
-                      child: Center(
+                      child: const Center(
                         child: Icon(
                           Icons.arrow_back_ios,
                           color: Colors.white,
@@ -621,14 +620,14 @@ class _QuizState extends State<Quiz> {
                       );
                     },
                     style: ElevatedButton.styleFrom(
-                      backgroundColor: Color(0xFF165D96),
+                      backgroundColor: const Color(0xFF165D96),
                       padding:
-                          EdgeInsets.symmetric(horizontal: 70, vertical: 10),
+                          const EdgeInsets.symmetric(horizontal: 70, vertical: 10),
                       shape: RoundedRectangleBorder(
                         borderRadius: BorderRadius.circular(10),
                       ),
                     ),
-                    child: Text(
+                    child: const Text(
                       'Submit',
                       style: TextStyle(
                         fontFamily: 'League Spartan',
@@ -648,11 +647,11 @@ class _QuizState extends State<Quiz> {
                       height: 50,
                       decoration: BoxDecoration(
                         color: currentQuestion < questions.length - 1
-                            ? Color(0xFF165D96)
+                            ? const Color(0xFF165D96)
                             : Colors.grey.shade400,
                         shape: BoxShape.circle,
                       ),
-                      child: Center(
+                      child: const Center(
                         child: Icon(
                           Icons.arrow_forward_ios,
                           color: Colors.white,

@@ -227,19 +227,19 @@ class _InsightsPageState extends State<InsightsPage> {
       elevation: 3,
       child: Container(
         width: 100,
-        padding: EdgeInsets.all(8.0),
+        padding: const EdgeInsets.all(8.0),
         child: Column(
           children: [
             Icon(icon, size: 30, color: Colors.blue),
-            SizedBox(height: 5),
+            const SizedBox(height: 5),
             Text(
               value,
-              style: TextStyle(fontSize: 18, fontWeight: FontWeight.bold),
+              style: const TextStyle(fontSize: 18, fontWeight: FontWeight.bold),
             ),
             Text(
               title,
               textAlign: TextAlign.center,
-              style: TextStyle(fontSize: 14),
+              style: const TextStyle(fontSize: 14),
             ),
           ],
         ),
@@ -255,28 +255,28 @@ class _InsightsPageState extends State<InsightsPage> {
     Widget text;
     switch (value.toInt()) {
       case 1:
-        text = Text('Mon', style: style);
+        text = const Text('Mon', style: style);
         break;
       case 2:
-        text = Text('Tue', style: style);
+        text = const Text('Tue', style: style);
         break;
       case 3:
-        text = Text('Wed', style: style);
+        text = const Text('Wed', style: style);
         break;
       case 4:
-        text = Text('Thu', style: style);
+        text = const Text('Thu', style: style);
         break;
       case 5:
-        text = Text('Fri', style: style);
+        text = const Text('Fri', style: style);
         break;
       case 6:
-        text = Text('Sat', style: style);
+        text = const Text('Sat', style: style);
         break;
       case 7:
-        text = Text('Sun', style: style);
+        text = const Text('Sun', style: style);
         break;
       default:
-        text = Text('', style: style);
+        text = const Text('', style: style);
         break;
     }
     return SideTitleWidget(axisSide: meta.axisSide, space: 4.0, child: text);
@@ -286,30 +286,30 @@ class _InsightsPageState extends State<InsightsPage> {
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
-        title: Text('Insights', style: TextStyle(color: Colors.white)),
-        backgroundColor: Color(0xFF165D96),
+        title: const Text('Insights', style: TextStyle(color: Colors.white)),
+        backgroundColor: const Color(0xFF165D96),
       ),
       body: isLoading
-          ? Center(
+          ? const Center(
               child: CircularProgressIndicator(),
             )
           : (courses.isEmpty
-              ? Center(
+              ? const Center(
                   child: Text('No data available.'),
                 )
               : SingleChildScrollView(
                   child: Padding(
-                    padding: EdgeInsets.all(16.0),
+                    padding: const EdgeInsets.all(16.0),
                     child: Column(
                       crossAxisAlignment: CrossAxisAlignment.start,
                       children: [
                         // Header with user's name
                         Text(
                           'Hello, ${widget.userName}! Here\'s an overview of your learning journey.',
-                          style: TextStyle(
+                          style: const TextStyle(
                               fontSize: 20, fontWeight: FontWeight.bold),
                         ),
-                        SizedBox(height: 20),
+                        const SizedBox(height: 20),
                         // Key Metrics Cards
                         Row(
                           mainAxisAlignment: MainAxisAlignment.spaceAround,
@@ -331,15 +331,15 @@ class _InsightsPageState extends State<InsightsPage> {
                             ),
                           ],
                         ),
-                        SizedBox(height: 20),
-                        Text(
+                        const SizedBox(height: 20),
+                        const Text(
                           'Quizzes Completed by Course',
                           style: TextStyle(
                               fontSize: 18, fontWeight: FontWeight.bold),
                         ),
-                        SizedBox(height: 40),
+                        const SizedBox(height: 40),
                         totalQuizzes == 0
-                            ? Center(
+                            ? const Center(
                                 child: Text('No quiz data to display.'),
                               )
                             : SizedBox(
@@ -366,12 +366,12 @@ class _InsightsPageState extends State<InsightsPage> {
                                             children: [
                                               Text(
                                                 '$totalQuizzesTaken',
-                                                style: TextStyle(
+                                                style: const TextStyle(
                                                     fontSize: 36,
                                                     fontWeight:
                                                         FontWeight.bold),
                                               ),
-                                              Text(
+                                              const Text(
                                                 'Quizzes Completed',
                                                 style: TextStyle(fontSize: 18),
                                               ),
@@ -380,12 +380,12 @@ class _InsightsPageState extends State<InsightsPage> {
                                         ],
                                       ),
                                     ),
-                                    SizedBox(height: 20),
+                                    const SizedBox(height: 20),
                                     // Legend
                                   ],
                                 ),
                               ),
-                        SizedBox(height: 40),
+                        const SizedBox(height: 40),
                         Center(
                           child: Wrap(
                             spacing: 10,
@@ -408,16 +408,16 @@ class _InsightsPageState extends State<InsightsPage> {
                             ],
                           ),
                         ),
-                        SizedBox(
+                        const SizedBox(
                           height: 40,
                         ),
                         // Course Insights Section
-                        Text(
+                        const Text(
                           'Your Courses',
                           style: TextStyle(
                               fontSize: 18, fontWeight: FontWeight.bold),
                         ),
-                        SizedBox(height: 10),
+                        const SizedBox(height: 10),
                         Column(
                           children: courses.map((course) {
                             // Safely retrieve courseID and quizzesCompleted
@@ -427,9 +427,9 @@ class _InsightsPageState extends State<InsightsPage> {
 
                             return Card(
                               child: ListTile(
-                                leading: Icon(Icons.book),
+                                leading: const Icon(Icons.book),
                                 title: Text(course),
-                                trailing: Icon(Icons.arrow_forward_ios),
+                                trailing: const Icon(Icons.arrow_forward_ios),
                                 onTap: () {
                                   // Navigate to Course Insights Page
                                   Navigator.push(
@@ -600,19 +600,19 @@ class _CourseInsightsPageState extends State<CourseInsightsPage> {
       elevation: 3,
       child: Container(
         width: 100,
-        padding: EdgeInsets.all(8.0),
+        padding: const EdgeInsets.all(8.0),
         child: Column(
           children: [
             Icon(icon, size: 30, color: Colors.blue),
-            SizedBox(height: 5),
+            const SizedBox(height: 5),
             Text(
               value,
-              style: TextStyle(fontSize: 18, fontWeight: FontWeight.bold),
+              style: const TextStyle(fontSize: 18, fontWeight: FontWeight.bold),
             ),
             Text(
               title,
               textAlign: TextAlign.center,
-              style: TextStyle(fontSize: 14),
+              style: const TextStyle(fontSize: 14),
             ),
           ],
         ),
@@ -630,7 +630,7 @@ class _CourseInsightsPageState extends State<CourseInsightsPage> {
           isSquare: true,
           textColor: Theme.of(context).textTheme.bodyMedium!.color!,
         ),
-        SizedBox(width: 10),
+        const SizedBox(width: 10),
         Indicator(
           color: colorsList[1],
           text: 'Unsolved Questions',
@@ -651,29 +651,29 @@ class _CourseInsightsPageState extends State<CourseInsightsPage> {
       appBar: AppBar(
         title: Text(
           '${widget.courseName} Insights',
-          style: TextStyle(color: Colors.white),
+          style: const TextStyle(color: Colors.white),
         ),
-        backgroundColor: Color(0xFF165D96),
+        backgroundColor: const Color(0xFF165D96),
       ),
       body: isLoading
-          ? Center(child: CircularProgressIndicator())
+          ? const Center(child: CircularProgressIndicator())
           : (totalQuestions == 0
-              ? Center(
+              ? const Center(
                   child: Text('No data available for this course.'),
                 )
               : SingleChildScrollView(
                   child: Padding(
-                    padding: EdgeInsets.all(16.0),
+                    padding: const EdgeInsets.all(16.0),
                     child: Column(
                       // Key Metrics
                       crossAxisAlignment: CrossAxisAlignment.start,
                       children: [
-                        Text(
+                        const Text(
                           'Course Overview',
                           style: TextStyle(
                               fontSize: 20, fontWeight: FontWeight.bold),
                         ),
-                        SizedBox(height: 20),
+                        const SizedBox(height: 20),
                         Row(
                           mainAxisAlignment: MainAxisAlignment.spaceAround,
                           children: [
@@ -689,13 +689,13 @@ class _CourseInsightsPageState extends State<CourseInsightsPage> {
                             ),
                           ],
                         ),
-                        SizedBox(height: 40),
-                        Text(
+                        const SizedBox(height: 40),
+                        const Text(
                           'Questions Progress',
                           style: TextStyle(
                               fontSize: 18, fontWeight: FontWeight.bold),
                         ),
-                        SizedBox(height: 40),
+                        const SizedBox(height: 40),
                         // Pie Chart for Solved vs Unsolved Questions
                         SizedBox(
                           height: 250,
@@ -720,11 +720,11 @@ class _CourseInsightsPageState extends State<CourseInsightsPage> {
                                       children: [
                                         Text(
                                           '$solvedQuestionsText / $totalQuestionsText',
-                                          style: TextStyle(
+                                          style: const TextStyle(
                                               fontSize: 24,
                                               fontWeight: FontWeight.bold),
                                         ),
-                                        Text(
+                                        const Text(
                                           'Questions Solved',
                                           style: TextStyle(fontSize: 18),
                                         ),
@@ -733,12 +733,12 @@ class _CourseInsightsPageState extends State<CourseInsightsPage> {
                                   ],
                                 ),
                               ),
-                              SizedBox(height: 20),
+                              const SizedBox(height: 20),
                               // Legend
                             ],
                           ),
                         ),
-                        SizedBox(height: 40),
+                        const SizedBox(height: 40),
                         _buildLegend(),
                         // Add more sections such as recent quizzes or performance trends if needed
                       ],
@@ -779,7 +779,7 @@ class Indicator extends StatelessWidget {
             color: color,
           ),
         ),
-        SizedBox(width: 4),
+        const SizedBox(width: 4),
         Text(
           text,
           style: TextStyle(

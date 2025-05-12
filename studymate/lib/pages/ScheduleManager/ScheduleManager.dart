@@ -28,9 +28,9 @@ class _ScheduleViewState extends State<ScheduleView> {
 
   final List<String> _labels = ["Day", "Week", "Month"];
   final List<Widget> _views = [
-    DayView(),
-    WeekView(),
-    MonthView(),
+    const DayView(),
+    const WeekView(),
+    const MonthView(),
   ];
 
   // Initialize the notification plugin
@@ -238,7 +238,7 @@ class _ScheduleViewState extends State<ScheduleView> {
                         decoration: const BoxDecoration(
                           color: Color(
                               0xFF165D96), // New background color for the title
-                          borderRadius: const BorderRadius.only(
+                          borderRadius: BorderRadius.only(
                             topLeft: Radius.circular(15),
                             topRight: Radius.circular(15),
                           ),
@@ -678,7 +678,7 @@ class _ScheduleViewState extends State<ScheduleView> {
                                         dateController.text.trim();
                                     if (!RegExp(r'^\d{4}-\d{2}-\d{2}$')
                                         .hasMatch(eventDateText)) {
-                                      throw FormatException(
+                                      throw const FormatException(
                                           "Invalid date format. Expected YYYY-MM-DD.");
                                     }
 

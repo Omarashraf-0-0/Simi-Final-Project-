@@ -69,7 +69,7 @@ class MaterialCourses extends StatelessWidget {
         } else if (snapshot.hasError) {
           return const Center(child: Text('Error loading PDF'));
         } else {
-          return PDF().cachedFromUrl(
+          return const PDF().cachedFromUrl(
             pdfUrl,
             placeholder: (progress) => Center(child: Text('$progress %')),
             errorWidget: (error) => const Center(child: Text('Error loading PDF')),

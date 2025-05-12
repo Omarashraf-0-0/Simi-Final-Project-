@@ -23,12 +23,12 @@ class _RegisterLoginState extends State<RegisterLogin> {
   String? gender;
 
   // Branding colors
-  final Color blue1 = Color(0xFF1c74bb);
-  final Color blue2 = Color(0xFF165d96);
-  final Color cyan1 = Color(0xFF18bebc);
-  final Color cyan2 = Color(0xFF139896);
-  final Color black = Color(0xFF000000);
-  final Color white = Color(0xFFFFFFFF);
+  const Color blue1 = Color(0xFF1c74bb);
+  const Color blue2 = Color(0xFF165d96);
+  const Color cyan1 = Color(0xFF18bebc);
+  const Color cyan2 = Color(0xFF139896);
+  const Color black = Color(0xFF000000);
+  const Color white = Color(0xFFFFFFFF);
 
   final _formKey = GlobalKey<FormState>(); // Form key for validation
 
@@ -121,7 +121,7 @@ class _RegisterLoginState extends State<RegisterLogin> {
             children: [
               // Back Button
               IconButton(
-                icon: Icon(Icons.arrow_back_ios_new, color: blue2),
+                icon: const Icon(Icons.arrow_back_ios_new, color: blue2),
                 onPressed: () {
                   Navigator.pop(context);
                 },
@@ -139,7 +139,7 @@ class _RegisterLoginState extends State<RegisterLogin> {
                         color: theme.primaryColor,
                       ),
                     ),
-                    SizedBox(height: 8),
+                    const SizedBox(height: 8),
                     Text(
                       'Create your account',
                       style: GoogleFonts.leagueSpartan(
@@ -161,7 +161,7 @@ class _RegisterLoginState extends State<RegisterLogin> {
                       controller: emailController,
                       decoration: InputDecoration(
                         labelText: 'Email',
-                        prefixIcon: Icon(Icons.email_outlined),
+                        prefixIcon: const Icon(Icons.email_outlined),
                         border: OutlineInputBorder(
                           borderRadius: BorderRadius.circular(15),
                         ),
@@ -187,7 +187,7 @@ class _RegisterLoginState extends State<RegisterLogin> {
                       controller: usernameController,
                       decoration: InputDecoration(
                         labelText: 'Username',
-                        prefixIcon: Icon(Icons.person_outline),
+                        prefixIcon: const Icon(Icons.person_outline),
                         border: OutlineInputBorder(
                           borderRadius: BorderRadius.circular(15),
                         ),
@@ -212,7 +212,7 @@ class _RegisterLoginState extends State<RegisterLogin> {
                       controller: passwordController,
                       decoration: InputDecoration(
                         labelText: 'Password',
-                        prefixIcon: Icon(Icons.lock_outline),
+                        prefixIcon: const Icon(Icons.lock_outline),
                         border: OutlineInputBorder(
                           borderRadius: BorderRadius.circular(15),
                         ),
@@ -241,7 +241,7 @@ class _RegisterLoginState extends State<RegisterLogin> {
                       controller: confirmPasswordController,
                       decoration: InputDecoration(
                         labelText: 'Confirm Password',
-                        prefixIcon: Icon(Icons.lock_outline),
+                        prefixIcon: const Icon(Icons.lock_outline),
                         border: OutlineInputBorder(
                           borderRadius: BorderRadius.circular(15),
                         ),
@@ -279,7 +279,7 @@ class _RegisterLoginState extends State<RegisterLogin> {
                       children: [
                         Expanded(
                           child: RadioListTile<String>(
-                            title: Text('Male'),
+                            title: const Text('Male'),
                             value: 'Male',
                             groupValue: gender,
                             onChanged: (value) {
@@ -291,7 +291,7 @@ class _RegisterLoginState extends State<RegisterLogin> {
                         ),
                         Expanded(
                           child: RadioListTile<String>(
-                            title: Text('Female'),
+                            title: const Text('Female'),
                             value: 'Female',
                             groupValue: gender,
                             onChanged: (value) {
@@ -311,7 +311,7 @@ class _RegisterLoginState extends State<RegisterLogin> {
                         onPressed: validateAndProceed,
                         style: ElevatedButton.styleFrom(
                           backgroundColor: blue2,
-                          padding: EdgeInsets.symmetric(vertical: 15),
+                          padding: const EdgeInsets.symmetric(vertical: 15),
                           shape: RoundedRectangleBorder(
                             borderRadius: BorderRadius.circular(15),
                           ),
@@ -341,18 +341,18 @@ class _RegisterLoginState extends State<RegisterLogin> {
                         color: theme.primaryColor,
                       ),
                     ),
-                    SizedBox(height: 8),
+                    const SizedBox(height: 8),
                     OutlinedButton(
                       onPressed: () {
                         // Navigate to Login page
                         Navigator.pushReplacement(
                           context,
-                          MaterialPageRoute(builder: (context) => LoginPage()),
+                          MaterialPageRoute(builder: (context) => const LoginPage()),
                         );
                       },
                       style: OutlinedButton.styleFrom(
-                        side: BorderSide(color: blue2, width: 2),
-                        padding: EdgeInsets.symmetric(horizontal: 40, vertical: 12),
+                        side: const BorderSide(color: blue2, width: 2),
+                        padding: const EdgeInsets.symmetric(horizontal: 40, vertical: 12),
                         shape: RoundedRectangleBorder(
                           borderRadius: BorderRadius.circular(15),
                         ),

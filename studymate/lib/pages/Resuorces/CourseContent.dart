@@ -100,7 +100,7 @@ class _CourseContentState extends State<CourseContent> {
       } else {
         // Handle permission denial
         ScaffoldMessenger.of(context).showSnackBar(
-          SnackBar(content: Text('Storage permission denied')),
+          const SnackBar(content: Text('Storage permission denied')),
         );
       }
     } else {
@@ -297,7 +297,7 @@ class _CourseContentState extends State<CourseContent> {
 
     return Scaffold(
       appBar: AppBar(
-      backgroundColor: Color(0xFF165d96),
+      backgroundColor: const Color(0xFF165d96),
 
         title: Center(
           child: Text(

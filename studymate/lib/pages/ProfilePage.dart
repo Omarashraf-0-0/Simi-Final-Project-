@@ -6,7 +6,6 @@ import 'package:hive/hive.dart';
 import 'package:image_picker/image_picker.dart';
 import 'package:http/http.dart' as http;
 import 'package:shimmer/shimmer.dart';
-import 'package:studymate/main.dart';
 
 class Profilepage extends StatefulWidget {
   const Profilepage({super.key});
@@ -171,7 +170,7 @@ class _ProfilepageState extends State<Profilepage> {
       _isImageLoading = true;
     });
 
-    final url = 'https://alyibrahim.pythonanywhere.com/get-profile-image';
+    const url = 'https://alyibrahim.pythonanywhere.com/get-profile-image';
     final username = Hive.box('userBox').get('username');
 
     final Map<String, String> body = {
@@ -277,7 +276,7 @@ class _ProfilepageState extends State<Profilepage> {
   }
 
   Future<void> _uploadAndSaveImage(File imageFile) async {
-    final serverUrl = 'https://alyibrahim.pythonanywhere.com/upload-image';
+    const serverUrl = 'https://alyibrahim.pythonanywhere.com/upload-image';
     final username = Hive.box('userBox').get('username');
 
     try {
@@ -373,7 +372,7 @@ class _ProfilepageState extends State<Profilepage> {
                                   null
                               ? MemoryImage(base64Decode(Hive.box('userBox')
                                   .get('profileImageBase64')))
-                              : AssetImage('assets/images/default_avatar.png')
+                              : const AssetImage('assets/images/default_avatar.png')
                                   as ImageProvider,
                         ),
                         GestureDetector(
@@ -454,9 +453,9 @@ class _ProfilepageState extends State<Profilepage> {
                     // Courses Section
                     _buildSectionTitle('Courses'),
                     isLoading
-                        ? Center(child: CircularProgressIndicator())
+                        ? const Center(child: CircularProgressIndicator())
                         : isError
-                            ? Text(
+                            ? const Text(
                                 'Failed to load courses',
                                 style: TextStyle(color: Colors.red),
                               )
@@ -471,7 +470,7 @@ class _ProfilepageState extends State<Profilepage> {
                       style: ElevatedButton.styleFrom(
                         backgroundColor: blue2,
                         padding:
-                            EdgeInsets.symmetric(vertical: 15, horizontal: 40),
+                            const EdgeInsets.symmetric(vertical: 15, horizontal: 40),
                         shape: RoundedRectangleBorder(
                           borderRadius: BorderRadius.circular(15),
                         ),
@@ -500,7 +499,7 @@ class _ProfilepageState extends State<Profilepage> {
         Shimmer.fromColors(
           baseColor: Theme.of(context).colorScheme.primary,
           highlightColor: Theme.of(context).colorScheme.secondary,
-          child: CircleAvatar(
+          child: const CircleAvatar(
             radius: 60,
             backgroundColor: Colors.white,
           ),
@@ -588,7 +587,7 @@ class _ProfilepageState extends State<Profilepage> {
             height: 50,
           ),
         ),
-        SizedBox(height: 8),
+        const SizedBox(height: 8),
         Shimmer.fromColors(
           baseColor: Theme.of(context).colorScheme.primary,
           highlightColor: Theme.of(context).colorScheme.secondary,
@@ -598,7 +597,7 @@ class _ProfilepageState extends State<Profilepage> {
             color: Colors.white,
           ),
         ),
-        SizedBox(height: 4),
+        const SizedBox(height: 4),
         Shimmer.fromColors(
           baseColor: Theme.of(context).colorScheme.primary,
           highlightColor: Theme.of(context).colorScheme.secondary,
@@ -626,7 +625,7 @@ class _ProfilepageState extends State<Profilepage> {
             color: Colors.white,
           ),
         ),
-        SizedBox(height: 8),
+        const SizedBox(height: 8),
         // Rows Placeholder
         _buildShimmerInfoRow(),
         _buildShimmerInfoRow(),
@@ -650,7 +649,7 @@ class _ProfilepageState extends State<Profilepage> {
               color: Colors.white,
             ),
           ),
-          SizedBox(width: 8),
+          const SizedBox(width: 8),
           Expanded(
             child: Shimmer.fromColors(
               baseColor: Theme.of(context).colorScheme.primary,

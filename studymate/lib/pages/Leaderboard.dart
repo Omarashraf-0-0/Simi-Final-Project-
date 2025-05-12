@@ -1,7 +1,7 @@
 import 'package:flutter/material.dart';
 
 void main() {
-  runApp(LeaderboardApp());
+  runApp(const LeaderboardApp());
 }
 
 class LeaderboardApp extends StatelessWidget {
@@ -9,7 +9,7 @@ class LeaderboardApp extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return MaterialApp(
+    return const MaterialApp(
       debugShowCheckedModeBanner: false,
       home: LeaderboardPage(),
     );
@@ -22,11 +22,11 @@ class LeaderboardPage extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      backgroundColor: Color(0xFF1E1E2A),
+      backgroundColor: const Color(0xFF1E1E2A),
       appBar: AppBar(
-        backgroundColor: Color(0xFF1E1E2A),
+        backgroundColor: const Color(0xFF1E1E2A),
         elevation: 0,
-        title: Text('Leaderboard', style: TextStyle(color: Colors.white)),
+        title: const Text('Leaderboard', style: TextStyle(color: Colors.white)),
         centerTitle: true,
       ),
       body: Column(
@@ -97,11 +97,11 @@ class LeaderboardPage extends StatelessWidget {
               backgroundColor: avatarColor,
               child: CircleAvatar(
                 radius: rank == 1 ? 46 : 36,
-                backgroundImage: AssetImage('assets/avatar_placeholder.png'), // Replace with actual image path
+                backgroundImage: const AssetImage('assets/avatar_placeholder.png'), // Replace with actual image path
               ),
             ),
             if (isCrownVisible)
-              Positioned(
+              const Positioned(
                 top: 0,
                 child: Icon(
                   Icons.emoji_events,
@@ -111,14 +111,14 @@ class LeaderboardPage extends StatelessWidget {
               ),
           ],
         ),
-        SizedBox(height: 8),
+        const SizedBox(height: 8),
         Text(
           username,
-          style: TextStyle(color: Colors.white, fontWeight: FontWeight.bold),
+          style: const TextStyle(color: Colors.white, fontWeight: FontWeight.bold),
         ),
         Text(
           score.toString(),
-          style: TextStyle(color: Colors.white70),
+          style: const TextStyle(color: Colors.white70),
         ),
       ],
     );
@@ -126,14 +126,14 @@ class LeaderboardPage extends StatelessWidget {
 
   Widget _buildUserTile(String username, int score, bool isIncreasing) {
     return ListTile(
-      leading: CircleAvatar(
+      leading: const CircleAvatar(
         backgroundImage: AssetImage('lib/assets/img/pfp.jpg'), // Replace with actual image path
       ),
       title: Text(
         username,
-        style: TextStyle(color: Colors.white),
+        style: const TextStyle(color: Colors.white),
       ),
-      subtitle: Text(
+      subtitle: const Text(
         '@username',
         style: TextStyle(color: Colors.white70),
       ),
@@ -142,9 +142,9 @@ class LeaderboardPage extends StatelessWidget {
         children: [
           Text(
             score.toString(),
-            style: TextStyle(color: Colors.white),
+            style: const TextStyle(color: Colors.white),
           ),
-          SizedBox(width: 8),
+          const SizedBox(width: 8),
           Icon(
             isIncreasing ? Icons.arrow_upward : Icons.arrow_downward,
             color: isIncreasing ? Colors.green : Colors.red,

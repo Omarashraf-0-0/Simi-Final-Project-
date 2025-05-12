@@ -26,12 +26,12 @@ class _UniversitysettingsState extends State<Universitysettings> {
   final _userUpdater = UserUpdater(url: 'https://alyibrahim.pythonanywhere.com/update_user');
 
   // ألوان البراندينج
-  final Color blue1 = Color(0xFF1c74bb);
-  final Color blue2 = Color(0xFF165d96);
-  final Color cyan1 = Color(0xFF18bebc);
-  final Color cyan2 = Color(0xFF139896);
-  final Color black = Color(0xFF000000);
-  final Color white = Color(0xFFFFFFFF);
+  const Color blue1 = Color(0xFF1c74bb);
+  const Color blue2 = Color(0xFF165d96);
+  const Color cyan1 = Color(0xFF18bebc);
+  const Color cyan2 = Color(0xFF139896);
+  const Color black = Color(0xFF000000);
+  const Color white = Color(0xFFFFFFFF);
 
   final RegExp inputRegExp = RegExp(r'^[a-zA-Z0-9]+$');
 
@@ -86,7 +86,7 @@ class _UniversitysettingsState extends State<Universitysettings> {
       appBar: AppBar(
         backgroundColor: blue2,
         leading: IconButton(
-          icon: Icon(Icons.arrow_back_ios_new_rounded, color: white),
+          icon: const Icon(Icons.arrow_back_ios_new_rounded, color: white),
           onPressed: () {
             Navigator.pop(context);
           },
@@ -117,12 +117,12 @@ class _UniversitysettingsState extends State<Universitysettings> {
                   ),
                 ),
               ),
-              SizedBox(height: 20),
+              const SizedBox(height: 20),
               // University Dropdown
               DropdownButtonFormField<String>(
                 decoration: InputDecoration(
                   labelText: 'University',
-                  prefixIcon: Icon(Icons.school),
+                  prefixIcon: const Icon(Icons.school),
                   border: OutlineInputBorder(
                     borderRadius: BorderRadius.circular(15),
                   ),
@@ -140,12 +140,12 @@ class _UniversitysettingsState extends State<Universitysettings> {
                   });
                 },
               ),
-              SizedBox(height: 20),
+              const SizedBox(height: 20),
               // College Dropdown
               DropdownButtonFormField<String>(
                 decoration: InputDecoration(
                   labelText: 'College',
-                  prefixIcon: Icon(Icons.account_balance),
+                  prefixIcon: const Icon(Icons.account_balance),
                   border: OutlineInputBorder(
                     borderRadius: BorderRadius.circular(15),
                   ),
@@ -163,12 +163,12 @@ class _UniversitysettingsState extends State<Universitysettings> {
                   });
                 },
               ),
-              SizedBox(height: 20),
+              const SizedBox(height: 20),
               // Major Dropdown
               DropdownButtonFormField<String>(
                 decoration: InputDecoration(
                   labelText: 'Major',
-                  prefixIcon: Icon(Icons.menu_book),
+                  prefixIcon: const Icon(Icons.menu_book),
                   border: OutlineInputBorder(
                     borderRadius: BorderRadius.circular(15),
                   ),
@@ -186,12 +186,12 @@ class _UniversitysettingsState extends State<Universitysettings> {
                   });
                 },
               ),
-              SizedBox(height: 20),
+              const SizedBox(height: 20),
               // Term Level Dropdown
               DropdownButtonFormField<String>(
                 decoration: InputDecoration(
                   labelText: 'Term Level',
-                  prefixIcon: Icon(Icons.bar_chart),
+                  prefixIcon: const Icon(Icons.bar_chart),
                   border: OutlineInputBorder(
                     borderRadius: BorderRadius.circular(15),
                   ),
@@ -209,20 +209,20 @@ class _UniversitysettingsState extends State<Universitysettings> {
                   });
                 },
               ),
-              SizedBox(height: 20),
+              const SizedBox(height: 20),
               // Registration Number Field
               TextField(
                 controller: registrationNumberController,
                 decoration: InputDecoration(
                   labelText: 'Registration Number',
-                  prefixIcon: Icon(Icons.confirmation_num),
+                  prefixIcon: const Icon(Icons.confirmation_num),
                   border: OutlineInputBorder(
                     borderRadius: BorderRadius.circular(15),
                   ),
                 ),
                 keyboardType: TextInputType.number,
               ),
-              SizedBox(height: 30),
+              const SizedBox(height: 30),
               // Save Changes Button
               SizedBox(
                 width: double.infinity,
@@ -230,7 +230,7 @@ class _UniversitysettingsState extends State<Universitysettings> {
                   onPressed: updateData,
                   style: ElevatedButton.styleFrom(
                     backgroundColor: blue2,
-                    padding: EdgeInsets.symmetric(vertical: 15),
+                    padding: const EdgeInsets.symmetric(vertical: 15),
                     shape: RoundedRectangleBorder(
                       borderRadius: BorderRadius.circular(15),
                     ),

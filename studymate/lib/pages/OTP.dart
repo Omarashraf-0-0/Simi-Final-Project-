@@ -64,7 +64,7 @@ class _OTPState extends State<OTP> {
       if (otpCode == _serverOTP) {
         // OTP is correct
         ScaffoldMessenger.of(context).showSnackBar(
-          SnackBar(
+          const SnackBar(
             content: Text('OTP Verified Successfully!'),
             backgroundColor: Colors.green,
           ),
@@ -75,7 +75,7 @@ class _OTPState extends State<OTP> {
       } else {
         // OTP is incorrect
         ScaffoldMessenger.of(context).showSnackBar(
-          SnackBar(
+          const SnackBar(
             content: Text('The OTP is wrong. Try resending it.'),
             backgroundColor: Colors.red,
           ),
@@ -85,7 +85,7 @@ class _OTPState extends State<OTP> {
   }
 
   Future<void> registerCollegeInfo() async {
-    final String url = 'https://alyibrahim.pythonanywhere.com/register';
+    const String url = 'https://alyibrahim.pythonanywhere.com/register';
 
     final Map<String, dynamic> data = {
       'username': widget.user?.username,
@@ -125,7 +125,7 @@ class _OTPState extends State<OTP> {
         // Navigate back to login page
         Navigator.pushAndRemoveUntil(
           context,
-          MaterialPageRoute(builder: (context) => LoginPage()),
+          MaterialPageRoute(builder: (context) => const LoginPage()),
               (route) => false,
         );
         // Optionally, you can show a success popup
@@ -183,7 +183,7 @@ class _OTPState extends State<OTP> {
         print('Failed to fetch OTP. Status code: ${response.statusCode}');
         // Handle error accordingly
         ScaffoldMessenger.of(context).showSnackBar(
-          SnackBar(
+          const SnackBar(
             content: Text('Failed to receive OTP from server.'),
             backgroundColor: Colors.red,
           ),
@@ -193,7 +193,7 @@ class _OTPState extends State<OTP> {
       print('Error fetching OTP: $e');
       // Handle error accordingly
       ScaffoldMessenger.of(context).showSnackBar(
-        SnackBar(
+        const SnackBar(
           content: Text('An error occurred while fetching OTP.'),
           backgroundColor: Colors.red,
         ),
@@ -232,7 +232,7 @@ class _OTPState extends State<OTP> {
     _fetchOTP();
     ScaffoldMessenger.of(context).showSnackBar(
       SnackBar(
-        content: Text('OTP Resent Successfully!'),
+        content: const Text('OTP Resent Successfully!'),
         backgroundColor: blue2,
       ),
     );
@@ -288,7 +288,7 @@ class _OTPState extends State<OTP> {
                   color: Colors.red,
                 ),
               )
-                  : SizedBox.shrink(),
+                  : const SizedBox.shrink(),
               SizedBox(height: size.height * 0.02),
               // حقول إدخال OTP
               Row(
@@ -305,7 +305,7 @@ class _OTPState extends State<OTP> {
                   onPressed: _isOTPLoaded ? _submitOTP : null,
                   style: ElevatedButton.styleFrom(
                     backgroundColor: blue2,
-                    padding: EdgeInsets.symmetric(vertical: 15),
+                    padding: const EdgeInsets.symmetric(vertical: 15),
                     shape: RoundedRectangleBorder(
                       borderRadius: BorderRadius.circular(15),
                     ),
@@ -352,7 +352,7 @@ class _OTPState extends State<OTP> {
         controller: _controllers[index],
         focusNode: _focusNodes[index],
         decoration: InputDecoration(
-          contentPadding: EdgeInsets.symmetric(vertical: 15),
+          contentPadding: const EdgeInsets.symmetric(vertical: 15),
           border: OutlineInputBorder(
             borderRadius: BorderRadius.circular(10),
           ),

@@ -37,9 +37,9 @@ class AboLayla extends StatelessWidget {
                         fontSize: 30,
                         fontFamily: fontFamily,
                       ),
-                  children: [
-                    const TextSpan(text: 'Hello, I am\n'),
-                    const TextSpan(
+                  children: const [
+                    TextSpan(text: 'Hello, I am\n'),
+                    TextSpan(
                       text: 'Abo Layla',
                       style: TextStyle(
                         color: primaryColor,

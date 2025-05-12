@@ -35,12 +35,12 @@ class _CollageInformationState extends State<CollageInformation> {
   final _formKey = GlobalKey<FormState>(); // Form key for validation
 
   // Branding colors
-  final Color blue1 = Color(0xFF1c74bb);
-  final Color blue2 = Color(0xFF165d96);
-  final Color cyan1 = Color(0xFF18bebc);
-  final Color cyan2 = Color(0xFF139896);
-  final Color black = Color(0xFF000000);
-  final Color white = Color(0xFFFFFFFF);
+  const Color blue1 = Color(0xFF1c74bb);
+  const Color blue2 = Color(0xFF165d96);
+  const Color cyan1 = Color(0xFF18bebc);
+  const Color cyan2 = Color(0xFF139896);
+  const Color black = Color(0xFF000000);
+  const Color white = Color(0xFFFFFFFF);
 
   @override
   void dispose() {
@@ -76,7 +76,7 @@ class _CollageInformationState extends State<CollageInformation> {
 
 
   Future<void> registerCollegeInfo() async {
-    final String url = 'https://alyibrahim.pythonanywhere.com/register';
+    const String url = 'https://alyibrahim.pythonanywhere.com/register';
 
     final Map<String, dynamic> data = {
       'username': widget.user?.username,
@@ -116,7 +116,7 @@ class _CollageInformationState extends State<CollageInformation> {
         // Navigate back to login page
         Navigator.pushAndRemoveUntil(
           context,
-          MaterialPageRoute(builder: (context) => LoginPage()),
+          MaterialPageRoute(builder: (context) => const LoginPage()),
           (route) => false,
         );
       } else {
@@ -174,7 +174,7 @@ class _CollageInformationState extends State<CollageInformation> {
             children: [
               // Back Button
               IconButton(
-                icon: Icon(Icons.arrow_back_ios_new, color: black),
+                icon: const Icon(Icons.arrow_back_ios_new, color: black),
                 onPressed: () {
                   Navigator.pop(context);
                 },
@@ -192,7 +192,7 @@ class _CollageInformationState extends State<CollageInformation> {
                         color: black,
                       ),
                     ),
-                    SizedBox(height: 8),
+                    const SizedBox(height: 8),
                     Text(
                       'College Information',
                       style: GoogleFonts.leagueSpartan(
@@ -213,7 +213,7 @@ class _CollageInformationState extends State<CollageInformation> {
                     DropdownButtonFormField<String>(
                       decoration: InputDecoration(
                         labelText: 'University',
-                        prefixIcon: Icon(Icons.school_outlined),
+                        prefixIcon: const Icon(Icons.school_outlined),
                         border: OutlineInputBorder(
                           borderRadius: BorderRadius.circular(15),
                         ),
@@ -237,7 +237,7 @@ class _CollageInformationState extends State<CollageInformation> {
                     DropdownButtonFormField<String>(
                       decoration: InputDecoration(
                         labelText: 'College',
-                        prefixIcon: Icon(Icons.account_balance_outlined),
+                        prefixIcon: const Icon(Icons.account_balance_outlined),
                         border: OutlineInputBorder(
                           borderRadius: BorderRadius.circular(15),
                         ),
@@ -261,7 +261,7 @@ class _CollageInformationState extends State<CollageInformation> {
                     DropdownButtonFormField<String>(
                       decoration: InputDecoration(
                         labelText: 'Major',
-                        prefixIcon: Icon(Icons.menu_book_outlined),
+                        prefixIcon: const Icon(Icons.menu_book_outlined),
                         border: OutlineInputBorder(
                           borderRadius: BorderRadius.circular(15),
                         ),
@@ -286,7 +286,7 @@ class _CollageInformationState extends State<CollageInformation> {
                       controller: registrationNumberController,
                       decoration: InputDecoration(
                         labelText: 'Registration Number',
-                        prefixIcon: Icon(Icons.confirmation_num_outlined),
+                        prefixIcon: const Icon(Icons.confirmation_num_outlined),
                         border: OutlineInputBorder(
                           borderRadius: BorderRadius.circular(15),
                         ),
@@ -309,7 +309,7 @@ class _CollageInformationState extends State<CollageInformation> {
                         onPressed: validateAndRegister,
                         style: ElevatedButton.styleFrom(
                           backgroundColor: blue2,
-                          padding: EdgeInsets.symmetric(vertical: 15),
+                          padding: const EdgeInsets.symmetric(vertical: 15),
                           shape: RoundedRectangleBorder(
                             borderRadius: BorderRadius.circular(15),
                           ),
@@ -336,18 +336,18 @@ class _CollageInformationState extends State<CollageInformation> {
                               color: black,
                             ),
                           ),
-                          SizedBox(height: 8),
+                          const SizedBox(height: 8),
                           OutlinedButton(
                             onPressed: () {
                               // Navigate to Login page
                               Navigator.pushReplacement(
                                 context,
-                                MaterialPageRoute(builder: (context) => LoginPage()),
+                                MaterialPageRoute(builder: (context) => const LoginPage()),
                               );
                             },
                             style: OutlinedButton.styleFrom(
-                              side: BorderSide(color: blue2, width: 2),
-                              padding: EdgeInsets.symmetric(horizontal: 40, vertical: 12),
+                              side: const BorderSide(color: blue2, width: 2),
+                              padding: const EdgeInsets.symmetric(horizontal: 40, vertical: 12),
                               shape: RoundedRectangleBorder(
                                 borderRadius: BorderRadius.circular(15),
                               ),

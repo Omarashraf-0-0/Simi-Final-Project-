@@ -76,7 +76,7 @@ class _TextfieldState extends State<Textfield> {
       keyboardType: widget.keyboardType,
       decoration: InputDecoration(
         labelText: widget.hintText,
-        hintStyle: widget.hintStyle ?? TextStyle(color: Colors.grey),
+        hintStyle: widget.hintStyle ?? const TextStyle(color: Colors.grey),
         prefixIcon: widget.prefixIcon,
         suffixIcon: widget.obscureText
             ? IconButton(
@@ -101,7 +101,7 @@ class _TextfieldState extends State<Textfield> {
         focusedBorder: OutlineInputBorder(
           borderRadius: BorderRadius.circular(widget.borderRadius),
           borderSide:
-              BorderSide(color: widget.borderColor ?? Color(0xff1c74bb)),
+              BorderSide(color: widget.borderColor ?? const Color(0xff1c74bb)),
         ),
       ),
       onTap: widget.isDateField

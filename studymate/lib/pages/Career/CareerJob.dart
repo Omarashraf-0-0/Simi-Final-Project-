@@ -148,14 +148,14 @@ class _CareerJobState extends State<CareerJob> {
   // Widget to build job list
   Widget buildJobList() {
     if (jobs.isEmpty) {
-      return Center(child: Text('No jobs found.'));
+      return const Center(child: Text('No jobs found.'));
     } else {
       return ListView.builder(
         itemCount: jobs.length,
         itemBuilder: (context, index) {
           Job job = jobs[index];
           return Card(
-            margin: EdgeInsets.symmetric(vertical: 8),
+            margin: const EdgeInsets.symmetric(vertical: 8),
             child: ListTile(
               title: Text(job.title),
               subtitle: Text('${job.company} - ${job.location}'),
@@ -195,7 +195,7 @@ class _CareerJobState extends State<CareerJob> {
                     fontFamily: GoogleFonts.leagueSpartan().fontFamily,
                   ),
                 ),
-                SizedBox(height: 5),
+                const SizedBox(height: 5),
                 Text(
                   'Location: ${job.location}',
                   style: TextStyle(
@@ -203,7 +203,7 @@ class _CareerJobState extends State<CareerJob> {
                     fontFamily: GoogleFonts.leagueSpartan().fontFamily,
                   ),
                 ),
-                SizedBox(height: 10),
+                const SizedBox(height: 10),
                 Text(
                   job.description,
                   style: TextStyle(
@@ -219,9 +219,9 @@ class _CareerJobState extends State<CareerJob> {
               onPressed: () {
                 Navigator.pop(context);
               },
-              child: Text('Close'),
+              child: const Text('Close'),
             ),
-            SizedBox(width: 8),
+            const SizedBox(width: 8),
             ElevatedButton(
               onPressed: () async {
                 // Redirect to job application URL
@@ -257,7 +257,7 @@ class _CareerJobState extends State<CareerJob> {
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
-        title: Text(
+        title: const Text(
           'Find a Job',
           style: TextStyle(
             fontFamily: 'League Spartan',
@@ -275,7 +275,7 @@ class _CareerJobState extends State<CareerJob> {
           children: [
             // Profession Input Field
             TextField(
-              decoration: InputDecoration(
+              decoration: const InputDecoration(
                 labelText: 'Profession (e.g., Engineer, Doctor)',
                 prefixIcon: Icon(Icons.work),
                 border: OutlineInputBorder(),
@@ -285,11 +285,11 @@ class _CareerJobState extends State<CareerJob> {
                 profession = value;
               },
             ),
-            SizedBox(height: 20),
+            const SizedBox(height: 20),
             // Job Type Selection
             DropdownButtonFormField<String>(
               value: jobType,
-              decoration: InputDecoration(
+              decoration: const InputDecoration(
                 labelText: 'Job Type',
                 prefixIcon: Icon(Icons.work_outline),
                 border: OutlineInputBorder(),
@@ -307,11 +307,11 @@ class _CareerJobState extends State<CareerJob> {
                 });
               },
             ),
-            SizedBox(height: 20),
+            const SizedBox(height: 20),
             // Work Mode Selection
             DropdownButtonFormField<String>(
               value: workMode,
-              decoration: InputDecoration(
+              decoration: const InputDecoration(
                 labelText: 'Work Mode',
                 prefixIcon: Icon(Icons.location_city),
                 border: OutlineInputBorder(),
@@ -329,12 +329,12 @@ class _CareerJobState extends State<CareerJob> {
                 });
               },
             ),
-            SizedBox(height: 20),
+            const SizedBox(height: 20),
             // Country Selection using DropdownButtonFormField with menuMaxHeight
             DropdownButtonFormField<String>(
               value: countryName,
               menuMaxHeight: MediaQuery.of(context).size.height * 0.25,
-              decoration: InputDecoration(
+              decoration: const InputDecoration(
                 labelText: 'Country',
                 prefixIcon: Icon(Icons.public),
                 border: OutlineInputBorder(),
@@ -353,7 +353,7 @@ class _CareerJobState extends State<CareerJob> {
                 });
               },
             ),
-            SizedBox(height: 20),
+            const SizedBox(height: 20),
             // Search Button
             ElevatedButton(
               onPressed: fetchJobs,
@@ -374,11 +374,11 @@ class _CareerJobState extends State<CareerJob> {
                 ),
               ),
             ),
-            SizedBox(height: 20),
+            const SizedBox(height: 20),
             // Display Jobs
             Expanded(
               child: isLoading
-                  ? Center(child: CircularProgressIndicator())
+                  ? const Center(child: CircularProgressIndicator())
                   : buildJobList(),
             ),
           ],

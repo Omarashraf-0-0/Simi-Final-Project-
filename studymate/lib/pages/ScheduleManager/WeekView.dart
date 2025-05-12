@@ -293,7 +293,7 @@ class _WeekViewState extends State<WeekView> {
                         },
                       );
                     },
-                    icon: Icon(
+                    icon: const Icon(
                       Icons.arrow_circle_right_outlined,
                       color: Colors.white,
                       size: 30,
