@@ -412,9 +412,8 @@ class _HomepageState extends State<Homepage> {
                   icon: Icons.nightlight_outlined,
                   text: 'Dark Mode',
                   onTap: () {
-                     final isDarkMode = Provider.of<ThemeManager>(context, listen: false).theme.brightness == Brightness.dark;
                       // Toggle theme when tapped
-                    Provider.of<ThemeManager>(context, listen: false).toggleTheme(); 
+                    Provider.of<ThemeManager>(context, listen: false).toggleTheme();
                   },
                 ),
                 Divider(),

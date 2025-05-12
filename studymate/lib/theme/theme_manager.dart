@@ -13,12 +13,13 @@ ThemeData get theme => _themeBridge.themeData;
 
 void toggleTheme() {
     if (_themeBridge.themeData.brightness == Brightness.dark) {
-      _themeBridge.changeTheme(LightAppTheme());
+      _themeBridge = LightAppTheme();
     } else {
-      _themeBridge.changeTheme(DarkAppTheme());
+      _themeBridge = DarkAppTheme();
     }
+     notifyListeners();
     _themeBridge = _themeBridge; // update current bridge reference
-    notifyListeners();
+   
   }
 
   

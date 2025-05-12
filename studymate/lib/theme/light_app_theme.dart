@@ -8,6 +8,7 @@ import 'text_theme.dart';
 import 'package:studymate/theme//bridge_theme.dart';
 
 class LightAppTheme implements ThemeBridge {
+
   late ThemeBridge _currentTheme;
 
 
@@ -15,11 +16,8 @@ class LightAppTheme implements ThemeBridge {
     _currentTheme = this;
   }
 
-      @override
-  void changeTheme(ThemeBridge newTheme) {
-    _currentTheme = newTheme;
-  }
-  
+ 
+
   @override
   ThemeData get themeData => ThemeData(
         useMaterial3: true,

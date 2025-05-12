@@ -1,0 +1,2 @@
+C:/Users/Modern Computer/Documents/GitHub/Simi-Final-Project-/studymate/android/app/.cxx/Debug/4ze506f5/arm64-v8a/CMakeFiles/edit_cache.dir
+C:/Users/Modern Computer/Documents/GitHub/Simi-Final-Project-/studymate/android/app/.cxx/Debug/4ze506f5/arm64-v8a/CMakeFiles/rebuild_cache.dir

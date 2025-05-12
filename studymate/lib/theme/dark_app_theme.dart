@@ -1,5 +1,5 @@
 import 'package:flutter/material.dart';
-import 'theme.dart';
+//import 'theme.dart';
 import 'app_colors.dart';
 import 'Custom_themes/text_field_theme.dart';
 import 'Custom_themes/checkbox_theme.dart';
@@ -14,10 +14,7 @@ class DarkAppTheme implements ThemeBridge {
   DarkAppTheme() {
     _currentTheme = this;
   }
-  @override
-  void changeTheme(ThemeBridge newTheme) {
-    _currentTheme = newTheme;
-  }
+
   @override
   ThemeData get themeData => ThemeData(
         useMaterial3: true,

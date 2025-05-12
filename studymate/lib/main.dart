@@ -76,7 +76,7 @@ class MyApp extends StatefulWidget {
   const MyApp({super.key});
   @override
   _MyAppState createState() => _MyAppState();
-  @override
+
   Widget build(BuildContext context) {
     return MaterialApp(
       navigatorKey: navigatorKey, // Add the global key here
@@ -101,6 +101,7 @@ class MyApp extends StatefulWidget {
 
 class _MyAppState extends State<MyApp> {
    late ThemeManager themeManager;
+  bool _isListenerAdded = false;
   final FirebaseMessaging _messaging = FirebaseMessaging.instance;
   final FlutterLocalNotificationsPlugin _flutterLocalNotificationsPlugin =
       FlutterLocalNotificationsPlugin();

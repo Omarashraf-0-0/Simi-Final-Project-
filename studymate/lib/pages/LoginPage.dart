@@ -32,12 +32,12 @@ class _LoginPageState extends State<LoginPage> {
   bool isPasswordVisible = false;
 
   // Colors according to your branding
-  const Color blue1 = Color(0xFF1c74bb);
-  const Color blue2 = Color(0xFF165d96);
-  const Color cyan1 = Color(0xFF18bebc);
-  const Color cyan2 = Color(0xFF139896);
-  const Color black = Color(0xFF000000);
-  const Color white = Color(0xFFFFFFFF);
+  final Color blue1 = Color(0xFF1c74bb);
+  final Color blue2 = Color(0xFF165d96);
+  final Color cyan1 = Color(0xFF18bebc);
+  final Color cyan2 = Color(0xFF139896);
+  final Color black = Color(0xFF000000);
+  final Color white = Color(0xFFFFFFFF);
 
   void showXPChangePopup(BuildContext context, int xpChange, String message) {
     showDialog(
@@ -115,7 +115,7 @@ class _LoginPageState extends State<LoginPage> {
   }
 
   Future<bool> fetchAndSaveProfileImage() async {
-    const url =
+    final url =
         'https://alyibrahim.pythonanywhere.com/get-profile-image'; // Replace with your server URL
 
     try {
@@ -141,7 +141,7 @@ class _LoginPageState extends State<LoginPage> {
             body: jsonEncode(body), // Encode the body as JSON
           )
           .timeout(
-            const Duration(seconds: 30), // Adjust the duration as needed
+            Duration(seconds: 30), // Adjust the duration as needed
           );
 
       if (response.statusCode == 200) {
@@ -349,7 +349,7 @@ class _LoginPageState extends State<LoginPage> {
                   controller: usernameController,
                   decoration: InputDecoration(
                     labelText: 'Username',
-                    prefixIcon: const Icon(Icons.person_outline),
+                    prefixIcon: Icon(Icons.person_outline),
                     border: OutlineInputBorder(
                       borderRadius: BorderRadius.circular(15),
                     ),
@@ -367,7 +367,7 @@ class _LoginPageState extends State<LoginPage> {
                   controller: passwordController,
                   decoration: InputDecoration(
                     labelText: 'Password',
-                    prefixIcon: const Icon(Icons.lock_outline),
+                    prefixIcon: Icon(Icons.lock_outline),
                     suffixIcon: IconButton(
                       icon: Icon(
                         isPasswordVisible
@@ -422,11 +422,11 @@ class _LoginPageState extends State<LoginPage> {
                         Navigator.push(
                           context,
                           MaterialPageRoute(
-                            builder: (context) => const ForgetPass(),
+                            builder: (context) => ForgetPass(),
                           ),
                         );
                       },
-                      child: const Text(
+                      child: Text(
                         'Forgot Password?',
                         style: TextStyle(
                           color: Colors.redAccent,
@@ -446,12 +446,12 @@ class _LoginPageState extends State<LoginPage> {
                     onPressed: login,
                     style: ElevatedButton.styleFrom(
                       backgroundColor: blue2,
-                      padding: const EdgeInsets.symmetric(vertical: 15),
+                      padding: EdgeInsets.symmetric(vertical: 15),
                       shape: RoundedRectangleBorder(
                         borderRadius: BorderRadius.circular(15),
                       ),
                     ),
-                    child: const Text(
+                    child: Text(
                       'Login',
                       style: TextStyle(
                         color: white,
@@ -480,18 +480,18 @@ class _LoginPageState extends State<LoginPage> {
                       Navigator.push(
                         context,
                         MaterialPageRoute(
-                          builder: (context) => const RegisterLogin(),
+                          builder: (context) => RegisterLogin(),
                         ),
                       );
                     },
                     style: OutlinedButton.styleFrom(
-                      side: const BorderSide(color: blue2, width: 2),
-                      padding: const EdgeInsets.symmetric(vertical: 15),
+                      side: BorderSide(color: blue2, width: 2),
+                      padding: EdgeInsets.symmetric(vertical: 15),
                       shape: RoundedRectangleBorder(
                         borderRadius: BorderRadius.circular(15),
                       ),
                     ),
-                    child: const Text(
+                    child: Text(
                       'Create an Account',
                       style: TextStyle(
                         color: blue2,
