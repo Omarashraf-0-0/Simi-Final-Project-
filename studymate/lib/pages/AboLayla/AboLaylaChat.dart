@@ -2,7 +2,81 @@ import 'package:flutter/material.dart';
 import 'package:google_generative_ai/google_generative_ai.dart';
 import 'package:google_fonts/google_fonts.dart';
 import 'package:flutter_markdown/flutter_markdown.dart';
+import 'package:http/http.dart' as http;
+import 'dart:convert';
 
+
+//++++++++++++++++++++++Abstract Factory+++++++++++++++++++++++++
+abstract class ChatLanguageFactory {
+  String getInitialPrompt(String courseName);
+  String formatUserMessage(String message, String courseName, bool isFirstPrompt);
+  TextDirection get textDirection;
+  TextStyle? get textStyle;
+  String getHintText();
+}
+//++++++++++++++++++++++Egyptain Factory+++++++++++++++++++++++++
+class EgyptianArabicFactory implements ChatLanguageFactory {
+  @override
+  String getInitialPrompt(String courseName) =>
+      "إزاي أقدر أساعدك في $courseName؟";
+
+  @override
+  String formatUserMessage(String message, String courseName, bool isFirstPrompt) {
+    if (isFirstPrompt) {
+      return "أنت تتحدث مع طالب جامعي في مادة $courseName. "
+          "أجب على سؤاله باللغة المصرية العامية، وابدأ بـ (يا امبيسا). "
+          "استخدم التنسيق مثل القوائم والرموز عند الحاجة.";
+    } else {
+      return "أجب بشكل طبيعي باللغة المصرية في سياق مادة $courseName. "
+          "استخدم التنسيق مثل القوائم والرموز عند الحاجة.";
+    }
+  }
+
+  @override
+  TextDirection get textDirection => TextDirection.rtl;
+
+  @override
+  TextStyle? get textStyle => GoogleFonts.cairo(fontSize: 16);
+
+  @override
+  String getHintText() => 'اكتب رسالتك...';
+}
+//++++++++++++++++++++++English Factory+++++++++++++++++++++++++
+class EnglishFactory implements ChatLanguageFactory {
+  @override
+  String getInitialPrompt(String courseName) =>
+      "Hey there!\nWhat can I help you with in $courseName?";
+
+  @override
+  String formatUserMessage(String message, String courseName, bool isFirstPrompt) {
+    if (isFirstPrompt) {
+      return "You are talking with a college student about $courseName. "
+          "Answer the question in casual English, starting with 'Hey there'. "
+          "Be friendly and supportive. Use markdown formatting such as bullet points, numbered lists, code blocks when appropriate.";
+    } else {
+      return "Reply normally in English about $courseName. "
+          "Use markdown formatting such as bullet points, numbered lists, code blocks when appropriate.";
+    }
+  }
+
+  @override
+  TextDirection get textDirection => TextDirection.ltr;
+
+  @override
+  TextStyle? get textStyle => null;
+
+  @override
+  String getHintText() => 'Type your message...';
+}
+//++++++++++++++++++++ Factory Selector++++++++++++++++++++++++
+ChatLanguageFactory getLanguageFactory(String selectedLanguage) {
+  switch (selectedLanguage) {
+    case 'مصري':
+      return EgyptianArabicFactory();
+    default:
+      return EnglishFactory();
+  }
+}
 class AboLaylaChat extends StatefulWidget {
   const AboLaylaChat({
     super.key,
@@ -28,8 +102,19 @@ class _AboLaylaChatState extends State<AboLaylaChat> {
   );
   final ScrollController _scrollController = ScrollController();
 
+  late final ChatLanguageFactory languageFactory;
   bool isFirstPrompt = true;
   bool isTyping = false;
+//++++++++++++++++++++++ TF +++++++++++++++++++++++
+@override
+  void initState() {
+    super.initState();
+    languageFactory = getLanguageFactory(widget.selectedLanguage);
+    _messages.add({
+      'text': languageFactory.getInitialPrompt(widget.selectedCourse),
+      'isUser': false,
+    });
+  }
 
   void _sendMessage() async {
     if (_controller.text.isEmpty) return;
@@ -50,6 +135,7 @@ class _AboLaylaChatState extends State<AboLaylaChat> {
         curve: Curves.easeOut,
       );
     });
+    
 
     try {
       String conversationContext = _messages
@@ -60,24 +146,12 @@ class _AboLaylaChatState extends State<AboLaylaChat> {
 
       String modifiedMessage;
 
-      if (isFirstPrompt) {
-        if (widget.selectedLanguage == 'مصري') {
-          modifiedMessage =
-              "$conversationContext\nUser: $userMessage\nBot: أنت تتحدث مع طالب جامعي في مادة ${widget.selectedCourse}. أجب على سؤاله باللغة المصرية العامية، وابدأ بـ (يا امبيسا). استخدم التنسيق مثل القوائم والرموز عند الحاجة.";
-        } else {
-          modifiedMessage =
-              "$conversationContext\nUser: $userMessage\nBot: You are talking with a college student about ${widget.selectedCourse}. Answer the question in casual English, starting with 'Hey there'. Be friendly and supportive. Use markdown formatting such as bullet points, numbered lists, code blocks when appropriate.";
-        }
-        isFirstPrompt = false;
-      } else {
-        if (widget.selectedLanguage == 'مصري') {
-          modifiedMessage =
-              "$conversationContext\nUser: $userMessage\nBot: أجب بشكل طبيعي باللغة المصرية في سياق مادة ${widget.selectedCourse}. استخدم التنسيق مثل القوائم والرموز عند الحاجة.";
-        } else {
-          modifiedMessage =
-              "$conversationContext\nUser: $userMessage\nBot: Reply normally in English about ${widget.selectedCourse}. Use markdown formatting such as bullet points, numbered lists, code blocks when appropriate.";
-        }
-      }
+   modifiedMessage = languageFactory.formatUserMessage(
+  userMessage,
+  widget.selectedCourse,
+  isFirstPrompt,
+);
+isFirstPrompt = false;
 
       // Add typing indicator message to list
       setState(() {
@@ -248,20 +322,20 @@ class _AboLaylaChatState extends State<AboLaylaChat> {
                                       isUser ? Colors.blue : Colors.grey[300],
                                   borderRadius: BorderRadius.circular(12),
                                 ),
+                                child: Directionality(
+                                 textDirection: languageFactory.textDirection ?? TextDirection.ltr,
                                 child: MarkdownBody(
                                   data: message['text']!,
-                                  styleSheet: MarkdownStyleSheet(
-                                    p: TextStyle(
-                                      color: isUser
-                                          ? Colors.white
-                                          : Colors.black87,
-                                    ),
+                                  styleSheet: MarkdownStyleSheet.fromTheme(Theme.of(context)).copyWith(
+                                    p:languageFactory.textStyle ?? const TextStyle(fontSize: 16),
                                     code: TextStyle(
                                       color: isUser
                                           ? Colors.white
                                           : Colors.black87,
                                       backgroundColor: Colors.transparent,
+                                    
                                     ),
+                                  ),
                                   ),
                                 ),
                               ),
