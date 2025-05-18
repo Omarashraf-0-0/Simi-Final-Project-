@@ -14,7 +14,7 @@ import 'package:timezone/timezone.dart' as tz;
 import 'DayView.dart';
 import 'WeekView.dart';
 import 'MonthView.dart';
-
+import 'package:studymate/pages/Notifications/NotificationClass.dart';
 class ScheduleView extends StatefulWidget {
   const ScheduleView({super.key});
 
@@ -826,11 +826,16 @@ class _ScheduleViewState extends State<ScheduleView> {
       DateTime scheduledDate = DateTime.parse(reminderTime);
 
       // Schedule the notification
-      await scheduleNotification(
+      await NotificationService().scheduleNotification(
         title: title,
         body: description,
         scheduledDate: scheduledDate,
       );
+      // await scheduleNotification(
+      //   title: title,
+      //   body: description,
+      //   scheduledDate: scheduledDate,
+      // );
 
       // Show success popup
       showSuccessPopup(

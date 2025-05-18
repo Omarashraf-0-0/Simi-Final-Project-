@@ -34,6 +34,7 @@ dependencies:
   flutter_slidable: any
   timezone: any
   firebase_messaging: any
+  firebase_in_app_messaging: any
 
   # Packages that require specific versions
   share_plus: any

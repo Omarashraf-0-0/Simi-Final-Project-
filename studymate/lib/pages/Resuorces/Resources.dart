@@ -340,7 +340,7 @@ class _ResourcesState extends State<Resources> {
         // Handle course card tap
         String title = "Welcome to ${courses[index]}";
         String body = "Get started with the course content";
-        showNotification(title, body);
+        // showNotification(title, body);
         Hive.box('userBox').put('COId', coursesIndex[index]);
         print("Course: ${courses[index]}, ${coursesIndex[index]}");
         Navigator.push(context, MaterialPageRoute(builder: (context) => CourseContent()));
