@@ -173,9 +173,12 @@ class _DayViewState extends State<DayView> {
           // Make only the Expanded widget (task card) slidable from end to start
           Expanded(
             child: Dismissible(
+              
               key: ValueKey(event['Sid']),
-              direction: DismissDirection.endToStart,
+              direction: DismissDirection.horizontal,
               confirmDismiss: (DismissDirection direction) async {
+                if (direction == DismissDirection.endToStart) {
+                  // Confirm delete
                 return await showDialog(
                   context: context,
                   builder: (BuildContext context) {
@@ -196,23 +199,47 @@ class _DayViewState extends State<DayView> {
                     );
                   },
                 );
+                }  else {
+                   // No confirmation for duplication
+                  return true;
+                }
               },
               onDismissed: (direction) {
+                if (direction == DismissDirection.endToStart) {
                 // Remove the item from data source
                 setState(() {
                   _events.remove(event);
                 });
                 // Call API to delete task from server
                 _deleteTask(event['Sid']);
+              } else if (direction == DismissDirection.startToEnd) {
+            // Handle duplicate
+            final duplicatedTask = Map<String, dynamic>.from(event);
+           duplicatedTask['Sid'] = UniqueKey().toString(); // Create a new ID
+           setState(() {
+             _events.add(duplicatedTask);
+            });
+              _showDuplicateDialog(duplicatedTask); // Your duplication API or logic
+             }
+    
               },
               background: Container(
-                color: Colors.red,
-                alignment: Alignment.centerRight,
-                padding: const EdgeInsets.only(right: 20.0),
+                color: Colors.green,
+                alignment: Alignment.centerLeft,
+                padding: const EdgeInsets.only(left: 20.0),
                 child: const Icon(
-                  Icons.delete,
+                  Icons.copy,
                   color: Colors.white,
                 ),
+              ),
+               secondaryBackground: Container(
+              color: Colors.red,
+              alignment: Alignment.centerRight,
+              padding: const EdgeInsets.only(right: 20.0),
+              child: const Icon(
+              Icons.delete,
+              color: Colors.white,
+              ),
               ),
               child: Card(
                 shape: RoundedRectangleBorder(
@@ -305,6 +332,72 @@ class _DayViewState extends State<DayView> {
       ),
     );
   }
+Future<void> _showDuplicateDialog(Map<String, dynamic> originalTask) async {
+  final _dateController = TextEditingController(text: originalTask['deadline'] ?? '');
+  final _titleController = TextEditingController(text: originalTask['title'] ?? '');
+  final _descriptionController = TextEditingController(text: originalTask['description'] ?? '');
+  final shouldDuplicate = await showDialog(
+    context: context,
+    builder: (_) => AlertDialog(
+      title: const Text('Duplicate Task'),
+      content: Column(
+        mainAxisSize: MainAxisSize.min,
+        children: [
+           TextFormField(
+        controller: _titleController,
+        decoration: const InputDecoration(labelText: 'Title'),
+      ),
+      const SizedBox(height: 10),
+      TextFormField(
+        controller: _descriptionController,
+        decoration: const InputDecoration(labelText: 'Description'),
+      ),
+      const SizedBox(height: 10),
+          TextFormField(
+            controller: _dateController,
+            decoration: const InputDecoration(labelText: 'New Deadline'),
+          ),
+        ],
+      ),
+      actions: [
+        TextButton(
+          onPressed: () => Navigator.pop(context, false),
+          child: const Text('Cancel'),
+        ),
+        TextButton(
+          onPressed: () => Navigator.pop(context, true),
+          child: const Text('Duplicate'),
+        ),
+      ],
+    ),
+  );
+
+  if (shouldDuplicate == true) {
+    final modifiedFields = {
+      'title': _titleController.text,
+    'description': _descriptionController.text,
+      'deadline': _dateController.text,
+    };
+    await _duplicateTask(originalTask['Sid'], modifiedFields);
+  }
+}
+Future<void> _duplicateTask(String originalId, Map<String, dynamic> modifiedFields) async {
+  final response = await http.post(
+    Uri.parse('https://alyibrahim.pythonanywhere.com/tasks/$originalId/duplicate'),
+    headers: {'Content-Type': 'application/json'},
+    body: json.encode(modifiedFields),
+  );
+
+  if (response.statusCode == 201) {
+    final newTask = json.decode(response.body);
+    setState(() {
+      _events.add(newTask); // Add to your task list
+    });
+  } else {
+    // Handle error (show Snackbar or alert)
+    print('Failed to duplicate task ${response.body}');
+  }
+}
 
   Future<void> _deleteTask(int taskId) async {
     String url = 'https://alyibrahim.pythonanywhere.com/delete_task';
