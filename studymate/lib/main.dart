@@ -26,7 +26,7 @@ import 'package:firebase_messaging/firebase_messaging.dart';
 import 'package:studymate/pages/Career/CareerHome.dart';
 import 'package:studymate/pages/Notifications/NotificationClass.dart';
 import 'package:studymate/pages/Notifications/InAppMessagingNotification.dart';
-import 'package:firebase_in_app_messaging/firebase_in_app_messaging.dart';
+// import 'package:firebase_in_app_messaging/firebase_in_app_messaging.dart';
 import 'package:firebase_messaging/firebase_messaging.dart';
 import 'package:flutter/material.dart';
 import 'package:firebase_core/firebase_core.dart';
@@ -53,8 +53,7 @@ void main() async {
   await Firebase.initializeApp(
     options: DefaultFirebaseOptions.currentPlatform,
   );
-  FirebaseInAppMessaging.instance.setAutomaticDataCollectionEnabled(true);
-  FirebaseInAppMessaging.instance.triggerEvent('test_event');
+  // FirebaseInAppMessaging.instance.setAutomaticDataCollectionEnabled(true);
 // تهيئة المنطقة الزمنية
   tz.initializeTimeZones();
 

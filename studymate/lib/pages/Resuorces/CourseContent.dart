@@ -9,7 +9,7 @@ import 'package:flutter_downloader/flutter_downloader.dart';
 import 'package:permission_handler/permission_handler.dart';
 import 'package:path_provider/path_provider.dart';
 import 'package:studymate/pages/Resuorces/SRS.dart';
-
+import 'package:studymate/pages/Resuorces/CourseClass.dart';
 class CourseContent extends StatefulWidget {
   const CourseContent({super.key});
 
@@ -156,77 +156,136 @@ class _CourseContentState extends State<CourseContent> {
       print('Request failed with status: ${response.body}.');
     }
   }
+Future<void> getcources() async {
+  const url = 'https://alyibrahim.pythonanywhere.com/CourseContent';
+  print('srsdkajsdfk$courseIndex');
+  final Map<String, dynamic> requestBody = {
+    'courseIdx': Hive.box('userBox').get('COId'),
+    'username': Hive.box('userBox').get('username'),
+  };
+  final response = await http.post(
+    Uri.parse(url),
+    headers: {'Content-Type': 'application/json'},
+    body: jsonEncode(requestBody),
+  );
 
-  Future<void> getcources() async {
-    const url = 'https://alyibrahim.pythonanywhere.com/CourseContent';
-    print('srsdkajsdfk$courseIndex');
-    final Map<String, dynamic> requestBody = {
-      'courseIdx': Hive.box('userBox').get('COId'),
-      'username': Hive.box('userBox').get('username'),
-    };
-    final response = await http.post(
-      Uri.parse(url),
-      headers: {'Content-Type': 'application/json'},
-      body: jsonEncode(requestBody),
-    );
+  if (response.statusCode == 200) {
+    final jsonResponse = jsonDecode(response.body);
+    print("print the json: $jsonResponse");
+    print("print the json: $courseIndex");
+    setState(() {
+      // --- Composite pattern START ---
+      // Initialize category composites
+      final Map<String, ResourceComposite> categoryComposites = {
+        'L': ResourceComposite('Lectures'),
+        'Su': ResourceComposite('Summaries'),
+        'Q': ResourceComposite('Quizzes'),
+        'Se': ResourceComposite('Sections'),
+        'R': ResourceComposite('Resources')
+      };
+      subjectIds.clear();
+      subjectLinks.clear();
 
-    if (response.statusCode == 200) {
-      final jsonResponse = jsonDecode(response.body);
-      print("print the json: $jsonResponse");
-      print("print the json: $courseIndex");
-      setState(() {
-        jsonResponse['subInfo'].forEach((resource) {
-          String category = resource['RCat'];
-          if (!categorizedList.containsKey(category)) {
-            categorizedList[category] = [];
-          }
-          categorizedList[category]
-              ?.add('${resource['RName']}: ${resource['RFileURL']}');
-          subjectIds[resource['RName']] = resource['RId'];
-        });
+      // Fill composites
+      jsonResponse['subInfo'].forEach((resource) {
+        String category = resource['RCat'];
+        String name = resource['RName'];
+        String url = resource['RFileURL'];
 
-        print(categorizedList);
-        if (categorizedList['L'] == null) {
-          categorizedList['L'] = [];
-        }
-        if (categorizedList['Su'] == null) {
-          categorizedList['Su'] = [];
-        }
-        if (categorizedList['Q'] == null) {
-          categorizedList['Q'] = [];
-        }
-        if (categorizedList['Se'] == null) {
-          categorizedList['Se'] = [];
-        }
-        if (categorizedList['R'] == null) {
-          categorizedList['R'] = [];
-        }
-        listFromL = categorizedList['L']!;
-        listFromSU = categorizedList['Su']!;
-        listFromQ = categorizedList['Q']!;
-        listFromSE = categorizedList['Se']!;
-        listFromR = categorizedList['R']!;
-        lnames = listFromL.map((e) => e.split(':')[0]).toList();
-        SEnames = listFromSE.map((e) => e.split(':')[0]).toList();
-        SUnames = listFromSU.map((e) => e.split(':')[0]).toList();
-        Qnames = listFromQ.map((e) => e.split(':')[0]).toList();
-        Rnames = listFromR.map((e) => e.split(':')[0]).toList();
-
-        categorizedList.forEach((category, subjects) {
-          for (var subject in subjects) {
-            var index = subject.indexOf(': ');
-            if (index != -1) {
-              var subjectName = subject.substring(0, index);
-              var link = subject.substring(index + 2);
-              subjectLinks[subjectName] = link;
-            }
-          }
-        });
+        categoryComposites.putIfAbsent(category, () => ResourceComposite(category));
+        categoryComposites[category]?.add(ResourceLeaf(name, url));
+        subjectIds[name] = resource['RId'];
+        subjectLinks[name] = url;
       });
-    } else {
-      print('Request failed with status: ${response.body}.');
-    }
+
+      // --- For UI: get lists of names as before ---
+      lnames = categoryComposites['L']?.children.map((e) => e.name).toList() ?? [];
+      SEnames = categoryComposites['Se']?.children.map((e) => e.name).toList() ?? [];
+      SUnames = categoryComposites['Su']?.children.map((e) => e.name).toList() ?? [];
+      Qnames = categoryComposites['Q']?.children.map((e) => e.name).toList() ?? [];
+      Rnames = categoryComposites['R']?.children.map((e) => e.name).toList() ?? [];
+
+      // --- For UI: get lists of ResourceLeaf objects (optional) ---
+      listFromL = categoryComposites['L']?.children.map((e) => e.name).toList() ?? [];
+      listFromSE = categoryComposites['Se']?.children.map((e) => e.name).toList() ?? [];
+      listFromSU = categoryComposites['Su']?.children.map((e) => e.name).toList() ?? [];
+      listFromQ = categoryComposites['Q']?.children.map((e) => e.name).toList() ?? [];
+      listFromR = categoryComposites['R']?.children.map((e) => e.name).toList() ?? [];
+    });
+  } else {
+    print('Request failed with status: ${response.body}.');
   }
+}
+  // Future<void> getcources() async {
+  //   const url = 'https://alyibrahim.pythonanywhere.com/CourseContent';
+  //   print('srsdkajsdfk$courseIndex');
+  //   final Map<String, dynamic> requestBody = {
+  //     'courseIdx': Hive.box('userBox').get('COId'),
+  //     'username': Hive.box('userBox').get('username'),
+  //   };
+  //   final response = await http.post(
+  //     Uri.parse(url),
+  //     headers: {'Content-Type': 'application/json'},
+  //     body: jsonEncode(requestBody),
+  //   );
+
+  //   if (response.statusCode == 200) {
+  //     final jsonResponse = jsonDecode(response.body);
+  //     print("print the json: $jsonResponse");
+  //     print("print the json: $courseIndex");
+  //     setState(() {
+  //       jsonResponse['subInfo'].forEach((resource) {
+  //         String category = resource['RCat'];
+  //         if (!categorizedList.containsKey(category)) {
+  //           categorizedList[category] = [];
+  //         }
+  //         categorizedList[category]
+  //             ?.add('${resource['RName']}: ${resource['RFileURL']}');
+  //         subjectIds[resource['RName']] = resource['RId'];
+  //       });
+
+  //       print(categorizedList);
+  //       if (categorizedList['L'] == null) {
+  //         categorizedList['L'] = [];
+  //       }
+  //       if (categorizedList['Su'] == null) {
+  //         categorizedList['Su'] = [];
+  //       }
+  //       if (categorizedList['Q'] == null) {
+  //         categorizedList['Q'] = [];
+  //       }
+  //       if (categorizedList['Se'] == null) {
+  //         categorizedList['Se'] = [];
+  //       }
+  //       if (categorizedList['R'] == null) {
+  //         categorizedList['R'] = [];
+  //       }
+  //       listFromL = categorizedList['L']!;
+  //       listFromSU = categorizedList['Su']!;
+  //       listFromQ = categorizedList['Q']!;
+  //       listFromSE = categorizedList['Se']!;
+  //       listFromR = categorizedList['R']!;
+  //       lnames = listFromL.map((e) => e.split(':')[0]).toList();
+  //       SEnames = listFromSE.map((e) => e.split(':')[0]).toList();
+  //       SUnames = listFromSU.map((e) => e.split(':')[0]).toList();
+  //       Qnames = listFromQ.map((e) => e.split(':')[0]).toList();
+  //       Rnames = listFromR.map((e) => e.split(':')[0]).toList();
+
+  //       categorizedList.forEach((category, subjects) {
+  //         for (var subject in subjects) {
+  //           var index = subject.indexOf(': ');
+  //           if (index != -1) {
+  //             var subjectName = subject.substring(0, index);
+  //             var link = subject.substring(index + 2);
+  //             subjectLinks[subjectName] = link;
+  //           }
+  //         }
+  //       });
+  //     });
+  //   } else {
+  //     print('Request failed with status: ${response.body}.');
+  //   }
+  // }
 
   Future<void> deleteMaterial(int idx) async {
     const url = 'https://alyibrahim.pythonanywhere.com/deleteMaterial';
