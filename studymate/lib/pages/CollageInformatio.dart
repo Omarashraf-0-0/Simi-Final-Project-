@@ -9,7 +9,7 @@ import 'package:http/http.dart' as http;
 import 'dart:convert'; // For jsonEncode
 
 class CollageInformation extends StatefulWidget {
-  final User? user;
+  final Student? user;
   const CollageInformation({
     super.key,
     this.user,
@@ -49,31 +49,57 @@ class _CollageInformationState extends State<CollageInformation> {
   }
 
 
-  User createUser() {
-    User user = User(
-      username: widget.user?.username,
-      password: widget.user?.password,
-      fullName: widget.user?.fullName,
-      role: widget.user?.role,
-      email: widget.user?.email,
-      phoneNumber: widget.user?.phoneNumber,
-      address: widget.user?.address,
-      gender: widget.user?.gender,
-      collage: selectedCollege,
-      university: selectedUniversity,
-      major: selectedMajor,
-      term_level: 1,
-      pfp: widget.user?.pfp,
-      xp: 0,
-      level: 1,
-      title: 'newbie',
-      registrationNumber: registrationNumberController.text,
-      birthDate: widget.user?.birthDate,
-    );
+  // User createUser() {
+  //   User user = User(
+  //     username: widget.user?.username,
+  //     password: widget.user?.password,
+  //     fullName: widget.user?.fullName,
+  //     role: widget.user?.role,
+  //     email: widget.user?.email,
+  //     phoneNumber: widget.user?.phoneNumber,
+  //     address: widget.user?.address,
+  //     gender: widget.user?.gender,
+  //     collage: selectedCollege,
+  //     university: selectedUniversity,
+  //     major: selectedMajor,
+  //     term_level: 1,
+  //     pfp: widget.user?.pfp,
+  //     xp: 0,
+  //     level: 1,
+  //     title: 'newbie',
+  //     registrationNumber: registrationNumberController.text,
+  //     birthDate: widget.user?.birthDate,
+  //   );
 
-    return user;
-  }
+  //   return user;
+  // }
 
+Student createStudent() {
+  Student student = Student(); // Singleton instance
+
+  student.initialize(
+    username: widget.user?.username,
+    password: widget.user?.password,
+    fullName: widget.user?.fullName,
+    role: widget.user?.role,
+    email: widget.user?.email,
+    phoneNumber: widget.user?.phoneNumber,
+    address: widget.user?.address,
+    gender: widget.user?.gender,
+    collage: selectedCollege,
+    university: selectedUniversity,
+    major: selectedMajor,
+    term_level: 1,
+    pfp: widget.user?.pfp,
+    xp: 0,
+    level: 1,
+    title: 'newbie',
+    registrationNumber: registrationNumberController.text,
+    birthDate: widget.user?.birthDate,
+  );
+
+  return student;
+}
 
   Future<void> registerCollegeInfo() async {
     final String url = 'https://alyibrahim.pythonanywhere.com/register';
@@ -149,7 +175,7 @@ class _CollageInformationState extends State<CollageInformation> {
           'OK',
         );
       } else {
-        User user = createUser();
+        Student user = createStudent();
         Navigator.pushAndRemoveUntil(
           context,
           MaterialPageRoute(builder: (context) => OTP(user:user)),

@@ -55,19 +55,23 @@ class _RegisterLoginState extends State<RegisterLogin> {
         return ;
       }
       // Create a new User object with the entered data
-      User user = User(
-        username: usernameController.text,
-        email: emailController.text,
-        password: passwordController.text,
-        gender: gender,
-      );
-
+      // User user = User(
+      //   username: usernameController.text,
+      //   email: emailController.text,
+      //   password: passwordController.text,
+      //   gender: gender,
+      // );
+      Student student = Student();
+      student.username = usernameController.text;
+      student.email = emailController.text;
+      student.password = passwordController.text;
+      student.gender = gender;
       // Navigate to the next registration page
       Navigator.push(
         context,
         MaterialPageRoute(
           builder: (context) => RegisterPage(
-            user: user,
+            user: student,
           ),
         ),
       );

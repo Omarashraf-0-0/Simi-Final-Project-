@@ -249,33 +249,53 @@ class _LoginPageState extends State<LoginPage> {
             showXPChangePopup(context, 5, 'You have gained 5 XP!');
           }
 
-          User? user = User(
-            id: jsonResponse['id'],
-            username: jsonResponse['username'],
-            password: jsonResponse['password'],
-            fullName: jsonResponse['name'],
-            role: jsonResponse['role'],
-            email: jsonResponse['email'],
-            phoneNumber: jsonResponse['phone_number'],
-            address: jsonResponse['address'],
-            gender: jsonResponse['gender'],
-            collage: jsonResponse['collage'],
-            university: jsonResponse['university'],
-            major: jsonResponse['major'],
-            term_level: jsonResponse['term_level'],
-            pfp: jsonResponse['pfp'],
-            xp: jsonResponse['xp'],
-            level: jsonResponse['level'],
-            title: jsonResponse['title'],
-            registrationNumber: jsonResponse['registrationNumber'],
-            birthDate: jsonResponse['birthDate'],
-          );
+            // User? user = User(
+            //   id: jsonResponse['id'],
+            //   username: jsonResponse['username'],
+            //   password: jsonResponse['password'],
+            //   fullName: jsonResponse['name'],
+            //   role: jsonResponse['role'],
+            //   email: jsonResponse['email'],
+            //   phoneNumber: jsonResponse['phone_number'],
+            //   address: jsonResponse['address'],
+            //   gender: jsonResponse['gender'],
+            //   collage: jsonResponse['collage'],
+            //   university: jsonResponse['university'],
+            //   major: jsonResponse['major'],
+            //   term_level: jsonResponse['term_level'],
+            //   pfp: jsonResponse['pfp'],
+            //   xp: jsonResponse['xp'],
+            //   level: jsonResponse['level'],
+            //   title: jsonResponse['title'],
+            //   registrationNumber: jsonResponse['registrationNumber'],
+            //   birthDate: jsonResponse['birthDate'],
+            // );
+            Student student = Student();
 
-          Navigator.pushAndRemoveUntil(
+          student.id = jsonResponse['id'];
+          student.username = jsonResponse['username'];
+          student.password = jsonResponse['password'];
+          student.fullName = jsonResponse['name'];
+          student.role = jsonResponse['role'];
+          student.email = jsonResponse['email'];
+          student.phoneNumber = jsonResponse['phone_number'];
+          student.address = jsonResponse['address'];
+          student.gender = jsonResponse['gender'];
+          student.collage = jsonResponse['collage'];
+          student.university = jsonResponse['university'];
+          student.major = jsonResponse['major'];
+          student.term_level = jsonResponse['term_level'];
+          student.pfp = jsonResponse['pfp'];
+          student.xp = jsonResponse['xp'];
+          student.level = jsonResponse['level'];
+          student.title = jsonResponse['title'];
+          student.registrationNumber = jsonResponse['registrationNumber'];
+          student.birthDate = jsonResponse['birthDate'];
+           Navigator.pushAndRemoveUntil(
             context,
             MaterialPageRoute(
               builder: (context) => DonePopUp(
-                user: user,
+                user: student,
                 title: 'Woo Hoo!',
                 description: 'Welcome back, ${jsonResponse['name']}!',
                 color: const Color(0xff3BBD5E),

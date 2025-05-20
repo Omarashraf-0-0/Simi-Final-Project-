@@ -24,12 +24,15 @@ import 'dart:convert';
 import 'package:intl/intl.dart';
 import 'package:studymate/pages/Notifications/Notification.dart';
 import '../Resuorces/Resources.dart';
+import '../../Classes/User.dart' as Student;
+
 
 class Homepage extends StatefulWidget {
-  User.User? user = User.User();
+  Student.Student? student = Student.Student();
+
   Homepage({
     super.key,
-    this.user,
+    this.student,
   });
 
   @override
