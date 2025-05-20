@@ -5,7 +5,7 @@ import '../../Classes/User.dart';
 import '../CollageInformatio.dart';
 
 class RegisterPage extends StatefulWidget {
-  final Student user;
+  final User user;
   const RegisterPage({
     super.key,
     required this.user,

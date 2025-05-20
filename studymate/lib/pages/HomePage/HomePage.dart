@@ -12,7 +12,6 @@ import 'package:studymate/pages/ProfilePage.dart';
 import 'package:studymate/pages/Settings/Settings.dart';
 import 'package:studymate/pages/ScheduleManager/ScheduleManager.dart';
 import '../../Classes/User.dart' as User;
-import '../../Classes/User.dart' as Student;
 import 'package:studymate/pages/AboLayla/AboLayla.dart';
 import 'package:studymate/pages/QuizGenerator/QuizHome.dart';
 import 'package:studymate/pages/Game/GameHome.dart';
@@ -27,10 +26,10 @@ import 'package:studymate/pages/Notifications/Notification.dart';
 import '../Resuorces/Resources.dart';
 
 class Homepage extends StatefulWidget {
-  Student.Student? student = Student.Student();
+  User.User? user = User.User();
   Homepage({
     super.key,
-    this.student,
+    this.user,
   });
 
   @override

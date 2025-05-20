@@ -28,7 +28,7 @@ class _IntroPageState extends State<IntroPage> {
       Navigator.pushReplacement(
           context, MaterialPageRoute(builder: (context) => LoginPage()));
     } else {
-      var user = Student();
+      User user = User();
       user.fullName = Hive.box('userBox').get('fullName');
       user.email = Hive.box('userBox').get('email');
       user.password = Hive.box('userBox').get('password');
@@ -36,7 +36,7 @@ class _IntroPageState extends State<IntroPage> {
           context,
           MaterialPageRoute(
               builder: (context) => Homepage(
-                    student: user,
+                    user: user,
                   )));
     }
   }

@@ -55,19 +55,19 @@ class _RegisterLoginState extends State<RegisterLogin> {
         return ;
       }
       // Create a new User object with the entered data
-     // Access the singleton Student instance and set its properties
-      Student student = Student();
-      student.username = usernameController.text;
-      student.email = emailController.text;
-      student.password = passwordController.text;
-      student.gender = gender;
+      User user = User(
+        username: usernameController.text,
+        email: emailController.text,
+        password: passwordController.text,
+        gender: gender,
+      );
 
       // Navigate to the next registration page
       Navigator.push(
         context,
         MaterialPageRoute(
           builder: (context) => RegisterPage(
-            user: student,
+            user: user,
           ),
         ),
       );
