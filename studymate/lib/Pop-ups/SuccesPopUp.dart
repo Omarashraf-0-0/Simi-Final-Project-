@@ -11,7 +11,7 @@ class DonePopUp extends StatefulWidget {
   final Color? textColor;
   final String? icon;
   final String? routeName;
-  User? user = User();
+  Student? user = Student();
 
   DonePopUp({
     super.key,
@@ -54,7 +54,7 @@ class CircularWidget extends StatelessWidget {
   final Color color;
   final Color textColor;
   final String routeName;
-  User? user;
+  Student? user;
   CircularWidget({
     super.key,
     required this.title,
@@ -110,7 +110,7 @@ class CircularWidget extends StatelessWidget {
                     context,
                     MaterialPageRoute(
                       builder: (context) => routeName == "/HomePage"
-                          ? Homepage(user: user)
+                          ? Homepage(student: user)
                           : LoginPage(),
                     ),
                   );
