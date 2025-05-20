@@ -9,7 +9,7 @@ import '../Pop-ups/PopUps_Success.dart';
 import '../pages/LoginPage.dart';
 
 class OTP extends StatefulWidget {
-  User? user;
+  Student? user;
   OTP({super.key, this.user});
 
   @override
