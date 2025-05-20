@@ -54,6 +54,7 @@ void main() async {
     options: DefaultFirebaseOptions.currentPlatform,
   );
   // FirebaseInAppMessaging.instance.setAutomaticDataCollectionEnabled(true);
+  // FirebaseInAppMessaging.instance.triggerEvent('test_event');
 // تهيئة المنطقة الزمنية
   tz.initializeTimeZones();
 
