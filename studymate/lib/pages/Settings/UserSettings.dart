@@ -126,7 +126,7 @@ class _UserSettingsState extends State<UserSettings> {
                       backgroundColor: cyan1,
                       backgroundImage: profileImageBase64 != null
                           ? MemoryImage(base64Decode(profileImageBase64))
-                          : AssetImage('assets/images/default_avatar.png') as ImageProvider,
+                          : AssetImage('lib/assets/img/default.jpeg') as ImageProvider,
                     ),
                     Positioned(
                       bottom: 0,
