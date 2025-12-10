@@ -133,14 +133,20 @@ class _QuizState extends State<Quiz> {
     List<String> userAnsList = [];
     List<String> quizAnsList = [];
     List<String> lectureNumbers = [];
+    
+    // NEW: Prepare quiz analysis data for recommendation system
+    List<Map<String, dynamic>> quizAnalysisData = [];
 
     for (int i = 0; i < questions.length; i++) {
       int selectedOptionIndex = questions[i]["selectedOption"];
       String correctAnswer = questions[i]["correctAnswer"];
-      String lectureNum = questions[i]["lecture"] ?? 'Unknown';
+      String lectureNum = questions[i]["lecture"]?.toString() ?? 'Unknown';
+      String topic = questions[i]["topic"] ?? 'General Topic';  // Get topic from question
 
       lectureNumbers.add(lectureNum);
       quizAnsList.add(correctAnswer);
+
+      bool isCorrect = false;
 
       if (selectedOptionIndex != -1) {
         String selectedAnswer = '';
@@ -163,19 +169,28 @@ class _QuizState extends State<Quiz> {
         if (questionType == "MCQ") {
           if (selectedAnswer.toUpperCase() == correctAnswer.toUpperCase()) {
             correctAnswers++;
+            isCorrect = true;
           }
         } else if (questionType == "TF" || questionType == "TRUEFALSE") {
           if (selectedAnswer.trim().toLowerCase() ==
               correctAnswer.trim().toLowerCase()) {
             correctAnswers++;
+            isCorrect = true;
           }
         }
       } else {
         userAnsList.add('');
       }
+      
+      // Add to quiz analysis data for recommendation system
+      quizAnalysisData.add({
+        "Lecture": lectureNum,
+        "Topic": topic,
+        "Correct": isCorrect ? 1 : 0
+      });
     }
 
-    // Prepare submission data
+    // Prepare submission data for original endpoint
     Map<String, dynamic> submissionData = {
       'UserID': await getUserID(),
       'UserAns': userAnsList.join(','),
@@ -184,11 +199,19 @@ class _QuizState extends State<Quiz> {
       'co_id': widget.coId,
     };
 
+    // Prepare data for quiz analysis endpoint (FOR AI RECOMMENDATION SYSTEM)
+    Map<String, dynamic> analysisData = {
+      'UserID': await getUserID(),
+      'co_id': widget.coId,
+      'quiz_results': quizAnalysisData
+    };
+
     print('Submission Data: $submissionData');
 
     try {
-      // Submit quiz results to the server
+      // Submit quiz results to both endpoints
       await submitToServer(submissionData);
+      await submitQuizAnalysis(analysisData);  // Send to recommendation system
 
       // Calculate XP changes based on the quiz result
       int xpChange = 0;
@@ -264,6 +287,25 @@ class _QuizState extends State<Quiz> {
       }
     } catch (e) {
       print('Error submitting quiz results: $e');
+    }
+  }
+
+  Future<void> submitQuizAnalysis(Map<String, dynamic> data) async {
+    try {
+      final response = await http.post(
+        Uri.parse('https://alyibrahim.pythonanywhere.com/save_quiz_analysis'),
+        headers: {'Content-Type': 'application/json'},
+        body: jsonEncode(data),
+      );
+
+      if (response.statusCode == 200) {
+        print('✅ Quiz analysis submitted successfully to AI recommendation system.');
+      } else {
+        print('❌ Failed to submit quiz analysis: ${response.statusCode}');
+        print('Response: ${response.body}');
+      }
+    } catch (e) {
+      print('❌ Error submitting quiz analysis: $e');
     }
   }
 
