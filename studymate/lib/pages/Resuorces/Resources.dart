@@ -3,7 +3,6 @@ import 'package:flutter/material.dart';
 import 'package:hive_flutter/hive_flutter.dart';
 import 'package:http/http.dart' as http;
 import 'package:shimmer/shimmer.dart';
-import 'package:studymate/main.dart';
 import 'package:studymate/pages/Resuorces/CourseContent.dart';
 import 'package:studymate/pages/Resuorces/Courses.dart';
 
@@ -338,9 +337,6 @@ class _ResourcesState extends State<Resources> {
       onTap: () {
         if (!mounted) return; // Ensure widget is still mounted
         // Handle course card tap
-        String title = "Welcome to ${courses[index]}";
-        String body = "Get started with the course content";
-        // showNotification(title, body);
         Hive.box('userBox').put('COId', coursesIndex[index]);
         print("Course: ${courses[index]}, ${coursesIndex[index]}");
         Navigator.push(context, MaterialPageRoute(builder: (context) => CourseContent()));

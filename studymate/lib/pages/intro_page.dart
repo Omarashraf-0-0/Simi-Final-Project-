@@ -3,9 +3,8 @@
 import 'package:flutter/material.dart';
 import 'package:hive/hive.dart';
 import 'package:studymate/Classes/User.dart';
-import 'package:studymate/pages/HomePage/HomePage.dart';
-import 'package:studymate/pages/LoginPage.dart';
-import 'package:flutter_test/flutter_test.dart';
+import 'package:go_router/go_router.dart';
+import '../router/app_router.dart';
 
 class IntroPage extends StatefulWidget {
   const IntroPage({super.key});
@@ -25,19 +24,13 @@ class _IntroPageState extends State<IntroPage> {
 
   void checkLoginStatus() {
     if (!isLoggedIn()) {
-      Navigator.pushReplacement(
-          context, MaterialPageRoute(builder: (context) => LoginPage()));
+      context.go(AppRoutes.login);
     } else {
       Student user = Student();
       user.fullName = Hive.box('userBox').get('fullName');
       user.email = Hive.box('userBox').get('email');
       user.password = Hive.box('userBox').get('password');
-      Navigator.pushReplacement(
-          context,
-          MaterialPageRoute(
-              builder: (context) => Homepage(
-                    student: user,
-                  )));
+      context.go(AppRoutes.home, extra: {'student': user});
     }
   }
 
@@ -75,7 +68,8 @@ class _IntroPageState extends State<IntroPage> {
         child: Column(
           mainAxisAlignment: MainAxisAlignment.center,
           children: [
-            Image.asset('lib/assets/img/El_Batal_Study_Mate_Light_Mode-removebg-preview.png'),
+            Image.asset(
+                'lib/assets/img/El_Batal_Study_Mate_Light_Mode-removebg-preview.png'),
           ],
         ),
       ),

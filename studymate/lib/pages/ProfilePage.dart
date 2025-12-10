@@ -6,7 +6,8 @@ import 'package:hive/hive.dart';
 import 'package:image_picker/image_picker.dart';
 import 'package:http/http.dart' as http;
 import 'package:shimmer/shimmer.dart';
-import 'package:studymate/main.dart';
+import 'package:go_router/go_router.dart';
+import '../router/app_router.dart';
 
 class Profilepage extends StatefulWidget {
   const Profilepage({super.key});
@@ -368,13 +369,13 @@ class _ProfilepageState extends State<Profilepage> {
                         CircleAvatar(
                           radius: 60,
                           backgroundColor: cyan1,
-                          backgroundImage: Hive.box('userBox')
-                                      .get('profileImageBase64') !=
-                                  null
-                              ? MemoryImage(base64Decode(Hive.box('userBox')
-                                  .get('profileImageBase64')))
-                              : AssetImage('lib/assets/img/default.jpeg')
-                                  as ImageProvider,
+                          backgroundImage:
+                              Hive.box('userBox').get('profileImageBase64') !=
+                                      null
+                                  ? MemoryImage(base64Decode(Hive.box('userBox')
+                                      .get('profileImageBase64')))
+                                  : AssetImage('lib/assets/img/default.jpeg')
+                                      as ImageProvider,
                         ),
                         GestureDetector(
                           onTap: _pickImage,
@@ -465,8 +466,13 @@ class _ProfilepageState extends State<Profilepage> {
 
                     // Logout Button
                     ElevatedButton(
-                      onPressed: () {
+                      onPressed: () async {
                         // Implement logout logic
+                        Box userBox = Hive.box('userBox');
+                        await userBox.clear(); // Clear all user data
+                        if (mounted) {
+                          context.go(AppRoutes.login);
+                        }
                       },
                       style: ElevatedButton.styleFrom(
                         backgroundColor: blue2,

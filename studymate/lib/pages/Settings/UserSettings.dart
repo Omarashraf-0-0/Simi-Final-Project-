@@ -17,12 +17,14 @@ class _UserSettingsState extends State<UserSettings> {
   final TextEditingController emailController = TextEditingController();
   final TextEditingController usernameController = TextEditingController();
   final TextEditingController passwordController = TextEditingController();
-  final TextEditingController confirmPasswordController = TextEditingController();
+  final TextEditingController confirmPasswordController =
+      TextEditingController();
 
   bool _isPasswordVisible = false;
   bool _isConfirmPasswordVisible = false;
 
-  final _userUpdater = UserUpdater(url: 'https://alyibrahim.pythonanywhere.com/update_user');
+  final _userUpdater =
+      UserUpdater(url: 'https://alyibrahim.pythonanywhere.com/update_user');
 
   // Colors according to your branding
   final Color blue1 = Color(0xFF1c74bb);
@@ -37,7 +39,8 @@ class _UserSettingsState extends State<UserSettings> {
     super.initState();
     // Initialize the text controllers with data from Hive
     emailController.text = Hive.box('userBox').get('email', defaultValue: '');
-    usernameController.text = Hive.box('userBox').get('fullName', defaultValue: '');
+    usernameController.text =
+        Hive.box('userBox').get('fullName', defaultValue: '');
   }
 
   // Method to update user data
@@ -46,7 +49,8 @@ class _UserSettingsState extends State<UserSettings> {
       'username': Hive.box('userBox').get('username'),
       'fullName': usernameController.text,
       'email': emailController.text,
-      'password': passwordController.text.isNotEmpty ? passwordController.text : null,
+      'password':
+          passwordController.text.isNotEmpty ? passwordController.text : null,
       'confirmPassword': confirmPasswordController.text,
     };
 
@@ -126,7 +130,8 @@ class _UserSettingsState extends State<UserSettings> {
                       backgroundColor: cyan1,
                       backgroundImage: profileImageBase64 != null
                           ? MemoryImage(base64Decode(profileImageBase64))
-                          : AssetImage('lib/assets/img/default.jpeg') as ImageProvider,
+                          : AssetImage('lib/assets/img/default.jpeg')
+                              as ImageProvider,
                     ),
                     Positioned(
                       bottom: 0,
@@ -193,7 +198,9 @@ class _UserSettingsState extends State<UserSettings> {
                   prefixIcon: Icon(Icons.lock),
                   suffixIcon: IconButton(
                     icon: Icon(
-                      _isPasswordVisible ? Icons.visibility : Icons.visibility_off,
+                      _isPasswordVisible
+                          ? Icons.visibility
+                          : Icons.visibility_off,
                     ),
                     onPressed: () {
                       setState(() {
@@ -216,7 +223,9 @@ class _UserSettingsState extends State<UserSettings> {
                   prefixIcon: Icon(Icons.lock),
                   suffixIcon: IconButton(
                     icon: Icon(
-                      _isConfirmPasswordVisible ? Icons.visibility : Icons.visibility_off,
+                      _isConfirmPasswordVisible
+                          ? Icons.visibility
+                          : Icons.visibility_off,
                     ),
                     onPressed: () {
                       setState(() {

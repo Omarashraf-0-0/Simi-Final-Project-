@@ -3,6 +3,8 @@ import 'package:lottie/lottie.dart';
 import '../Classes/User.dart';
 import '../pages/HomePage/HomePage.dart';
 import '../pages/LoginPage.dart';
+import 'package:go_router/go_router.dart';
+import '../router/app_router.dart';
 
 class DonePopUp extends StatefulWidget {
   final String? title;
@@ -55,7 +57,7 @@ class CircularWidget extends StatelessWidget {
   final Color textColor;
   final String routeName;
   final Student? user;
-  const CircularWidget({
+  CircularWidget({
     super.key,
     required this.title,
     required this.description,
@@ -105,19 +107,14 @@ class CircularWidget extends StatelessWidget {
             // Elevated Button for "Done"
             ElevatedButton(
               onPressed: () {
-                // Close the app or perform another action
-                if (routeName == "/HomePage") {
-                  Navigator.pushReplacement(
-                    context,
-                    MaterialPageRoute(
-                      builder: (context) => routeName == "/HomePage"
-                          ? Homepage(student: user)
-                          : LoginPage(),
-                    ),
-                  );
+                // Navigate using GoRouter
+                if (routeName == "/HomePage" || routeName == "/home") {
+                  context.go(AppRoutes.home);
+                } else if (routeName == "/login") {
+                  context.go(AppRoutes.login);
                 } else {
-                  Navigator.pushReplacementNamed(context, routeName,
-                      arguments: routeName);
+                  // Default to home if unknown route
+                  context.go(AppRoutes.home);
                 }
               },
               style: ElevatedButton.styleFrom(

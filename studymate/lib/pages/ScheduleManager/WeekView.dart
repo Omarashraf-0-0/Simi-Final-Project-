@@ -248,11 +248,6 @@ class _WeekViewState extends State<WeekView> {
                                 ' until ${_formatDate(task['RepeatEndDate'])}';
                           }
 
-                          // Prepare the reminder time
-                          String reminderTime = task['ReminderBefore'] != null
-                              ? '${task['ReminderBefore']} minutes before'
-                              : 'None';
-
                           return AlertDialog(
                             title: Text(task['Title']),
                             content: SingleChildScrollView(

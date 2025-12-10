@@ -4,24 +4,23 @@ import 'package:flutter/material.dart';
 import 'package:flutter_font_icons/flutter_font_icons.dart';
 import 'package:google_nav_bar/google_nav_bar.dart';
 import 'package:hive/hive.dart';
-import 'package:studymate/main.dart';
 import 'package:studymate/pages/HomePage/Homebody.dart';
-import 'package:studymate/pages/LoginPage.dart';
-import 'package:studymate/pages/Performance/PerformanceHome.dart';
 import 'package:studymate/pages/ProfilePage.dart';
 import 'package:studymate/pages/Settings/Settings.dart';
-import 'package:studymate/pages/ScheduleManager/ScheduleManager.dart';
 import 'package:studymate/pages/AboLayla/AboLayla.dart';
+import 'package:studymate/pages/ScheduleManager/ScheduleManager.dart';
 import 'package:studymate/pages/QuizGenerator/QuizHome.dart';
 import 'package:studymate/pages/Game/GameHome.dart';
 import 'package:studymate/pages/Game/GameLeaderBoard.dart';
-import 'package:studymate/pages/OTP.dart';
 import 'package:studymate/pages/Career/CareerHome.dart';
 import 'package:http/http.dart' as http;
 import 'dart:convert';
 import 'package:studymate/pages/Notifications/Notification.dart';
 import '../Resuorces/Resources.dart';
 import '../../Classes/User.dart' as Student;
+import 'package:go_router/go_router.dart';
+import '../../router/app_router.dart';
+import '../../main.dart' show themeManager;
 
 class Homepage extends StatefulWidget {
   final Student.Student? student;
@@ -54,11 +53,11 @@ class _HomepageState extends State<Homepage> {
 
   Future<void> Logout() async {
     Box userBox = Hive.box('userBox');
-    await userBox.put('isLoggedIn', false);
-    await userBox.put('loginTime', 0);
+    await userBox.clear(); // Clear all user data
     // navigate to the login page
-    Navigator.pushReplacement(
-        context, MaterialPageRoute(builder: (context) => LoginPage()));
+    if (mounted) {
+      context.go(AppRoutes.login);
+    }
   }
 
   // Notifications list
@@ -346,12 +345,7 @@ class _HomepageState extends State<Homepage> {
                 _buildDrawerItem(
                   icon: Icons.insights_outlined,
                   text: 'Insights',
-                  onTap: () {
-                    Navigator.push(
-                      context,
-                      MaterialPageRoute(builder: (context) => InsightsPage()),
-                    );
-                  },
+                  onTap: () => context.push(AppRoutes.performance),
                 ),
                 _buildDrawerItem(
                   icon: Icons.schedule_outlined,
@@ -376,12 +370,7 @@ class _HomepageState extends State<Homepage> {
                 _buildDrawerItem(
                   icon: Icons.help_outline,
                   text: 'Help',
-                  onTap: () {
-                    Navigator.push(
-                      context,
-                      MaterialPageRoute(builder: (context) => OTP()),
-                    );
-                  },
+                  onTap: () => context.push(AppRoutes.otp),
                 ),
                 _buildDrawerItem(
                   icon: Icons.nightlight_outlined,

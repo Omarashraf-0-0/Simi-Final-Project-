@@ -247,41 +247,6 @@ class _InsightsPageState extends State<InsightsPage> {
     );
   }
 
-  // Bottom titles for the chart (unused in current code but kept for reference)
-  Widget _bottomTitleWidgets(double value, TitleMeta meta) {
-    const style = TextStyle(
-      fontSize: 12,
-    );
-    Widget text;
-    switch (value.toInt()) {
-      case 1:
-        text = Text('Mon', style: style);
-        break;
-      case 2:
-        text = Text('Tue', style: style);
-        break;
-      case 3:
-        text = Text('Wed', style: style);
-        break;
-      case 4:
-        text = Text('Thu', style: style);
-        break;
-      case 5:
-        text = Text('Fri', style: style);
-        break;
-      case 6:
-        text = Text('Sat', style: style);
-        break;
-      case 7:
-        text = Text('Sun', style: style);
-        break;
-      default:
-        text = Text('', style: style);
-        break;
-    }
-    return SideTitleWidget(axisSide: meta.axisSide, space: 4.0, child: text);
-  }
-
   @override
   Widget build(BuildContext context) {
     return Scaffold(

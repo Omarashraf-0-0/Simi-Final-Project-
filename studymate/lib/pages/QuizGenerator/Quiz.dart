@@ -1,6 +1,5 @@
 // Quiz.dart
 
-import 'package:studymate/pages/XPChangePopup.dart';
 import 'dart:async';
 import 'dart:convert';
 import 'package:flutter/material.dart';

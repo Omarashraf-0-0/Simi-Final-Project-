@@ -75,9 +75,9 @@ class _CVState extends State<CV> {
       // LinkedIn section (if applicable)
       'linkedin': addLinkedIn
           ? {
-              'name': linkedInUsername,
-              'linkedinURL': linkedInLink,
-            }
+        'name': linkedInUsername.isEmpty?"No linkedin yet":linkedInUsername,
+        'linkedinURL': linkedInLink.isEmpty?"":linkedInLink,
+      }
           : {
               'name': "No linkedin yet",
               'linkedinURL': "",
@@ -86,9 +86,9 @@ class _CVState extends State<CV> {
       // GitHub section (if applicable)
       'github': addGitHub
           ? {
-              'name': gitHubUsername,
-              'githubURL': gitHubLink,
-            }
+        'name': gitHubUsername.isEmpty?"No github yet":gitHubUsername,
+        'githubURL': gitHubLink.isEmpty?"":gitHubLink,
+      }
           : {
               'name': "No github yet",
               'githubURL': "",
@@ -103,8 +103,9 @@ class _CVState extends State<CV> {
           'degree': edu.degree,
           'years': "${edu.from} - ${edu.to}",
           'institution': edu.universityName,
-          'descriptions':
-              edu.description.split('\n').map((desc) => desc.trim()).toList(),
+          'descriptions': edu.description.isNotEmpty
+              ? edu.description.split('\n').map((desc) => desc.trim()).toList()
+              : [],
         };
       }).toList(),
 

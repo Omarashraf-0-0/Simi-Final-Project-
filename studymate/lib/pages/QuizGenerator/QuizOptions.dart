@@ -467,7 +467,6 @@ class _QuizOptionsState extends State<QuizOptions> {
                     ),
                     icon: const Icon(Icons.arrow_drop_down, color: Colors.grey),
                     items: courses.asMap().entries.map((entry) {
-                      int idx = entry.key;
                       String value = entry.value;
                       return DropdownMenuItem<String>(
                         value: value,

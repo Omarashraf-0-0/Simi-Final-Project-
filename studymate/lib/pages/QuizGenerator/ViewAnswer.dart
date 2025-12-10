@@ -44,8 +44,6 @@ class _ViewAnswerState extends State<ViewAnswer> {
         ? userAnswers[currentQuestion]
         : -1;
 
-    bool isCorrect = userSelectedIndex == correctOptionIndex;
-
     return Scaffold(
       appBar: AppBar(
         backgroundColor: const Color(0xFF165D96),

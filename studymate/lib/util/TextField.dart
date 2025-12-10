@@ -39,12 +39,12 @@ class Textfield extends StatefulWidget {
 }
 
 class _TextfieldState extends State<Textfield> {
-  late bool _isObscure;
+  late bool _isObscured;
 
   @override
   void initState() {
     super.initState();
-    _isObscure = widget.obscureText;
+    _isObscured = widget.obscureText;
   }
 
   Future<void> _selectDate(BuildContext context) async {
@@ -81,7 +81,7 @@ class _TextfieldState extends State<Textfield> {
   Widget build(BuildContext context) {
     return TextField(
       controller: widget.controller,
-      obscureText: widget.obscureText && _isObscure,
+      obscureText: _isObscured,
       keyboardType: widget.keyboardType,
       decoration: InputDecoration(
         hintText: widget.hintText,
@@ -90,11 +90,11 @@ class _TextfieldState extends State<Textfield> {
         suffixIcon: widget.obscureText && widget.toggleVisability
             ? IconButton(
                 icon: Icon(
-                  _isObscure ? Icons.visibility_off : Icons.visibility,
+                  _isObscured ? Icons.visibility_off : Icons.visibility,
                 ),
                 onPressed: () {
                   setState(() {
-                    _isObscure = !_isObscure;
+                    _isObscured = !_isObscured;
                   });
                 },
               )

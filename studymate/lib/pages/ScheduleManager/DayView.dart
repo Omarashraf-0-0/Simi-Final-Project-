@@ -244,11 +244,6 @@ class _DayViewState extends State<DayView> {
                                 ' until ${_formatDate(event['RepeatEndDate'])}';
                           }
 
-                          // Prepare the reminder time
-                          String reminderTime = event['ReminderBefore'] != null
-                              ? '${event['ReminderBefore']} minutes before'
-                              : 'None';
-
                           return AlertDialog(
                             title: Text(event['Title']),
                             content: SingleChildScrollView(

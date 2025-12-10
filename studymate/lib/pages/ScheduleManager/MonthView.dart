@@ -381,11 +381,6 @@ class _MonthViewState extends State<MonthView> {
                                 ' until ${_formatDate(task['RepeatEndDate'])}';
                           }
 
-                          // Prepare the reminder time
-                          String reminderTime = task['ReminderBefore'] != null
-                              ? '${task['ReminderBefore']} minutes before'
-                              : 'None';
-
                           return AlertDialog(
                             title: Text(task['Title']),
                             content: SingleChildScrollView(

@@ -9,8 +9,9 @@ import 'package:studymate/Pop-ups/PopUps_Warning.dart';
 import 'package:studymate/pages/XPChangePopup.dart';
 import '../Classes/User.dart';
 import '../Pop-ups/SuccesPopUp.dart';
-import 'Login & Register/Forget_Pass.dart';
-import 'Login & Register/Register_login.dart';
+import '../util/semantics_keys.dart';
+import 'package:go_router/go_router.dart';
+import '../router/app_router.dart';
 
 class LoginPage extends StatefulWidget {
   const LoginPage({super.key});
@@ -298,7 +299,7 @@ class _LoginPageState extends State<LoginPage> {
                 description: 'Welcome back, ${jsonResponse['name']}!',
                 color: const Color(0xff3BBD5E),
                 textColor: Theme.of(context).colorScheme.secondary,
-                routeName: '/HomePage',
+                routeName: AppRoutes.home,
               ),
             ),
             (Route<dynamic> route) => false,
@@ -363,51 +364,61 @@ class _LoginPageState extends State<LoginPage> {
 
                 // Username TextField
                 SizedBox(height: size.height * 0.04),
-                TextField(
-                  controller: usernameController,
-                  decoration: InputDecoration(
-                    labelText: 'Username',
-                    prefixIcon: Icon(Icons.person_outline),
-                    border: OutlineInputBorder(
-                      borderRadius: BorderRadius.circular(15),
-                    ),
-                    floatingLabelStyle: TextStyle(color: theme.primaryColor),
-                    focusedBorder: OutlineInputBorder(
-                      borderRadius: BorderRadius.circular(15),
-                      borderSide: BorderSide(color: theme.primaryColor),
+                Semantics(
+                  label: SemanticsKeys.loginUsernameField,
+                  textField: true,
+                  child: TextField(
+                    controller: usernameController,
+                    decoration: InputDecoration(
+                      labelText: 'Username',
+                      prefixIcon: Icon(Icons.person_outline),
+                      border: OutlineInputBorder(
+                        borderRadius: BorderRadius.circular(15),
+                      ),
+                      floatingLabelStyle: TextStyle(color: theme.primaryColor),
+                      focusedBorder: OutlineInputBorder(
+                        borderRadius: BorderRadius.circular(15),
+                        borderSide: BorderSide(color: theme.primaryColor),
+                      ),
                     ),
                   ),
                 ),
 
                 // Password TextField
                 SizedBox(height: size.height * 0.025),
-                TextField(
-                  controller: passwordController,
-                  decoration: InputDecoration(
-                    labelText: 'Password',
-                    prefixIcon: Icon(Icons.lock_outline),
-                    suffixIcon: IconButton(
-                      icon: Icon(
-                        isPasswordVisible
-                            ? Icons.visibility
-                            : Icons.visibility_off,
+                Semantics(
+                  label: SemanticsKeys.loginPasswordField,
+                  child: TextField(
+                    controller: passwordController,
+                    decoration: InputDecoration(
+                      labelText: 'Password',
+                      prefixIcon: Icon(Icons.lock_outline),
+                      suffixIcon: Semantics(
+                        label: SemanticsKeys.loginPasswordVisibilityToggle,
+                        child: IconButton(
+                          icon: Icon(
+                            isPasswordVisible
+                                ? Icons.visibility
+                                : Icons.visibility_off,
+                          ),
+                          onPressed: () {
+                            setState(() {
+                              isPasswordVisible = !isPasswordVisible;
+                            });
+                          },
+                        ),
                       ),
-                      onPressed: () {
-                        setState(() {
-                          isPasswordVisible = !isPasswordVisible;
-                        });
-                      },
+                      border: OutlineInputBorder(
+                        borderRadius: BorderRadius.circular(15),
+                      ),
+                      floatingLabelStyle: TextStyle(color: theme.primaryColor),
+                      focusedBorder: OutlineInputBorder(
+                        borderRadius: BorderRadius.circular(15),
+                        borderSide: BorderSide(color: theme.primaryColor),
+                      ),
                     ),
-                    border: OutlineInputBorder(
-                      borderRadius: BorderRadius.circular(15),
-                    ),
-                    floatingLabelStyle: TextStyle(color: theme.primaryColor),
-                    focusedBorder: OutlineInputBorder(
-                      borderRadius: BorderRadius.circular(15),
-                      borderSide: BorderSide(color: theme.primaryColor),
-                    ),
+                    obscureText: !isPasswordVisible,
                   ),
-                  obscureText: !isPasswordVisible,
                 ),
 
                 // Remember Me and Forgot Password Row
@@ -415,41 +426,49 @@ class _LoginPageState extends State<LoginPage> {
                 Row(
                   mainAxisAlignment: MainAxisAlignment.spaceBetween,
                   children: [
-                    Row(
-                      children: [
-                        Checkbox(
-                          value: isRememberMeChecked,
-                          activeColor: cyan1,
-                          onChanged: (value) {
-                            setState(() {
-                              isRememberMeChecked = value!;
-                            });
-                          },
-                        ),
-                        Text(
-                          'Remember Me',
-                          style:
-                              Theme.of(context).textTheme.labelLarge?.copyWith(
-                                    fontFamily: 'Poppins',
-                                  ),
-                        ),
-                      ],
-                    ),
                     InkWell(
                       onTap: () {
-                        Navigator.push(
-                          context,
-                          MaterialPageRoute(
-                            builder: (context) => ForgetPass(),
-                          ),
-                        );
+                        setState(() {
+                          isRememberMeChecked = !isRememberMeChecked;
+                        });
                       },
-                      child: Text(
-                        'Forgot Password?',
-                        style: TextStyle(
-                          color: Colors.redAccent,
-                          decoration: TextDecoration.underline,
-                          fontFamily: 'Poppins',
+                      child: Row(
+                        children: [
+                          Semantics(
+                            label: SemanticsKeys.loginRememberMeCheckbox,
+                            child: Checkbox(
+                              value: isRememberMeChecked,
+                              activeColor: cyan1,
+                              onChanged: (value) {
+                                setState(() {
+                                  isRememberMeChecked = value!;
+                                });
+                              },
+                            ),
+                          ),
+                          Text(
+                            'Remember Me',
+                            style: Theme.of(context)
+                                .textTheme
+                                .labelLarge
+                                ?.copyWith(
+                                  fontFamily: 'Poppins',
+                                ),
+                          ),
+                        ],
+                      ),
+                    ),
+                    Semantics(
+                      label: SemanticsKeys.loginForgotPasswordButton,
+                      child: InkWell(
+                        onTap: () => context.push(AppRoutes.forgotPassword),
+                        child: Text(
+                          'Forgot Password?',
+                          style: TextStyle(
+                            color: Colors.redAccent,
+                            decoration: TextDecoration.underline,
+                            fontFamily: 'Poppins',
+                          ),
                         ),
                       ),
                     ),
@@ -458,24 +477,27 @@ class _LoginPageState extends State<LoginPage> {
 
                 // Login Button
                 SizedBox(height: size.height * 0.04),
-                SizedBox(
-                  width: double.infinity,
-                  child: ElevatedButton(
-                    onPressed: login,
-                    style: ElevatedButton.styleFrom(
-                      backgroundColor: blue2,
-                      padding: EdgeInsets.symmetric(vertical: 15),
-                      shape: RoundedRectangleBorder(
-                        borderRadius: BorderRadius.circular(15),
+                Semantics(
+                  label: SemanticsKeys.loginButton,
+                  child: SizedBox(
+                    width: double.infinity,
+                    child: ElevatedButton(
+                      onPressed: login,
+                      style: ElevatedButton.styleFrom(
+                        backgroundColor: blue2,
+                        padding: EdgeInsets.symmetric(vertical: 15),
+                        shape: RoundedRectangleBorder(
+                          borderRadius: BorderRadius.circular(15),
+                        ),
                       ),
-                    ),
-                    child: Text(
-                      'Login',
-                      style: TextStyle(
-                        color: white,
-                        fontSize: 18,
-                        fontFamily: 'Poppins',
-                        fontWeight: FontWeight.bold,
+                      child: Text(
+                        'Login',
+                        style: TextStyle(
+                          color: white,
+                          fontSize: 18,
+                          fontFamily: 'Poppins',
+                          fontWeight: FontWeight.bold,
+                        ),
                       ),
                     ),
                   ),
@@ -491,30 +513,26 @@ class _LoginPageState extends State<LoginPage> {
                       ),
                 ),
                 SizedBox(height: size.height * 0.02),
-                SizedBox(
-                  width: double.infinity,
-                  child: OutlinedButton(
-                    onPressed: () {
-                      Navigator.push(
-                        context,
-                        MaterialPageRoute(
-                          builder: (context) => RegisterLogin(),
+                Semantics(
+                  label: SemanticsKeys.loginRegisterButton,
+                  child: SizedBox(
+                    width: double.infinity,
+                    child: OutlinedButton(
+                      onPressed: () => context.push(AppRoutes.register),
+                      style: OutlinedButton.styleFrom(
+                        side: BorderSide(color: blue2, width: 2),
+                        padding: EdgeInsets.symmetric(vertical: 15),
+                        shape: RoundedRectangleBorder(
+                          borderRadius: BorderRadius.circular(15),
                         ),
-                      );
-                    },
-                    style: OutlinedButton.styleFrom(
-                      side: BorderSide(color: blue2, width: 2),
-                      padding: EdgeInsets.symmetric(vertical: 15),
-                      shape: RoundedRectangleBorder(
-                        borderRadius: BorderRadius.circular(15),
                       ),
-                    ),
-                    child: Text(
-                      'Create an Account',
-                      style: TextStyle(
-                        color: blue2,
-                        fontFamily: 'Poppins',
-                        fontSize: 18,
+                      child: Text(
+                        'Create an Account',
+                        style: TextStyle(
+                          color: blue2,
+                          fontFamily: 'Poppins',
+                          fontSize: 18,
+                        ),
                       ),
                     ),
                   ),
