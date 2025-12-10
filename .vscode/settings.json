@@ -1,4 +1,11 @@
 {
 	"java.configuration.updateBuildConfiguration": "interactive",
-	"cSpell.words": ["Batal", "Lyla", "Profilepage", "removebg", "studymate"]
+	"cSpell.words": [
+		"Batal",
+		"Lyla",
+		"Profilepage",
+		"removebg",
+		"studymate"
+	],
+	"cmake.sourceDirectory": "D:/Projects/Simi-Final-Project-/Simi-Final-Project-/studymate/windows/flutter"
 }
