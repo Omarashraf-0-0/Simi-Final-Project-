@@ -3,6 +3,7 @@ import 'dart:typed_data';
 import 'package:flutter/material.dart';
 import 'package:hive_flutter/hive_flutter.dart';
 import 'package:http/http.dart' as http;
+import '../../theme/app_constants.dart';
 
 class GameLeaderBoard extends StatefulWidget {
   const GameLeaderBoard({super.key});
@@ -92,21 +93,21 @@ class _GameLeaderBoardState extends State<GameLeaderBoard> {
   Color _getRankColor(String rank) {
     switch (rank) {
       case 'El Batal':
-        return const Color(0xFFb3141c);
+        return AppConstants.rankElBatal;
       case 'Legend':
-        return const Color(0xFFFFD700);
+        return AppConstants.rankLegend;
       case 'Mentor':
-        return const Color(0xFF6F42C1);
+        return AppConstants.rankMentor;
       case 'Expert':
-        return const Color(0xFFFD7E14);
+        return AppConstants.rankExpert;
       case 'Challenger':
-        return const Color(0xFFFFC107);
+        return AppConstants.rankChallenger;
       case 'Achiever':
-        return const Color(0xFF28A745);
+        return AppConstants.rankAchiever;
       case 'Explorer':
-        return const Color(0xFF007BFF);
+        return AppConstants.rankExplorer;
       case 'NewComer':
-        return const Color(0xFF808080);
+        return AppConstants.rankNewComer;
       default:
         return Colors.black;
     }
@@ -128,30 +129,15 @@ class _GameLeaderBoardState extends State<GameLeaderBoard> {
     bool isCurrentUserInTopTen = currentUserRank > 0 && currentUserRank <= 10;
 
     return Scaffold(
-      backgroundColor: const Color(0xFF1E1E2A),
-      appBar: AppBar(
-        backgroundColor: const Color(0xFF1E1E2A),
-        elevation: 0,
-        leading: IconButton(
-          icon:
-              const Icon(Icons.arrow_back_ios_new_rounded, color: Colors.white),
-          onPressed: () {
-            Navigator.pop(context);
-          },
-        ),
-        title: const Text(
-          'Leaderboard',
-          style: TextStyle(
-            fontFamily: 'League Spartan',
-            fontSize: 25,
-            fontWeight: FontWeight.bold,
-            color: Colors.white,
-          ),
-        ),
+      backgroundColor: AppConstants.backgroundDarkCard,
+      appBar: AppConstants.buildAppBar(
+        title: 'Leaderboard',
+        leading: AppConstants.buildBackButton(context),
+        backgroundColor: AppConstants.backgroundDarkCard,
         centerTitle: true,
       ),
       body: isLoading
-          ? const Center(child: CircularProgressIndicator())
+          ? AppConstants.buildLoadingIndicator()
           : Column(
               children: [
                 // Top 3 Users Section
@@ -256,17 +242,19 @@ class _GameLeaderBoardState extends State<GameLeaderBoard> {
               ),
           ],
         ),
-        const SizedBox(height: 8),
+        SizedBox(height: AppConstants.spacingXS),
         Text(
           user['username'],
-          style: TextStyle(
+          style: AppConstants.bodyText.copyWith(
             color: rankColor,
-            fontWeight: FontWeight.bold,
+            fontWeight: AppConstants.fontWeightBold,
           ),
         ),
         Text(
           'XP: ${user['xp']}',
-          style: const TextStyle(color: Colors.white70),
+          style: AppConstants.smallText.copyWith(
+            color: AppConstants.textOnDark.withOpacity(0.7),
+          ),
         ),
       ],
     );
@@ -285,31 +273,35 @@ class _GameLeaderBoardState extends State<GameLeaderBoard> {
       ),
       title: Text(
         user['username'],
-        style: TextStyle(color: rankColor),
+        style: AppConstants.bodyText.copyWith(color: rankColor),
       ),
       subtitle: Text(
         'Title: ${user['title']}',
-        style: const TextStyle(color: Colors.white70),
+        style: AppConstants.smallText.copyWith(
+          color: AppConstants.textOnDark.withOpacity(0.7),
+        ),
       ),
       trailing: Row(
         mainAxisSize: MainAxisSize.min,
         children: [
           Text(
             'XP: ${user['xp']}',
-            style: const TextStyle(color: Colors.white),
+            style: AppConstants.bodyText.copyWith(
+              color: AppConstants.textOnDark,
+            ),
           ),
-          const SizedBox(width: 8),
+          SizedBox(width: AppConstants.spacingXS),
           Text(
             '#$rank',
-            style: TextStyle(
-              fontWeight: FontWeight.bold,
+            style: AppConstants.subtitle.copyWith(
+              fontWeight: AppConstants.fontWeightBold,
               color: rankColor,
-              fontSize: 18,
             ),
           ),
         ],
       ),
-      tileColor: isCurrentUser ? Colors.blue.withOpacity(0.3) : null,
+      tileColor:
+          isCurrentUser ? AppConstants.primaryBlue.withOpacity(0.3) : null,
     );
   }
 }

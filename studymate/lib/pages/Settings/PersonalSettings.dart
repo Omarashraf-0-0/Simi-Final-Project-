@@ -1,7 +1,7 @@
 import 'package:flutter/material.dart';
-import 'package:google_fonts/google_fonts.dart';
 import 'package:hive/hive.dart';
 import 'package:studymate/pages/UserUpdater.dart';
+import 'package:studymate/theme/app_constants.dart';
 
 class PersonalSettings extends StatefulWidget {
   const PersonalSettings({super.key});
@@ -16,15 +16,8 @@ class _PersonalSettingsState extends State<PersonalSettings> {
   final TextEditingController dateOfBirthController = TextEditingController();
   final TextEditingController addressController = TextEditingController();
 
-  final _userUpdater = UserUpdater(url: 'https://alyibrahim.pythonanywhere.com/update_user');
-
-  // ألوان البراندينج
-  final Color blue1 = Color(0xFF1c74bb);
-  final Color blue2 = Color(0xFF165d96);
-  final Color cyan1 = Color(0xFF18bebc);
-  final Color cyan2 = Color(0xFF139896);
-  final Color black = Color(0xFF000000);
-  final Color white = Color(0xFFFFFFFF);
+  final _userUpdater =
+      UserUpdater(url: 'https://alyibrahim.pythonanywhere.com/update_user');
 
   @override
   void initState() {
@@ -71,7 +64,8 @@ class _PersonalSettingsState extends State<PersonalSettings> {
     );
     if (pickedDate != null && pickedDate != initialDate) {
       setState(() {
-        dateOfBirthController.text = pickedDate.toLocal().toString().split(' ')[0];
+        dateOfBirthController.text =
+            pickedDate.toLocal().toString().split(' ')[0];
       });
     }
   }
@@ -89,22 +83,9 @@ class _PersonalSettingsState extends State<PersonalSettings> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      appBar: AppBar(
-        backgroundColor: blue2,
-        leading: IconButton(
-          icon: Icon(Icons.arrow_back_ios_new_rounded, color: white),
-          onPressed: () {
-            Navigator.pop(context);
-          },
-        ),
-        title: Text(
-          'Personal Settings',
-          style: GoogleFonts.leagueSpartan(
-            color: white,
-            fontWeight: FontWeight.bold,
-          ),
-        ),
-        centerTitle: true,
+      appBar: AppConstants.buildAppBar(
+        title: 'Personal Settings',
+        leading: AppConstants.buildBackButton(context),
       ),
       body: Padding(
         padding: const EdgeInsets.all(16.0),
@@ -116,9 +97,7 @@ class _PersonalSettingsState extends State<PersonalSettings> {
                 alignment: Alignment.centerLeft,
                 child: Text(
                   'Personal Information',
-                  style: GoogleFonts.leagueSpartan(
-                    fontSize: 24,
-                    fontWeight: FontWeight.bold,
+                  style: AppConstants.cardTitle.copyWith(
                     color: Theme.of(context).colorScheme.onSurface,
                   ),
                 ),
@@ -181,7 +160,7 @@ class _PersonalSettingsState extends State<PersonalSettings> {
                 child: ElevatedButton(
                   onPressed: updateData,
                   style: ElevatedButton.styleFrom(
-                    backgroundColor: blue2,
+                    backgroundColor: AppConstants.primaryBlueDark,
                     padding: EdgeInsets.symmetric(vertical: 15),
                     shape: RoundedRectangleBorder(
                       borderRadius: BorderRadius.circular(15),
@@ -189,10 +168,8 @@ class _PersonalSettingsState extends State<PersonalSettings> {
                   ),
                   child: Text(
                     'Save Changes',
-                    style: GoogleFonts.leagueSpartan(
-                      fontSize: 18,
-                      fontWeight: FontWeight.bold,
-                      color: white,
+                    style: AppConstants.subtitle.copyWith(
+                      color: AppConstants.textOnPrimary,
                     ),
                   ),
                 ),

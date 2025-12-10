@@ -1,10 +1,10 @@
 import 'dart:io';
 import 'dart:convert';
 import 'package:flutter/material.dart';
-import 'package:google_fonts/google_fonts.dart';
 import 'package:hive/hive.dart';
 import 'package:studymate/pages/UserUpdater.dart';
 import 'package:image_picker/image_picker.dart';
+import 'package:studymate/theme/app_constants.dart';
 
 class UserSettings extends StatefulWidget {
   const UserSettings({super.key});
@@ -25,14 +25,6 @@ class _UserSettingsState extends State<UserSettings> {
 
   final _userUpdater =
       UserUpdater(url: 'https://alyibrahim.pythonanywhere.com/update_user');
-
-  // Colors according to your branding
-  final Color blue1 = Color(0xFF1c74bb);
-  final Color blue2 = Color(0xFF165d96);
-  final Color cyan1 = Color(0xFF18bebc);
-  final Color cyan2 = Color(0xFF139896);
-  final Color black = Color(0xFF000000);
-  final Color white = Color(0xFFFFFFFF);
 
   @override
   void initState() {
@@ -86,22 +78,9 @@ class _UserSettingsState extends State<UserSettings> {
     final profileImageBase64 = Hive.box('userBox').get('profileImageBase64');
 
     return Scaffold(
-      appBar: AppBar(
-        backgroundColor: blue2,
-        leading: IconButton(
-          icon: Icon(Icons.arrow_back_ios_new_rounded, color: white),
-          onPressed: () {
-            Navigator.pop(context);
-          },
-        ),
-        title: Text(
-          'User Settings',
-          style: GoogleFonts.leagueSpartan(
-            color: white,
-            fontWeight: FontWeight.bold,
-          ),
-        ),
-        centerTitle: true,
+      appBar: AppConstants.buildAppBar(
+        title: 'User Settings',
+        leading: AppConstants.buildBackButton(context),
       ),
       body: Padding(
         padding: const EdgeInsets.all(16.0),
@@ -113,9 +92,7 @@ class _UserSettingsState extends State<UserSettings> {
                 alignment: Alignment.centerLeft,
                 child: Text(
                   'Profile Picture',
-                  style: GoogleFonts.leagueSpartan(
-                    fontSize: 24,
-                    fontWeight: FontWeight.bold,
+                  style: AppConstants.cardTitle.copyWith(
                     color: Theme.of(context).colorScheme.onSurface,
                   ),
                 ),
@@ -127,7 +104,7 @@ class _UserSettingsState extends State<UserSettings> {
                   children: [
                     CircleAvatar(
                       radius: 65,
-                      backgroundColor: cyan1,
+                      backgroundColor: AppConstants.primaryCyan,
                       backgroundImage: profileImageBase64 != null
                           ? MemoryImage(base64Decode(profileImageBase64))
                           : AssetImage('assets/img/default.jpeg')
@@ -140,10 +117,10 @@ class _UserSettingsState extends State<UserSettings> {
                         onTap: _pickImage,
                         child: CircleAvatar(
                           radius: 20,
-                          backgroundColor: cyan2,
+                          backgroundColor: AppConstants.primaryCyanDark,
                           child: Icon(
                             Icons.camera_alt,
-                            color: white,
+                            color: AppConstants.textOnPrimary,
                           ),
                         ),
                       ),
@@ -157,9 +134,7 @@ class _UserSettingsState extends State<UserSettings> {
                 alignment: Alignment.centerLeft,
                 child: Text(
                   'User Information',
-                  style: GoogleFonts.leagueSpartan(
-                    fontSize: 24,
-                    fontWeight: FontWeight.bold,
+                  style: AppConstants.cardTitle.copyWith(
                     color: Theme.of(context).colorScheme.onSurface,
                   ),
                 ),
@@ -246,7 +221,7 @@ class _UserSettingsState extends State<UserSettings> {
                 child: ElevatedButton(
                   onPressed: updateData,
                   style: ElevatedButton.styleFrom(
-                    backgroundColor: blue2,
+                    backgroundColor: AppConstants.primaryBlueDark,
                     padding: EdgeInsets.symmetric(vertical: 15),
                     shape: RoundedRectangleBorder(
                       borderRadius: BorderRadius.circular(15),
@@ -254,10 +229,8 @@ class _UserSettingsState extends State<UserSettings> {
                   ),
                   child: Text(
                     'Save Changes',
-                    style: GoogleFonts.leagueSpartan(
-                      fontSize: 18,
-                      fontWeight: FontWeight.bold,
-                      color: white,
+                    style: AppConstants.subtitle.copyWith(
+                      color: AppConstants.textOnPrimary,
                     ),
                   ),
                 ),

@@ -1,6 +1,6 @@
 import 'package:flutter/material.dart';
-import 'package:google_fonts/google_fonts.dart';
 import 'GameRanks.dart';
+import '../../theme/app_constants.dart';
 
 class GameHome extends StatefulWidget {
   const GameHome({super.key});
@@ -10,39 +10,16 @@ class GameHome extends StatefulWidget {
 }
 
 class _GameHomeState extends State<GameHome> {
-  // ألوان البراندينج
-  final Color blue1 = const Color(0xFF1c74bb);
-  final Color blue2 = const Color(0xFF165d96);
-  final Color cyan1 = const Color(0xFF18bebc);
-  final Color cyan2 = const Color(0xFF139896);
-  final Color redAccent = const Color(0xFFb3141c);
-  final Color black = const Color(0xFF000000);
-  final Color white = const Color(0xFFFFFFFF);
-
   @override
   Widget build(BuildContext context) {
     // حجم الشاشة للتصميم المتجاوب
     final size = MediaQuery.of(context).size;
 
     return Scaffold(
-      backgroundColor: black,
-      appBar: AppBar(
-        backgroundColor: blue2,
-        leading: IconButton(
-          icon: Icon(Icons.arrow_back_ios_new_rounded, color: white),
-          onPressed: () {
-            Navigator.pop(context);
-          },
-        ),
-        title: Text(
-          'El Batal Game',
-          style: GoogleFonts.leagueSpartan(
-            fontSize: 24,
-            fontWeight: FontWeight.bold,
-            color: white,
-          ),
-        ),
-        centerTitle: true,
+      backgroundColor: AppConstants.backgroundDark,
+      appBar: AppConstants.buildAppBar(
+        title: 'El Batal Game',
+        leading: AppConstants.buildBackButton(context),
       ),
       body: Stack(
         children: [
@@ -57,7 +34,7 @@ class _GameHomeState extends State<GameHome> {
           ),
           // تراكب بلون نصف شفاف لمزيد من الوضوح
           Container(
-            color: Colors.black.withOpacity(0.5),
+            color: AppConstants.backgroundDark.withOpacity(0.5),
           ),
           // المحتوى الأمامي
           Padding(
@@ -69,23 +46,20 @@ class _GameHomeState extends State<GameHome> {
                 // عنوان الترحيب
                 Text(
                   'Welcome to',
-                  style: GoogleFonts.leagueSpartan(
-                    fontSize: 32,
-                    fontWeight: FontWeight.bold,
-                    color: white,
+                  style: AppConstants.pageTitle.copyWith(
+                    color: AppConstants.textOnDark,
                   ),
                 ),
                 Text(
                   'El Batal Gamification',
-                  style: GoogleFonts.leagueSpartan(
-                    fontSize: 36,
-                    fontWeight: FontWeight.bold,
-                    color: redAccent,
+                  style: AppConstants.pageTitle.copyWith(
+                    fontSize: AppConstants.fontSizeXXL + 4,
+                    color: AppConstants.rankElBatal,
                     shadows: [
                       Shadow(
-                        offset: Offset(2.0, 2.0),
+                        offset: const Offset(2.0, 2.0),
                         blurRadius: 4.0,
-                        color: black.withOpacity(0.5),
+                        color: AppConstants.backgroundDark.withOpacity(0.5),
                       ),
                     ],
                   ),
@@ -116,20 +90,22 @@ class _GameHomeState extends State<GameHome> {
                       );
                     },
                     style: ElevatedButton.styleFrom(
-                      backgroundColor: redAccent,
-                      padding:
-                          EdgeInsets.symmetric(vertical: 15, horizontal: 50),
-                      shape: RoundedRectangleBorder(
-                        borderRadius: BorderRadius.circular(30),
+                      backgroundColor: AppConstants.rankElBatal,
+                      padding: EdgeInsets.symmetric(
+                        vertical: AppConstants.spacingM,
+                        horizontal:
+                            AppConstants.spacingXXL + AppConstants.spacingS,
                       ),
-                      elevation: 5,
+                      shape: RoundedRectangleBorder(
+                        borderRadius:
+                            BorderRadius.circular(AppConstants.radiusXL + 6),
+                      ),
+                      elevation: AppConstants.elevationM,
                     ),
                     child: Text(
                       'Explore',
-                      style: GoogleFonts.leagueSpartan(
-                        fontSize: 24,
-                        fontWeight: FontWeight.bold,
-                        color: white,
+                      style: AppConstants.cardTitle.copyWith(
+                        color: AppConstants.textOnDark,
                       ),
                     ),
                   ),

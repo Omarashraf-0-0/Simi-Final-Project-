@@ -3,6 +3,7 @@ import 'package:google_fonts/google_fonts.dart';
 import 'package:studymate/pages/LoginPage.dart';
 import '../../Classes/User.dart';
 import '../CollageInformatio.dart';
+import '../../theme/app_constants.dart';
 
 class RegisterPage extends StatefulWidget {
   final Student user;
@@ -20,14 +21,6 @@ class _RegisterPageState extends State<RegisterPage> {
   final TextEditingController phoneController = TextEditingController();
   final TextEditingController addressController = TextEditingController();
   final TextEditingController birthDateController = TextEditingController();
-
-  // ألوان البراندينج
-  final Color blue1 = Color(0xFF1c74bb);
-  final Color blue2 = Color(0xFF165d96);
-  final Color cyan1 = Color(0xFF18bebc);
-  final Color cyan2 = Color(0xFF139896);
-  final Color black = Color(0xFF000000);
-  final Color white = Color(0xFFFFFFFF);
 
   final _formKey = GlobalKey<FormState>(); // مفتاح النموذج للتحقق
 
@@ -73,7 +66,8 @@ class _RegisterPageState extends State<RegisterPage> {
     );
     if (pickedDate != null) {
       setState(() {
-        birthDateController.text = pickedDate.toLocal().toString().split(' ')[0];
+        birthDateController.text =
+            pickedDate.toLocal().toString().split(' ')[0];
       });
     }
   }
@@ -84,16 +78,18 @@ class _RegisterPageState extends State<RegisterPage> {
     final size = MediaQuery.of(context).size;
 
     return Scaffold(
-      backgroundColor: white,
+      backgroundColor: AppConstants.textOnPrimary,
       body: SingleChildScrollView(
         child: Padding(
-          padding: EdgeInsets.symmetric(horizontal: size.width * 0.08, vertical: size.height * 0.05),
+          padding: EdgeInsets.symmetric(
+              horizontal: size.width * 0.08, vertical: size.height * 0.05),
           child: Column(
             crossAxisAlignment: CrossAxisAlignment.start,
             children: [
               // زر العودة
               IconButton(
-                icon: Icon(Icons.arrow_back_ios_new, color: black),
+                icon: Icon(Icons.arrow_back_ios_new,
+                    color: AppConstants.textPrimary),
                 onPressed: () {
                   Navigator.pop(context);
                 },
@@ -108,7 +104,7 @@ class _RegisterPageState extends State<RegisterPage> {
                       style: GoogleFonts.leagueSpartan(
                         fontSize: 32,
                         fontWeight: FontWeight.bold,
-                        color: black,
+                        color: AppConstants.textPrimary,
                       ),
                     ),
                     SizedBox(height: 8),
@@ -160,7 +156,8 @@ class _RegisterPageState extends State<RegisterPage> {
                       validator: (value) {
                         if (value == null || value.isEmpty) {
                           return 'Please enter your phone number.';
-                        } else if (!RegExp(r'^(010|011|012|015)\d{8}$').hasMatch(value)) {
+                        } else if (!RegExp(r'^(010|011|012|015)\d{8}$')
+                            .hasMatch(value)) {
                           return 'Phone number must be 11 digits and start with 010, 011, 012, or 015.';
                         }
                         return null;
@@ -215,7 +212,7 @@ class _RegisterPageState extends State<RegisterPage> {
                       child: ElevatedButton(
                         onPressed: validateAndProceed,
                         style: ElevatedButton.styleFrom(
-                          backgroundColor: blue2,
+                          backgroundColor: AppConstants.primaryBlueDark,
                           padding: EdgeInsets.symmetric(vertical: 15),
                           shape: RoundedRectangleBorder(
                             borderRadius: BorderRadius.circular(15),
@@ -226,7 +223,7 @@ class _RegisterPageState extends State<RegisterPage> {
                           style: GoogleFonts.leagueSpartan(
                             fontSize: 18,
                             fontWeight: FontWeight.bold,
-                            color: white,
+                            color: AppConstants.textOnPrimary,
                           ),
                         ),
                       ),
@@ -243,7 +240,7 @@ class _RegisterPageState extends State<RegisterPage> {
                       'Already have an account?',
                       style: GoogleFonts.leagueSpartan(
                         fontSize: 16,
-                        color: black,
+                        color: AppConstants.textPrimary,
                       ),
                     ),
                     SizedBox(height: 8),
@@ -256,8 +253,10 @@ class _RegisterPageState extends State<RegisterPage> {
                         );
                       },
                       style: OutlinedButton.styleFrom(
-                        side: BorderSide(color: blue2, width: 2),
-                        padding: EdgeInsets.symmetric(horizontal: 40, vertical: 12),
+                        side: BorderSide(
+                            color: AppConstants.primaryBlueDark, width: 2),
+                        padding:
+                            EdgeInsets.symmetric(horizontal: 40, vertical: 12),
                         shape: RoundedRectangleBorder(
                           borderRadius: BorderRadius.circular(15),
                         ),
@@ -266,7 +265,7 @@ class _RegisterPageState extends State<RegisterPage> {
                         'Login',
                         style: GoogleFonts.leagueSpartan(
                           fontSize: 16,
-                          color: blue2,
+                          color: AppConstants.primaryBlueDark,
                         ),
                       ),
                     ),

@@ -1,8 +1,5 @@
 studymate/linux/flutter/generated_plugin_registrant.cc
 studymate/linux/flutter/generated_plugin_registrant.h
-studymate/linux/flutter/generated_plugin_registrant.cc
-studymate/linux/flutter/generated_plugin_registrant.cc
-studymate/linux/flutter/generated_plugin_registrant.h
 studymate/linux/flutter/generated_plugins.cmake
 studymate/macos/Flutter/GeneratedPluginRegistrant.swift
 studymate/windows/flutter/generated_plugin_registrant.cc
@@ -13,8 +10,7 @@ studymate/windows/flutter/generated_plugins.cmake
 /tests/error_logs/
 /error_logs
 /.idea
-/.idea
-studymate/pubspec.lock
-/.idea
 studymate/pubspec.lock
 *.lock
+studymate/pubspec.lock
+studymate/pubspec.lock

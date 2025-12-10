@@ -7,6 +7,7 @@ import '../Classes/User.dart';
 import '../Pop-ups/PopUps_Failed.dart';
 import '../Pop-ups/PopUps_Success.dart';
 import '../pages/LoginPage.dart';
+import '../theme/app_constants.dart';
 
 class OTP extends StatefulWidget {
   final Student? user;
@@ -17,14 +18,6 @@ class OTP extends StatefulWidget {
 }
 
 class _OTPState extends State<OTP> {
-  // ألوان البراندينج
-  final Color blue1 = const Color(0xFF1c74bb);
-  final Color blue2 = const Color(0xFF165d96);
-  final Color cyan1 = const Color(0xFF18bebc);
-  final Color cyan2 = const Color(0xFF139896);
-  final Color black = const Color(0xFF000000);
-  final Color white = const Color(0xFFFFFFFF);
-
   final _formKey = GlobalKey<FormState>();
   final List<FocusNode> _focusNodes = List.generate(6, (index) => FocusNode());
   final List<TextEditingController> _controllers =
@@ -233,7 +226,7 @@ class _OTPState extends State<OTP> {
     ScaffoldMessenger.of(context).showSnackBar(
       SnackBar(
         content: Text('OTP Resent Successfully!'),
-        backgroundColor: blue2,
+        backgroundColor: AppConstants.primaryBlueDark,
       ),
     );
   }
@@ -244,23 +237,10 @@ class _OTPState extends State<OTP> {
     final size = MediaQuery.of(context).size;
 
     return Scaffold(
-      backgroundColor: white,
-      appBar: AppBar(
-        backgroundColor: blue2,
-        title: Text(
-          'Verify OTP',
-          style: GoogleFonts.leagueSpartan(
-            color: white,
-            fontWeight: FontWeight.bold,
-          ),
-        ),
-        centerTitle: true,
-        leading: IconButton(
-          icon: Icon(Icons.arrow_back_ios_new, color: white),
-          onPressed: () {
-            Navigator.pop(context);
-          },
-        ),
+      backgroundColor: Theme.of(context).scaffoldBackgroundColor,
+      appBar: AppConstants.buildAppBar(
+        title: 'Verify OTP',
+        leading: AppConstants.buildBackButton(context),
       ),
       body: Padding(
         padding: EdgeInsets.symmetric(
@@ -274,7 +254,7 @@ class _OTPState extends State<OTP> {
                 'Enter the 6-digit code sent to your email',
                 style: GoogleFonts.leagueSpartan(
                   fontSize: 18,
-                  color: black,
+                  color: AppConstants.textPrimary,
                 ),
                 textAlign: TextAlign.center,
               ),
@@ -304,10 +284,12 @@ class _OTPState extends State<OTP> {
                 child: ElevatedButton(
                   onPressed: _isOTPLoaded ? _submitOTP : null,
                   style: ElevatedButton.styleFrom(
-                    backgroundColor: blue2,
-                    padding: EdgeInsets.symmetric(vertical: 15),
+                    backgroundColor: AppConstants.primaryBlueDark,
+                    padding: EdgeInsets.symmetric(
+                        vertical: AppConstants.spacingM + 3),
                     shape: RoundedRectangleBorder(
-                      borderRadius: BorderRadius.circular(15),
+                      borderRadius:
+                          BorderRadius.circular(AppConstants.radiusM + 7),
                     ),
                   ),
                   child: Text(
@@ -315,7 +297,7 @@ class _OTPState extends State<OTP> {
                     style: GoogleFonts.leagueSpartan(
                       fontSize: 18,
                       fontWeight: FontWeight.bold,
-                      color: white,
+                      color: AppConstants.textOnPrimary,
                     ),
                   ),
                 ),
@@ -332,7 +314,9 @@ class _OTPState extends State<OTP> {
                   'Resend Code',
                   style: GoogleFonts.leagueSpartan(
                     fontSize: 16,
-                    color: _isResendEnabled ? blue2 : Colors.grey,
+                    color: _isResendEnabled
+                        ? AppConstants.primaryBlueDark
+                        : Colors.grey,
                     decoration: _isResendEnabled
                         ? TextDecoration.underline
                         : TextDecoration.none,
@@ -362,7 +346,7 @@ class _OTPState extends State<OTP> {
         style: GoogleFonts.leagueSpartan(
           fontSize: 24,
           fontWeight: FontWeight.bold,
-          color: black,
+          color: AppConstants.textPrimary,
         ),
         textAlign: TextAlign.center,
         keyboardType: TextInputType.number,

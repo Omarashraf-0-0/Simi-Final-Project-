@@ -7,6 +7,7 @@ import '../Pop-ups/PopUps_Failed.dart';
 import '../Pop-ups/PopUps_Warning.dart';
 import 'package:http/http.dart' as http;
 import 'dart:convert'; // For jsonEncode
+import '../theme/app_constants.dart';
 
 class CollageInformation extends StatefulWidget {
   final Student? user;
@@ -25,29 +26,33 @@ class _CollageInformationState extends State<CollageInformation> {
   String? selectedCollege;
   String? selectedMajor;
 
-  final TextEditingController registrationNumberController = TextEditingController();
+  final TextEditingController registrationNumberController =
+      TextEditingController();
 
   // Dropdown options
   final List<String> universities = ['AAST', 'AUC', 'GUC', 'MIU', 'MSA'];
-  final List<String> colleges = ['Engineering', 'Business', 'Computing', 'Media', 'Pharmacy'];
-  final List<String> majors = ['Computer Science', 'Business Administration', 'Media', 'Pharmacy', 'Engineering'];
+  final List<String> colleges = [
+    'Engineering',
+    'Business',
+    'Computing',
+    'Media',
+    'Pharmacy'
+  ];
+  final List<String> majors = [
+    'Computer Science',
+    'Business Administration',
+    'Media',
+    'Pharmacy',
+    'Engineering'
+  ];
 
   final _formKey = GlobalKey<FormState>(); // Form key for validation
-
-  // Branding colors
-  final Color blue1 = Color(0xFF1c74bb);
-  final Color blue2 = Color(0xFF165d96);
-  final Color cyan1 = Color(0xFF18bebc);
-  final Color cyan2 = Color(0xFF139896);
-  final Color black = Color(0xFF000000);
-  final Color white = Color(0xFFFFFFFF);
 
   @override
   void dispose() {
     registrationNumberController.dispose();
     super.dispose();
   }
-
 
   // User createUser() {
   //   User user = User(
@@ -74,32 +79,32 @@ class _CollageInformationState extends State<CollageInformation> {
   //   return user;
   // }
 
-Student createStudent() {
-  Student student = Student(); // Singleton instance
+  Student createStudent() {
+    Student student = Student(); // Singleton instance
 
-  student.initialize(
-    username: widget.user?.username,
-    password: widget.user?.password,
-    fullName: widget.user?.fullName,
-    role: widget.user?.role,
-    email: widget.user?.email,
-    phoneNumber: widget.user?.phoneNumber,
-    address: widget.user?.address,
-    gender: widget.user?.gender,
-    collage: selectedCollege,
-    university: selectedUniversity,
-    major: selectedMajor,
-    term_level: 1,
-    pfp: widget.user?.pfp,
-    xp: 0,
-    level: 1,
-    title: 'newbie',
-    registrationNumber: registrationNumberController.text,
-    birthDate: widget.user?.birthDate,
-  );
+    student.initialize(
+      username: widget.user?.username,
+      password: widget.user?.password,
+      fullName: widget.user?.fullName,
+      role: widget.user?.role,
+      email: widget.user?.email,
+      phoneNumber: widget.user?.phoneNumber,
+      address: widget.user?.address,
+      gender: widget.user?.gender,
+      collage: selectedCollege,
+      university: selectedUniversity,
+      major: selectedMajor,
+      term_level: 1,
+      pfp: widget.user?.pfp,
+      xp: 0,
+      level: 1,
+      title: 'newbie',
+      registrationNumber: registrationNumberController.text,
+      birthDate: widget.user?.birthDate,
+    );
 
-  return student;
-}
+    return student;
+  }
 
   Future<void> registerCollegeInfo() async {
     final String url = 'https://alyibrahim.pythonanywhere.com/register';
@@ -167,7 +172,9 @@ Student createStudent() {
 
   void validateAndRegister() {
     if (_formKey.currentState!.validate()) {
-      if (selectedUniversity == null || selectedCollege == null || selectedMajor == null) {
+      if (selectedUniversity == null ||
+          selectedCollege == null ||
+          selectedMajor == null) {
         showWarningPopup(
           context,
           'Warning',
@@ -178,8 +185,8 @@ Student createStudent() {
         Student user = createStudent();
         Navigator.pushAndRemoveUntil(
           context,
-          MaterialPageRoute(builder: (context) => OTP(user:user)),
-              (route) => false,
+          MaterialPageRoute(builder: (context) => OTP(user: user)),
+          (route) => false,
         );
       }
     }
@@ -191,16 +198,18 @@ Student createStudent() {
     final size = MediaQuery.of(context).size;
 
     return Scaffold(
-      backgroundColor: white,
+      backgroundColor: Theme.of(context).scaffoldBackgroundColor,
       body: SingleChildScrollView(
         child: Padding(
-          padding: EdgeInsets.symmetric(horizontal: size.width * 0.08, vertical: size.height * 0.05),
+          padding: EdgeInsets.symmetric(
+              horizontal: size.width * 0.08, vertical: size.height * 0.05),
           child: Column(
             crossAxisAlignment: CrossAxisAlignment.start,
             children: [
               // Back Button
               IconButton(
-                icon: Icon(Icons.arrow_back_ios_new, color: black),
+                icon: Icon(Icons.arrow_back_ios_new,
+                    color: AppConstants.textPrimary),
                 onPressed: () {
                   Navigator.pop(context);
                 },
@@ -212,10 +221,8 @@ Student createStudent() {
                   children: [
                     Text(
                       'Last Step!',
-                      style: GoogleFonts.leagueSpartan(
+                      style: AppConstants.pageTitle.copyWith(
                         fontSize: 32,
-                        fontWeight: FontWeight.bold,
-                        color: black,
                       ),
                     ),
                     SizedBox(height: 8),
@@ -256,7 +263,9 @@ Student createStudent() {
                           selectedUniversity = value;
                         });
                       },
-                      validator: (value) => value == null ? 'Please select your university.' : null,
+                      validator: (value) => value == null
+                          ? 'Please select your university.'
+                          : null,
                     ),
                     SizedBox(height: size.height * 0.025),
                     // College Dropdown
@@ -280,7 +289,8 @@ Student createStudent() {
                           selectedCollege = value;
                         });
                       },
-                      validator: (value) => value == null ? 'Please select your college.' : null,
+                      validator: (value) =>
+                          value == null ? 'Please select your college.' : null,
                     ),
                     SizedBox(height: size.height * 0.025),
                     // Major Dropdown
@@ -304,7 +314,8 @@ Student createStudent() {
                           selectedMajor = value;
                         });
                       },
-                      validator: (value) => value == null ? 'Please select your major.' : null,
+                      validator: (value) =>
+                          value == null ? 'Please select your major.' : null,
                     ),
                     SizedBox(height: size.height * 0.025),
                     // Registration Number Field
@@ -334,10 +345,12 @@ Student createStudent() {
                       child: ElevatedButton(
                         onPressed: validateAndRegister,
                         style: ElevatedButton.styleFrom(
-                          backgroundColor: blue2,
-                          padding: EdgeInsets.symmetric(vertical: 15),
+                          backgroundColor: AppConstants.primaryBlueDark,
+                          padding: EdgeInsets.symmetric(
+                              vertical: AppConstants.spacingM + 3),
                           shape: RoundedRectangleBorder(
-                            borderRadius: BorderRadius.circular(15),
+                            borderRadius:
+                                BorderRadius.circular(AppConstants.radiusM + 7),
                           ),
                         ),
                         child: Text(
@@ -345,7 +358,7 @@ Student createStudent() {
                           style: GoogleFonts.leagueSpartan(
                             fontSize: 18,
                             fontWeight: FontWeight.bold,
-                            color: white,
+                            color: AppConstants.textOnPrimary,
                           ),
                         ),
                       ),
@@ -359,7 +372,7 @@ Student createStudent() {
                             'Already have an account?',
                             style: GoogleFonts.leagueSpartan(
                               fontSize: 16,
-                              color: black,
+                              color: AppConstants.textPrimary,
                             ),
                           ),
                           SizedBox(height: 8),
@@ -368,21 +381,27 @@ Student createStudent() {
                               // Navigate to Login page
                               Navigator.pushReplacement(
                                 context,
-                                MaterialPageRoute(builder: (context) => LoginPage()),
+                                MaterialPageRoute(
+                                    builder: (context) => LoginPage()),
                               );
                             },
                             style: OutlinedButton.styleFrom(
-                              side: BorderSide(color: blue2, width: 2),
-                              padding: EdgeInsets.symmetric(horizontal: 40, vertical: 12),
+                              side: BorderSide(
+                                  color: AppConstants.primaryBlueDark,
+                                  width: 2),
+                              padding: EdgeInsets.symmetric(
+                                  horizontal: AppConstants.spacingXL + 8,
+                                  vertical: AppConstants.spacingS),
                               shape: RoundedRectangleBorder(
-                                borderRadius: BorderRadius.circular(15),
+                                borderRadius: BorderRadius.circular(
+                                    AppConstants.radiusM + 7),
                               ),
                             ),
                             child: Text(
                               'Login',
                               style: GoogleFonts.leagueSpartan(
                                 fontSize: 16,
-                                color: blue2,
+                                color: AppConstants.primaryBlueDark,
                               ),
                             ),
                           ),

@@ -6,6 +6,7 @@ import 'package:http/http.dart' as http; // For HTTP requests
 import 'package:hive_flutter/hive_flutter.dart'; // For Hive storage
 import 'package:hive/hive.dart';
 import 'Quiz.dart'; // Import the Quiz screen
+import 'package:studymate/theme/app_constants.dart';
 
 class QuizOptions extends StatefulWidget {
   const QuizOptions({super.key});
@@ -15,14 +16,6 @@ class QuizOptions extends StatefulWidget {
 }
 
 class _QuizOptionsState extends State<QuizOptions> {
-  // Define your branding colors
-  final Color blue1 = Color(0xFF1c74bb);
-  final Color blue2 = Color(0xFF165d96);
-  final Color cyan1 = Color(0xFF18bebc);
-  final Color cyan2 = Color(0xFF139896);
-  final Color black = Color(0xFF000000);
-  final Color white = Color(0xFFFFFFFF);
-
   String? selectedCourse;
   String? selectedCourseId;
   TextEditingController questionsController = TextEditingController();
@@ -405,26 +398,11 @@ class _QuizOptionsState extends State<QuizOptions> {
     return Scaffold(
       backgroundColor: Theme.of(context)
           .scaffoldBackgroundColor, // Set background color to white
-      appBar: AppBar(
-        title: Text(
-          'Make Your Quiz!',
-          style: TextStyle(
-            fontFamily: 'League Spartan',
-            fontSize: 24,
-            fontWeight: FontWeight.bold,
-            color: white,
-          ),
-        ),
-        backgroundColor: blue2,
-        centerTitle: true,
-        elevation: 0,
+      appBar: AppConstants.buildAppBar(
+        title: 'Make Your Quiz!',
       ),
       body: isLoading || isGenerating
-          ? Center(
-              child: CircularProgressIndicator(
-                color: blue2,
-              ),
-            )
+          ? AppConstants.buildLoadingIndicator()
           : SingleChildScrollView(
               padding: const EdgeInsets.symmetric(horizontal: 20, vertical: 30),
               child: Column(
@@ -433,10 +411,7 @@ class _QuizOptionsState extends State<QuizOptions> {
                   // Section: Select Your Course
                   Text(
                     'Select Your Course',
-                    style: TextStyle(
-                      fontSize: 24,
-                      fontWeight: FontWeight.bold,
-                      fontFamily: 'League Spartan',
+                    style: AppConstants.cardTitle.copyWith(
                       color: Theme.of(context).colorScheme.onSurface,
                     ),
                   ),
@@ -448,10 +423,8 @@ class _QuizOptionsState extends State<QuizOptions> {
                       alignment: Alignment.centerLeft,
                       child: Text(
                         'Choose Course',
-                        style: TextStyle(
-                          color:
-                              blue2, // Set the placeholder text color to blue
-                          fontFamily: 'League Spartan',
+                        style: AppConstants.bodyText.copyWith(
+                          color: AppConstants.primaryBlueDark,
                         ),
                       ),
                     ),
@@ -472,9 +445,8 @@ class _QuizOptionsState extends State<QuizOptions> {
                         value: value,
                         child: Text(
                           value,
-                          style: TextStyle(
+                          style: AppConstants.bodyText.copyWith(
                             color: Theme.of(context).colorScheme.primary,
-                            fontFamily: 'League Spartan',
                           ),
                         ),
                       );
@@ -508,7 +480,7 @@ class _QuizOptionsState extends State<QuizOptions> {
                     Container(
                       height: 150,
                       decoration: BoxDecoration(
-                        color: white,
+                        color: AppConstants.backgroundLight,
                         borderRadius: BorderRadius.circular(15),
                         border: Border.all(color: Colors.grey[300]!),
                       ),
@@ -516,13 +488,12 @@ class _QuizOptionsState extends State<QuizOptions> {
                         itemCount: lectures.length,
                         itemBuilder: (context, index) {
                           return ListTile(
-                            leading: Icon(Icons.book, color: blue2),
+                            leading: Icon(Icons.book,
+                                color: AppConstants.primaryBlueDark),
                             title: Text(
                               lectures[index]['name']!,
-                              style: TextStyle(
-                                fontSize: 16,
-                                fontFamily: 'League Spartan',
-                                color: black,
+                              style: AppConstants.bodyText.copyWith(
+                                color: AppConstants.textPrimary,
                               ),
                             ),
                           );
@@ -534,10 +505,7 @@ class _QuizOptionsState extends State<QuizOptions> {
                   // Section: Lecture Range
                   Text(
                     'Lecture Range',
-                    style: TextStyle(
-                      fontSize: 24,
-                      fontWeight: FontWeight.bold,
-                      fontFamily: 'League Spartan',
+                    style: AppConstants.cardTitle.copyWith(
                       color: Theme.of(context).colorScheme.onSurface,
                     ),
                   ),
@@ -551,10 +519,8 @@ class _QuizOptionsState extends State<QuizOptions> {
                           keyboardType: TextInputType.number,
                           decoration: InputDecoration(
                             labelText: 'From',
-                            labelStyle: TextStyle(
-                              color:
-                                  blue2, // Placeholder text color set to blue
-                              fontFamily: 'League Spartan',
+                            labelStyle: AppConstants.bodyText.copyWith(
+                              color: AppConstants.primaryBlueDark,
                             ),
                             contentPadding: EdgeInsets.symmetric(
                                 vertical: 15, horizontal: 20),
@@ -580,10 +546,8 @@ class _QuizOptionsState extends State<QuizOptions> {
                           keyboardType: TextInputType.number,
                           decoration: InputDecoration(
                             labelText: 'To',
-                            labelStyle: TextStyle(
-                              color:
-                                  blue2, // Placeholder text color set to blue
-                              fontFamily: 'League Spartan',
+                            labelStyle: AppConstants.bodyText.copyWith(
+                              color: AppConstants.primaryBlueDark,
                             ),
                             contentPadding: EdgeInsets.symmetric(
                                 vertical: 15, horizontal: 20),
@@ -608,10 +572,7 @@ class _QuizOptionsState extends State<QuizOptions> {
                   // Section: Questions Number
                   Text(
                     'Questions Number',
-                    style: TextStyle(
-                      fontSize: 24,
-                      fontWeight: FontWeight.bold,
-                      fontFamily: 'League Spartan',
+                    style: AppConstants.cardTitle.copyWith(
                       color: Theme.of(context).colorScheme.onSurface,
                     ),
                   ),
@@ -622,9 +583,8 @@ class _QuizOptionsState extends State<QuizOptions> {
                     decoration: InputDecoration(
                       labelText:
                           'Total Questions', // Changed from hintText to labelText
-                      labelStyle: TextStyle(
-                        color: blue2, // Set the label text color to blue
-                        fontFamily: 'League Spartan',
+                      labelStyle: AppConstants.bodyText.copyWith(
+                        color: AppConstants.primaryBlueDark,
                       ),
                       contentPadding:
                           EdgeInsets.symmetric(vertical: 15, horizontal: 20),
@@ -635,20 +595,16 @@ class _QuizOptionsState extends State<QuizOptions> {
                         borderSide: BorderSide.none,
                       ),
                     ),
-                    style: TextStyle(
+                    style: AppConstants.bodyText.copyWith(
                       fontWeight: FontWeight.bold,
-                      fontFamily: 'League Spartan',
-                      color: Colors.black, // Ensure typed text is black
+                      color: AppConstants.textPrimary,
                     ),
                   ),
                   const SizedBox(height: 30),
                   // Section: Questions Type
                   Text(
                     'Questions Type',
-                    style: TextStyle(
-                      fontSize: 24,
-                      fontWeight: FontWeight.bold,
-                      fontFamily: 'League Spartan',
+                    style: AppConstants.cardTitle.copyWith(
                       color: Theme.of(context).colorScheme.onSurface,
                     ),
                   ),
@@ -661,10 +617,8 @@ class _QuizOptionsState extends State<QuizOptions> {
                           keyboardType: TextInputType.number,
                           decoration: InputDecoration(
                             labelText: 'MCQ',
-                            labelStyle: TextStyle(
-                              color:
-                                  blue2, // Placeholder text color set to blue
-                              fontFamily: 'League Spartan',
+                            labelStyle: AppConstants.bodyText.copyWith(
+                              color: AppConstants.primaryBlueDark,
                             ),
                             contentPadding: EdgeInsets.symmetric(
                                 vertical: 15, horizontal: 20),
@@ -690,10 +644,8 @@ class _QuizOptionsState extends State<QuizOptions> {
                           keyboardType: TextInputType.number,
                           decoration: InputDecoration(
                             labelText: 'T/F',
-                            labelStyle: TextStyle(
-                              color:
-                                  blue2, // Placeholder text color set to blue
-                              fontFamily: 'League Spartan',
+                            labelStyle: AppConstants.bodyText.copyWith(
+                              color: AppConstants.primaryBlueDark,
                             ),
                             contentPadding: EdgeInsets.symmetric(
                                 vertical: 15, horizontal: 20),
@@ -720,7 +672,7 @@ class _QuizOptionsState extends State<QuizOptions> {
                     child: ElevatedButton(
                       onPressed: validateQuestions,
                       style: ElevatedButton.styleFrom(
-                        backgroundColor: blue2,
+                        backgroundColor: AppConstants.primaryBlueDark,
                         padding: const EdgeInsets.symmetric(
                             horizontal: 50, vertical: 15),
                         shape: RoundedRectangleBorder(
@@ -730,11 +682,9 @@ class _QuizOptionsState extends State<QuizOptions> {
                       ),
                       child: Text(
                         'Generate Quiz',
-                        style: TextStyle(
+                        style: AppConstants.subtitle.copyWith(
                           fontSize: 22,
-                          fontWeight: FontWeight.bold,
-                          color: white,
-                          fontFamily: 'League Spartan',
+                          color: AppConstants.textOnPrimary,
                         ),
                       ),
                     ),

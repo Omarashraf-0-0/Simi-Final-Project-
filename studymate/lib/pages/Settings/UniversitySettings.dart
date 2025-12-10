@@ -1,7 +1,7 @@
 import 'package:flutter/material.dart';
-import 'package:google_fonts/google_fonts.dart';
 import 'package:hive/hive.dart';
 import 'package:studymate/pages/UserUpdater.dart';
+import 'package:studymate/theme/app_constants.dart';
 
 class Universitysettings extends StatefulWidget {
   const Universitysettings({super.key});
@@ -16,22 +16,40 @@ class _UniversitysettingsState extends State<Universitysettings> {
   String? selectedMajor;
   String? selectedTermLevel;
 
-  final TextEditingController registrationNumberController = TextEditingController();
+  final TextEditingController registrationNumberController =
+      TextEditingController();
 
   final List<String> universities = ['AAST', 'AUC', 'GUC', 'MIU', 'MSA'];
-  final List<String> colleges = ['Engineering', 'Business', 'Computing', 'Media', 'Pharmacy'];
-  final List<String> majors = ['Computer Science', 'Business Administration', 'Media', 'Pharmacy', 'Engineering'];
-  final List<String> termLevels = ['Prep', '1', '2', '3', '4', '5', '6', '7', '8', '9', '10'];
+  final List<String> colleges = [
+    'Engineering',
+    'Business',
+    'Computing',
+    'Media',
+    'Pharmacy'
+  ];
+  final List<String> majors = [
+    'Computer Science',
+    'Business Administration',
+    'Media',
+    'Pharmacy',
+    'Engineering'
+  ];
+  final List<String> termLevels = [
+    'Prep',
+    '1',
+    '2',
+    '3',
+    '4',
+    '5',
+    '6',
+    '7',
+    '8',
+    '9',
+    '10'
+  ];
 
-  final _userUpdater = UserUpdater(url: 'https://alyibrahim.pythonanywhere.com/update_user');
-
-  // ألوان البراندينج
-  final Color blue1 = Color(0xFF1c74bb);
-  final Color blue2 = Color(0xFF165d96);
-  final Color cyan1 = Color(0xFF18bebc);
-  final Color cyan2 = Color(0xFF139896);
-  final Color black = Color(0xFF000000);
-  final Color white = Color(0xFFFFFFFF);
+  final _userUpdater =
+      UserUpdater(url: 'https://alyibrahim.pythonanywhere.com/update_user');
 
   final RegExp inputRegExp = RegExp(r'^[a-zA-Z0-9]+$');
 
@@ -43,7 +61,8 @@ class _UniversitysettingsState extends State<Universitysettings> {
     selectedCollege = Hive.box('userBox').get('college');
     selectedMajor = Hive.box('userBox').get('major');
     selectedTermLevel = '${Hive.box('userBox').get('term_level')}';
-    registrationNumberController.text = Hive.box('userBox').get('Registration_Number') ?? '';
+    registrationNumberController.text =
+        Hive.box('userBox').get('Registration_Number') ?? '';
   }
 
   bool validateInput(String input) {
@@ -52,7 +71,8 @@ class _UniversitysettingsState extends State<Universitysettings> {
 
   Future<void> updateData() async {
     final username = Hive.box('userBox').get('username');
-    if (!validateInput(username) || !validateInput(registrationNumberController.text)) {
+    if (!validateInput(username) ||
+        !validateInput(registrationNumberController.text)) {
       // Handle invalid input
       print('Invalid input');
       return;
@@ -83,22 +103,9 @@ class _UniversitysettingsState extends State<Universitysettings> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      appBar: AppBar(
-        backgroundColor: blue2,
-        leading: IconButton(
-          icon: Icon(Icons.arrow_back_ios_new_rounded, color: white),
-          onPressed: () {
-            Navigator.pop(context);
-          },
-        ),
-        title: Text(
-          'University Settings',
-          style: GoogleFonts.leagueSpartan(
-            color: white,
-            fontWeight: FontWeight.bold,
-          ),
-        ),
-        centerTitle: true,
+      appBar: AppConstants.buildAppBar(
+        title: 'University Settings',
+        leading: AppConstants.buildBackButton(context),
       ),
       body: Padding(
         padding: const EdgeInsets.all(16.0),
@@ -110,9 +117,7 @@ class _UniversitysettingsState extends State<Universitysettings> {
                 alignment: Alignment.centerLeft,
                 child: Text(
                   'University Information',
-                  style: GoogleFonts.leagueSpartan(
-                    fontSize: 24,
-                    fontWeight: FontWeight.bold,
+                  style: AppConstants.cardTitle.copyWith(
                     color: Theme.of(context).colorScheme.onSurface,
                   ),
                 ),
@@ -200,7 +205,8 @@ class _UniversitysettingsState extends State<Universitysettings> {
                 items: termLevels.map((String value) {
                   return DropdownMenuItem<String>(
                     value: value,
-                    child: Text(value == 'Prep' ? 'Preparatory' : 'Term $value'),
+                    child:
+                        Text(value == 'Prep' ? 'Preparatory' : 'Term $value'),
                   );
                 }).toList(),
                 onChanged: (String? value) {
@@ -229,7 +235,7 @@ class _UniversitysettingsState extends State<Universitysettings> {
                 child: ElevatedButton(
                   onPressed: updateData,
                   style: ElevatedButton.styleFrom(
-                    backgroundColor: blue2,
+                    backgroundColor: AppConstants.primaryBlueDark,
                     padding: EdgeInsets.symmetric(vertical: 15),
                     shape: RoundedRectangleBorder(
                       borderRadius: BorderRadius.circular(15),
@@ -237,10 +243,8 @@ class _UniversitysettingsState extends State<Universitysettings> {
                   ),
                   child: Text(
                     'Save Changes',
-                    style: GoogleFonts.leagueSpartan(
-                      fontSize: 18,
-                      fontWeight: FontWeight.bold,
-                      color: white,
+                    style: AppConstants.subtitle.copyWith(
+                      color: AppConstants.textOnPrimary,
                     ),
                   ),
                 ),

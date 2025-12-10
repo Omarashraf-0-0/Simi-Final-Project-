@@ -1,13 +1,13 @@
 import 'dart:convert';
 import 'dart:io';
 import 'package:flutter/material.dart';
-import 'package:google_fonts/google_fonts.dart';
 import 'package:hive/hive.dart';
 import 'package:image_picker/image_picker.dart';
 import 'package:http/http.dart' as http;
 import 'package:shimmer/shimmer.dart';
 import 'package:go_router/go_router.dart';
 import '../router/app_router.dart';
+import '../theme/app_constants.dart';
 
 class Profilepage extends StatefulWidget {
   const Profilepage({super.key});
@@ -17,14 +17,6 @@ class Profilepage extends StatefulWidget {
 }
 
 class _ProfilepageState extends State<Profilepage> {
-  // Branding colors
-  final Color blue1 = const Color(0xFF1c74bb);
-  final Color blue2 = const Color(0xFF165d96);
-  final Color cyan1 = const Color(0xFF18bebc);
-  final Color cyan2 = const Color(0xFF139896);
-  final Color black = const Color(0xFF000000);
-  final Color white = const Color(0xFFFFFFFF);
-
   bool _isImageLoading = true;
   bool isLoading = true; // For courses loading
   bool _isDataLoading = true; // Overall loading state
@@ -125,8 +117,8 @@ class _ProfilepageState extends State<Profilepage> {
       context: context,
       builder: (context) {
         return AlertDialog(
-          title: Text("Error", style: TextStyle(color: black)),
-          content: Text(message, style: TextStyle(color: black)),
+          title: Text("Error", style: AppConstants.subtitle),
+          content: Text(message, style: AppConstants.bodyText),
           actions: [
             TextButton(
               onPressed: () {
@@ -135,7 +127,8 @@ class _ProfilepageState extends State<Profilepage> {
                   fetchCourses(); // Retry fetching courses
                 }
               },
-              child: Text("Retry", style: TextStyle(color: blue2)),
+              child: Text("Retry",
+                  style: TextStyle(color: AppConstants.primaryBlueDark)),
             ),
             TextButton(
               onPressed: () {
@@ -143,7 +136,8 @@ class _ProfilepageState extends State<Profilepage> {
                   Navigator.of(context).pop();
                 }
               },
-              child: Text("Cancel", style: TextStyle(color: blue2)),
+              child: Text("Cancel",
+                  style: TextStyle(color: AppConstants.primaryBlueDark)),
             ),
           ],
         );
@@ -324,24 +318,9 @@ class _ProfilepageState extends State<Profilepage> {
     final theme = Theme.of(context);
     return Scaffold(
       backgroundColor: theme.scaffoldBackgroundColor,
-      appBar: AppBar(
-        backgroundColor: blue2,
-        leading: IconButton(
-          icon: Icon(Icons.arrow_back_ios_new_rounded, color: white),
-          onPressed: () {
-            if (mounted) {
-              Navigator.pop(context);
-            }
-          },
-        ),
-        title: Text(
-          'Profile',
-          style: GoogleFonts.leagueSpartan(
-            color: white,
-            fontWeight: FontWeight.bold,
-          ),
-        ),
-        centerTitle: true,
+      appBar: AppConstants.buildAppBar(
+        title: 'Profile',
+        leading: AppConstants.buildBackButton(context),
       ),
       body: _isDataLoading
           ? SingleChildScrollView(
@@ -368,7 +347,7 @@ class _ProfilepageState extends State<Profilepage> {
                       children: [
                         CircleAvatar(
                           radius: 60,
-                          backgroundColor: cyan1,
+                          backgroundColor: AppConstants.primaryCyan,
                           backgroundImage:
                               Hive.box('userBox').get('profileImageBase64') !=
                                       null
@@ -380,9 +359,10 @@ class _ProfilepageState extends State<Profilepage> {
                         GestureDetector(
                           onTap: _pickImage,
                           child: CircleAvatar(
-                            radius: 20,
-                            backgroundColor: cyan2,
-                            child: Icon(Icons.camera_alt, color: white),
+                            radius: 18,
+                            backgroundColor: AppConstants.primaryCyanDark,
+                            child: Icon(Icons.camera_alt,
+                                color: AppConstants.textOnPrimary),
                           ),
                         ),
                       ],
@@ -390,18 +370,12 @@ class _ProfilepageState extends State<Profilepage> {
                     SizedBox(height: size.height * 0.02),
                     Text(
                       _fullName,
-                      style: GoogleFonts.leagueSpartan(
-                        fontSize: 24,
-                        fontWeight: FontWeight.bold,
-                        color: Theme.of(context).colorScheme.onSurface,
-                      ),
+                      style: AppConstants.sectionHeader,
                     ),
                     SizedBox(height: size.height * 0.005),
                     Text(
                       _title,
-                      style: GoogleFonts.leagueSpartan(
-                        fontSize: 18,
-                        fontWeight: FontWeight.bold,
+                      style: AppConstants.subtitle.copyWith(
                         color: _getRankColor(_title),
                       ),
                     ),
@@ -424,7 +398,7 @@ class _ProfilepageState extends State<Profilepage> {
                             'Day Streak',
                             Icons.flash_on_outlined,
                             const Color(0xFFD1F2EB),
-                            cyan1),
+                            AppConstants.primaryCyan),
                         _buildStatCard(
                             '1',
                             'Top 5 Finishes',
@@ -475,19 +449,20 @@ class _ProfilepageState extends State<Profilepage> {
                         }
                       },
                       style: ElevatedButton.styleFrom(
-                        backgroundColor: blue2,
-                        padding:
-                            EdgeInsets.symmetric(vertical: 15, horizontal: 40),
+                        backgroundColor: AppConstants.primaryBlueDark,
+                        padding: EdgeInsets.symmetric(
+                            vertical: AppConstants.spacingM + 3,
+                            horizontal: AppConstants.spacingXL + 8),
                         shape: RoundedRectangleBorder(
-                          borderRadius: BorderRadius.circular(15),
+                          borderRadius:
+                              BorderRadius.circular(AppConstants.radiusM + 7),
                         ),
                       ),
                       child: Text(
                         'Logout',
-                        style: GoogleFonts.leagueSpartan(
-                          fontSize: 18,
-                          fontWeight: FontWeight.bold,
-                          color: white,
+                        style: AppConstants.subtitle.copyWith(
+                          fontWeight: AppConstants.fontWeightBold,
+                          color: AppConstants.textOnPrimary,
                         ),
                       ),
                     ),
@@ -691,10 +666,8 @@ class _ProfilepageState extends State<Profilepage> {
         const SizedBox(height: 8),
         Text(
           value,
-          style: GoogleFonts.leagueSpartan(
-            fontSize: 18,
-            fontWeight: FontWeight.bold,
-            color: Theme.of(context).colorScheme.onSurface,
+          style: AppConstants.subtitle.copyWith(
+            fontWeight: AppConstants.fontWeightBold,
           ),
         ),
         const SizedBox(height: 4),
@@ -702,8 +675,7 @@ class _ProfilepageState extends State<Profilepage> {
           width: 80,
           child: Text(
             label,
-            style: GoogleFonts.leagueSpartan(
-              fontSize: 14,
+            style: AppConstants.caption.copyWith(
               color: Colors.grey[700],
             ),
             textAlign: TextAlign.center,
@@ -720,10 +692,8 @@ class _ProfilepageState extends State<Profilepage> {
         padding: const EdgeInsets.only(bottom: 8),
         child: Text(
           title,
-          style: GoogleFonts.leagueSpartan(
+          style: AppConstants.pageTitle.copyWith(
             fontSize: 22,
-            fontWeight: FontWeight.bold,
-            color: Theme.of(context).colorScheme.onSurface,
           ),
         ),
       ),
@@ -738,19 +708,15 @@ class _ProfilepageState extends State<Profilepage> {
         children: [
           Text(
             '$label: ',
-            style: GoogleFonts.leagueSpartan(
-              fontSize: 16,
-              fontWeight: FontWeight.bold,
-              color: cyan1,
+            style: AppConstants.bodyText.copyWith(
+              fontWeight: AppConstants.fontWeightBold,
+              color: AppConstants.primaryCyan,
             ),
           ),
           Expanded(
             child: Text(
               value,
-              style: GoogleFonts.leagueSpartan(
-                fontSize: 16,
-                color: Theme.of(context).colorScheme.onSurface,
-              ),
+              style: AppConstants.bodyText,
             ),
           ),
         ],
@@ -766,10 +732,7 @@ class _ProfilepageState extends State<Profilepage> {
           padding: const EdgeInsets.symmetric(vertical: 4),
           child: Text(
             '- $course',
-            style: GoogleFonts.leagueSpartan(
-              fontSize: 16,
-              color: Theme.of(context).colorScheme.onSurface,
-            ),
+            style: AppConstants.bodyText,
           ),
         );
       }).toList(),

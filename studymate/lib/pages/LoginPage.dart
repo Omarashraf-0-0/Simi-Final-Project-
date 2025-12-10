@@ -12,6 +12,7 @@ import '../Pop-ups/SuccesPopUp.dart';
 import '../util/semantics_keys.dart';
 import 'package:go_router/go_router.dart';
 import '../router/app_router.dart';
+import '../theme/app_constants.dart';
 
 class LoginPage extends StatefulWidget {
   const LoginPage({super.key});
@@ -29,14 +30,6 @@ class _LoginPageState extends State<LoginPage> {
 
   // Add a boolean to manage the password visibility
   bool isPasswordVisible = false;
-
-  // Colors according to your branding
-  final Color blue1 = Color(0xFF1c74bb);
-  final Color blue2 = Color(0xFF165d96);
-  final Color cyan1 = Color(0xFF18bebc);
-  final Color cyan2 = Color(0xFF139896);
-  final Color black = Color(0xFF000000);
-  final Color white = Color(0xFFFFFFFF);
 
   void showXPChangePopup(BuildContext context, int xpChange, String message) {
     showDialog(
@@ -438,7 +431,7 @@ class _LoginPageState extends State<LoginPage> {
                             label: SemanticsKeys.loginRememberMeCheckbox,
                             child: Checkbox(
                               value: isRememberMeChecked,
-                              activeColor: cyan1,
+                              activeColor: AppConstants.primaryCyan,
                               onChanged: (value) {
                                 setState(() {
                                   isRememberMeChecked = value!;
@@ -484,16 +477,18 @@ class _LoginPageState extends State<LoginPage> {
                     child: ElevatedButton(
                       onPressed: login,
                       style: ElevatedButton.styleFrom(
-                        backgroundColor: blue2,
-                        padding: EdgeInsets.symmetric(vertical: 15),
+                        backgroundColor: AppConstants.primaryBlueDark,
+                        padding: EdgeInsets.symmetric(
+                            vertical: AppConstants.spacingM + 3),
                         shape: RoundedRectangleBorder(
-                          borderRadius: BorderRadius.circular(15),
+                          borderRadius:
+                              BorderRadius.circular(AppConstants.radiusM + 7),
                         ),
                       ),
                       child: Text(
                         'Login',
                         style: TextStyle(
-                          color: white,
+                          color: AppConstants.textOnPrimary,
                           fontSize: 18,
                           fontFamily: 'Poppins',
                           fontWeight: FontWeight.bold,
@@ -520,16 +515,19 @@ class _LoginPageState extends State<LoginPage> {
                     child: OutlinedButton(
                       onPressed: () => context.push(AppRoutes.register),
                       style: OutlinedButton.styleFrom(
-                        side: BorderSide(color: blue2, width: 2),
-                        padding: EdgeInsets.symmetric(vertical: 15),
+                        side: BorderSide(
+                            color: AppConstants.primaryBlueDark, width: 2),
+                        padding: EdgeInsets.symmetric(
+                            vertical: AppConstants.spacingM + 3),
                         shape: RoundedRectangleBorder(
-                          borderRadius: BorderRadius.circular(15),
+                          borderRadius:
+                              BorderRadius.circular(AppConstants.radiusM + 7),
                         ),
                       ),
                       child: Text(
                         'Create an Account',
                         style: TextStyle(
-                          color: blue2,
+                          color: AppConstants.primaryBlueDark,
                           fontFamily: 'Poppins',
                           fontSize: 18,
                         ),

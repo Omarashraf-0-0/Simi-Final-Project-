@@ -1,7 +1,6 @@
 import 'dart:convert';
 import 'package:flutter/material.dart';
 import 'package:flutter_local_notifications/flutter_local_notifications.dart';
-import 'package:google_fonts/google_fonts.dart';
 import 'package:hive/hive.dart';
 import 'package:http/http.dart' as http;
 import 'package:intl/intl.dart';
@@ -11,10 +10,12 @@ import 'package:studymate/Pop-ups/PopUps_Warning.dart';
 import 'package:studymate/util/TextField.dart';
 import 'package:timezone/data/latest.dart' as tz;
 import 'package:timezone/timezone.dart' as tz;
+import 'package:studymate/theme/app_constants.dart';
 import 'DayView.dart';
 import 'WeekView.dart';
 import 'MonthView.dart';
 import 'package:studymate/pages/Notifications/NotificationClass.dart';
+
 class ScheduleView extends StatefulWidget {
   const ScheduleView({super.key});
 
@@ -75,7 +76,8 @@ class _ScheduleViewState extends State<ScheduleView> {
     const AndroidInitializationSettings initializationSettingsAndroid =
         AndroidInitializationSettings('@mipmap/ic_launcher');
 
-    const InitializationSettings initializationSettings = InitializationSettings(
+    const InitializationSettings initializationSettings =
+        InitializationSettings(
       android: initializationSettingsAndroid,
     );
 
@@ -125,11 +127,9 @@ class _ScheduleViewState extends State<ScheduleView> {
             ),
             title: Text(
               "Schedule Manager",
-              style: Theme.of(context).textTheme.headlineSmall?.copyWith(
-                    color: Theme.of(context).colorScheme.onPrimary,
-                    fontFamily: GoogleFonts.leagueSpartan().fontFamily,
-                    
-                  ),
+              style: AppConstants.pageTitle.copyWith(
+                color: Theme.of(context).colorScheme.onPrimary,
+              ),
             ),
             actions: [
               IconButton(
@@ -179,9 +179,9 @@ class _ScheduleViewState extends State<ScheduleView> {
                                               .colorScheme
                                               .onPrimary
                                           : Theme.of(context)
-                                              .colorScheme.primary,
-                                      fontFamily: GoogleFonts.leagueSpartan()
-                                          .fontFamily,
+                                              .colorScheme
+                                              .primary,
+                                      fontFamily: AppConstants.fontFamily,
                                     ),
                               ),
                             ),
@@ -210,14 +210,15 @@ class _ScheduleViewState extends State<ScheduleView> {
       child: GestureDetector(
         onTap: _toggleAddEventPopup, // Close the popup when tapping outside
         child: Container(
-          color: Colors.black54, // Dim background
+          color: Colors.black.withOpacity(0.54), // Dim background
           child: Center(
             child: GestureDetector(
               onTap: () {}, // Prevent event propagation to the background
               child: Material(
-                borderRadius:
-                    BorderRadius.circular(15), // Ensure proper styling
-                color: Colors.white, // Popup background color
+                borderRadius: BorderRadius.circular(
+                    AppConstants.radiusM + 7), // Ensure proper styling
+                color: Theme.of(context)
+                    .scaffoldBackgroundColor, // Popup background color
                 child: Container(
                   width: MediaQuery.of(context).size.width *
                       0.9, // 90% of the screen
@@ -225,7 +226,7 @@ class _ScheduleViewState extends State<ScheduleView> {
                       0.9, // 90% of the screen height
 
                   decoration: BoxDecoration(
-                    color:Theme.of(context).scaffoldBackgroundColor,
+                    color: Theme.of(context).scaffoldBackgroundColor,
                     borderRadius: BorderRadius.circular(15),
                   ),
                   child: Column(
@@ -234,23 +235,20 @@ class _ScheduleViewState extends State<ScheduleView> {
                     children: [
                       // Title Section with Background Color
                       Container(
-                        padding: const EdgeInsets.all(16),
-                        decoration: const BoxDecoration(
-                          color: Color(
-                              0xFF165D96), // New background color for the title
-                          borderRadius: const BorderRadius.only(
-                            topLeft: Radius.circular(15),
-                            topRight: Radius.circular(15),
+                        padding: EdgeInsets.all(AppConstants.spacingM),
+                        decoration: BoxDecoration(
+                          color: AppConstants.primaryBlueDark,
+                          borderRadius: BorderRadius.only(
+                            topLeft: Radius.circular(AppConstants.radiusM + 7),
+                            topRight: Radius.circular(AppConstants.radiusM + 7),
                           ),
                         ),
                         child: Text(
                           "Add New Event",
                           textAlign: TextAlign.center,
-                          style: TextStyle(
-                            fontSize: 20,
-                            fontWeight: FontWeight.bold,
-                            color: Colors.white, // Text color
-                            fontFamily: GoogleFonts.leagueSpartan().fontFamily,
+                          style: AppConstants.sectionHeader.copyWith(
+                            color: AppConstants.textOnPrimary,
+                            fontWeight: AppConstants.fontWeightBold,
                           ),
                         ),
                       ),
@@ -265,10 +263,13 @@ class _ScheduleViewState extends State<ScheduleView> {
                                 children: [
                                   Text(
                                     "Title: ",
-                                    style: Theme.of(context).textTheme.titleLarge?.copyWith(
-                                      fontWeight: FontWeight.bold,
-                                     // fontSize: 16,
-                                    ),
+                                    style: Theme.of(context)
+                                        .textTheme
+                                        .titleLarge
+                                        ?.copyWith(
+                                          fontWeight: FontWeight.bold,
+                                          // fontSize: 16,
+                                        ),
                                   ),
                                   const SizedBox(width: 8),
                                   Expanded(
@@ -569,18 +570,20 @@ class _ScheduleViewState extends State<ScheduleView> {
                                             controller: descriptionController,
                                             decoration: InputDecoration(
                                               hintText: "Description",
-                                             fillColor:Theme.of(context).scaffoldBackgroundColor,
+                                              fillColor: Theme.of(context)
+                                                  .scaffoldBackgroundColor,
                                               filled: true,
                                               border: OutlineInputBorder(
                                                 borderRadius:
                                                     BorderRadius.circular(10),
                                               ),
-                                              hintStyle:
-                                                  Theme.of(context).textTheme.bodyLarge?.copyWith(
-                                                   // color: Colors.grey
-                                             
-                                                    ),
-                                              
+                                              hintStyle: Theme.of(context)
+                                                  .textTheme
+                                                  .bodyLarge
+                                                  ?.copyWith(
+                                                      // color: Colors.grey
+
+                                                      ),
                                             ),
                                             keyboardType: TextInputType
                                                 .multiline, // Allow multiple lines
@@ -608,8 +611,12 @@ class _ScheduleViewState extends State<ScheduleView> {
                           children: [
                             TextButton(
                               onPressed: _toggleAddEventPopup,
-                              child: Text("Cancel",
-                              style: Theme.of(context).textTheme.titleSmall?.copyWith(fontWeight:FontWeight.bold),
+                              child: Text(
+                                "Cancel",
+                                style: Theme.of(context)
+                                    .textTheme
+                                    .titleSmall
+                                    ?.copyWith(fontWeight: FontWeight.bold),
                               ),
                             ),
                             ElevatedButton(
@@ -665,8 +672,7 @@ class _ScheduleViewState extends State<ScheduleView> {
                                     "Error",
                                     "Please enter a repeat until date for the event",
                                   );
-                                } else if (descriptionController
-                                    .text.isEmpty) {
+                                } else if (descriptionController.text.isEmpty) {
                                   showWarningPopup(
                                     context,
                                     "Error",
@@ -726,14 +732,14 @@ class _ScheduleViewState extends State<ScheduleView> {
                                         "Error",
                                         "The reminder time cannot be after the start time.",
                                       );
-                                    }else if (reminderTime.isBefore(DateTime.now())) {
+                                    } else if (reminderTime
+                                        .isBefore(DateTime.now())) {
                                       showWarningPopup(
                                         context,
                                         "Error",
                                         "The reminder time cannot be in the past.",
                                       );
-                                    } 
-                                    else if (_selectedRepeat != "None" &&
+                                    } else if (_selectedRepeat != "None" &&
                                         repeatUntil.isBefore(eventDate)) {
                                       showWarningPopup(
                                         context,
@@ -769,8 +775,13 @@ class _ScheduleViewState extends State<ScheduleView> {
                                   }
                                 }
                               },
-                              child: Text("Save",
-                              style: Theme.of(context).textTheme.titleSmall?.copyWith(fontWeight:FontWeight.bold),),
+                              child: Text(
+                                "Save",
+                                style: Theme.of(context)
+                                    .textTheme
+                                    .titleSmall
+                                    ?.copyWith(fontWeight: FontWeight.bold),
+                              ),
                             )
                           ],
                         ),
@@ -875,14 +886,13 @@ class _ScheduleViewState extends State<ScheduleView> {
         android: AndroidNotificationDetails(
           '1', // Replace with your channel ID
           'Your Channel Name', // Replace with your channel name
-          channelDescription: 'Your channel description', // Optional description
+          channelDescription:
+              'Your channel description', // Optional description
           importance: Importance.max, // High visibility
           priority: Priority.high, // High priority
         ),
       ),
       androidScheduleMode: AndroidScheduleMode.exactAllowWhileIdle,
-      uiLocalNotificationDateInterpretation:
-          UILocalNotificationDateInterpretation.absoluteTime,
     );
 
     // print('Notification scheduled for: $tzScheduledDate');

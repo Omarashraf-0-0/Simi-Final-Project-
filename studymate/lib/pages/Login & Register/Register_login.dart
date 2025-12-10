@@ -6,6 +6,7 @@ import '../../Classes/User.dart';
 import '../../Pop-ups/PopUps_Warning.dart';
 import 'dart:convert';
 import 'package:http/http.dart' as http;
+import '../../theme/app_constants.dart';
 
 class RegisterLogin extends StatefulWidget {
   const RegisterLogin({super.key});
@@ -18,17 +19,10 @@ class _RegisterLoginState extends State<RegisterLogin> {
   final TextEditingController usernameController = TextEditingController();
   final TextEditingController emailController = TextEditingController();
   final TextEditingController passwordController = TextEditingController();
-  final TextEditingController confirmPasswordController = TextEditingController();
+  final TextEditingController confirmPasswordController =
+      TextEditingController();
 
   String? gender;
-
-  // Branding colors
-  final Color blue1 = Color(0xFF1c74bb);
-  final Color blue2 = Color(0xFF165d96);
-  final Color cyan1 = Color(0xFF18bebc);
-  final Color cyan2 = Color(0xFF139896);
-  final Color black = Color(0xFF000000);
-  final Color white = Color(0xFFFFFFFF);
 
   final _formKey = GlobalKey<FormState>(); // Form key for validation
 
@@ -43,16 +37,17 @@ class _RegisterLoginState extends State<RegisterLogin> {
   }
 
   Future<void> validateAndProceed() async {
-
     if (_formKey.currentState!.validate()) {
       if (gender == null) {
         showWarningPopup(context, 'Error', 'Please select your gender.', 'OK');
         return;
       }
-      bool isEmailAlreadyUsed = await is_email_already_used(emailController.text);
-      if(isEmailAlreadyUsed==true){
-        showWarningPopup(context,'Email already used',"The email address \"${emailController.text}\" is already associated with an account. Please use a different email.");
-        return ;
+      bool isEmailAlreadyUsed =
+          await is_email_already_used(emailController.text);
+      if (isEmailAlreadyUsed == true) {
+        showWarningPopup(context, 'Email already used',
+            "The email address \"${emailController.text}\" is already associated with an account. Please use a different email.");
+        return;
       }
       // Create a new User object with the entered data
       // User user = User(
@@ -109,7 +104,6 @@ class _RegisterLoginState extends State<RegisterLogin> {
     }
   }
 
-
   @override
   Widget build(BuildContext context) {
     // Screen size for responsive design
@@ -119,13 +113,15 @@ class _RegisterLoginState extends State<RegisterLogin> {
       backgroundColor: theme.scaffoldBackgroundColor,
       body: SingleChildScrollView(
         child: Padding(
-          padding: EdgeInsets.symmetric(horizontal: size.width * 0.08, vertical: size.height * 0.05),
+          padding: EdgeInsets.symmetric(
+              horizontal: size.width * 0.08, vertical: size.height * 0.05),
           child: Column(
             crossAxisAlignment: CrossAxisAlignment.start,
             children: [
               // Back Button
               IconButton(
-                icon: Icon(Icons.arrow_back_ios_new, color: blue2),
+                icon: Icon(Icons.arrow_back_ios_new,
+                    color: AppConstants.primaryBlueDark),
                 onPressed: () {
                   Navigator.pop(context);
                 },
@@ -169,7 +165,8 @@ class _RegisterLoginState extends State<RegisterLogin> {
                         border: OutlineInputBorder(
                           borderRadius: BorderRadius.circular(15),
                         ),
-                        floatingLabelStyle:  TextStyle(color: theme.primaryColor),
+                        floatingLabelStyle:
+                            TextStyle(color: theme.primaryColor),
                         focusedBorder: OutlineInputBorder(
                           borderRadius: BorderRadius.circular(15),
                           borderSide: BorderSide(color: theme.primaryColor),
@@ -179,7 +176,8 @@ class _RegisterLoginState extends State<RegisterLogin> {
                       validator: (value) {
                         if (value == null || value.isEmpty) {
                           return 'Please enter your email.';
-                        } else if (!RegExp(r'^[^@]+@[^@]+\.[^@]+').hasMatch(value)) {
+                        } else if (!RegExp(r'^[^@]+@[^@]+\.[^@]+')
+                            .hasMatch(value)) {
                           return 'Invalid email address.';
                         }
                         return null;
@@ -195,7 +193,8 @@ class _RegisterLoginState extends State<RegisterLogin> {
                         border: OutlineInputBorder(
                           borderRadius: BorderRadius.circular(15),
                         ),
-                        floatingLabelStyle:  TextStyle(color: theme.primaryColor),
+                        floatingLabelStyle:
+                            TextStyle(color: theme.primaryColor),
                         focusedBorder: OutlineInputBorder(
                           borderRadius: BorderRadius.circular(15),
                           borderSide: BorderSide(color: theme.primaryColor),
@@ -204,7 +203,8 @@ class _RegisterLoginState extends State<RegisterLogin> {
                       validator: (value) {
                         if (value == null || value.isEmpty) {
                           return 'Please enter your username.';
-                        } else if (!RegExp(r'^[a-zA-Z0-9_]+$').hasMatch(value)) {
+                        } else if (!RegExp(r'^[a-zA-Z0-9_]+$')
+                            .hasMatch(value)) {
                           return 'Username can only contain letters, numbers, and underscores.';
                         }
                         return null;
@@ -220,7 +220,8 @@ class _RegisterLoginState extends State<RegisterLogin> {
                         border: OutlineInputBorder(
                           borderRadius: BorderRadius.circular(15),
                         ),
-                        floatingLabelStyle:  TextStyle(color: theme.primaryColor),
+                        floatingLabelStyle:
+                            TextStyle(color: theme.primaryColor),
                         focusedBorder: OutlineInputBorder(
                           borderRadius: BorderRadius.circular(15),
                           borderSide: BorderSide(color: theme.primaryColor),
@@ -249,7 +250,8 @@ class _RegisterLoginState extends State<RegisterLogin> {
                         border: OutlineInputBorder(
                           borderRadius: BorderRadius.circular(15),
                         ),
-                        floatingLabelStyle:  TextStyle(color: theme.primaryColor),
+                        floatingLabelStyle:
+                            TextStyle(color: theme.primaryColor),
                         focusedBorder: OutlineInputBorder(
                           borderRadius: BorderRadius.circular(15),
                           borderSide: BorderSide(color: theme.primaryColor),
@@ -314,7 +316,7 @@ class _RegisterLoginState extends State<RegisterLogin> {
                       child: ElevatedButton(
                         onPressed: validateAndProceed,
                         style: ElevatedButton.styleFrom(
-                          backgroundColor: blue2,
+                          backgroundColor: AppConstants.primaryBlueDark,
                           padding: EdgeInsets.symmetric(vertical: 15),
                           shape: RoundedRectangleBorder(
                             borderRadius: BorderRadius.circular(15),
@@ -325,7 +327,7 @@ class _RegisterLoginState extends State<RegisterLogin> {
                           style: GoogleFonts.leagueSpartan(
                             fontSize: 18,
                             fontWeight: FontWeight.bold,
-                            color: white,
+                            color: AppConstants.textOnPrimary,
                           ),
                         ),
                       ),
@@ -355,8 +357,10 @@ class _RegisterLoginState extends State<RegisterLogin> {
                         );
                       },
                       style: OutlinedButton.styleFrom(
-                        side: BorderSide(color: blue2, width: 2),
-                        padding: EdgeInsets.symmetric(horizontal: 40, vertical: 12),
+                        side: BorderSide(
+                            color: AppConstants.primaryBlueDark, width: 2),
+                        padding:
+                            EdgeInsets.symmetric(horizontal: 40, vertical: 12),
                         shape: RoundedRectangleBorder(
                           borderRadius: BorderRadius.circular(15),
                         ),
@@ -365,7 +369,7 @@ class _RegisterLoginState extends State<RegisterLogin> {
                         'Login',
                         style: GoogleFonts.leagueSpartan(
                           fontSize: 16,
-                          color: blue2,
+                          color: AppConstants.primaryBlueDark,
                         ),
                       ),
                     ),

@@ -1,8 +1,8 @@
 import 'package:flutter/material.dart';
-import 'package:google_fonts/google_fonts.dart';
 import 'UserSettings.dart';
 import 'PersonalSettings.dart';
 import 'Universitysettings.dart';
+import '../../theme/app_constants.dart';
 
 class Settings extends StatefulWidget {
   const Settings({super.key});
@@ -12,33 +12,12 @@ class Settings extends StatefulWidget {
 }
 
 class _SettingsState extends State<Settings> {
-  final Color blue1 = Color(0xFF1c74bb);
-  final Color blue2 = Color(0xFF165d96);
-  final Color cyan1 = Color(0xFF18bebc);
-  final Color cyan2 = Color(0xFF139896);
-  final Color black = Color(0xFF000000);
-  final Color white = Color(0xFFFFFFFF);
-
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      appBar: AppBar(
-        backgroundColor: blue2,
-        leading: IconButton(
-          icon: Icon(Icons.arrow_back_ios_new_rounded, color: Theme.of(context).colorScheme.onPrimary),
-          onPressed: () {
-            Navigator.pop(context);
-          },
-        ),
-        title: Text(
-          'Settings',
-          style: GoogleFonts.leagueSpartan(
-            color: Theme.of(context).colorScheme.onPrimary,
-            fontWeight: FontWeight.bold,
-            fontSize: 24,
-          ),
-        ),
-        centerTitle: true,
+      appBar: AppConstants.buildAppBar(
+        title: 'Settings',
+        leading: AppConstants.buildBackButton(context),
       ),
       body: Padding(
         padding: const EdgeInsets.all(16.0),
@@ -51,24 +30,20 @@ class _SettingsState extends State<Settings> {
                 children: [
                   TextSpan(
                     text: 'Select ',
-                    style: GoogleFonts.leagueSpartan(
-                      fontSize: 28,
-                      fontWeight: FontWeight.bold,
-                      color: Theme.of(context).textTheme.displayLarge?.color ?? black,
+                    style: AppConstants.sectionHeader.copyWith(
+                      color: Theme.of(context).textTheme.displayLarge?.color,
                     ),
                   ),
                   TextSpan(
                     text: 'Option!',
-                    style: GoogleFonts.leagueSpartan(
-                      fontSize: 28,
-                      fontWeight: FontWeight.bold,
-                      color: cyan1,
+                    style: AppConstants.sectionHeader.copyWith(
+                      color: AppConstants.primaryCyan,
                     ),
                   ),
                 ],
               ),
             ),
-            SizedBox(height: 20),
+            SizedBox(height: AppConstants.spacingL),
             Expanded(
               child: ListView(
                 children: [
@@ -92,7 +67,8 @@ class _SettingsState extends State<Settings> {
                     onTap: () {
                       Navigator.push(
                         context,
-                        MaterialPageRoute(builder: (context) => PersonalSettings()),
+                        MaterialPageRoute(
+                            builder: (context) => PersonalSettings()),
                       );
                     },
                   ),
@@ -104,7 +80,8 @@ class _SettingsState extends State<Settings> {
                     onTap: () {
                       Navigator.push(
                         context,
-                        MaterialPageRoute(builder: (context) => Universitysettings()),
+                        MaterialPageRoute(
+                            builder: (context) => Universitysettings()),
                       );
                     },
                   ),
@@ -125,39 +102,38 @@ class _SettingsState extends State<Settings> {
     required VoidCallback onTap,
   }) {
     return Card(
-      elevation: 3,
-      margin: EdgeInsets.symmetric(vertical: 10),
+      elevation: AppConstants.elevationS,
+      margin: EdgeInsets.symmetric(vertical: AppConstants.spacingS),
       shape: RoundedRectangleBorder(
-        borderRadius: BorderRadius.circular(15),
+        borderRadius: BorderRadius.circular(AppConstants.radiusL),
       ),
       shadowColor: Theme.of(context).colorScheme.onSurface,
       surfaceTintColor: Theme.of(context).colorScheme.onSurface,
       child: ListTile(
         leading: CircleAvatar(
-          backgroundColor: cyan1,
+          backgroundColor: AppConstants.primaryCyan,
           child: Icon(
             icon,
-            color: white,
+            color: AppConstants.textOnPrimary,
           ),
         ),
         title: Text(
           title,
-          style: GoogleFonts.leagueSpartan(
-            fontSize: 18,
-            fontWeight: FontWeight.bold,
+          style: AppConstants.subtitle.copyWith(
+            fontWeight: AppConstants.fontWeightBold,
             color: Theme.of(context).colorScheme.onSurface,
           ),
         ),
         subtitle: subtitle != null
             ? Text(
                 subtitle,
-                style: GoogleFonts.leagueSpartan(
-                  fontSize: 14,
+                style: AppConstants.smallText.copyWith(
                   color: Colors.grey[700],
                 ),
               )
             : null,
-        trailing: Icon(Icons.arrow_forward_ios, color: Theme.of(context).colorScheme.onSurface),
+        trailing: Icon(Icons.arrow_forward_ios,
+            color: Theme.of(context).colorScheme.onSurface),
         onTap: onTap,
       ),
     );
