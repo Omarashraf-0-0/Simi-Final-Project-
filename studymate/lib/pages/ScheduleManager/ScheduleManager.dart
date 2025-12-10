@@ -1,6 +1,7 @@
 import 'dart:convert';
 import 'package:flutter/material.dart';
 import 'package:flutter_local_notifications/flutter_local_notifications.dart';
+import 'package:google_fonts/google_fonts.dart';
 import 'package:hive/hive.dart';
 import 'package:http/http.dart' as http;
 import 'package:intl/intl.dart';
@@ -127,9 +128,10 @@ class _ScheduleViewState extends State<ScheduleView> {
             ),
             title: Text(
               "Schedule Manager",
-              style: AppConstants.pageTitle.copyWith(
-                color: Theme.of(context).colorScheme.onPrimary,
-              ),
+              style: Theme.of(context).textTheme.headlineSmall?.copyWith(
+                    color: Theme.of(context).colorScheme.onPrimary,
+                    fontFamily: GoogleFonts.leagueSpartan().fontFamily,
+                  ),
             ),
             actions: [
               IconButton(
@@ -181,7 +183,8 @@ class _ScheduleViewState extends State<ScheduleView> {
                                           : Theme.of(context)
                                               .colorScheme
                                               .primary,
-                                      fontFamily: AppConstants.fontFamily,
+                                      fontFamily: GoogleFonts.leagueSpartan()
+                                          .fontFamily,
                                     ),
                               ),
                             ),
