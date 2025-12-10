@@ -11,7 +11,7 @@ class DonePopUp extends StatefulWidget {
   final Color? textColor;
   final String? icon;
   final String? routeName;
-  Student? user = Student();
+  final Student? user;
 
   DonePopUp({
     super.key,
@@ -54,8 +54,8 @@ class CircularWidget extends StatelessWidget {
   final Color color;
   final Color textColor;
   final String routeName;
-  Student? user;
-  CircularWidget({
+  final Student? user;
+  const CircularWidget({
     super.key,
     required this.title,
     required this.description,
@@ -68,7 +68,8 @@ class CircularWidget extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      backgroundColor: Theme.of(context).scaffoldBackgroundColor, // This will follow the app theme
+      backgroundColor: Theme.of(context)
+          .scaffoldBackgroundColor, // This will follow the app theme
       body: Center(
         child: Column(
           mainAxisAlignment: MainAxisAlignment.center,
@@ -115,7 +116,8 @@ class CircularWidget extends StatelessWidget {
                     ),
                   );
                 } else {
-                  Navigator.pushReplacementNamed(context, routeName, arguments: routeName);
+                  Navigator.pushReplacementNamed(context, routeName,
+                      arguments: routeName);
                 }
               },
               style: ElevatedButton.styleFrom(

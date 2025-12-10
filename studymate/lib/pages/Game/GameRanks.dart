@@ -80,7 +80,8 @@ class _GameRanksState extends State<GameRanks> {
       appBar: AppBar(
         backgroundColor: blue2,
         leading: IconButton(
-          icon: const Icon(Icons.arrow_back_ios_new_rounded, color: Colors.white),
+          icon:
+              const Icon(Icons.arrow_back_ios_new_rounded, color: Colors.white),
           onPressed: () {
             Navigator.pop(context);
           },
@@ -101,7 +102,7 @@ class _GameRanksState extends State<GameRanks> {
           Container(
             decoration: const BoxDecoration(
               image: DecorationImage(
-                image: AssetImage('lib/assets/img/GameBackgrounds/rank_bg.jpg'),
+                image: AssetImage('lib/assets/img/bg7.jpg'),
                 fit: BoxFit.cover,
               ),
             ),
@@ -159,7 +160,8 @@ class _GameRanksState extends State<GameRanks> {
                   controller: PageController(viewportFraction: 0.8),
                   itemBuilder: (context, index) {
                     return Padding(
-                      padding: EdgeInsets.symmetric(horizontal: size.width * 0.02),
+                      padding:
+                          EdgeInsets.symmetric(horizontal: size.width * 0.02),
                       child: Column(
                         children: [
                           Expanded(
@@ -176,7 +178,8 @@ class _GameRanksState extends State<GameRanks> {
                                 borderRadius: BorderRadius.circular(20),
                                 boxShadow: [
                                   BoxShadow(
-                                    color: ranks[index]['color'].withOpacity(0.5),
+                                    color:
+                                        ranks[index]['color'].withOpacity(0.5),
                                     blurRadius: 10,
                                     offset: const Offset(0, 5),
                                   ),

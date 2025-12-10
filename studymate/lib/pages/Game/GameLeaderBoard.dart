@@ -56,16 +56,20 @@ class _GameLeaderBoardState extends State<GameLeaderBoard> {
           }
         });
 
-        setState(() {
-          isLoading = false;
-        });
+        if (mounted) {
+          setState(() {
+            isLoading = false;
+          });
+        }
       } else {
         throw Exception('Failed to load users');
       }
     } catch (error) {
-      setState(() {
-        isLoading = false;
-      });
+      if (mounted) {
+        setState(() {
+          isLoading = false;
+        });
+      }
     }
   }
 
@@ -121,8 +125,7 @@ class _GameLeaderBoardState extends State<GameLeaderBoard> {
       topTenUsers = users;
     }
 
-    bool isCurrentUserInTopTen =
-        currentUserRank > 0 && currentUserRank <= 10;
+    bool isCurrentUserInTopTen = currentUserRank > 0 && currentUserRank <= 10;
 
     return Scaffold(
       backgroundColor: const Color(0xFF1E1E2A),
@@ -131,7 +134,7 @@ class _GameLeaderBoardState extends State<GameLeaderBoard> {
         elevation: 0,
         leading: IconButton(
           icon:
-          const Icon(Icons.arrow_back_ios_new_rounded, color: Colors.white),
+              const Icon(Icons.arrow_back_ios_new_rounded, color: Colors.white),
           onPressed: () {
             Navigator.pop(context);
           },
@@ -150,61 +153,61 @@ class _GameLeaderBoardState extends State<GameLeaderBoard> {
       body: isLoading
           ? const Center(child: CircularProgressIndicator())
           : Column(
-        children: [
-          // Top 3 Users Section
-          if (topTenUsers.length >= 3)
-            Padding(
-              padding: const EdgeInsets.symmetric(vertical: 16.0),
-              child: Row(
-                mainAxisAlignment: MainAxisAlignment.spaceEvenly,
-                children: [
-                  // Second Place
-                  _buildTopUser(
-                    rank: 2,
-                    user: topTenUsers[1],
-                    isCrownVisible: false,
+              children: [
+                // Top 3 Users Section
+                if (topTenUsers.length >= 3)
+                  Padding(
+                    padding: const EdgeInsets.symmetric(vertical: 16.0),
+                    child: Row(
+                      mainAxisAlignment: MainAxisAlignment.spaceEvenly,
+                      children: [
+                        // Second Place
+                        _buildTopUser(
+                          rank: 2,
+                          user: topTenUsers[1],
+                          isCrownVisible: false,
+                        ),
+                        // First Place
+                        _buildTopUser(
+                          rank: 1,
+                          user: topTenUsers[0],
+                          isCrownVisible: true,
+                        ),
+                        // Third Place
+                        _buildTopUser(
+                          rank: 3,
+                          user: topTenUsers[2],
+                          isCrownVisible: false,
+                        ),
+                      ],
+                    ),
                   ),
-                  // First Place
-                  _buildTopUser(
-                    rank: 1,
-                    user: topTenUsers[0],
-                    isCrownVisible: true,
-                  ),
-                  // Third Place
-                  _buildTopUser(
-                    rank: 3,
-                    user: topTenUsers[2],
-                    isCrownVisible: false,
-                  ),
-                ],
-              ),
-            ),
-          // Users List
-          Expanded(
-            child: ListView.builder(
-              itemCount: topTenUsers.length - 3,
-              itemBuilder: (context, index) {
-                final user = topTenUsers[index + 3];
-                final rank = index + 4;
-                final isCurrentUser =
-                    user['username'] == currentUser?['username'];
+                // Users List
+                Expanded(
+                  child: ListView.builder(
+                    itemCount: topTenUsers.length - 3,
+                    itemBuilder: (context, index) {
+                      final user = topTenUsers[index + 3];
+                      final rank = index + 4;
+                      final isCurrentUser =
+                          user['username'] == currentUser?['username'];
 
-                return _buildUserTile(
-                  rank: rank,
-                  user: user,
-                  isCurrentUser: isCurrentUser,
-                );
-              },
+                      return _buildUserTile(
+                        rank: rank,
+                        user: user,
+                        isCurrentUser: isCurrentUser,
+                      );
+                    },
+                  ),
+                ),
+                if (!isCurrentUserInTopTen && currentUserRank > 0)
+                  _buildUserTile(
+                    rank: currentUserRank,
+                    user: currentUser!,
+                    isCurrentUser: true,
+                  ),
+              ],
             ),
-          ),
-          if (!isCurrentUserInTopTen && currentUserRank > 0)
-            _buildUserTile(
-              rank: currentUserRank,
-              user: currentUser!,
-              isCurrentUser: true,
-            ),
-        ],
-      ),
     );
   }
 

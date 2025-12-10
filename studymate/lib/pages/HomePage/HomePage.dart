@@ -11,26 +11,22 @@ import 'package:studymate/pages/Performance/PerformanceHome.dart';
 import 'package:studymate/pages/ProfilePage.dart';
 import 'package:studymate/pages/Settings/Settings.dart';
 import 'package:studymate/pages/ScheduleManager/ScheduleManager.dart';
-import '../../Classes/User.dart' as User;
 import 'package:studymate/pages/AboLayla/AboLayla.dart';
 import 'package:studymate/pages/QuizGenerator/QuizHome.dart';
 import 'package:studymate/pages/Game/GameHome.dart';
 import 'package:studymate/pages/Game/GameLeaderBoard.dart';
 import 'package:studymate/pages/OTP.dart';
 import 'package:studymate/pages/Career/CareerHome.dart';
-
 import 'package:http/http.dart' as http;
 import 'dart:convert';
-import 'package:intl/intl.dart';
 import 'package:studymate/pages/Notifications/Notification.dart';
 import '../Resuorces/Resources.dart';
 import '../../Classes/User.dart' as Student;
 
-
 class Homepage extends StatefulWidget {
-  Student.Student? student = Student.Student();
+  final Student.Student? student;
 
-  Homepage({
+  const Homepage({
     super.key,
     this.student,
   });
@@ -135,7 +131,6 @@ class _HomepageState extends State<Homepage> {
 
   // Fetch today's schedule
   List<dynamic> _events = [];
-  bool _isLoading = true;
 
   Future<void> _fetchTodaysSchedule() async {
     final today = DateTime.now();
@@ -151,14 +146,12 @@ class _HomepageState extends State<Homepage> {
         if (mounted) {
           setState(() {
             _events = json.decode(response.body);
-            _isLoading = false;
             print(_events);
           });
         }
       } else {
         if (mounted) {
           setState(() {
-            _isLoading = false;
             _events = [];
             print(
                 'Failed to fetch today\'s schedule with status code ${response.statusCode}');
@@ -169,33 +162,17 @@ class _HomepageState extends State<Homepage> {
       print("Error fetching today's schedule: $e");
       if (mounted) {
         setState(() {
-          _isLoading = false;
           _events = [];
         });
       }
     }
   }
 
-  String _formatTime(String time) {
-    try {
-      // Parse the time string into a DateTime object
-      final parsedTime = DateFormat('HH:mm:ss').parse(time);
-
-      // Format the DateTime object into a 12-hour format
-      return DateFormat('hh:mm a').format(parsedTime);
-    } catch (e) {
-      // Return a fallback value if parsing fails
-      return 'Invalid Time';
-    }
-  }
-
   @override
   Widget build(BuildContext context) {
     // Define the branding colors
-    final Color primaryColor = Color(0xFF1c74bb); // Blue 1
     final Color secondaryColor = Color(0xFF165d96); // Blue 2
     final Color accentColor = Color(0xFF18bebc); // Cyan 1
-    final Color accentColor2 = Color(0xFF139896); // Cyan 2
 
     return Scaffold(
       backgroundColor: Theme.of(context).scaffoldBackgroundColor,
@@ -484,7 +461,8 @@ class _HomepageState extends State<Homepage> {
               GButton(icon: Ionicons.home_outline, text: 'Home'),
               GButton(icon: Ionicons.book_outline, text: 'Courses'),
               GButton(
-                  icon: Ionicons.chatbubble_ellipses_outline, text: 'Abo Layla'),
+                  icon: Ionicons.chatbubble_ellipses_outline,
+                  text: 'Abo Layla'),
               GButton(icon: Ionicons.trophy_outline, text: 'Leaderboard'),
             ],
             selectedIndex: idx,

@@ -50,7 +50,7 @@ class _GameHomeState extends State<GameHome> {
           Container(
             decoration: const BoxDecoration(
               image: DecorationImage(
-                image: AssetImage('lib/assets/img/GameBackgrounds/game_home_bg.jpg'),
+                image: AssetImage('lib/assets/img/bg5.jpg'),
                 fit: BoxFit.cover,
               ),
             ),
@@ -98,7 +98,8 @@ class _GameHomeState extends State<GameHome> {
                     height: size.height * 0.4,
                     decoration: BoxDecoration(
                       image: DecorationImage(
-                        image: AssetImage('lib/assets/img/GameCharacters/ElBatal.png'),
+                        image: AssetImage(
+                            'lib/assets/img/GameCharacters/ElBatal.png'),
                         fit: BoxFit.contain,
                       ),
                     ),
@@ -116,7 +117,8 @@ class _GameHomeState extends State<GameHome> {
                     },
                     style: ElevatedButton.styleFrom(
                       backgroundColor: redAccent,
-                      padding: EdgeInsets.symmetric(vertical: 15, horizontal: 50),
+                      padding:
+                          EdgeInsets.symmetric(vertical: 15, horizontal: 50),
                       shape: RoundedRectangleBorder(
                         borderRadius: BorderRadius.circular(30),
                       ),

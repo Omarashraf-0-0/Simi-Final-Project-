@@ -2,7 +2,6 @@ import 'dart:convert';
 import 'dart:io';
 
 import 'package:flutter/material.dart';
-import 'package:flutter_downloader/flutter_downloader.dart';
 import 'package:hive/hive.dart';
 import 'package:intl/intl.dart';
 import 'package:google_fonts/google_fonts.dart';
@@ -10,8 +9,6 @@ import 'package:http/http.dart' as http;
 import 'package:path_provider/path_provider.dart';
 
 import 'PDFViewerPage.dart';
-
-
 
 class CV extends StatefulWidget {
   const CV({super.key});
@@ -30,11 +27,11 @@ class _CVState extends State<CV> {
   String email = '';
 
   // LinkedIn & GitHub
-  String linkedInUsername = '';
+  String linkedInUsername = 'No linkedin yet';
   bool addLinkedIn = false;
   String linkedInLink = '';
 
-  String gitHubUsername = '';
+  String gitHubUsername = 'No github yet';
   bool addGitHub = false;
   String gitHubLink = '';
 
@@ -57,9 +54,6 @@ class _CVState extends State<CV> {
   int experienceCount = 1;
   List<Experience> experiences = [Experience()];
 
-
-
-
   Future<void> generateCV() async {
     // Validate the form before proceeding
     if (!_formKey.currentState!.validate()) {
@@ -81,24 +75,24 @@ class _CVState extends State<CV> {
       // LinkedIn section (if applicable)
       'linkedin': addLinkedIn
           ? {
-        'name': linkedInUsername==null?"No linkedin yet":linkedInUsername,
-        'linkedinURL': linkedInLink==null?"":linkedInLink,
-      }
+              'name': linkedInUsername,
+              'linkedinURL': linkedInLink,
+            }
           : {
-        'name': "No linkedin yet",
-        'linkedinURL':"",
-      },
+              'name': "No linkedin yet",
+              'linkedinURL': "",
+            },
 
       // GitHub section (if applicable)
       'github': addGitHub
           ? {
-        'name': gitHubUsername==null?"No github yet":gitHubUsername,
-        'githubURL': gitHubLink==null?"":gitHubLink,
-      }
+              'name': gitHubUsername,
+              'githubURL': gitHubLink,
+            }
           : {
-        'name': "No github yet",
-        'githubURL': "",
-      },
+              'name': "No github yet",
+              'githubURL': "",
+            },
 
       // Objective
       'objective': objective,
@@ -109,18 +103,17 @@ class _CVState extends State<CV> {
           'degree': edu.degree,
           'years': "${edu.from} - ${edu.to}",
           'institution': edu.universityName,
-          'descriptions': edu.description != null
-              ? edu.description.split('\n').map((desc) => desc.trim()).toList()
-              : [],
+          'descriptions':
+              edu.description.split('\n').map((desc) => desc.trim()).toList(),
         };
       }).toList(),
 
       // Adjusted skills structure
       'skills': Map.fromEntries(
         skills.map((sk) => MapEntry(
-          sk.head,
-          sk.skills.split(',').map((s) => s.trim()).toList(),
-        )),
+              sk.head,
+              sk.skills.split(',').map((s) => s.trim()).toList(),
+            )),
       ),
 
       // Modified projects structure
@@ -166,7 +159,6 @@ class _CVState extends State<CV> {
         final dir = await getApplicationDocumentsDirectory();
         final file = File('${dir.path}/cv.pdf');
         await file.writeAsBytes(bytes);
-        
 
         // Navigate to PDF viewer page
         Navigator.push(
@@ -175,7 +167,6 @@ class _CVState extends State<CV> {
             builder: (context) => PDFViewerPage(filePath: file.path),
           ),
         );
-
       } else {
         print("Failed to generate CV: ${response.body}");
 
@@ -196,10 +187,6 @@ class _CVState extends State<CV> {
       );
     }
   }
-
-
-
-
 
   @override
   void initState() {
@@ -277,7 +264,7 @@ class _CVState extends State<CV> {
                   border: OutlineInputBorder(),
                 ),
                 validator: (value) =>
-                value == null || value.isEmpty ? 'Required' : null,
+                    value == null || value.isEmpty ? 'Required' : null,
                 onSaved: (value) => name = value!,
               ),
               SizedBox(height: 10),
@@ -287,9 +274,7 @@ class _CVState extends State<CV> {
                 initialDate: birthdate ?? DateTime(2000),
                 fieldLabelText: 'Birthdate',
                 onDateSaved: (date) => birthdate = date,
-                onDateSubmitted: (date) {
-                  
-                },
+                onDateSubmitted: (date) {},
               ),
               SizedBox(height: 10),
               TextFormField(
@@ -300,7 +285,7 @@ class _CVState extends State<CV> {
                 ),
                 keyboardType: TextInputType.phone,
                 validator: (value) =>
-                value == null || value.isEmpty ? 'Required' : null,
+                    value == null || value.isEmpty ? 'Required' : null,
                 onSaved: (value) => phoneNumber = value!,
               ),
               SizedBox(height: 10),
@@ -342,9 +327,9 @@ class _CVState extends State<CV> {
                         border: OutlineInputBorder(),
                       ),
                       validator: (value) =>
-                      addLinkedIn && (value == null || value.isEmpty)
-                          ? 'Required'
-                          : null,
+                          addLinkedIn && (value == null || value.isEmpty)
+                              ? 'Required'
+                              : null,
                       onSaved: (value) => linkedInUsername = value!,
                     ),
                     SizedBox(height: 10),
@@ -354,10 +339,10 @@ class _CVState extends State<CV> {
                         border: OutlineInputBorder(),
                       ),
                       initialValue: linkedInLink,
-                      validator: (value) => addLinkedIn &&
-                          (value == null || value.isEmpty)
-                          ? 'Required'
-                          : null,
+                      validator: (value) =>
+                          addLinkedIn && (value == null || value.isEmpty)
+                              ? 'Required'
+                              : null,
                       onSaved: (value) => linkedInLink = value!,
                     ),
                   ],
@@ -382,9 +367,9 @@ class _CVState extends State<CV> {
                         border: OutlineInputBorder(),
                       ),
                       validator: (value) =>
-                      addGitHub && (value == null || value.isEmpty)
-                          ? 'Required'
-                          : null,
+                          addGitHub && (value == null || value.isEmpty)
+                              ? 'Required'
+                              : null,
                       onSaved: (value) => gitHubUsername = value!,
                     ),
                     SizedBox(height: 10),
@@ -394,10 +379,10 @@ class _CVState extends State<CV> {
                         border: OutlineInputBorder(),
                       ),
                       initialValue: gitHubLink,
-                      validator: (value) => addGitHub &&
-                          (value == null || value.isEmpty)
-                          ? 'Required'
-                          : null,
+                      validator: (value) =>
+                          addGitHub && (value == null || value.isEmpty)
+                              ? 'Required'
+                              : null,
                       onSaved: (value) => gitHubLink = value!,
                     ),
                   ],
@@ -414,7 +399,7 @@ class _CVState extends State<CV> {
                 ),
                 maxLines: 3,
                 validator: (value) =>
-                value == null || value.isEmpty ? 'Required' : null,
+                    value == null || value.isEmpty ? 'Required' : null,
                 onSaved: (value) => objective = value!,
               ),
               SizedBox(height: 20),
@@ -430,7 +415,7 @@ class _CVState extends State<CV> {
                 value: educationCount,
                 items: List.generate(
                   3,
-                      (index) => DropdownMenuItem(
+                  (index) => DropdownMenuItem(
                     value: index + 1,
                     child: Text('${index + 1}'),
                   ),
@@ -442,7 +427,7 @@ class _CVState extends State<CV> {
                   });
                 },
                 validator: (value) =>
-                value == null || value < 1 ? 'At least 1 required' : null,
+                    value == null || value < 1 ? 'At least 1 required' : null,
               ),
               SizedBox(height: 10),
               ListView.builder(
@@ -469,7 +454,7 @@ class _CVState extends State<CV> {
                 value: skillsCount,
                 items: List.generate(
                   5,
-                      (index) => DropdownMenuItem(
+                  (index) => DropdownMenuItem(
                     value: index + 1,
                     child: Text('${index + 1}'),
                   ),
@@ -481,7 +466,7 @@ class _CVState extends State<CV> {
                   });
                 },
                 validator: (value) =>
-                value == null || value < 1 ? 'At least 1 required' : null,
+                    value == null || value < 1 ? 'At least 1 required' : null,
               ),
               SizedBox(height: 10),
               ListView.builder(
@@ -508,7 +493,7 @@ class _CVState extends State<CV> {
                 value: projectsCount,
                 items: List.generate(
                   3,
-                      (index) => DropdownMenuItem(
+                  (index) => DropdownMenuItem(
                     value: index + 1,
                     child: Text('${index + 1}'),
                   ),
@@ -520,7 +505,7 @@ class _CVState extends State<CV> {
                   });
                 },
                 validator: (value) =>
-                value == null || value < 1 ? 'At least 1 required' : null,
+                    value == null || value < 1 ? 'At least 1 required' : null,
               ),
               SizedBox(height: 10),
               ListView.builder(
@@ -547,7 +532,7 @@ class _CVState extends State<CV> {
                 value: experienceCount,
                 items: List.generate(
                   5,
-                      (index) => DropdownMenuItem(
+                  (index) => DropdownMenuItem(
                     value: index + 1,
                     child: Text('${index + 1}'),
                   ),
@@ -559,7 +544,7 @@ class _CVState extends State<CV> {
                   });
                 },
                 validator: (value) =>
-                value == null || value < 1 ? 'At least 1 required' : null,
+                    value == null || value < 1 ? 'At least 1 required' : null,
               ),
               SizedBox(height: 10),
               ListView.builder(
@@ -579,8 +564,10 @@ class _CVState extends State<CV> {
               ElevatedButton(
                 onPressed: _submitForm,
                 style: ElevatedButton.styleFrom(
-                  padding: EdgeInsets.symmetric(horizontal: 50.0, vertical: 15.0),
-                  backgroundColor: Color(0xFF165D96), // Use backgroundColor instead of primary
+                  padding:
+                      EdgeInsets.symmetric(horizontal: 50.0, vertical: 15.0),
+                  backgroundColor: Color(
+                      0xFF165D96), // Use backgroundColor instead of primary
                   shape: RoundedRectangleBorder(
                     borderRadius: BorderRadius.circular(10),
                   ),
@@ -617,14 +604,13 @@ class _CVState extends State<CV> {
         builder: (context) => AlertDialog(
           title: Text('CV Data'),
           content: SingleChildScrollView(
-            child: Text(
-                'Name: $name\n'
-                    'Birthdate: ${birthdate != null ? DateFormat('yyyy-MM-dd').format(birthdate!) : ''}\n'
-                    'Phone: $phoneNumber\n'
-                    'Email: $email\n'
-                    'Objective: $objective\n'
-              // يمكنك إضافة بقية البيانات هنا
-            ),
+            child: Text('Name: $name\n'
+                'Birthdate: ${birthdate != null ? DateFormat('yyyy-MM-dd').format(birthdate!) : ''}\n'
+                'Phone: $phoneNumber\n'
+                'Email: $email\n'
+                'Objective: $objective\n'
+                // يمكنك إضافة بقية البيانات هنا
+                ),
           ),
           actions: [
             TextButton(
@@ -689,7 +675,8 @@ class EducationForm extends StatelessWidget {
   final int index;
   final Education education;
 
-  const EducationForm({super.key, required this.index, required this.education});
+  const EducationForm(
+      {super.key, required this.index, required this.education});
 
   @override
   Widget build(BuildContext context) {
@@ -707,7 +694,7 @@ class EducationForm extends StatelessWidget {
             border: OutlineInputBorder(),
           ),
           validator: (value) =>
-          value == null || value.isEmpty ? 'Required' : null,
+              value == null || value.isEmpty ? 'Required' : null,
           onSaved: (value) => education.universityName = value!,
         ),
         SizedBox(height: 10),
@@ -717,7 +704,7 @@ class EducationForm extends StatelessWidget {
             border: OutlineInputBorder(),
           ),
           validator: (value) =>
-          value == null || value.isEmpty ? 'Required' : null,
+              value == null || value.isEmpty ? 'Required' : null,
           onSaved: (value) => education.degree = value!,
         ),
         SizedBox(height: 10),
@@ -730,7 +717,7 @@ class EducationForm extends StatelessWidget {
                   border: OutlineInputBorder(),
                 ),
                 validator: (value) =>
-                value == null || value.isEmpty ? 'Required' : null,
+                    value == null || value.isEmpty ? 'Required' : null,
                 onSaved: (value) => education.from = value!,
               ),
             ),
@@ -742,7 +729,7 @@ class EducationForm extends StatelessWidget {
                   border: OutlineInputBorder(),
                 ),
                 validator: (value) =>
-                value == null || value.isEmpty ? 'Required' : null,
+                    value == null || value.isEmpty ? 'Required' : null,
                 onSaved: (value) => education.to = value!,
               ),
             ),
@@ -756,7 +743,7 @@ class EducationForm extends StatelessWidget {
           ),
           maxLines: 3,
           validator: (value) =>
-          value == null || value.isEmpty ? 'Required' : null,
+              value == null || value.isEmpty ? 'Required' : null,
           onSaved: (value) => education.description = value!,
         ),
         SizedBox(height: 20),
@@ -788,7 +775,7 @@ class SkillForm extends StatelessWidget {
             border: OutlineInputBorder(),
           ),
           validator: (value) =>
-          value == null || value.isEmpty ? 'Required' : null,
+              value == null || value.isEmpty ? 'Required' : null,
           onSaved: (value) => skill.head = value!,
         ),
         SizedBox(height: 10),
@@ -798,7 +785,7 @@ class SkillForm extends StatelessWidget {
             border: OutlineInputBorder(),
           ),
           validator: (value) =>
-          value == null || value.isEmpty ? 'Required' : null,
+              value == null || value.isEmpty ? 'Required' : null,
           onSaved: (value) => skill.skills = value!,
         ),
         SizedBox(height: 20),
@@ -830,7 +817,7 @@ class ProjectForm extends StatelessWidget {
             border: OutlineInputBorder(),
           ),
           validator: (value) =>
-          value == null || value.isEmpty ? 'Required' : null,
+              value == null || value.isEmpty ? 'Required' : null,
           onSaved: (value) => project.head = value!,
         ),
         SizedBox(height: 10),
@@ -841,7 +828,7 @@ class ProjectForm extends StatelessWidget {
           ),
           maxLines: 3,
           validator: (value) =>
-          value == null || value.isEmpty ? 'Required' : null,
+              value == null || value.isEmpty ? 'Required' : null,
           onSaved: (value) => project.description = value!,
         ),
         SizedBox(height: 20),
@@ -855,7 +842,8 @@ class ExperienceForm extends StatelessWidget {
   final int index;
   final Experience experience;
 
-  const ExperienceForm({super.key, required this.index, required this.experience});
+  const ExperienceForm(
+      {super.key, required this.index, required this.experience});
 
   @override
   Widget build(BuildContext context) {
@@ -874,7 +862,7 @@ class ExperienceForm extends StatelessWidget {
           ),
           maxLines: 3,
           validator: (value) =>
-          value == null || value.isEmpty ? 'Required' : null,
+              value == null || value.isEmpty ? 'Required' : null,
           onSaved: (value) => experience.description = value!,
         ),
         SizedBox(height: 20),

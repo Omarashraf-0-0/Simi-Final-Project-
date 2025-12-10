@@ -9,8 +9,8 @@ import '../Pop-ups/PopUps_Success.dart';
 import '../pages/LoginPage.dart';
 
 class OTP extends StatefulWidget {
-  Student? user;
-  OTP({super.key, this.user});
+  final Student? user;
+  const OTP({super.key, this.user});
 
   @override
   State<OTP> createState() => _OTPState();
@@ -28,7 +28,7 @@ class _OTPState extends State<OTP> {
   final _formKey = GlobalKey<FormState>();
   final List<FocusNode> _focusNodes = List.generate(6, (index) => FocusNode());
   final List<TextEditingController> _controllers =
-  List.generate(6, (index) => TextEditingController());
+      List.generate(6, (index) => TextEditingController());
 
   String _serverOTP = ''; // Variable to store the OTP from the server
   Timer? _timer;
@@ -126,7 +126,7 @@ class _OTPState extends State<OTP> {
         Navigator.pushAndRemoveUntil(
           context,
           MaterialPageRoute(builder: (context) => LoginPage()),
-              (route) => false,
+          (route) => false,
         );
         // Optionally, you can show a success popup
         showSuccessPopup(
@@ -161,11 +161,10 @@ class _OTPState extends State<OTP> {
         'fullname': widget.user?.fullName,
         'email': widget.user?.email,
       };
-      final response =
-      await http.post(
-          Uri.parse('https://alyibrahim.pythonanywhere.com/Send_OTP'),
-          headers: {'Content-Type': 'application/json'},
-          body: jsonEncode(requestBody),
+      final response = await http.post(
+        Uri.parse('https://alyibrahim.pythonanywhere.com/Send_OTP'),
+        headers: {'Content-Type': 'application/json'},
+        body: jsonEncode(requestBody),
       );
 
       if (response.statusCode == 200) {
@@ -176,7 +175,8 @@ class _OTPState extends State<OTP> {
           _serverOTP = jsonResponse['OTP']; // Store the OTP from the server
           _isOTPLoaded = true;
           _startTimer(); // Start the timer after OTP is received
-          _isResendEnabled = false; // Disable resend button while timer is running
+          _isResendEnabled =
+              false; // Disable resend button while timer is running
         });
         print('OTP Received from Server: $_serverOTP');
       } else {
@@ -207,7 +207,7 @@ class _OTPState extends State<OTP> {
     const oneSec = Duration(seconds: 1);
     _timer = Timer.periodic(
       oneSec,
-          (Timer timer) {
+      (Timer timer) {
         if (mounted) {
           setState(() {
             if (_start == 0) {
@@ -263,8 +263,8 @@ class _OTPState extends State<OTP> {
         ),
       ),
       body: Padding(
-        padding:
-        EdgeInsets.symmetric(horizontal: size.width * 0.08, vertical: size.height * 0.05),
+        padding: EdgeInsets.symmetric(
+            horizontal: size.width * 0.08, vertical: size.height * 0.05),
         child: Form(
           key: _formKey,
           child: Column(
@@ -282,12 +282,12 @@ class _OTPState extends State<OTP> {
               // Timer display
               _isTimerRunning
                   ? Text(
-                'Time remaining: $_start secs',
-                style: GoogleFonts.leagueSpartan(
-                  fontSize: 16,
-                  color: Colors.red,
-                ),
-              )
+                      'Time remaining: $_start secs',
+                      style: GoogleFonts.leagueSpartan(
+                        fontSize: 16,
+                        color: Colors.red,
+                      ),
+                    )
                   : SizedBox.shrink(),
               SizedBox(height: size.height * 0.02),
               // حقول إدخال OTP
@@ -325,16 +325,17 @@ class _OTPState extends State<OTP> {
               TextButton(
                 onPressed: _isResendEnabled
                     ? () {
-                  _resendOTP();
-                }
+                        _resendOTP();
+                      }
                     : null,
                 child: Text(
                   'Resend Code',
                   style: GoogleFonts.leagueSpartan(
                     fontSize: 16,
                     color: _isResendEnabled ? blue2 : Colors.grey,
-                    decoration:
-                    _isResendEnabled ? TextDecoration.underline : TextDecoration.none,
+                    decoration: _isResendEnabled
+                        ? TextDecoration.underline
+                        : TextDecoration.none,
                   ),
                 ),
               ),

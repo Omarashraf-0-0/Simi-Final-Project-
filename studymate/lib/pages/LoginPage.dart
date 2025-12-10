@@ -3,15 +3,13 @@ import 'dart:convert';
 
 import 'package:flutter/material.dart';
 import 'package:hive/hive.dart';
+import 'package:http/http.dart' as http;
 import 'package:studymate/Pop-ups/PopUps_Failed.dart';
 import 'package:studymate/Pop-ups/PopUps_Warning.dart';
+import 'package:studymate/pages/XPChangePopup.dart';
 import '../Classes/User.dart';
 import '../Pop-ups/SuccesPopUp.dart';
 import 'Login & Register/Forget_Pass.dart';
-import 'package:http/http.dart' as http;
-import 'package:studymate/pages/XPChangePopup.dart';
-import 'dart:convert';
-import 'package:studymate/theme/text_theme.dart';
 import 'Login & Register/Register_login.dart';
 
 class LoginPage extends StatefulWidget {
@@ -249,28 +247,28 @@ class _LoginPageState extends State<LoginPage> {
             showXPChangePopup(context, 5, 'You have gained 5 XP!');
           }
 
-            // User? user = User(
-            //   id: jsonResponse['id'],
-            //   username: jsonResponse['username'],
-            //   password: jsonResponse['password'],
-            //   fullName: jsonResponse['name'],
-            //   role: jsonResponse['role'],
-            //   email: jsonResponse['email'],
-            //   phoneNumber: jsonResponse['phone_number'],
-            //   address: jsonResponse['address'],
-            //   gender: jsonResponse['gender'],
-            //   collage: jsonResponse['collage'],
-            //   university: jsonResponse['university'],
-            //   major: jsonResponse['major'],
-            //   term_level: jsonResponse['term_level'],
-            //   pfp: jsonResponse['pfp'],
-            //   xp: jsonResponse['xp'],
-            //   level: jsonResponse['level'],
-            //   title: jsonResponse['title'],
-            //   registrationNumber: jsonResponse['registrationNumber'],
-            //   birthDate: jsonResponse['birthDate'],
-            // );
-            Student student = Student();
+          // User? user = User(
+          //   id: jsonResponse['id'],
+          //   username: jsonResponse['username'],
+          //   password: jsonResponse['password'],
+          //   fullName: jsonResponse['name'],
+          //   role: jsonResponse['role'],
+          //   email: jsonResponse['email'],
+          //   phoneNumber: jsonResponse['phone_number'],
+          //   address: jsonResponse['address'],
+          //   gender: jsonResponse['gender'],
+          //   collage: jsonResponse['collage'],
+          //   university: jsonResponse['university'],
+          //   major: jsonResponse['major'],
+          //   term_level: jsonResponse['term_level'],
+          //   pfp: jsonResponse['pfp'],
+          //   xp: jsonResponse['xp'],
+          //   level: jsonResponse['level'],
+          //   title: jsonResponse['title'],
+          //   registrationNumber: jsonResponse['registrationNumber'],
+          //   birthDate: jsonResponse['birthDate'],
+          // );
+          Student student = Student();
 
           student.id = jsonResponse['id'];
           student.username = jsonResponse['username'];
@@ -291,7 +289,7 @@ class _LoginPageState extends State<LoginPage> {
           student.title = jsonResponse['title'];
           student.registrationNumber = jsonResponse['registrationNumber'];
           student.birthDate = jsonResponse['birthDate'];
-           Navigator.pushAndRemoveUntil(
+          Navigator.pushAndRemoveUntil(
             context,
             MaterialPageRoute(
               builder: (context) => DonePopUp(
