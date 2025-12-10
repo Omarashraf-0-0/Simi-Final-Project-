@@ -16,3 +16,5 @@ studymate/windows/flutter/generated_plugins.cmake
 /.idea
 studymate/pubspec.lock
 /.idea
+studymate/pubspec.lock
+*.lock
