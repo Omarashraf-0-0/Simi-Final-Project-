@@ -43,7 +43,7 @@ class _CareerHomeState extends State<CareerHome> {
               height: size.height * 0.33,
               width: double.infinity,
               child: Image.asset(
-                'lib/assets/img/career.png',
+                'assets/img/career.png',
                 fit: BoxFit.cover,
               ),
             ),
@@ -104,7 +104,7 @@ class _CareerHomeState extends State<CareerHome> {
                             radius: 30,
                             backgroundColor: const Color.fromARGB(255, 255, 255, 255),
                             child: Image.asset(
-                              'lib/assets/img/career2.png',
+                              'assets/img/career2.png',
                               fit: BoxFit.cover,
                             ),
                           ),
@@ -162,7 +162,7 @@ class _CareerHomeState extends State<CareerHome> {
                             radius: 30,
                             backgroundColor: const Color.fromARGB(255, 255, 255, 255),
                             child: Image.asset(
-                              'lib/assets/img/cv2.png',
+                              'assets/img/cv2.png',
                               fit: BoxFit.cover,
                             ),
                           ),

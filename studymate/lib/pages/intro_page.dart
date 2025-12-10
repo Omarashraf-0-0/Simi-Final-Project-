@@ -69,7 +69,7 @@ class _IntroPageState extends State<IntroPage> {
           mainAxisAlignment: MainAxisAlignment.center,
           children: [
             Image.asset(
-                'lib/assets/img/El_Batal_Study_Mate_Light_Mode-removebg-preview.png'),
+                'assets/img/El_Batal_Study_Mate_Light_Mode-removebg-preview.png'),
           ],
         ),
       ),

@@ -127,7 +127,7 @@ class LeaderboardPage extends StatelessWidget {
   Widget _buildUserTile(String username, int score, bool isIncreasing) {
     return ListTile(
       leading: CircleAvatar(
-        backgroundImage: AssetImage('lib/assets/img/pfp.jpg'), // Replace with actual image path
+        backgroundImage: AssetImage('assets/img/pfp.jpg'), // Replace with actual image path
       ),
       title: Text(
         username,

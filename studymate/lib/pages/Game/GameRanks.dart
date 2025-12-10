@@ -15,49 +15,49 @@ class _GameRanksState extends State<GameRanks> {
       'name': 'NewComer',
       'xpRange': '0 to 99 XP',
       'color': const Color(0xFF808080),
-      'image': 'lib/assets/img/GameCharacters/NewCommer.png',
+      'image': 'assets/img/GameCharacters/NewCommer.png',
     },
     {
       'name': 'Explorer',
       'xpRange': '100 to 299 XP',
       'color': const Color(0xFF007BFF),
-      'image': 'lib/assets/img/GameCharacters/Explorer.png',
+      'image': 'assets/img/GameCharacters/Explorer.png',
     },
     {
       'name': 'Achiever',
       'xpRange': '300 to 599 XP',
       'color': const Color(0xFF28A745),
-      'image': 'lib/assets/img/GameCharacters/Achiever.png',
+      'image': 'assets/img/GameCharacters/Achiever.png',
     },
     {
       'name': 'Challenger',
       'xpRange': '600 to 999 XP',
       'color': const Color(0xFFFFC107),
-      'image': 'lib/assets/img/GameCharacters/Challenger.png',
+      'image': 'assets/img/GameCharacters/Challenger.png',
     },
     {
       'name': 'Expert',
       'xpRange': '1000 to 1499 XP',
       'color': const Color(0xFFFD7E14),
-      'image': 'lib/assets/img/GameCharacters/Expert.png',
+      'image': 'assets/img/GameCharacters/Expert.png',
     },
     {
       'name': 'Mentor',
       'xpRange': '1500 to 2199 XP',
       'color': const Color(0xFF6F42C1),
-      'image': 'lib/assets/img/GameCharacters/Mentor.png',
+      'image': 'assets/img/GameCharacters/Mentor.png',
     },
     {
       'name': 'Legend',
       'xpRange': '2200 to 2999 XP',
       'color': const Color(0xFFFFD700),
-      'image': 'lib/assets/img/GameCharacters/Legend.png',
+      'image': 'assets/img/GameCharacters/Legend.png',
     },
     {
       'name': 'El Batal',
       'xpRange': '3000+ XP',
       'color': const Color(0xFFb3141c),
-      'image': 'lib/assets/img/GameCharacters/ElBatal.png',
+      'image': 'assets/img/GameCharacters/ElBatal.png',
     },
   ];
 
@@ -102,7 +102,7 @@ class _GameRanksState extends State<GameRanks> {
           Container(
             decoration: const BoxDecoration(
               image: DecorationImage(
-                image: AssetImage('lib/assets/img/bg7.jpg'),
+                image: AssetImage('assets/img/bg7.jpg'),
                 fit: BoxFit.cover,
               ),
             ),

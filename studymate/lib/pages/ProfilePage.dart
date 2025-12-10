@@ -374,7 +374,7 @@ class _ProfilepageState extends State<Profilepage> {
                                       null
                                   ? MemoryImage(base64Decode(Hive.box('userBox')
                                       .get('profileImageBase64')))
-                                  : AssetImage('lib/assets/img/default.jpeg')
+                                  : AssetImage('assets/img/default.jpeg')
                                       as ImageProvider,
                         ),
                         GestureDetector(

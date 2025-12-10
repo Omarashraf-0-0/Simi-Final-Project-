@@ -262,7 +262,7 @@ class _HomepageState extends State<Homepage> {
               children: [
                 // App logo
                 Image.asset(
-                  'lib/assets/img/El_Batal_Study_Mate_Light_Mode-removebg-preview.png',
+                  'assets/img/El_Batal_Study_Mate_Light_Mode-removebg-preview.png',
                   height: 60,
                   width: 60,
                   color: Colors.white,

@@ -61,26 +61,8 @@ flutter:
   uses-material-design: true
 
   assets:
-    - lib/assets/img/
-    - lib/assets/animations/
-    - lib/assets/img/AboLayla.jpg
-    - lib/assets/img/TheRock.jpg
-    - lib/assets/img/default.jpeg
-    - lib/assets/img/QuizTime.png
-    - lib/assets/img/El_Batal_Study_Mate_Light_Mode-removebg-preview.png
-    - lib/assets/img/GameCharacters/ElBatal.png
-    - lib/assets/img/GameCharacters/NewCommer.png
-    - lib/assets/img/GameCharacters/Explorer.png
-    - lib/assets/img/GameCharacters/Achiever.png
-    - lib/assets/img/GameCharacters/Challenger.png
-    - lib/assets/img/GameCharacters/Expert.png
-    - lib/assets/img/GameCharacters/Mentor.png
-    - lib/assets/img/GameCharacters/Legend.png
-    - lib/assets/img/Job.png
-    - lib/assets/img/cv.png
-    - lib/assets/img/cv2.png
-    - lib/assets/img/career.png
-    - lib/assets/img/career2.png
+    - assets/img/
+    - assets/animations/
 
   fonts:
     - family: Poppins

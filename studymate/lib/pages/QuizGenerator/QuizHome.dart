@@ -43,7 +43,7 @@ class _QuizHomeState extends State<QuizHome> {
             children: <Widget>[
               // Adjusted image for better scaling
               Image.asset(
-                'lib/assets/img/QuizTime.png',
+                'assets/img/QuizTime.png',
                 height: 250,
                 fit: BoxFit.contain,
               ),

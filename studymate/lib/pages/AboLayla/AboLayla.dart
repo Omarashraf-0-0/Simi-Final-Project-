@@ -28,7 +28,7 @@ class AboLayla extends StatelessWidget {
           child: Column(
             mainAxisAlignment: MainAxisAlignment.center,
             children: [
-              Image.asset('lib/assets/img/AboLayla.jpg'),
+              Image.asset('assets/img/AboLayla.jpg'),
               const SizedBox(height: 15),
               RichText(
                 textAlign: TextAlign.center,

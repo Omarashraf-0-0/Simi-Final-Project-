@@ -348,7 +348,7 @@ class _LoginPageState extends State<LoginPage> {
                 // Logo Image
                 SizedBox(height: size.height * 0.08),
                 Image.asset(
-                  'lib/assets/img/El_Batal_Study_Mate_Light_Mode-removebg-preview.png',
+                  'assets/img/El_Batal_Study_Mate_Light_Mode-removebg-preview.png',
                   height: size.height * 0.25,
                 ),
                 SizedBox(height: size.height * 0.02),

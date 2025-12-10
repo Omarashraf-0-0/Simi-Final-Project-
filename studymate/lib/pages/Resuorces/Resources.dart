@@ -107,14 +107,14 @@ class _ResourcesState extends State<Resources> {
 
   String _getCourseBackground(int index) {
     final List<String> backgrounds = [
-      'lib/assets/img/bg1.jpg',
-      'lib/assets/img/bg2.jpg',
-      'lib/assets/img/bg3.jpg',
-      'lib/assets/img/bg4.jpg',
-      'lib/assets/img/bg5.jpg',
-      'lib/assets/img/bg6.jpg',
-      'lib/assets/img/bg7.jpg',
-      'lib/assets/img/bg8.jpg',
+      'assets/img/bg1.jpg',
+      'assets/img/bg2.jpg',
+      'assets/img/bg3.jpg',
+      'assets/img/bg4.jpg',
+      'assets/img/bg5.jpg',
+      'assets/img/bg6.jpg',
+      'assets/img/bg7.jpg',
+      'assets/img/bg8.jpg',
     ];
     return backgrounds[index % backgrounds.length];
   }

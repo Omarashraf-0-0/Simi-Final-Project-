@@ -79,7 +79,7 @@ class CircularWidget extends StatelessWidget {
             SizedBox(height: 60),
             // Lottie animation
             Lottie.asset(
-              'lib/assets/animations/SuccesAnimation.json',
+              'assets/animations/SuccesAnimation.json',
               height: 375,
               width: 375,
               fit: BoxFit.fill,

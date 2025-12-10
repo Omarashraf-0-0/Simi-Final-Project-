@@ -82,10 +82,10 @@ class _GameLeaderBoardState extends State<GameLeaderBoard> {
       } catch (e) {
         // Handle the exception as needed
         print('Error decoding base64 image: $e');
-        return AssetImage('lib/assets/img/default.jpeg');
+        return AssetImage('assets/img/default.jpeg');
       }
     } else {
-      return AssetImage('lib/assets/img/default.jpeg');
+      return AssetImage('assets/img/default.jpeg');
     }
   }
 

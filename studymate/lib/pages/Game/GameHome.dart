@@ -50,7 +50,7 @@ class _GameHomeState extends State<GameHome> {
           Container(
             decoration: const BoxDecoration(
               image: DecorationImage(
-                image: AssetImage('lib/assets/img/bg5.jpg'),
+                image: AssetImage('assets/img/bg5.jpg'),
                 fit: BoxFit.cover,
               ),
             ),
@@ -99,7 +99,7 @@ class _GameHomeState extends State<GameHome> {
                     decoration: BoxDecoration(
                       image: DecorationImage(
                         image: AssetImage(
-                            'lib/assets/img/GameCharacters/ElBatal.png'),
+                            'assets/img/GameCharacters/ElBatal.png'),
                         fit: BoxFit.contain,
                       ),
                     ),
