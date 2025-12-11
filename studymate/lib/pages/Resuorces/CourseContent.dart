@@ -25,6 +25,17 @@ class _CourseContentState extends State<CourseContent> {
   String? taskId; // Store taskId as a class member
   String userRole = '';
   final ReceivePort _port = ReceivePort();
+  bool isLoadingContent = true;
+  
+  // Cache management
+  static const Duration _cacheDuration = Duration(hours: 1);
+  
+  // Brand colors
+  final Color primaryColor = const Color(0xFF1c74bb);
+  final Color secondaryColor = const Color(0xFF165d96);
+  final Color accentColor = const Color(0xFF18bebc);
+  final Color backgroundColor = const Color(0xFFF5F7FA);
+  final Color cardColor = Colors.white;
 
   @override
   void initState() {
@@ -152,69 +163,151 @@ class _CourseContentState extends State<CourseContent> {
     if (response.statusCode == 200) {
       print('Request successful');
       print(response.body);
+      
+      // Invalidate cache after successful update
+      final userBox = Hive.box('userBox');
+      final courseId = userBox.get('COId');
+      final cacheKey = 'course_content_$courseId';
+      final cacheTimeKey = 'course_content_time_$courseId';
+      await userBox.delete(cacheKey);
+      await userBox.delete(cacheTimeKey);
+      
+      // Refresh course content
+      await getcources();
     } else {
       print('Request failed with status: ${response.body}.');
     }
   }
 Future<void> getcources() async {
+  if (!mounted) return;
+  
+  setState(() {
+    isLoadingContent = true;
+  });
+  
   const url = 'https://alyibrahim.pythonanywhere.com/CourseContent';
-  print('srsdkajsdfk$courseIndex');
-  final Map<String, dynamic> requestBody = {
-    'courseIdx': Hive.box('userBox').get('COId'),
-    'username': Hive.box('userBox').get('username'),
-  };
-  final response = await http.post(
-    Uri.parse(url),
-    headers: {'Content-Type': 'application/json'},
-    body: jsonEncode(requestBody),
-  );
+  final userBox = Hive.box('userBox');
+  final courseId = userBox.get('COId');
+  final username = userBox.get('username');
+  
+  // Create cache key based on course ID
+  final cacheKey = 'course_content_$courseId';
+  final cacheTimeKey = 'course_content_time_$courseId';
+  
+  try {
+    // Check cache first
+    final cachedTime = userBox.get(cacheTimeKey);
+    final cachedData = userBox.get(cacheKey);
+    
+    if (cachedTime != null && cachedData != null) {
+      final cacheAge = DateTime.now().difference(DateTime.parse(cachedTime));
+      if (cacheAge < _cacheDuration) {
+        // Use cached data
+        _processCourseData(jsonDecode(cachedData));
+        return;
+      }
+    }
+    
+    final Map<String, dynamic> requestBody = {
+      'courseIdx': courseId,
+      'username': username,
+    };
+    
+    final response = await http.post(
+      Uri.parse(url),
+      headers: {'Content-Type': 'application/json'},
+      body: jsonEncode(requestBody),
+    ).timeout(const Duration(seconds: 15));
 
-  if (response.statusCode == 200) {
-    final jsonResponse = jsonDecode(response.body);
-    print("print the json: $jsonResponse");
-    print("print the json: $courseIndex");
-    setState(() {
-      // --- Composite pattern START ---
-      // Initialize category composites
-      final Map<String, ResourceComposite> categoryComposites = {
-        'L': ResourceComposite('Lectures'),
-        'Su': ResourceComposite('Summaries'),
-        'Q': ResourceComposite('Quizzes'),
-        'Se': ResourceComposite('Sections'),
-        'R': ResourceComposite('Resources')
-      };
-      subjectIds.clear();
-      subjectLinks.clear();
-
-      // Fill composites
-      jsonResponse['subInfo'].forEach((resource) {
-        String category = resource['RCat'];
-        String name = resource['RName'];
-        String url = resource['RFileURL'];
-
-        categoryComposites.putIfAbsent(category, () => ResourceComposite(category));
-        categoryComposites[category]?.add(ResourceLeaf(name, url));
-        subjectIds[name] = resource['RId'];
-        subjectLinks[name] = url;
+    if (response.statusCode == 200) {
+      final jsonResponse = jsonDecode(response.body);
+      
+      // Cache the response
+      await userBox.put(cacheKey, response.body);
+      await userBox.put(cacheTimeKey, DateTime.now().toIso8601String());
+      
+      _processCourseData(jsonResponse);
+    } else {
+      throw Exception('Server error: ${response.statusCode}');
+    }
+  } catch (e) {
+    // Fallback to stale cache if available
+    final cachedData = userBox.get(cacheKey);
+    
+    if (cachedData != null && mounted) {
+      try {
+        _processCourseData(jsonDecode(cachedData));
+        // Show offline indicator
+        ScaffoldMessenger.of(context).showSnackBar(
+          const SnackBar(
+            content: Text('Showing cached data (offline mode)'),
+            duration: Duration(seconds: 2),
+          ),
+        );
+        return;
+      } catch (_) {
+        // Cache is corrupted
+      }
+    }
+    
+    if (mounted) {
+      setState(() {
+        isLoadingContent = false;
       });
-
-      // --- For UI: get lists of names as before ---
-      lnames = categoryComposites['L']?.children.map((e) => e.name).toList() ?? [];
-      SEnames = categoryComposites['Se']?.children.map((e) => e.name).toList() ?? [];
-      SUnames = categoryComposites['Su']?.children.map((e) => e.name).toList() ?? [];
-      Qnames = categoryComposites['Q']?.children.map((e) => e.name).toList() ?? [];
-      Rnames = categoryComposites['R']?.children.map((e) => e.name).toList() ?? [];
-
-      // --- For UI: get lists of ResourceLeaf objects (optional) ---
-      listFromL = categoryComposites['L']?.children.map((e) => e.name).toList() ?? [];
-      listFromSE = categoryComposites['Se']?.children.map((e) => e.name).toList() ?? [];
-      listFromSU = categoryComposites['Su']?.children.map((e) => e.name).toList() ?? [];
-      listFromQ = categoryComposites['Q']?.children.map((e) => e.name).toList() ?? [];
-      listFromR = categoryComposites['R']?.children.map((e) => e.name).toList() ?? [];
-    });
-  } else {
-    print('Request failed with status: ${response.body}.');
+      ScaffoldMessenger.of(context).showSnackBar(
+        const SnackBar(
+          content: Text('Failed to load course content'),
+          duration: Duration(seconds: 3),
+        ),
+      );
+    }
   }
+}
+
+void _processCourseData(Map<String, dynamic> jsonResponse) {
+  if (!mounted) return;
+  
+  setState(() {
+    // --- Composite pattern START ---
+    // Initialize category composites
+    final Map<String, ResourceComposite> categoryComposites = {
+      'L': ResourceComposite('Lectures'),
+      'Su': ResourceComposite('Summaries'),
+      'Q': ResourceComposite('Quizzes'),
+      'Se': ResourceComposite('Sections'),
+      'R': ResourceComposite('Resources')
+    };
+    subjectIds.clear();
+    subjectLinks.clear();
+
+    // Fill composites
+    jsonResponse['subInfo'].forEach((resource) {
+      String category = resource['RCat'];
+      String name = resource['RName'];
+      String url = resource['RFileURL'];
+
+      categoryComposites.putIfAbsent(category, () => ResourceComposite(category));
+      categoryComposites[category]?.add(ResourceLeaf(name, url));
+      subjectIds[name] = resource['RId'];
+      subjectLinks[name] = url;
+    });
+
+    // --- For UI: get lists of names as before ---
+    lnames = categoryComposites['L']?.children.map((e) => e.name).toList() ?? [];
+    SEnames = categoryComposites['Se']?.children.map((e) => e.name).toList() ?? [];
+    SUnames = categoryComposites['Su']?.children.map((e) => e.name).toList() ?? [];
+    Qnames = categoryComposites['Q']?.children.map((e) => e.name).toList() ?? [];
+    Rnames = categoryComposites['R']?.children.map((e) => e.name).toList() ?? [];
+
+    // --- For UI: get lists of ResourceLeaf objects (optional) ---
+    listFromL = categoryComposites['L']?.children.map((e) => e.name).toList() ?? [];
+    listFromSE = categoryComposites['Se']?.children.map((e) => e.name).toList() ?? [];
+    listFromSU = categoryComposites['Su']?.children.map((e) => e.name).toList() ?? [];
+    listFromQ = categoryComposites['Q']?.children.map((e) => e.name).toList() ?? [];
+    listFromR = categoryComposites['R']?.children.map((e) => e.name).toList() ?? [];
+    
+    isLoadingContent = false;
+  });
 }
   // Future<void> getcources() async {
   //   const url = 'https://alyibrahim.pythonanywhere.com/CourseContent';
@@ -350,94 +443,200 @@ Future<void> getcources() async {
 
   @override
   Widget build(BuildContext context) {
-    // final args = ModalRoute.of(context)?.settings.arguments as Map<String, dynamic>;
-    // courseName = args?['courseId'];
-    // courseIndex = args?['courseIndex'];
-
     return Scaffold(
+      backgroundColor: backgroundColor,
       appBar: AppBar(
-      backgroundColor: Color(0xFF165d96),
-
-        title: Center(
-          child: Text(
-            'Course Content',
-            style: TextStyle(color: Theme.of(context).colorScheme.secondary),
+        backgroundColor: primaryColor,
+        elevation: 0,
+        leading: IconButton(
+          icon: const Icon(Icons.arrow_back_ios_rounded, color: Colors.white),
+          onPressed: () => Navigator.pop(context),
+        ),
+        title: const Text(
+          'Course Content',
+          style: TextStyle(
+            color: Colors.white,
+            fontSize: 20,
+            fontWeight: FontWeight.bold,
           ),
         ),
+        centerTitle: true,
       ),
-      body: Padding(
-        padding: const EdgeInsets.all(8.0),
-        child: ListView(
-          children: [
-            _buildTermDropdown('Lectures', lnames),
-            _buildTermDropdown('Sections', SEnames),
-            _buildTermDropdown('Summaries', SUnames),
-            _buildTermDropdown('Quizzes', Qnames),
-            _buildTermDropdownLinks('Resources', Rnames),
-            if (userRole == 'moderator') // Add this condition
-              ElevatedButton(
-                onPressed: () => _showAddMaterialPopup(context),
-                child: const Text('Add Material'),
+      body: isLoadingContent
+          ? Center(
+              child: CircularProgressIndicator(
+                valueColor: AlwaysStoppedAnimation<Color>(primaryColor),
               ),
-          ],
-        ),
-      ),
-    );
-  }
-
-  Widget _buildTermDropdown(String term, List<String> subjects) {
-    return Padding(
-      padding: const EdgeInsets.all(16.0),
-      child: Container(
-        decoration: BoxDecoration(
-          border: Border.all(color: Colors.grey),
-          borderRadius: BorderRadius.circular(8),
-        ),
-        child: ExpansionTile(
-          title: Row(
-            children: [
-              const Icon(Icons.my_library_books,
-                  color: Color.fromARGB(255, 104, 110, 114)),
-              const SizedBox(width: 15),
-              Text(
-                term,
-                style: const TextStyle(fontSize: 18),
-              ),
-            ],
-          ),
-          children: subjects.map((subject) {
-            return ListTile(
-              leading: const Icon(Icons.book),
-              title: Text(subject),
-              trailing: Row(
-                mainAxisSize: MainAxisSize.min,
+            )
+          : SingleChildScrollView(
+              physics: const BouncingScrollPhysics(),
+              padding: const EdgeInsets.all(20),
+              child: Column(
+                crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
-                  // Download icon
-                  IconButton(
-                    icon: const Icon(Icons.file_download),
-                    onPressed: () => _downloadPdf(subject),
+                  // Header
+                  Text(
+                    'Materials & Resources',
+                    style: TextStyle(
+                      fontSize: 26,
+                      fontWeight: FontWeight.bold,
+                      color: Colors.grey[800],
+                    ),
                   ),
-                  if (userRole == 'moderator') // Add this condition
-                    // Edit icon
-                    IconButton(
-                      icon: const Icon(Icons.edit, color: Colors.grey),
-                      onPressed: () => _showEditPopup(context, subject),
+                  const SizedBox(height: 8),
+                  Text(
+                    'Access all your course materials',
+                    style: TextStyle(
+                      fontSize: 16,
+                      color: Colors.grey[600],
+                    ),
+                  ),
+                  const SizedBox(height: 24),
+                  // Content sections
+                  _buildModernTermDropdown('Lectures', lnames, Icons.play_circle_outline_rounded, const Color(0xFF1c74bb)),
+                  const SizedBox(height: 16),
+                  _buildModernTermDropdown('Sections', SEnames, Icons.menu_book_rounded, const Color(0xFF18bebc)),
+                  const SizedBox(height: 16),
+                  _buildModernTermDropdown('Summaries', SUnames, Icons.description_outlined, const Color(0xFF667eea)),
+                  const SizedBox(height: 16),
+                  _buildModernTermDropdown('Quizzes', Qnames, Icons.quiz_outlined, const Color(0xFFf093fb)),
+                  const SizedBox(height: 16),
+                  _buildModernTermDropdownLinks('Resources', Rnames, Icons.link_rounded, const Color(0xFF43e97b)),
+                  const SizedBox(height: 24),
+                  // Add Material Button
+                  if (userRole == 'moderator')
+                    SizedBox(
+                      width: double.infinity,
+                      child: ElevatedButton.icon(
+                        onPressed: () => _showAddMaterialPopup(context),
+                        icon: const Icon(Icons.add_rounded),
+                        label: const Text(
+                          'Add Material',
+                          style: TextStyle(
+                            fontSize: 16,
+                            fontWeight: FontWeight.bold,
+                          ),
+                        ),
+                        style: ElevatedButton.styleFrom(
+                          backgroundColor: primaryColor,
+                          foregroundColor: Colors.white,
+                          padding: const EdgeInsets.symmetric(vertical: 16),
+                          shape: RoundedRectangleBorder(
+                            borderRadius: BorderRadius.circular(15),
+                          ),
+                          elevation: 0,
+                        ),
+                      ),
                     ),
                 ],
               ),
-              onTap: () {
-                final link = subjectLinks[subject];
-                if (link != null) {
-                  Navigator.push(
-                    context,
-                    MaterialPageRoute(
-                      builder: (context) => MaterialCourses(pdfUrl: link),
+            ),
+    );
+  }
+
+  Widget _buildModernTermDropdown(String term, List<String> subjects, IconData icon, Color color) {
+    if (subjects.isEmpty) {
+      return const SizedBox.shrink();
+    }
+    
+    return Container(
+      decoration: BoxDecoration(
+        color: cardColor,
+        borderRadius: BorderRadius.circular(16),
+        boxShadow: [
+          BoxShadow(
+            color: Colors.black.withOpacity(0.05),
+            blurRadius: 10,
+            offset: const Offset(0, 4),
+          ),
+        ],
+      ),
+      child: Theme(
+        data: Theme.of(context).copyWith(
+          dividerColor: Colors.transparent,
+        ),
+        child: ExpansionTile(
+          tilePadding: const EdgeInsets.symmetric(horizontal: 20, vertical: 8),
+          childrenPadding: const EdgeInsets.only(bottom: 12),
+          leading: Container(
+            padding: const EdgeInsets.all(10),
+            decoration: BoxDecoration(
+              color: color.withOpacity(0.1),
+              borderRadius: BorderRadius.circular(10),
+            ),
+            child: Icon(icon, color: color, size: 24),
+          ),
+          title: Text(
+            term,
+            style: TextStyle(
+              fontSize: 18,
+              fontWeight: FontWeight.bold,
+              color: Colors.grey[800],
+            ),
+          ),
+          subtitle: Text(
+            '${subjects.length} item${subjects.length != 1 ? 's' : ''}',
+            style: TextStyle(
+              fontSize: 13,
+              color: Colors.grey[600],
+            ),
+          ),
+          children: subjects.map((subject) {
+            return Container(
+              margin: const EdgeInsets.symmetric(horizontal: 16, vertical: 4),
+              decoration: BoxDecoration(
+                color: backgroundColor,
+                borderRadius: BorderRadius.circular(12),
+              ),
+              child: ListTile(
+                contentPadding: const EdgeInsets.symmetric(horizontal: 16, vertical: 4),
+                leading: Container(
+                  padding: const EdgeInsets.all(8),
+                  decoration: BoxDecoration(
+                    color: Colors.white,
+                    borderRadius: BorderRadius.circular(8),
+                  ),
+                  child: Icon(Icons.insert_drive_file_outlined, color: color, size: 20),
+                ),
+                title: Text(
+                  subject,
+                  style: TextStyle(
+                    fontSize: 15,
+                    fontWeight: FontWeight.w500,
+                    color: Colors.grey[800],
+                  ),
+                ),
+                trailing: Row(
+                  mainAxisSize: MainAxisSize.min,
+                  children: [
+                    // Download icon
+                    IconButton(
+                      icon: Icon(Icons.download_rounded, color: Colors.grey[700]),
+                      onPressed: () => _downloadPdf(subject),
+                      tooltip: 'Download',
                     ),
-                  );
-                } else {
-                  print('No link found for $subject');
-                }
-              },
+                    if (userRole == 'moderator')
+                      IconButton(
+                        icon: Icon(Icons.edit_outlined, color: Colors.grey[700]),
+                        onPressed: () => _showEditPopup(context, subject),
+                        tooltip: 'Edit',
+                      ),
+                  ],
+                ),
+                onTap: () {
+                  final link = subjectLinks[subject];
+                  if (link != null) {
+                    Navigator.push(
+                      context,
+                      MaterialPageRoute(
+                        builder: (context) => MaterialCourses(pdfUrl: link),
+                      ),
+                    );
+                  } else {
+                    print('No link found for $subject');
+                  }
+                },
+              ),
             );
           }).toList(),
         ),
@@ -445,54 +644,94 @@ Future<void> getcources() async {
     );
   }
 
-  Widget _buildTermDropdownLinks(String term, List<String> subjects) {
-    return Padding(
-      padding: const EdgeInsets.all(16.0),
-      child: Container(
-        decoration: BoxDecoration(
-          border: Border.all(color: Colors.grey),
-          borderRadius: BorderRadius.circular(8),
+  Widget _buildModernTermDropdownLinks(String term, List<String> subjects, IconData icon, Color color) {
+    if (subjects.isEmpty) {
+      return const SizedBox.shrink();
+    }
+    
+    return Container(
+      decoration: BoxDecoration(
+        color: cardColor,
+        borderRadius: BorderRadius.circular(16),
+        boxShadow: [
+          BoxShadow(
+            color: Colors.black.withOpacity(0.05),
+            blurRadius: 10,
+            offset: const Offset(0, 4),
+          ),
+        ],
+      ),
+      child: Theme(
+        data: Theme.of(context).copyWith(
+          dividerColor: Colors.transparent,
         ),
         child: ExpansionTile(
-          title: Row(
-            children: [
-              const Icon(Icons.my_library_books,
-                  color: Color.fromARGB(255, 104, 110, 114)),
-              const SizedBox(width: 15),
-              Text(
-                term,
-                style: const TextStyle(fontSize: 18),
-              ),
-            ],
+          tilePadding: const EdgeInsets.symmetric(horizontal: 20, vertical: 8),
+          childrenPadding: const EdgeInsets.only(bottom: 12),
+          leading: Container(
+            padding: const EdgeInsets.all(10),
+            decoration: BoxDecoration(
+              color: color.withOpacity(0.1),
+              borderRadius: BorderRadius.circular(10),
+            ),
+            child: Icon(icon, color: color, size: 24),
+          ),
+          title: Text(
+            term,
+            style: TextStyle(
+              fontSize: 18,
+              fontWeight: FontWeight.bold,
+              color: Colors.grey[800],
+            ),
+          ),
+          subtitle: Text(
+            '${subjects.length} item${subjects.length != 1 ? 's' : ''}',
+            style: TextStyle(
+              fontSize: 13,
+              color: Colors.grey[600],
+            ),
           ),
           children: subjects.map((subject) {
-            return ListTile(
-              leading: const Icon(Icons.book),
-              title: Text(subject),
-              trailing: Row(
-                mainAxisSize: MainAxisSize.min,
-                children: [
-                  if (userRole == 'moderator') // Add this condition
-                    // Edit icon
-                    IconButton(
-                      icon: const Icon(Icons.edit, color: Colors.grey),
-                      onPressed: () => _showEditPopup(context, subject),
-                    ),
-                ],
+            return Container(
+              margin: const EdgeInsets.symmetric(horizontal: 16, vertical: 4),
+              decoration: BoxDecoration(
+                color: backgroundColor,
+                borderRadius: BorderRadius.circular(12),
               ),
-              onTap: () {
-                final link = subjectLinks[subject];
-                if (link != null) {
-                  // Navigator.push(
-                  //   context,
-                  //   MaterialPageRoute(
-                  //     builder: (context) => UrlLauncherPage(url: link),
-                  //   ),
-                  // );
-                } else {
-                  print('No link found for $subject');
-                }
-              },
+              child: ListTile(
+                contentPadding: const EdgeInsets.symmetric(horizontal: 16, vertical: 4),
+                leading: Container(
+                  padding: const EdgeInsets.all(8),
+                  decoration: BoxDecoration(
+                    color: Colors.white,
+                    borderRadius: BorderRadius.circular(8),
+                  ),
+                  child: Icon(Icons.link_rounded, color: color, size: 20),
+                ),
+                title: Text(
+                  subject,
+                  style: TextStyle(
+                    fontSize: 15,
+                    fontWeight: FontWeight.w500,
+                    color: Colors.grey[800],
+                  ),
+                ),
+                trailing: userRole == 'moderator'
+                    ? IconButton(
+                        icon: Icon(Icons.edit_outlined, color: Colors.grey[700]),
+                        onPressed: () => _showEditPopup(context, subject),
+                        tooltip: 'Edit',
+                      )
+                    : null,
+                onTap: () {
+                  final link = subjectLinks[subject];
+                  if (link != null) {
+                    // Open external link
+                  } else {
+                    print('No link found for $subject');
+                  }
+                },
+              ),
             );
           }).toList(),
         ),

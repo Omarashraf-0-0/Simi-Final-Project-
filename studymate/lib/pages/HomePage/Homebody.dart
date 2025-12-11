@@ -33,6 +33,11 @@ class _HomebodyState extends State<Homebody>
   bool _isLoading = true;
   bool _isLoadingQuizzes = true;
   bool _isLoadingCourses = true;
+  
+  // Cache management
+  static const String _coursesCacheKey = 'recent_courses_cache';
+  static const String _coursesCacheTimeKey = 'recent_courses_cache_time';
+  static const Duration _cacheDuration = Duration(minutes: 15);
 
   // Animation
   late AnimationController _animationController;
@@ -185,14 +190,32 @@ class _HomebodyState extends State<Homebody>
       print('Error loading data: $e');
     }
   }
+  
+  // Clear cache and refresh data
+  Future<void> _refreshData() async {
+    final userBox = Hive.box('userBox');
+    await userBox.delete(_coursesCacheKey);
+    await userBox.delete(_coursesCacheTimeKey);
+    
+    setState(() {
+      _isLoadingCourses = true;
+      _isLoadingQuizzes = true;
+      _isLoading = true;
+    });
+    
+    await _loadData();
+  }
 
   @override
   Widget build(BuildContext context) {
-    return SingleChildScrollView(
-      physics: const BouncingScrollPhysics(),
-      child: Column(
-        crossAxisAlignment: CrossAxisAlignment.start,
-        children: [
+    return RefreshIndicator(
+      onRefresh: _refreshData,
+      color: primaryColor,
+      child: SingleChildScrollView(
+        physics: const AlwaysScrollableScrollPhysics(),
+        child: Column(
+          crossAxisAlignment: CrossAxisAlignment.start,
+          children: [
           // Hero Section with Gradient Background
           _buildHeroSection(),
 
@@ -266,6 +289,7 @@ class _HomebodyState extends State<Homebody>
           ),
           const SizedBox(height: 100),
         ],
+      ),
       ),
     );
   }
@@ -593,19 +617,34 @@ class _HomebodyState extends State<Homebody>
     }
   }
 
-  // Get background image for course card
-  String _getCourseBackgroundImage(int index) {
-    final images = [
-      'assets/img/bg1.jpg',
-      'assets/img/bg2.jpg',
-      'assets/img/bg3.jpg',
-      'assets/img/bg4.jpg',
-      'assets/img/bg5.jpg',
-      'assets/img/bg6.jpg',
-      'assets/img/bg7.jpg',
-      'assets/img/bg8.jpg',
+  // Get gradient colors for course cards
+  List<Color> _getCourseGradient(int index) {
+    final List<List<Color>> gradients = [
+      [primaryColor, secondaryColor],
+      [accentColor, accentColor2],
+      [const Color(0xFF667eea), const Color(0xFF764ba2)],
+      [const Color(0xFFf093fb), const Color(0xFFF5576C)],
+      [const Color(0xFF4facfe), const Color(0xFF00f2fe)],
+      [const Color(0xFF43e97b), const Color(0xFF38f9d7)],
+      [const Color(0xFFfa709a), const Color(0xFFfee140)],
+      [const Color(0xFF30cfd0), const Color(0xFF330867)],
     ];
-    return images[index % images.length];
+    return gradients[index % gradients.length];
+  }
+
+  // Get icon for course card
+  IconData _getCourseIcon(int index) {
+    final List<IconData> icons = [
+      Icons.school_rounded,
+      Icons.science_rounded,
+      Icons.calculate_rounded,
+      Icons.psychology_rounded,
+      Icons.computer_rounded,
+      Icons.language_rounded,
+      Icons.business_rounded,
+      Icons.palette_rounded,
+    ];
+    return icons[index % icons.length];
   }
 
   // Get color for event card based on type
@@ -907,6 +946,9 @@ class _HomebodyState extends State<Homebody>
       physics: const BouncingScrollPhysics(),
       itemCount: courses.length,
       itemBuilder: (context, index) {
+        final gradient = _getCourseGradient(index);
+        final icon = _getCourseIcon(index);
+        
         return GestureDetector(
           onTap: () {
             Hive.box('userBox').put('COId', coursesIndex[index]);
@@ -920,106 +962,96 @@ class _HomebodyState extends State<Homebody>
             child: Container(
               width: 280,
               decoration: BoxDecoration(
+                gradient: LinearGradient(
+                  begin: Alignment.topLeft,
+                  end: Alignment.bottomRight,
+                  colors: gradient,
+                ),
                 borderRadius: BorderRadius.circular(20),
                 boxShadow: [
                   BoxShadow(
-                    color: Colors.black.withOpacity(0.1),
+                    color: gradient[0].withOpacity(0.3),
                     blurRadius: 15,
                     offset: const Offset(0, 8),
                   ),
                 ],
               ),
-              child: ClipRRect(
-                borderRadius: BorderRadius.circular(20),
-                child: Stack(
-                  fit: StackFit.expand,
-                  children: [
-                    // Background image
-                    Image.asset(
-                      _getCourseBackgroundImage(index),
-                      fit: BoxFit.cover,
-                    ),
-                    // Gradient overlay
-                    Container(
-                      decoration: BoxDecoration(
-                        gradient: LinearGradient(
-                          begin: Alignment.topCenter,
-                          end: Alignment.bottomCenter,
-                          colors: [
-                            Colors.transparent,
-                            Colors.black.withOpacity(0.7),
-                            Colors.black.withOpacity(0.9),
-                          ],
+              child: Material(
+                color: Colors.transparent,
+                child: InkWell(
+                  borderRadius: BorderRadius.circular(20),
+                  onTap: () {
+                    Hive.box('userBox').put('COId', coursesIndex[index]);
+                    Navigator.push(
+                      context,
+                      MaterialPageRoute(builder: (_) => CourseContent()),
+                    );
+                  },
+                  child: Padding(
+                    padding: const EdgeInsets.all(20),
+                    child: Column(
+                      crossAxisAlignment: CrossAxisAlignment.start,
+                      children: [
+                        // Icon badge
+                        Container(
+                          padding: const EdgeInsets.all(12),
+                          decoration: BoxDecoration(
+                            color: Colors.white.withOpacity(0.25),
+                            borderRadius: BorderRadius.circular(12),
+                          ),
+                          child: Icon(
+                            icon,
+                            color: Colors.white,
+                            size: 28,
+                          ),
                         ),
-                      ),
-                    ),
-                    // Content
-                    Padding(
-                      padding: const EdgeInsets.all(20),
-                      child: Column(
-                        crossAxisAlignment: CrossAxisAlignment.start,
-                        children: [
-                          // Book icon badge
-                          Container(
-                            padding: const EdgeInsets.all(10),
-                            decoration: BoxDecoration(
-                              color: Colors.white.withOpacity(0.2),
-                              borderRadius: BorderRadius.circular(12),
-                              border: Border.all(
-                                color: Colors.white.withOpacity(0.3),
-                                width: 1.5,
-                              ),
-                            ),
-                            child: const Icon(
-                              Icons.menu_book_rounded,
-                              color: Colors.white,
-                              size: 24,
-                            ),
+                        const Spacer(),
+                        // Course title
+                        Text(
+                          courses[index],
+                          style: const TextStyle(
+                            fontSize: 20,
+                            color: Colors.white,
+                            fontWeight: FontWeight.bold,
+                            height: 1.3,
                           ),
-                          const Spacer(),
-                          // Course title
-                          Text(
-                            courses[index],
-                            style: const TextStyle(
-                              fontSize: 20,
-                              color: Colors.white,
-                              fontWeight: FontWeight.bold,
-                              height: 1.2,
-                              shadows: [
-                                Shadow(
-                                  offset: Offset(0, 2),
-                                  blurRadius: 4,
-                                  color: Colors.black45,
-                                ),
-                              ],
-                            ),
-                            maxLines: 3,
-                            overflow: TextOverflow.ellipsis,
+                          maxLines: 3,
+                          overflow: TextOverflow.ellipsis,
+                        ),
+                        const SizedBox(height: 12),
+                        // View button
+                        Container(
+                          padding: const EdgeInsets.symmetric(
+                            horizontal: 14,
+                            vertical: 8,
                           ),
-                          const SizedBox(height: 8),
-                          // Arrow indicator
-                          Row(
+                          decoration: BoxDecoration(
+                            color: Colors.white.withOpacity(0.25),
+                            borderRadius: BorderRadius.circular(8),
+                          ),
+                          child: const Row(
+                            mainAxisSize: MainAxisSize.min,
                             children: [
                               Text(
                                 'View Content',
                                 style: TextStyle(
-                                  fontSize: 14,
-                                  color: Colors.white.withOpacity(0.9),
-                                  fontWeight: FontWeight.w500,
+                                  fontSize: 13,
+                                  color: Colors.white,
+                                  fontWeight: FontWeight.bold,
                                 ),
                               ),
-                              const SizedBox(width: 4),
+                              SizedBox(width: 6),
                               Icon(
                                 Icons.arrow_forward_rounded,
-                                color: Colors.white.withOpacity(0.9),
-                                size: 18,
+                                color: Colors.white,
+                                size: 16,
                               ),
                             ],
                           ),
-                        ],
-                      ),
+                        ),
+                      ],
                     ),
-                  ],
+                  ),
                 ),
               ),
             ),
@@ -1238,31 +1270,92 @@ class _HomebodyState extends State<Homebody>
 
   Future<void> _fetchRecentCourses() async {
     try {
-      final username = Hive.box('userBox').get('username');
+      final userBox = Hive.box('userBox');
+      final username = userBox.get('username');
+      
+      // Check cache first
+      final cachedTime = userBox.get(_coursesCacheTimeKey);
+      final cachedData = userBox.get(_coursesCacheKey);
+      
+      if (cachedTime != null && cachedData != null) {
+        final cacheAge = DateTime.now().difference(DateTime.parse(cachedTime));
+        if (cacheAge < _cacheDuration) {
+          // Use cached data
+          final data = jsonDecode(cachedData);
+          if (mounted) {
+            setState(() {
+              courses = List<String>.from(data['courses']);
+              coursesIndex = (data['CourseID'] as List)
+                  .map((item) => item['COId'].toString())
+                  .toList();
+              _isLoadingCourses = false;
+            });
+          }
+          return;
+        }
+      }
+      
+      // Fetch from API with timeout
       final response = await http.post(
         Uri.parse('https://alyibrahim.pythonanywhere.com/recentCourses'),
         headers: {'Content-Type': 'application/json'},
-        body: jsonEncode({'username': username}),
-      );
+        body: jsonEncode({'username': username, 'limit': 5}),
+      ).timeout(const Duration(seconds: 10));
 
       if (response.statusCode == 200) {
         final data = jsonDecode(response.body);
-        print(data);
-        setState(() {
-          courses = List<String>.from(data['courses']);
-          coursesIndex = (data['CourseID'] as List)
-              .map((item) => item['COId'].toString())
-              .toList();
-          _isLoadingCourses = false;
-        });
+        
+        // Cache the response
+        await userBox.put(_coursesCacheKey, response.body);
+        await userBox.put(_coursesCacheTimeKey, DateTime.now().toIso8601String());
+        
+        if (mounted) {
+          setState(() {
+            courses = List<String>.from(data['courses']);
+            coursesIndex = (data['CourseID'] as List)
+                .map((item) => item['COId'].toString())
+                .toList();
+            _isLoadingCourses = false;
+          });
+        }
       } else {
-        throw Exception('Failed to load courses');
+        throw Exception('Failed to load courses: ${response.statusCode}');
       }
     } catch (e) {
-      setState(() {
-        _isLoadingCourses = false;
-      });
-      print('Error: $e');
+      // Fallback to stale cache if available
+      final userBox = Hive.box('userBox');
+      final cachedData = userBox.get(_coursesCacheKey);
+      
+      if (cachedData != null && mounted) {
+        try {
+          final data = jsonDecode(cachedData);
+          setState(() {
+            courses = List<String>.from(data['courses']);
+            coursesIndex = (data['CourseID'] as List)
+                .map((item) => item['COId'].toString())
+                .toList();
+            _isLoadingCourses = false;
+          });
+          // Show snackbar indicating offline mode
+          if (mounted) {
+            ScaffoldMessenger.of(context).showSnackBar(
+              const SnackBar(
+                content: Text('Showing cached data (offline mode)'),
+                duration: Duration(seconds: 2),
+              ),
+            );
+          }
+          return;
+        } catch (_) {
+          // Cache is corrupted, continue to error state
+        }
+      }
+      
+      if (mounted) {
+        setState(() {
+          _isLoadingCourses = false;
+        });
+      }
     }
   }
 

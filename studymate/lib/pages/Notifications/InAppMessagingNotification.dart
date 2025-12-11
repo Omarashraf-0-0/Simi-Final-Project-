@@ -2,6 +2,8 @@ import 'dart:convert';
 import 'dart:io';
 import 'package:firebase_messaging/firebase_messaging.dart';
 import 'package:flutter_local_notifications/flutter_local_notifications.dart';
+import 'package:http/http.dart' as http;
+import 'package:hive/hive.dart';
 
 class MessagingService {
   static final FirebaseMessaging _messaging = FirebaseMessaging.instance;
@@ -47,6 +49,12 @@ class MessagingService {
     RemoteNotification? notification = remoteMessage.notification;
     AndroidNotification? android = notification?.android;
 
+    // Store notification in database
+    await _storeNotificationInDatabase(
+      title: notification?.title ?? 'New Notification',
+      body: notification?.body ?? '',
+    );
+
     if (notification != null && android != null) {
       await _localNotification.show(
         notification.hashCode,
@@ -64,6 +72,43 @@ class MessagingService {
         ),
         payload: jsonEncode(remoteMessage.data),
       );
+    }
+  }
+
+  // Store notification in backend database
+  static Future<void> _storeNotificationInDatabase({
+    required String title,
+    required String body,
+  }) async {
+    try {
+      final userBox = Hive.box('userBox');
+      final userId = userBox.get('id');
+      
+      if (userId == null) {
+        print('User ID not found, cannot store notification');
+        return;
+      }
+
+      const url = 'https://alyibrahim.pythonanywhere.com/storeNotification';
+      
+      final response = await http.post(
+        Uri.parse(url),
+        headers: {'Content-Type': 'application/json'},
+        body: jsonEncode({
+          'user_id': userId,
+          'title': title,
+          'body': body,
+          'type': 'fcm',  // Mark as FCM notification
+        }),
+      );
+
+      if (response.statusCode == 200) {
+        print('✅ Notification stored in database');
+      } else {
+        print('❌ Failed to store notification: ${response.statusCode}');
+      }
+    } catch (e) {
+      print('❌ Error storing notification: $e');
     }
   }
 

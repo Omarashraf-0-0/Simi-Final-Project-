@@ -50,6 +50,123 @@ class _ProfilepageState extends State<Profilepage> {
     super.dispose();
   }
 
+  Future<void> removeCourse(int index) async {
+    final courseId = coursesIndex[index];
+    final courseName = _courses[index];
+    final username = Hive.box('userBox').get('username');
+
+    // Show confirmation dialog
+    final confirm = await showDialog<bool>(
+      context: context,
+      builder: (context) => AlertDialog(
+        shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(20)),
+        title: Row(
+          children: [
+            Icon(Icons.warning_rounded, color: Colors.orange, size: 28),
+            SizedBox(width: 12),
+            Text('Remove Course?'),
+          ],
+        ),
+        content: Text(
+          'Are you sure you want to remove "$courseName" from your courses?',
+          style: TextStyle(fontSize: 16),
+        ),
+        actions: [
+          TextButton(
+            onPressed: () => Navigator.pop(context, false),
+            child: Text('Cancel', style: TextStyle(color: Colors.grey[600])),
+          ),
+          ElevatedButton(
+            onPressed: () => Navigator.pop(context, true),
+            style: ElevatedButton.styleFrom(
+              backgroundColor: Colors.red,
+              shape: RoundedRectangleBorder(
+                borderRadius: BorderRadius.circular(10),
+              ),
+            ),
+            child: Text('Remove', style: TextStyle(color: Colors.white)),
+          ),
+        ],
+      ),
+    );
+
+    if (confirm != true) return;
+
+    try {
+      const url = 'https://alyibrahim.pythonanywhere.com/removeCourse';
+      
+      print('🗑️ Removing course...');
+      print('Username: $username');
+      print('Course ID: $courseId');
+      print('Course Name: $courseName');
+      
+      final response = await http.post(
+        Uri.parse(url),
+        headers: {'Content-Type': 'application/json'},
+        body: jsonEncode({
+          'username': username,
+          'course_id': courseId,
+        }),
+      );
+
+      print('Response Status: ${response.statusCode}');
+      print('Response Body: ${response.body}');
+
+      if (response.statusCode == 200) {
+        final jsonResponse = jsonDecode(response.body);
+        if (jsonResponse['success'] != null || jsonResponse['message'] != null) {
+          if (mounted) {
+            setState(() {
+              _courses.removeAt(index);
+              coursesIndex.removeAt(index);
+            });
+
+            ScaffoldMessenger.of(context).showSnackBar(
+              SnackBar(
+                content: Row(
+                  children: [
+                    Icon(Icons.check_circle, color: Colors.white),
+                    SizedBox(width: 12),
+                    Text('Course removed successfully'),
+                  ],
+                ),
+                backgroundColor: Colors.green,
+                behavior: SnackBarBehavior.floating,
+                shape: RoundedRectangleBorder(
+                  borderRadius: BorderRadius.circular(10),
+                ),
+              ),
+            );
+          }
+        } else {
+          throw Exception('Invalid response format: ${response.body}');
+        }
+      } else {
+        throw Exception('Status ${response.statusCode}: ${response.body}');
+      }
+    } catch (error) {
+      print('❌ Error removing course: $error');
+      if (mounted) {
+        ScaffoldMessenger.of(context).showSnackBar(
+          SnackBar(
+            content: Row(
+              children: [
+                Icon(Icons.error_outline, color: Colors.white),
+                SizedBox(width: 12),
+                Text('Failed to remove course'),
+              ],
+            ),
+            backgroundColor: Colors.red,
+            behavior: SnackBarBehavior.floating,
+            shape: RoundedRectangleBorder(
+              borderRadius: BorderRadius.circular(10),
+            ),
+          ),
+        );
+      }
+    }
+  }
+
   Future<void> fetchCourses() async {
     if (!mounted) return; // Check if the widget is still mounted
     setState(() {
@@ -618,53 +735,98 @@ class _ProfilepageState extends State<Profilepage> {
                   ..._courses.asMap().entries.map((entry) {
                     final index = entry.key;
                     final course = entry.value;
-                    return Container(
-                      padding: const EdgeInsets.symmetric(
-                          horizontal: 20, vertical: 16),
-                      decoration: BoxDecoration(
-                        border: Border(
-                          bottom: index < _courses.length - 1
-                              ? BorderSide(color: Colors.grey[100]!, width: 1)
-                              : BorderSide.none,
+                    return Dismissible(
+                      key: Key(coursesIndex[index]),
+                      direction: DismissDirection.endToStart,
+                      background: Container(
+                        alignment: Alignment.centerRight,
+                        padding: EdgeInsets.only(right: 20),
+                        decoration: BoxDecoration(
+                          gradient: LinearGradient(
+                            colors: [Colors.red.shade300, Colors.red.shade600],
+                            begin: Alignment.centerLeft,
+                            end: Alignment.centerRight,
+                          ),
+                        ),
+                        child: Row(
+                          mainAxisAlignment: MainAxisAlignment.end,
+                          children: [
+                            Icon(Icons.delete_rounded,
+                                color: Colors.white, size: 28),
+                            SizedBox(width: 8),
+                            Text(
+                              'Remove',
+                              style: TextStyle(
+                                color: Colors.white,
+                                fontWeight: FontWeight.bold,
+                                fontSize: 16,
+                              ),
+                            ),
+                          ],
                         ),
                       ),
-                      child: Row(
-                        children: [
-                          Container(
-                            width: 40,
-                            height: 40,
-                            decoration: BoxDecoration(
-                              gradient: LinearGradient(
-                                colors: [
-                                  AppConstants.primaryCyan,
-                                  AppConstants.primaryBlue,
-                                ],
+                      confirmDismiss: (direction) async {
+                        await removeCourse(index);
+                        return false; // We handle removal in removeCourse
+                      },
+                      child: Container(
+                        padding: const EdgeInsets.symmetric(
+                            horizontal: 20, vertical: 16),
+                        decoration: BoxDecoration(
+                          color: Colors.white,
+                          border: Border(
+                            bottom: index < _courses.length - 1
+                                ? BorderSide(color: Colors.grey[100]!, width: 1)
+                                : BorderSide.none,
+                          ),
+                        ),
+                        child: Row(
+                          children: [
+                            Container(
+                              width: 40,
+                              height: 40,
+                              decoration: BoxDecoration(
+                                gradient: LinearGradient(
+                                  colors: [
+                                    AppConstants.primaryCyan,
+                                    AppConstants.primaryBlue,
+                                  ],
+                                ),
+                                borderRadius: BorderRadius.circular(10),
                               ),
-                              borderRadius: BorderRadius.circular(10),
-                            ),
-                            child: Center(
-                              child: Text(
-                                '${index + 1}',
-                                style: const TextStyle(
-                                  color: Colors.white,
-                                  fontSize: 16,
-                                  fontWeight: FontWeight.w700,
+                              child: Center(
+                                child: Text(
+                                  '${index + 1}',
+                                  style: const TextStyle(
+                                    color: Colors.white,
+                                    fontSize: 16,
+                                    fontWeight: FontWeight.w700,
+                                  ),
                                 ),
                               ),
                             ),
-                          ),
-                          const SizedBox(width: 15),
-                          Expanded(
-                            child: Text(
-                              course,
-                              style: const TextStyle(
-                                fontSize: 15,
-                                fontWeight: FontWeight.w600,
-                                color: Color(0xFF165d96),
+                            const SizedBox(width: 15),
+                            Expanded(
+                              child: Text(
+                                course,
+                                style: const TextStyle(
+                                  fontSize: 15,
+                                  fontWeight: FontWeight.w600,
+                                  color: Color(0xFF165d96),
+                                ),
                               ),
                             ),
-                          ),
-                        ],
+                            IconButton(
+                              icon: Icon(
+                                Icons.delete_outline_rounded,
+                                color: Colors.red.shade400,
+                                size: 24,
+                              ),
+                              onPressed: () => removeCourse(index),
+                              tooltip: 'Remove course',
+                            ),
+                          ],
+                        ),
                       ),
                     );
                   }).toList(),

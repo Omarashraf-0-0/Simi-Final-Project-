@@ -11,11 +11,15 @@ import 'package:studymate/theme/theme.dart';
 import 'package:studymate/theme/theme_manager.dart';
 import 'package:studymate/pages/Notifications/NotificationClass.dart';
 import 'package:studymate/pages/Notifications/InAppMessagingNotification.dart';
+import 'package:studymate/services/enhanced_notification_service.dart';
+import 'package:studymate/services/schedule_notification_sync.dart';
 import 'package:studymate/router/app_router.dart';
+import 'package:go_router/go_router.dart';
 
 Future<void> firebaseMessagingBackgroundHandler(RemoteMessage message) async {
   // await Firebase.initializeApp();
   print('Handling background message ${message.messageId}');
+  // Navigation will be handled when app is opened
 }
 
 ThemeManager themeManager = ThemeManager();
@@ -40,18 +44,53 @@ void main() async {
   // Initialize timezone data
   tz.initializeTimeZones();
 
-  // Initialize NotificationService
+  // Initialize NotificationService (old)
   await NotificationService().init();
+
+  // Initialize Enhanced Notification Service (new comprehensive system)
+  await EnhancedNotificationService().initialize();
 
   // Initialize MessagingService
   await MessagingService.initialize((payload) {
     print("User tapped notification with payload: $payload");
+    // Navigation will be handled in _MyAppState
   });
+
+  // Sync all schedule, quiz, and assignment notifications
+  final scheduleSync = ScheduleNotificationSync();
+  await scheduleSync.syncAllNotifications();
 
   // Setup background message handler
   FirebaseMessaging.onBackgroundMessage(firebaseMessagingBackgroundHandler);
 
   runApp(MyApp());
+}
+
+// Helper function to handle notification navigation
+void handleNotificationNavigation(Map<String, dynamic> data) {
+  final context = rootNavigatorKey.currentContext;
+  if (context == null) return;
+
+  final type = data['type'];
+  switch (type) {
+    case 'schedule':
+      context.go(AppRoutes.schedule);
+      break;
+    case 'rank':
+      context.go(AppRoutes.profile);
+      break;
+    case 'quiz':
+      context.go(AppRoutes.quiz);
+      break;
+    case 'assignment':
+      context.go(AppRoutes.resources);
+      break;
+    case 'notification_settings':
+      context.go(AppRoutes.notificationSettings);
+      break;
+    default:
+      context.go(AppRoutes.home);
+  }
 }
 
 class MyApp extends StatefulWidget {
@@ -72,7 +111,20 @@ class _MyAppState extends State<MyApp> {
     MessagingService.onMessage.listen(MessagingService.invokeLocalNotification);
     MessagingService.onMessageOpenedApp.listen((RemoteMessage message) {
       print('Notification opened: ${message.data}');
-      // Handle navigation based on message data if needed
+      // Handle navigation using go_router
+      if (message.data.isNotEmpty) {
+        handleNotificationNavigation(message.data);
+      }
+    });
+    
+    // Handle notification tap from terminated state
+    FirebaseMessaging.instance.getInitialMessage().then((RemoteMessage? message) {
+      if (message != null && message.data.isNotEmpty) {
+        // Delay navigation to ensure app is fully initialized
+        Future.delayed(const Duration(milliseconds: 500), () {
+          handleNotificationNavigation(message.data);
+        });
+      }
     });
   }
 

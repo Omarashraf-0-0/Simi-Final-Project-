@@ -2,8 +2,10 @@
 
 import 'package:flutter/material.dart';
 import 'package:percent_indicator/circular_percent_indicator.dart';
+import 'package:go_router/go_router.dart';
 import 'package:studymate/pages/HomePage/HomePage.dart';
 import 'package:studymate/pages/XPChangePopup.dart';
+import 'package:studymate/router/app_router.dart';
 import 'ViewAnswer.dart';
 
 class QuizScore extends StatefulWidget {
@@ -40,6 +42,7 @@ class _QuizScoreState extends State<QuizScore> {
   void showXPChangePopup(BuildContext context, int xpChange, String message) {
     showDialog(
       context: context,
+      useRootNavigator: false,
       barrierDismissible: false, // Prevent closing the popup by tapping outside
       builder: (BuildContext context) {
         return XPChangePopup(
@@ -130,9 +133,8 @@ class _QuizScoreState extends State<QuizScore> {
               Spacer(),
               ElevatedButton(
                 onPressed: () {
-                  // Navigate to ViewAnswer screen
-                  Navigator.push(
-                    context,
+                  // Navigate to ViewAnswer screen using go_router
+                  Navigator.of(context, rootNavigator: false).push(
                     MaterialPageRoute(
                       builder: (_) => ViewAnswer(
                         questions: widget.questions,
@@ -163,12 +165,13 @@ class _QuizScoreState extends State<QuizScore> {
               SizedBox(height: 20),
               ElevatedButton(
                 onPressed: () {
-                  // Navigate to the home page
-                  Navigator.pushAndRemoveUntil(
-                    context,
-                    MaterialPageRoute(builder: (context) => Homepage()),
-                    (Route<dynamic> route) => false,
-                  );
+                  // Navigate to the home page using go_router
+                  // First, pop all quiz pages from the stack
+                  while (Navigator.of(context, rootNavigator: false).canPop()) {
+                    Navigator.of(context, rootNavigator: false).pop();
+                  }
+                  // Then navigate to home using go_router
+                  context.go(AppRoutes.home);
                 },
                 style: ElevatedButton.styleFrom(
                   backgroundColor:

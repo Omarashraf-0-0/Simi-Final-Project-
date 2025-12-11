@@ -77,6 +77,7 @@ class _HomepageState extends State<Homepage> {
 
     showDialog(
       context: context,
+      useRootNavigator: false,
       barrierDismissible: true,
       builder: (BuildContext context) {
         return Dialog(
@@ -230,8 +231,14 @@ class _HomepageState extends State<Homepage> {
                                   size: 14,
                                   color: Colors.grey[400],
                                 ),
-                                onTap: () {
-                                  // Handle notification tap
+                                onTap: () async {
+                                  // Show notification details popup
+                                  Navigator.pop(context); // Close notification list first
+                                  _showNotificationDetailPopup(
+                                    title: notification['title'] ?? '',
+                                    body: notification['body'] ?? '',
+                                    notificationId: notification['id'] ?? '',
+                                  );
                                 },
                               ),
                             );
@@ -277,14 +284,9 @@ class _HomepageState extends State<Homepage> {
                       child: ElevatedButton(
                         onPressed: () {
                           Navigator.pop(context);
-                          Navigator.push(
-                            context,
-                            MaterialPageRoute(
-                              builder: (context) => NotificationPage(
-                                notifications: _notifications,
-                              ),
-                            ),
-                          );
+                          context.go(AppRoutes.notifications, extra: {
+                            'notifications': _notifications,
+                          });
                         },
                         style: ElevatedButton.styleFrom(
                           backgroundColor: primaryColor,
@@ -1046,11 +1048,11 @@ class _HomepageState extends State<Homepage> {
 
   Future<void> fetchNotifications() async {
     const url =
-        'https://alyibrahim.pythonanywhere.com/getNotification'; // Replace with your actual Flask server URL
-    final username = Hive.box('userBox').get('id');
-    print("USERNAME: $username");
+        'https://alyibrahim.pythonanywhere.com/getNotification';
+    final userId = Hive.box('userBox').get('id');
+    print("User ID: $userId");
     final Map<String, dynamic> requestBody = {
-      'username': username,
+      'username': userId,  // Backend expects 'username' parameter (even though it's user_id value)
     };
     final response = await http.post(
       Uri.parse(url),
@@ -1060,7 +1062,7 @@ class _HomepageState extends State<Homepage> {
 
     if (response.statusCode == 200) {
       final jsonResponse = jsonDecode(response.body);
-      print("print the json: $jsonResponse");
+      print("Notifications response: $jsonResponse");
       if (mounted) {
         setState(() {
           print("jsonResponse: $jsonResponse");
@@ -1071,12 +1073,211 @@ class _HomepageState extends State<Homepage> {
                     "id": n["id"].toString()
                   })
               .toList();
-          print("notifications: $notifications");
+          print("Parsed notifications: $notifications");
           _notifications = notifications;
         });
       }
     } else {
-      print('Request failed with status: ${response.body}.');
+      print('Request failed with status: ${response.statusCode} - ${response.body}');
     }
+  }
+
+  // Mark notification as read and remove it
+  Future<void> markNotificationAsRead(String notificationId) async {
+    const url = 'https://alyibrahim.pythonanywhere.com/deleteNotification';
+    
+    try {
+      final response = await http.post(
+        Uri.parse(url),
+        headers: {'Content-Type': 'application/json'},
+        body: jsonEncode({
+          'notificationId': notificationId,
+        }),
+      );
+
+      if (response.statusCode == 200) {
+        // Remove from local list
+        if (mounted) {
+          setState(() {
+            _notifications.removeWhere((n) => n['id'] == notificationId);
+          });
+        }
+        print('Notification marked as read: $notificationId');
+      } else {
+        print('Failed to mark notification as read: ${response.statusCode}');
+      }
+    } catch (e) {
+      print('Error marking notification as read: $e');
+    }
+  }
+
+  // Show notification detail popup
+  void _showNotificationDetailPopup({
+    required String title,
+    required String body,
+    required String notificationId,
+  }) {
+    final Color primaryColor = Color(0xFF1c74bb);
+    final Color accentColor = Color(0xFF18bebc);
+
+    showDialog(
+      context: context,
+      useRootNavigator: false,
+      barrierDismissible: true,
+      builder: (BuildContext dialogContext) {
+        return Dialog(
+          shape: RoundedRectangleBorder(
+            borderRadius: BorderRadius.circular(25),
+          ),
+          elevation: 16,
+          child: Container(
+            constraints: BoxConstraints(maxWidth: 400),
+            decoration: BoxDecoration(
+              borderRadius: BorderRadius.circular(25),
+              color: Colors.white,
+            ),
+            child: Column(
+              mainAxisSize: MainAxisSize.min,
+              children: [
+                // Header with gradient
+                Container(
+                  padding: EdgeInsets.all(24),
+                  decoration: BoxDecoration(
+                    gradient: LinearGradient(
+                      begin: Alignment.topLeft,
+                      end: Alignment.bottomRight,
+                      colors: [primaryColor, accentColor],
+                    ),
+                    borderRadius: BorderRadius.only(
+                      topLeft: Radius.circular(25),
+                      topRight: Radius.circular(25),
+                    ),
+                  ),
+                  child: Row(
+                    children: [
+                      Container(
+                        padding: EdgeInsets.all(12),
+                        decoration: BoxDecoration(
+                          color: Colors.white.withOpacity(0.2),
+                          borderRadius: BorderRadius.circular(15),
+                        ),
+                        child: Icon(
+                          Icons.notifications_active_rounded,
+                          color: Colors.white,
+                          size: 28,
+                        ),
+                      ),
+                      SizedBox(width: 16),
+                      Expanded(
+                        child: Text(
+                          title,
+                          style: TextStyle(
+                            color: Colors.white,
+                            fontSize: 20,
+                            fontWeight: FontWeight.bold,
+                          ),
+                        ),
+                      ),
+                    ],
+                  ),
+                ),
+                // Body content
+                Container(
+                  padding: EdgeInsets.all(24),
+                  constraints: BoxConstraints(maxHeight: 300),
+                  child: SingleChildScrollView(
+                    child: Text(
+                      body,
+                      style: TextStyle(
+                        fontSize: 16,
+                        color: Colors.grey[800],
+                        height: 1.5,
+                      ),
+                    ),
+                  ),
+                ),
+                // Action buttons
+                Container(
+                  padding: EdgeInsets.fromLTRB(16, 0, 16, 16),
+                  child: Row(
+                    children: [
+                      Expanded(
+                        child: OutlinedButton(
+                          onPressed: () {
+                            Navigator.of(dialogContext).pop();
+                          },
+                          style: OutlinedButton.styleFrom(
+                            padding: EdgeInsets.symmetric(vertical: 14),
+                            side: BorderSide(color: primaryColor, width: 2),
+                            shape: RoundedRectangleBorder(
+                              borderRadius: BorderRadius.circular(15),
+                            ),
+                          ),
+                          child: Text(
+                            'Close',
+                            style: TextStyle(
+                              color: primaryColor,
+                              fontSize: 15,
+                              fontWeight: FontWeight.w600,
+                            ),
+                          ),
+                        ),
+                      ),
+                      SizedBox(width: 12),
+                      Expanded(
+                        child: ElevatedButton(
+                          onPressed: () async {
+                            // Mark as read and close dialog
+                            await markNotificationAsRead(notificationId);
+                            Navigator.of(dialogContext).pop();
+                            
+                            // Show confirmation
+                            if (mounted) {
+                              ScaffoldMessenger.of(context).showSnackBar(
+                                SnackBar(
+                                  content: Row(
+                                    children: [
+                                      Icon(Icons.check_circle, color: Colors.white, size: 20),
+                                      SizedBox(width: 8),
+                                      Text('Marked as read'),
+                                    ],
+                                  ),
+                                  backgroundColor: Colors.green,
+                                  behavior: SnackBarBehavior.floating,
+                                  shape: RoundedRectangleBorder(
+                                    borderRadius: BorderRadius.circular(10),
+                                  ),
+                                  duration: Duration(seconds: 2),
+                                ),
+                              );
+                            }
+                          },
+                          style: ElevatedButton.styleFrom(
+                            backgroundColor: primaryColor,
+                            foregroundColor: Colors.white,
+                            padding: EdgeInsets.symmetric(vertical: 14),
+                            elevation: 0,
+                            shape: RoundedRectangleBorder(
+                              borderRadius: BorderRadius.circular(15),
+                            ),
+                          ),
+                          child: Text(
+                            'Mark as Read',
+                            style: TextStyle(
+                              fontSize: 15,
+                              fontWeight: FontWeight.w600,
+                            ),
+                          ),
+                        ),
+                      ),
+                    ],
+                  ),
+                ),
+              ],
+            ),
+          ),
+        );
+      },
+    );
   }
 }

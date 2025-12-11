@@ -249,8 +249,7 @@ class _QuizState extends State<Quiz> {
       await updateUserXP(xpChange);
 
       // Navigate to the QuizScore page and pass xpChange and message
-      Navigator.push(
-        context,
+      Navigator.of(context, rootNavigator: false).push(
         MaterialPageRoute(
           builder: (_) => QuizScore(
             score: correctAnswers,

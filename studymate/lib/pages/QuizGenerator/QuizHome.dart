@@ -46,8 +46,7 @@ class _QuizHomeState extends State<QuizHome> {
               Center(
                 child: ElevatedButton(
                   onPressed: () {
-                    Navigator.push(
-                      context,
+                    Navigator.of(context, rootNavigator: false).push(
                       MaterialPageRoute(builder: (context) => QuizOptions()),
                     );
                   },

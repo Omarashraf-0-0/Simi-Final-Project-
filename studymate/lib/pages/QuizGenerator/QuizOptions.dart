@@ -302,8 +302,7 @@ class _QuizOptionsState extends State<QuizOptions> {
         });
 
         // Navigate to the Quiz screen and pass the quiz data and co_id
-        Navigator.push(
-          context,
+        Navigator.of(context, rootNavigator: false).push(
           MaterialPageRoute(
             builder: (context) => Quiz(
               quizData: jsonResponse,

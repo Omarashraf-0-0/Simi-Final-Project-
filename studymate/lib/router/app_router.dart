@@ -19,6 +19,7 @@ import 'package:studymate/pages/Game/GameHome.dart';
 import 'package:studymate/pages/Game/GameLeaderBoard.dart';
 import 'package:studymate/pages/AboLayla/AboLayla.dart';
 import 'package:studymate/pages/Notifications/Notification.dart';
+import 'package:studymate/pages/Settings/NotificationSettingsPage.dart';
 import 'package:studymate/pages/Performance/PerformanceHome.dart';
 import 'package:studymate/pages/Login%20&%20Register/Forget_Pass.dart';
 import 'package:studymate/pages/OTP.dart';
@@ -41,6 +42,7 @@ class AppRoutes {
   static const schedule = '/schedule';
   static const resources = '/resources';
   static const notifications = '/notifications';
+  static const notificationSettings = '/notification-settings';
   static const performance = '/performance';
 
   // Resources routes
@@ -186,6 +188,11 @@ final GoRouter appRouter = GoRouter(
         final extra = state.extra as Map<String, dynamic>?;
         return NotificationPage(notifications: extra?['notifications'] ?? []);
       },
+    ),
+    GoRoute(
+      path: AppRoutes.notificationSettings,
+      name: 'notificationSettings',
+      builder: (context, state) => const NotificationSettingsPage(),
     ),
     GoRoute(
       path: AppRoutes.performance,
