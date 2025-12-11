@@ -63,6 +63,7 @@ flutter:
   assets:
     - assets/
     - assets/img/
+    - assets/img/GameCharacters/
     - assets/animations/
 
   fonts:

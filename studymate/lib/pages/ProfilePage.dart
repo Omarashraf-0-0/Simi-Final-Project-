@@ -312,242 +312,1075 @@ class _ProfilepageState extends State<Profilepage> {
     }
   }
 
+  Widget _buildModernStatCard(
+      String value, String label, IconData icon, List<Color> gradientColors) {
+    return Container(
+      padding: const EdgeInsets.all(18),
+      decoration: BoxDecoration(
+        color: Colors.white,
+        borderRadius: BorderRadius.circular(20),
+        boxShadow: [
+          BoxShadow(
+            color: gradientColors[0].withOpacity(0.2),
+            blurRadius: 15,
+            offset: const Offset(0, 8),
+          ),
+        ],
+      ),
+      child: Column(
+        children: [
+          Container(
+            padding: const EdgeInsets.all(12),
+            decoration: BoxDecoration(
+              gradient: LinearGradient(colors: gradientColors),
+              shape: BoxShape.circle,
+              boxShadow: [
+                BoxShadow(
+                  color: gradientColors[0].withOpacity(0.4),
+                  blurRadius: 10,
+                  offset: const Offset(0, 4),
+                ),
+              ],
+            ),
+            child: Icon(icon, color: Colors.white, size: 26),
+          ),
+          const SizedBox(height: 12),
+          Text(
+            value,
+            style: TextStyle(
+              fontSize: 22,
+              fontWeight: FontWeight.w800,
+              color: gradientColors[1],
+              letterSpacing: 0.5,
+            ),
+          ),
+          const SizedBox(height: 4),
+          Text(
+            label,
+            style: TextStyle(
+              fontSize: 12,
+              fontWeight: FontWeight.w600,
+              color: Colors.grey[600],
+            ),
+            textAlign: TextAlign.center,
+            maxLines: 1,
+            overflow: TextOverflow.ellipsis,
+          ),
+        ],
+      ),
+    );
+  }
+
+  Widget _buildInfoCard(
+      String title, IconData titleIcon, List<Map<String, dynamic>> items) {
+    return Padding(
+      padding: const EdgeInsets.symmetric(horizontal: 20),
+      child: Container(
+        decoration: BoxDecoration(
+          color: Colors.white,
+          borderRadius: BorderRadius.circular(20),
+          boxShadow: [
+            BoxShadow(
+              color: Colors.black.withOpacity(0.05),
+              blurRadius: 15,
+              offset: const Offset(0, 5),
+            ),
+          ],
+        ),
+        child: Column(
+          crossAxisAlignment: CrossAxisAlignment.start,
+          children: [
+            Padding(
+              padding: const EdgeInsets.all(20),
+              child: Row(
+                children: [
+                  Container(
+                    padding: const EdgeInsets.all(10),
+                    decoration: BoxDecoration(
+                      gradient: LinearGradient(
+                        colors: [
+                          AppConstants.primaryBlue.withOpacity(0.2),
+                          AppConstants.primaryCyan.withOpacity(0.2),
+                        ],
+                      ),
+                      borderRadius: BorderRadius.circular(12),
+                    ),
+                    child: Icon(
+                      titleIcon,
+                      color: AppConstants.primaryBlue,
+                      size: 24,
+                    ),
+                  ),
+                  const SizedBox(width: 12),
+                  Text(
+                    title,
+                    style: const TextStyle(
+                      fontSize: 20,
+                      fontWeight: FontWeight.w700,
+                      color: Color(0xFF165d96),
+                    ),
+                  ),
+                ],
+              ),
+            ),
+            const Divider(height: 1),
+            ...items
+                .map((item) => _buildModernInfoRow(
+                      item['label'] as String,
+                      item['value'] as String,
+                      item['icon'] as IconData,
+                    ))
+                .toList(),
+          ],
+        ),
+      ),
+    );
+  }
+
+  Widget _buildModernInfoRow(String label, String value, IconData icon) {
+    return Container(
+      padding: const EdgeInsets.symmetric(horizontal: 20, vertical: 16),
+      decoration: BoxDecoration(
+        border: Border(
+          bottom: BorderSide(
+            color: Colors.grey[100]!,
+            width: 1,
+          ),
+        ),
+      ),
+      child: Row(
+        children: [
+          Container(
+            padding: const EdgeInsets.all(8),
+            decoration: BoxDecoration(
+              color: AppConstants.primaryCyan.withOpacity(0.1),
+              borderRadius: BorderRadius.circular(10),
+            ),
+            child: Icon(
+              icon,
+              color: AppConstants.primaryCyan,
+              size: 20,
+            ),
+          ),
+          const SizedBox(width: 15),
+          Expanded(
+            child: Column(
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: [
+                Text(
+                  label,
+                  style: TextStyle(
+                    fontSize: 12,
+                    fontWeight: FontWeight.w600,
+                    color: Colors.grey[600],
+                  ),
+                ),
+                const SizedBox(height: 4),
+                Text(
+                  value,
+                  style: const TextStyle(
+                    fontSize: 15,
+                    fontWeight: FontWeight.w600,
+                    color: Color(0xFF165d96),
+                  ),
+                ),
+              ],
+            ),
+          ),
+        ],
+      ),
+    );
+  }
+
+  Widget _buildCoursesCard() {
+    return Padding(
+      padding: const EdgeInsets.symmetric(horizontal: 20),
+      child: Container(
+        decoration: BoxDecoration(
+          color: Colors.white,
+          borderRadius: BorderRadius.circular(20),
+          boxShadow: [
+            BoxShadow(
+              color: Colors.black.withOpacity(0.05),
+              blurRadius: 15,
+              offset: const Offset(0, 5),
+            ),
+          ],
+        ),
+        child: Column(
+          crossAxisAlignment: CrossAxisAlignment.start,
+          children: [
+            Padding(
+              padding: const EdgeInsets.all(20),
+              child: Row(
+                children: [
+                  Container(
+                    padding: const EdgeInsets.all(10),
+                    decoration: BoxDecoration(
+                      gradient: LinearGradient(
+                        colors: [
+                          AppConstants.primaryBlue.withOpacity(0.2),
+                          AppConstants.primaryCyan.withOpacity(0.2),
+                        ],
+                      ),
+                      borderRadius: BorderRadius.circular(12),
+                    ),
+                    child: Icon(
+                      Icons.menu_book_rounded,
+                      color: AppConstants.primaryBlue,
+                      size: 24,
+                    ),
+                  ),
+                  const SizedBox(width: 12),
+                  Text(
+                    'My Courses (${_courses.length})',
+                    style: const TextStyle(
+                      fontSize: 20,
+                      fontWeight: FontWeight.w700,
+                      color: Color(0xFF165d96),
+                    ),
+                  ),
+                ],
+              ),
+            ),
+            if (isLoading)
+              const Padding(
+                padding: EdgeInsets.all(40),
+                child: Center(child: CircularProgressIndicator()),
+              )
+            else if (isError)
+              Padding(
+                padding: const EdgeInsets.all(40),
+                child: Center(
+                  child: Column(
+                    children: [
+                      Icon(Icons.error_outline,
+                          size: 48, color: Colors.red[400]),
+                      const SizedBox(height: 12),
+                      Text(
+                        'Failed to load courses',
+                        style: TextStyle(
+                          color: Colors.red[400],
+                          fontSize: 16,
+                          fontWeight: FontWeight.w600,
+                        ),
+                      ),
+                    ],
+                  ),
+                ),
+              )
+            else if (_courses.isEmpty)
+              Padding(
+                padding: const EdgeInsets.all(40),
+                child: Center(
+                  child: Column(
+                    children: [
+                      Icon(Icons.school_outlined,
+                          size: 48, color: Colors.grey[400]),
+                      const SizedBox(height: 12),
+                      Text(
+                        'No courses yet',
+                        style: TextStyle(
+                          color: Colors.grey[600],
+                          fontSize: 16,
+                          fontWeight: FontWeight.w600,
+                        ),
+                      ),
+                    ],
+                  ),
+                ),
+              )
+            else
+              Column(
+                children: [
+                  const Divider(height: 1),
+                  ..._courses.asMap().entries.map((entry) {
+                    final index = entry.key;
+                    final course = entry.value;
+                    return Container(
+                      padding: const EdgeInsets.symmetric(
+                          horizontal: 20, vertical: 16),
+                      decoration: BoxDecoration(
+                        border: Border(
+                          bottom: index < _courses.length - 1
+                              ? BorderSide(color: Colors.grey[100]!, width: 1)
+                              : BorderSide.none,
+                        ),
+                      ),
+                      child: Row(
+                        children: [
+                          Container(
+                            width: 40,
+                            height: 40,
+                            decoration: BoxDecoration(
+                              gradient: LinearGradient(
+                                colors: [
+                                  AppConstants.primaryCyan,
+                                  AppConstants.primaryBlue,
+                                ],
+                              ),
+                              borderRadius: BorderRadius.circular(10),
+                            ),
+                            child: Center(
+                              child: Text(
+                                '${index + 1}',
+                                style: const TextStyle(
+                                  color: Colors.white,
+                                  fontSize: 16,
+                                  fontWeight: FontWeight.w700,
+                                ),
+                              ),
+                            ),
+                          ),
+                          const SizedBox(width: 15),
+                          Expanded(
+                            child: Text(
+                              course,
+                              style: const TextStyle(
+                                fontSize: 15,
+                                fontWeight: FontWeight.w600,
+                                color: Color(0xFF165d96),
+                              ),
+                            ),
+                          ),
+                        ],
+                      ),
+                    );
+                  }).toList(),
+                ],
+              ),
+          ],
+        ),
+      ),
+    );
+  }
+
   @override
   Widget build(BuildContext context) {
     final size = MediaQuery.of(context).size;
-    final theme = Theme.of(context);
+
     return Scaffold(
-      backgroundColor: theme.scaffoldBackgroundColor,
-      appBar: AppConstants.buildAppBar(
-        title: 'Profile',
-        leading: AppConstants.buildBackButton(context),
+      backgroundColor: const Color(0xFFF5F7FA),
+      extendBodyBehindAppBar: true,
+      appBar: AppBar(
+        backgroundColor: Colors.transparent,
+        elevation: 0,
+        leading: Padding(
+          padding: const EdgeInsets.only(left: 8),
+          child: Center(
+            child: Material(
+              color: Colors.transparent,
+              child: InkWell(
+                onTap: () => Navigator.pop(context),
+                borderRadius: BorderRadius.circular(12),
+                child: Container(
+                  padding: const EdgeInsets.all(8),
+                  decoration: BoxDecoration(
+                    color: Colors.white.withOpacity(0.9),
+                    borderRadius: BorderRadius.circular(12),
+                    border: Border.all(
+                      color: Colors.white,
+                      width: 1,
+                    ),
+                    boxShadow: [
+                      BoxShadow(
+                        color: Colors.black.withOpacity(0.1),
+                        blurRadius: 10,
+                        offset: const Offset(0, 4),
+                      ),
+                    ],
+                  ),
+                  child: Icon(
+                    Icons.arrow_back_ios_new_rounded,
+                    size: 20,
+                    color: AppConstants.primaryBlueDark,
+                  ),
+                ),
+              ),
+            ),
+          ),
+        ),
       ),
       body: _isDataLoading
-          ? SingleChildScrollView(
-              child: Padding(
-                padding: EdgeInsets.symmetric(
-                  horizontal: size.width * 0.08,
-                  vertical: size.height * 0.04,
+          ? _buildShimmerContent(size)
+          : Stack(
+              children: [
+                // Enhanced Background with gradient and pattern
+                Container(
+                  height: size.height,
+                  decoration: BoxDecoration(
+                    gradient: LinearGradient(
+                      begin: Alignment.topLeft,
+                      end: Alignment.bottomRight,
+                      colors: [
+                        const Color(0xFFF5F7FA),
+                        const Color(0xFFE8EFF5),
+                        const Color(0xFFD6E9F5),
+                      ],
+                    ),
+                  ),
                 ),
-                child: _buildShimmerContent(size),
-              ),
-            )
-          : SingleChildScrollView(
-              child: Padding(
-                padding: EdgeInsets.symmetric(
-                  horizontal: size.width * 0.08,
-                  vertical: size.height * 0.04,
-                ),
-                child: Column(
-                  crossAxisAlignment: CrossAxisAlignment.center,
-                  children: [
-                    // Profile Picture and Name
-                    Stack(
-                      alignment: Alignment.bottomRight,
-                      children: [
-                        CircleAvatar(
-                          radius: 60,
-                          backgroundColor: AppConstants.primaryCyan,
-                          backgroundImage:
-                              Hive.box('userBox').get('profileImageBase64') !=
-                                      null
-                                  ? MemoryImage(base64Decode(Hive.box('userBox')
-                                      .get('profileImageBase64')))
-                                  : AssetImage('assets/img/default.jpeg')
-                                      as ImageProvider,
-                        ),
-                        GestureDetector(
-                          onTap: _pickImage,
-                          child: CircleAvatar(
-                            radius: 18,
-                            backgroundColor: AppConstants.primaryCyanDark,
-                            child: Icon(Icons.camera_alt,
-                                color: AppConstants.textOnPrimary),
+
+                // Top gradient header with mesh effect
+                Container(
+                  height: size.height * 0.38,
+                  decoration: BoxDecoration(
+                    gradient: LinearGradient(
+                      begin: Alignment.topLeft,
+                      end: Alignment.bottomRight,
+                      colors: [
+                        AppConstants.primaryBlue,
+                        AppConstants.primaryBlueDark,
+                        AppConstants.primaryCyan,
+                      ],
+                      stops: const [0.0, 0.5, 1.0],
+                    ),
+                  ),
+                  child: Stack(
+                    children: [
+                      // Decorative circles
+                      Positioned(
+                        top: -50,
+                        right: -50,
+                        child: Container(
+                          width: 200,
+                          height: 200,
+                          decoration: BoxDecoration(
+                            shape: BoxShape.circle,
+                            color: Colors.white.withOpacity(0.05),
                           ),
                         ),
-                      ],
-                    ),
-                    SizedBox(height: size.height * 0.02),
-                    Text(
-                      _fullName,
-                      style: AppConstants.sectionHeader,
-                    ),
-                    SizedBox(height: size.height * 0.005),
-                    Text(
-                      _title,
-                      style: AppConstants.subtitle.copyWith(
-                        color: _getRankColor(_title),
                       ),
-                    ),
-                    SizedBox(height: size.height * 0.01),
-
-                    // Progress Bar
-                    LinearProgressIndicator(
-                      value: _getProgressValue(_xp, _title),
-                      backgroundColor: Colors.grey[300],
-                      color: _getRankColor(_title),
-                    ),
-                    SizedBox(height: size.height * 0.02),
-
-                    // Stats Row
-                    Row(
-                      mainAxisAlignment: MainAxisAlignment.spaceAround,
-                      children: [
-                        _buildStatCard(
-                            '$_dayStreak',
-                            'Day Streak',
-                            Icons.flash_on_outlined,
-                            const Color(0xFFD1F2EB),
-                            AppConstants.primaryCyan),
-                        _buildStatCard(
-                            '1',
-                            'Top 5 Finishes',
-                            Icons.emoji_events_outlined,
-                            const Color(0xFFFDF1CB),
-                            const Color(0xFFFDD539)),
-                        _buildStatCard('$_xp', 'XP', Icons.star_outline,
-                            const Color(0xFFF1D6FC), const Color(0xFFC174FA)),
-                      ],
-                    ),
-                    SizedBox(height: size.height * 0.03),
-
-                    // Personal Information Section
-                    _buildSectionTitle('Personal Information'),
-                    _buildInfoRow('Email', _email),
-                    _buildInfoRow('Phone Number', _phoneNumber),
-                    _buildInfoRow('Registration Number', _registrationNumber),
-                    SizedBox(height: size.height * 0.02),
-
-                    // College Information Section
-                    _buildSectionTitle('College Information'),
-                    _buildInfoRow('University', _university),
-                    _buildInfoRow('College', _college),
-                    _buildInfoRow('Major', _major),
-                    _buildInfoRow('Term Level', _termLevel),
-                    SizedBox(height: size.height * 0.02),
-
-                    // Courses Section
-                    _buildSectionTitle('Courses'),
-                    isLoading
-                        ? Center(child: CircularProgressIndicator())
-                        : isError
-                            ? Text(
-                                'Failed to load courses',
-                                style: TextStyle(color: Colors.red),
-                              )
-                            : _buildCourses(),
-                    SizedBox(height: size.height * 0.02),
-
-                    // Logout Button
-                    ElevatedButton(
-                      onPressed: () async {
-                        // Implement logout logic
-                        Box userBox = Hive.box('userBox');
-                        await userBox.clear(); // Clear all user data
-                        if (mounted) {
-                          context.go(AppRoutes.login);
-                        }
-                      },
-                      style: ElevatedButton.styleFrom(
-                        backgroundColor: AppConstants.primaryBlueDark,
-                        padding: EdgeInsets.symmetric(
-                            vertical: AppConstants.spacingM + 3,
-                            horizontal: AppConstants.spacingXL + 8),
-                        shape: RoundedRectangleBorder(
-                          borderRadius:
-                              BorderRadius.circular(AppConstants.radiusM + 7),
+                      Positioned(
+                        top: 100,
+                        left: -80,
+                        child: Container(
+                          width: 180,
+                          height: 180,
+                          decoration: BoxDecoration(
+                            shape: BoxShape.circle,
+                            color: Colors.white.withOpacity(0.08),
+                          ),
                         ),
                       ),
-                      child: Text(
-                        'Logout',
-                        style: AppConstants.subtitle.copyWith(
-                          fontWeight: AppConstants.fontWeightBold,
-                          color: AppConstants.textOnPrimary,
+                      Positioned(
+                        bottom: 20,
+                        right: 30,
+                        child: Container(
+                          width: 150,
+                          height: 150,
+                          decoration: BoxDecoration(
+                            shape: BoxShape.circle,
+                            color: Colors.white.withOpacity(0.06),
+                          ),
                         ),
                       ),
-                    ),
-                  ],
+                    ],
+                  ),
                 ),
-              ),
+
+                // Content
+                SingleChildScrollView(
+                  physics: const BouncingScrollPhysics(),
+                  child: Column(
+                    children: [
+                      SizedBox(height: size.height * 0.12),
+
+                      // Profile Card
+                      Padding(
+                        padding: const EdgeInsets.symmetric(horizontal: 20),
+                        child: Container(
+                          decoration: BoxDecoration(
+                            color: Colors.white,
+                            borderRadius: BorderRadius.circular(30),
+                            boxShadow: [
+                              BoxShadow(
+                                color: Colors.black.withOpacity(0.1),
+                                blurRadius: 30,
+                                offset: const Offset(0, 10),
+                              ),
+                            ],
+                          ),
+                          child: Column(
+                            children: [
+                              const SizedBox(height: 30),
+
+                              // Profile Picture with Rank Badge
+                              Stack(
+                                clipBehavior: Clip.none,
+                                children: [
+                                  // Profile Picture
+                                  Container(
+                                    padding: const EdgeInsets.all(5),
+                                    decoration: BoxDecoration(
+                                      shape: BoxShape.circle,
+                                      gradient: LinearGradient(
+                                        colors: [
+                                          _getRankColor(_title),
+                                          _getRankColor(_title)
+                                              .withOpacity(0.6),
+                                        ],
+                                      ),
+                                      boxShadow: [
+                                        BoxShadow(
+                                          color: _getRankColor(_title)
+                                              .withOpacity(0.4),
+                                          blurRadius: 20,
+                                          offset: const Offset(0, 8),
+                                        ),
+                                      ],
+                                    ),
+                                    child: CircleAvatar(
+                                      radius: 65,
+                                      backgroundColor: Colors.white,
+                                      child: CircleAvatar(
+                                        radius: 62,
+                                        backgroundImage: Hive.box('userBox')
+                                                    .get(
+                                                        'profileImageBase64') !=
+                                                null
+                                            ? MemoryImage(base64Decode(
+                                                Hive.box('userBox')
+                                                    .get('profileImageBase64')))
+                                            : const AssetImage(
+                                                    'assets/img/default.jpeg')
+                                                as ImageProvider,
+                                      ),
+                                    ),
+                                  ),
+
+                                  // Camera Button
+                                  Positioned(
+                                    bottom: 5,
+                                    right: 5,
+                                    child: GestureDetector(
+                                      onTap: _pickImage,
+                                      child: Container(
+                                        padding: const EdgeInsets.all(10),
+                                        decoration: BoxDecoration(
+                                          gradient: LinearGradient(
+                                            colors: [
+                                              AppConstants.primaryCyan,
+                                              AppConstants.primaryCyanDark,
+                                            ],
+                                          ),
+                                          shape: BoxShape.circle,
+                                          border: Border.all(
+                                            color: Colors.white,
+                                            width: 3,
+                                          ),
+                                          boxShadow: [
+                                            BoxShadow(
+                                              color: AppConstants.primaryCyan
+                                                  .withOpacity(0.4),
+                                              blurRadius: 10,
+                                              offset: const Offset(0, 4),
+                                            ),
+                                          ],
+                                        ),
+                                        child: const Icon(
+                                          Icons.camera_alt_rounded,
+                                          color: Colors.white,
+                                          size: 20,
+                                        ),
+                                      ),
+                                    ),
+                                  ),
+                                ],
+                              ),
+
+                              const SizedBox(height: 20),
+
+                              // Name
+                              Text(
+                                _fullName,
+                                style: const TextStyle(
+                                  fontSize: 26,
+                                  fontWeight: FontWeight.w800,
+                                  color: Color(0xFF165d96),
+                                  letterSpacing: 0.5,
+                                ),
+                                textAlign: TextAlign.center,
+                              ),
+
+                              const SizedBox(height: 8),
+
+                              // Rank Badge
+                              Container(
+                                padding: const EdgeInsets.symmetric(
+                                  horizontal: 20,
+                                  vertical: 8,
+                                ),
+                                decoration: BoxDecoration(
+                                  gradient: LinearGradient(
+                                    colors: [
+                                      _getRankColor(_title).withOpacity(0.2),
+                                      _getRankColor(_title).withOpacity(0.1),
+                                    ],
+                                  ),
+                                  borderRadius: BorderRadius.circular(20),
+                                  border: Border.all(
+                                    color:
+                                        _getRankColor(_title).withOpacity(0.3),
+                                    width: 1.5,
+                                  ),
+                                ),
+                                child: Row(
+                                  mainAxisSize: MainAxisSize.min,
+                                  children: [
+                                    Icon(
+                                      Icons.military_tech_rounded,
+                                      color: _getRankColor(_title),
+                                      size: 20,
+                                    ),
+                                    const SizedBox(width: 8),
+                                    Text(
+                                      _title,
+                                      style: TextStyle(
+                                        fontSize: 16,
+                                        fontWeight: FontWeight.w700,
+                                        color: _getRankColor(_title),
+                                      ),
+                                    ),
+                                  ],
+                                ),
+                              ),
+
+                              const SizedBox(height: 20),
+
+                              // Progress Bar
+                              Padding(
+                                padding:
+                                    const EdgeInsets.symmetric(horizontal: 30),
+                                child: Column(
+                                  children: [
+                                    Row(
+                                      mainAxisAlignment:
+                                          MainAxisAlignment.spaceBetween,
+                                      children: [
+                                        Text(
+                                          'Progress to Next Rank',
+                                          style: TextStyle(
+                                            fontSize: 13,
+                                            fontWeight: FontWeight.w600,
+                                            color: Colors.grey[700],
+                                          ),
+                                        ),
+                                        Text(
+                                          '${(_getProgressValue(_xp, _title) * 100).toInt()}%',
+                                          style: TextStyle(
+                                            fontSize: 13,
+                                            fontWeight: FontWeight.w700,
+                                            color: _getRankColor(_title),
+                                          ),
+                                        ),
+                                      ],
+                                    ),
+                                    const SizedBox(height: 10),
+                                    ClipRRect(
+                                      borderRadius: BorderRadius.circular(10),
+                                      child: LinearProgressIndicator(
+                                        value: _getProgressValue(_xp, _title),
+                                        minHeight: 12,
+                                        backgroundColor: Colors.grey[200],
+                                        valueColor: AlwaysStoppedAnimation(
+                                          _getRankColor(_title),
+                                        ),
+                                      ),
+                                    ),
+                                  ],
+                                ),
+                              ),
+
+                              const SizedBox(height: 30),
+                            ],
+                          ),
+                        ),
+                      ),
+
+                      const SizedBox(height: 20),
+
+                      // Stats Cards
+                      Padding(
+                        padding: const EdgeInsets.symmetric(horizontal: 20),
+                        child: Row(
+                          children: [
+                            Expanded(
+                              child: _buildModernStatCard(
+                                '$_dayStreak',
+                                'Day Streak',
+                                Icons.local_fire_department_rounded,
+                                [Colors.orange[400]!, Colors.deepOrange[600]!],
+                              ),
+                            ),
+                            const SizedBox(width: 12),
+                            Expanded(
+                              child: _buildModernStatCard(
+                                '$_xp',
+                                'Total XP',
+                                Icons.stars_rounded,
+                                [Colors.amber[400]!, Colors.orange[600]!],
+                              ),
+                            ),
+                            const SizedBox(width: 12),
+                            Expanded(
+                              child: _buildModernStatCard(
+                                '${_courses.length}',
+                                'Courses',
+                                Icons.school_rounded,
+                                [
+                                  AppConstants.primaryCyan,
+                                  AppConstants.primaryBlue
+                                ],
+                              ),
+                            ),
+                          ],
+                        ),
+                      ),
+
+                      const SizedBox(height: 20),
+
+                      // Personal Information Card
+                      _buildInfoCard(
+                        'Personal Information',
+                        Icons.person_rounded,
+                        [
+                          {
+                            'label': 'Email',
+                            'value': _email,
+                            'icon': Icons.email_rounded
+                          },
+                          {
+                            'label': 'Phone',
+                            'value': _phoneNumber,
+                            'icon': Icons.phone_rounded
+                          },
+                          {
+                            'label': 'Registration',
+                            'value': _registrationNumber,
+                            'icon': Icons.badge_rounded
+                          },
+                        ],
+                      ),
+
+                      const SizedBox(height: 15),
+
+                      // College Information Card
+                      _buildInfoCard(
+                        'College Information',
+                        Icons.school_rounded,
+                        [
+                          {
+                            'label': 'University',
+                            'value': _university,
+                            'icon': Icons.account_balance_rounded
+                          },
+                          {
+                            'label': 'College',
+                            'value': _college,
+                            'icon': Icons.business_rounded
+                          },
+                          {
+                            'label': 'Major',
+                            'value': _major,
+                            'icon': Icons.auto_stories_rounded
+                          },
+                          {
+                            'label': 'Term Level',
+                            'value': _termLevel,
+                            'icon': Icons.stairs_rounded
+                          },
+                        ],
+                      ),
+
+                      const SizedBox(height: 15),
+
+                      // Courses Card
+                      _buildCoursesCard(),
+
+                      const SizedBox(height: 20),
+
+                      // Logout Button
+                      Padding(
+                        padding: const EdgeInsets.symmetric(horizontal: 20),
+                        child: Container(
+                          width: double.infinity,
+                          height: 56,
+                          decoration: BoxDecoration(
+                            gradient: LinearGradient(
+                              colors: [
+                                Colors.red[400]!,
+                                Colors.red[600]!,
+                              ],
+                            ),
+                            borderRadius: BorderRadius.circular(16),
+                            boxShadow: [
+                              BoxShadow(
+                                color: Colors.red.withOpacity(0.3),
+                                blurRadius: 15,
+                                offset: const Offset(0, 8),
+                              ),
+                            ],
+                          ),
+                          child: Material(
+                            color: Colors.transparent,
+                            child: InkWell(
+                              onTap: () async {
+                                Box userBox = Hive.box('userBox');
+                                await userBox.clear();
+                                if (mounted) {
+                                  context.go(AppRoutes.login);
+                                }
+                              },
+                              borderRadius: BorderRadius.circular(16),
+                              child: const Center(
+                                child: Row(
+                                  mainAxisSize: MainAxisSize.min,
+                                  children: [
+                                    Icon(
+                                      Icons.logout_rounded,
+                                      color: Colors.white,
+                                      size: 24,
+                                    ),
+                                    SizedBox(width: 12),
+                                    Text(
+                                      'Logout',
+                                      style: TextStyle(
+                                        fontSize: 18,
+                                        fontWeight: FontWeight.w700,
+                                        color: Colors.white,
+                                        letterSpacing: 0.5,
+                                      ),
+                                    ),
+                                  ],
+                                ),
+                              ),
+                            ),
+                          ),
+                        ),
+                      ),
+
+                      const SizedBox(height: 30),
+                    ],
+                  ),
+                ),
+              ],
             ),
     );
   }
 
   Widget _buildShimmerContent(Size size) {
-    return Column(
-      crossAxisAlignment: CrossAxisAlignment.center,
+    return Stack(
       children: [
-        // Profile Picture Placeholder
-        Shimmer.fromColors(
-          baseColor: Theme.of(context).colorScheme.primary,
-          highlightColor: Theme.of(context).colorScheme.secondary,
-          child: CircleAvatar(
-            radius: 60,
-            backgroundColor: Colors.white,
-          ),
-        ),
-        SizedBox(height: size.height * 0.02),
-        // Name Placeholder
-        Shimmer.fromColors(
-          baseColor: Theme.of(context).colorScheme.primary,
-          highlightColor: Theme.of(context).colorScheme.secondary,
-          child: Container(
-            width: size.width * 0.6,
-            height: 20.0,
-            color: Colors.white,
-          ),
-        ),
-        SizedBox(height: size.height * 0.01),
-        // Title Placeholder
-        Shimmer.fromColors(
-          baseColor: Theme.of(context).colorScheme.primary,
-          highlightColor: Theme.of(context).colorScheme.secondary,
-          child: Container(
-            width: size.width * 0.4,
-            height: 18.0,
-            color: Colors.white,
-          ),
-        ),
-        SizedBox(height: size.height * 0.02),
-        // Progress Bar Placeholder
-        Shimmer.fromColors(
-          baseColor: Theme.of(context).colorScheme.primary,
-          highlightColor: Theme.of(context).colorScheme.secondary,
-          child: Container(
-            width: double.infinity,
-            height: 10.0,
-            color: Colors.white,
-          ),
-        ),
-        SizedBox(height: size.height * 0.02),
-        // Stats Row Placeholder
-        Row(
-          mainAxisAlignment: MainAxisAlignment.spaceAround,
-          children: [
-            _buildShimmerStatCard(),
-            _buildShimmerStatCard(),
-            _buildShimmerStatCard(),
-          ],
-        ),
-        SizedBox(height: size.height * 0.03),
-        // Personal Information Section Placeholder
-        _buildShimmerSection(size),
-        // College Information Section Placeholder
-        _buildShimmerSection(size),
-        // Courses Section Placeholder
-        _buildShimmerSection(size),
-        SizedBox(height: size.height * 0.02),
-        // Logout Button Placeholder
-        Shimmer.fromColors(
-          baseColor: Colors.grey[300]!,
-          highlightColor: Colors.grey[100]!,
-          child: Container(
-            width: double.infinity,
-            height: 50.0,
-            decoration: BoxDecoration(
-              color: Colors.white,
-              borderRadius: BorderRadius.circular(15),
+        // Background gradient (same as main design)
+        Container(
+          height: size.height,
+          decoration: BoxDecoration(
+            gradient: LinearGradient(
+              begin: Alignment.topLeft,
+              end: Alignment.bottomRight,
+              colors: [
+                const Color(0xFFF5F7FA),
+                const Color(0xFFE8EFF5),
+                const Color(0xFFD6E9F5),
+              ],
             ),
+          ),
+        ),
+
+        // Top gradient header
+        Container(
+          height: size.height * 0.38,
+          decoration: BoxDecoration(
+            gradient: LinearGradient(
+              begin: Alignment.topLeft,
+              end: Alignment.bottomRight,
+              colors: [
+                AppConstants.primaryBlue,
+                AppConstants.primaryBlueDark,
+                AppConstants.primaryCyan,
+              ],
+            ),
+          ),
+        ),
+
+        // Content
+        SingleChildScrollView(
+          physics: const BouncingScrollPhysics(),
+          child: Column(
+            children: [
+              SizedBox(height: size.height * 0.12),
+
+              // Profile Card Shimmer
+              Padding(
+                padding: const EdgeInsets.symmetric(horizontal: 20),
+                child: Container(
+                  decoration: BoxDecoration(
+                    color: Colors.white,
+                    borderRadius: BorderRadius.circular(30),
+                    boxShadow: [
+                      BoxShadow(
+                        color: Colors.black.withOpacity(0.1),
+                        blurRadius: 30,
+                        offset: const Offset(0, 10),
+                      ),
+                    ],
+                  ),
+                  child: Column(
+                    children: [
+                      const SizedBox(height: 30),
+
+                      // Profile Picture Shimmer
+                      Shimmer.fromColors(
+                        baseColor: Colors.grey[300]!,
+                        highlightColor: Colors.grey[100]!,
+                        child: Container(
+                          width: 140,
+                          height: 140,
+                          decoration: BoxDecoration(
+                            shape: BoxShape.circle,
+                            color: Colors.white,
+                          ),
+                        ),
+                      ),
+
+                      const SizedBox(height: 20),
+
+                      // Name Shimmer
+                      Shimmer.fromColors(
+                        baseColor: Colors.grey[300]!,
+                        highlightColor: Colors.grey[100]!,
+                        child: Container(
+                          width: size.width * 0.5,
+                          height: 26,
+                          decoration: BoxDecoration(
+                            color: Colors.white,
+                            borderRadius: BorderRadius.circular(8),
+                          ),
+                        ),
+                      ),
+
+                      const SizedBox(height: 12),
+
+                      // Rank Badge Shimmer
+                      Shimmer.fromColors(
+                        baseColor: Colors.grey[300]!,
+                        highlightColor: Colors.grey[100]!,
+                        child: Container(
+                          width: 120,
+                          height: 36,
+                          decoration: BoxDecoration(
+                            color: Colors.white,
+                            borderRadius: BorderRadius.circular(20),
+                          ),
+                        ),
+                      ),
+
+                      const SizedBox(height: 20),
+
+                      // Progress Bar Shimmer
+                      Padding(
+                        padding: const EdgeInsets.symmetric(horizontal: 30),
+                        child: Column(
+                          children: [
+                            Row(
+                              mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                              children: [
+                                Shimmer.fromColors(
+                                  baseColor: Colors.grey[300]!,
+                                  highlightColor: Colors.grey[100]!,
+                                  child: Container(
+                                    width: 140,
+                                    height: 13,
+                                    decoration: BoxDecoration(
+                                      color: Colors.white,
+                                      borderRadius: BorderRadius.circular(6),
+                                    ),
+                                  ),
+                                ),
+                                Shimmer.fromColors(
+                                  baseColor: Colors.grey[300]!,
+                                  highlightColor: Colors.grey[100]!,
+                                  child: Container(
+                                    width: 40,
+                                    height: 13,
+                                    decoration: BoxDecoration(
+                                      color: Colors.white,
+                                      borderRadius: BorderRadius.circular(6),
+                                    ),
+                                  ),
+                                ),
+                              ],
+                            ),
+                            const SizedBox(height: 10),
+                            Shimmer.fromColors(
+                              baseColor: Colors.grey[300]!,
+                              highlightColor: Colors.grey[100]!,
+                              child: Container(
+                                width: double.infinity,
+                                height: 12,
+                                decoration: BoxDecoration(
+                                  color: Colors.white,
+                                  borderRadius: BorderRadius.circular(10),
+                                ),
+                              ),
+                            ),
+                          ],
+                        ),
+                      ),
+
+                      const SizedBox(height: 30),
+                    ],
+                  ),
+                ),
+              ),
+
+              const SizedBox(height: 20),
+
+              // Stats Cards Shimmer
+              Padding(
+                padding: const EdgeInsets.symmetric(horizontal: 20),
+                child: Row(
+                  children: [
+                    Expanded(child: _buildShimmerStatCard()),
+                    const SizedBox(width: 12),
+                    Expanded(child: _buildShimmerStatCard()),
+                    const SizedBox(width: 12),
+                    Expanded(child: _buildShimmerStatCard()),
+                  ],
+                ),
+              ),
+
+              const SizedBox(height: 20),
+
+              // Info Cards Shimmer
+              _buildShimmerInfoCard(size),
+              const SizedBox(height: 15),
+              _buildShimmerInfoCard(size),
+              const SizedBox(height: 15),
+              _buildShimmerInfoCard(size),
+
+              const SizedBox(height: 20),
+
+              // Logout Button Shimmer
+              Padding(
+                padding: const EdgeInsets.symmetric(horizontal: 20),
+                child: Shimmer.fromColors(
+                  baseColor: Colors.grey[300]!,
+                  highlightColor: Colors.grey[100]!,
+                  child: Container(
+                    width: double.infinity,
+                    height: 56,
+                    decoration: BoxDecoration(
+                      color: Colors.white,
+                      borderRadius: BorderRadius.circular(16),
+                    ),
+                  ),
+                ),
+              ),
+
+              const SizedBox(height: 30),
+            ],
           ),
         ),
       ],
@@ -555,90 +1388,56 @@ class _ProfilepageState extends State<Profilepage> {
   }
 
   Widget _buildShimmerStatCard() {
-    return Column(
-      children: [
-        Shimmer.fromColors(
-          baseColor: Theme.of(context).colorScheme.primary,
-          highlightColor: Theme.of(context).colorScheme.secondary,
-          child: Container(
-            decoration: BoxDecoration(
-              color: Colors.white,
-              borderRadius: BorderRadius.circular(10),
-            ),
-            width: 50,
-            height: 50,
+    return Container(
+      padding: const EdgeInsets.all(18),
+      decoration: BoxDecoration(
+        color: Colors.white,
+        borderRadius: BorderRadius.circular(20),
+        boxShadow: [
+          BoxShadow(
+            color: Colors.black.withOpacity(0.05),
+            blurRadius: 15,
+            offset: const Offset(0, 8),
           ),
-        ),
-        SizedBox(height: 8),
-        Shimmer.fromColors(
-          baseColor: Theme.of(context).colorScheme.primary,
-          highlightColor: Theme.of(context).colorScheme.secondary,
-          child: Container(
-            width: 40,
-            height: 18,
-            color: Colors.white,
-          ),
-        ),
-        SizedBox(height: 4),
-        Shimmer.fromColors(
-          baseColor: Theme.of(context).colorScheme.primary,
-          highlightColor: Theme.of(context).colorScheme.secondary,
-          child: Container(
-            width: 60,
-            height: 14,
-            color: Colors.white,
-          ),
-        ),
-      ],
-    );
-  }
-
-  Widget _buildShimmerSection(Size size) {
-    return Column(
-      crossAxisAlignment: CrossAxisAlignment.start,
-      children: [
-        // Section Title Placeholder
-        Shimmer.fromColors(
-          baseColor: Theme.of(context).colorScheme.primary,
-          highlightColor: Theme.of(context).colorScheme.secondary,
-          child: Container(
-            width: size.width * 0.5,
-            height: 24.0,
-            color: Colors.white,
-          ),
-        ),
-        SizedBox(height: 8),
-        // Rows Placeholder
-        _buildShimmerInfoRow(),
-        _buildShimmerInfoRow(),
-        _buildShimmerInfoRow(),
-        SizedBox(height: size.height * 0.02),
-      ],
-    );
-  }
-
-  Widget _buildShimmerInfoRow() {
-    return Padding(
-      padding: const EdgeInsets.symmetric(vertical: 6),
-      child: Row(
+        ],
+      ),
+      child: Column(
         children: [
           Shimmer.fromColors(
-            baseColor: Theme.of(context).colorScheme.primary,
-            highlightColor: Theme.of(context).colorScheme.secondary,
+            baseColor: Colors.grey[300]!,
+            highlightColor: Colors.grey[100]!,
             child: Container(
-              width: 120,
-              height: 16.0,
-              color: Colors.white,
+              width: 50,
+              height: 50,
+              decoration: BoxDecoration(
+                color: Colors.white,
+                shape: BoxShape.circle,
+              ),
             ),
           ),
-          SizedBox(width: 8),
-          Expanded(
-            child: Shimmer.fromColors(
-              baseColor: Theme.of(context).colorScheme.primary,
-              highlightColor: Theme.of(context).colorScheme.secondary,
-              child: Container(
-                height: 16.0,
+          const SizedBox(height: 12),
+          Shimmer.fromColors(
+            baseColor: Colors.grey[300]!,
+            highlightColor: Colors.grey[100]!,
+            child: Container(
+              width: 40,
+              height: 22,
+              decoration: BoxDecoration(
                 color: Colors.white,
+                borderRadius: BorderRadius.circular(6),
+              ),
+            ),
+          ),
+          const SizedBox(height: 4),
+          Shimmer.fromColors(
+            baseColor: Colors.grey[300]!,
+            highlightColor: Colors.grey[100]!,
+            child: Container(
+              width: 60,
+              height: 12,
+              decoration: BoxDecoration(
+                color: Colors.white,
+                borderRadius: BorderRadius.circular(6),
               ),
             ),
           ),
@@ -647,95 +1446,125 @@ class _ProfilepageState extends State<Profilepage> {
     );
   }
 
-  Widget _buildStatCard(String value, String label, IconData icon,
-      Color bgColor, Color iconColor) {
-    return Column(
-      children: [
-        Container(
-          decoration: BoxDecoration(
-            color: bgColor,
-            borderRadius: BorderRadius.circular(10),
-          ),
-          padding: const EdgeInsets.all(12),
-          child: Icon(
-            icon,
-            color: iconColor,
-            size: 32,
-          ),
-        ),
-        const SizedBox(height: 8),
-        Text(
-          value,
-          style: AppConstants.subtitle.copyWith(
-            fontWeight: AppConstants.fontWeightBold,
-          ),
-        ),
-        const SizedBox(height: 4),
-        SizedBox(
-          width: 80,
-          child: Text(
-            label,
-            style: AppConstants.caption.copyWith(
-              color: Colors.grey[700],
-            ),
-            textAlign: TextAlign.center,
-          ),
-        ),
-      ],
-    );
-  }
-
-  Widget _buildSectionTitle(String title) {
-    return Align(
-      alignment: Alignment.centerLeft,
-      child: Padding(
-        padding: const EdgeInsets.only(bottom: 8),
-        child: Text(
-          title,
-          style: AppConstants.pageTitle.copyWith(
-            fontSize: 22,
-          ),
-        ),
-      ),
-    );
-  }
-
-  Widget _buildInfoRow(String label, String value) {
+  Widget _buildShimmerInfoCard(Size size) {
     return Padding(
-      padding: const EdgeInsets.symmetric(vertical: 6),
-      child: Row(
-        crossAxisAlignment: CrossAxisAlignment.start,
-        children: [
-          Text(
-            '$label: ',
-            style: AppConstants.bodyText.copyWith(
-              fontWeight: AppConstants.fontWeightBold,
-              color: AppConstants.primaryCyan,
+      padding: const EdgeInsets.symmetric(horizontal: 20),
+      child: Container(
+        decoration: BoxDecoration(
+          color: Colors.white,
+          borderRadius: BorderRadius.circular(20),
+          boxShadow: [
+            BoxShadow(
+              color: Colors.black.withOpacity(0.05),
+              blurRadius: 15,
+              offset: const Offset(0, 5),
             ),
-          ),
-          Expanded(
-            child: Text(
-              value,
-              style: AppConstants.bodyText,
+          ],
+        ),
+        child: Column(
+          crossAxisAlignment: CrossAxisAlignment.start,
+          children: [
+            // Header Shimmer
+            Padding(
+              padding: const EdgeInsets.all(20),
+              child: Row(
+                children: [
+                  Shimmer.fromColors(
+                    baseColor: Colors.grey[300]!,
+                    highlightColor: Colors.grey[100]!,
+                    child: Container(
+                      width: 44,
+                      height: 44,
+                      decoration: BoxDecoration(
+                        color: Colors.white,
+                        borderRadius: BorderRadius.circular(12),
+                      ),
+                    ),
+                  ),
+                  const SizedBox(width: 12),
+                  Shimmer.fromColors(
+                    baseColor: Colors.grey[300]!,
+                    highlightColor: Colors.grey[100]!,
+                    child: Container(
+                      width: 150,
+                      height: 20,
+                      decoration: BoxDecoration(
+                        color: Colors.white,
+                        borderRadius: BorderRadius.circular(8),
+                      ),
+                    ),
+                  ),
+                ],
+              ),
             ),
-          ),
-        ],
-      ),
-    );
-  }
+            const Divider(height: 1),
 
-  Widget _buildCourses() {
-    return Column(
-      crossAxisAlignment: CrossAxisAlignment.start,
-      children: _courses.map((course) {
-        return Padding(
-          padding: const EdgeInsets.symmetric(vertical: 4),
-          child: Text(
-            '- $course',
-            style: AppConstants.bodyText,
-          ),
-        );
-      }).toList(),
+            // Info Rows Shimmer
+            ...List.generate(
+                3,
+                (index) => Container(
+                      padding: const EdgeInsets.symmetric(
+                          horizontal: 20, vertical: 16),
+                      decoration: BoxDecoration(
+                        border: Border(
+                          bottom: index < 2
+                              ? BorderSide(color: Colors.grey[100]!, width: 1)
+                              : BorderSide.none,
+                        ),
+                      ),
+                      child: Row(
+                        children: [
+                          Shimmer.fromColors(
+                            baseColor: Colors.grey[300]!,
+                            highlightColor: Colors.grey[100]!,
+                            child: Container(
+                              width: 36,
+                              height: 36,
+                              decoration: BoxDecoration(
+                                color: Colors.white,
+                                borderRadius: BorderRadius.circular(10),
+                              ),
+                            ),
+                          ),
+                          const SizedBox(width: 15),
+                          Expanded(
+                            child: Column(
+                              crossAxisAlignment: CrossAxisAlignment.start,
+                              children: [
+                                Shimmer.fromColors(
+                                  baseColor: Colors.grey[300]!,
+                                  highlightColor: Colors.grey[100]!,
+                                  child: Container(
+                                    width: 80,
+                                    height: 12,
+                                    decoration: BoxDecoration(
+                                      color: Colors.white,
+                                      borderRadius: BorderRadius.circular(6),
+                                    ),
+                                  ),
+                                ),
+                                const SizedBox(height: 6),
+                                Shimmer.fromColors(
+                                  baseColor: Colors.grey[300]!,
+                                  highlightColor: Colors.grey[100]!,
+                                  child: Container(
+                                    width: double.infinity,
+                                    height: 15,
+                                    decoration: BoxDecoration(
+                                      color: Colors.white,
+                                      borderRadius: BorderRadius.circular(6),
+                                    ),
+                                  ),
+                                ),
+                              ],
+                            ),
+                          ),
+                        ],
+                      ),
+                    )),
+          ],
+        ),
+      ),
     );
   }
 }

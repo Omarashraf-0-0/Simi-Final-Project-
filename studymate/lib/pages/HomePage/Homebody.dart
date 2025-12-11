@@ -264,7 +264,7 @@ class _HomebodyState extends State<Homebody>
                   )
                 : _buildQuizzesSection(),
           ),
-          const SizedBox(height: 30),
+          const SizedBox(height: 100),
         ],
       ),
     );
@@ -720,6 +720,7 @@ class _HomebodyState extends State<Homebody>
           padding: const EdgeInsets.only(right: 16),
           child: Container(
             width: 220,
+            height: 140,
             decoration: BoxDecoration(
               gradient: LinearGradient(
                 begin: Alignment.topLeft,
@@ -746,9 +747,10 @@ class _HomebodyState extends State<Homebody>
                   // Navigate to event details
                 },
                 child: Padding(
-                  padding: const EdgeInsets.all(20),
+                  padding: const EdgeInsets.all(16),
                   child: Column(
                     crossAxisAlignment: CrossAxisAlignment.start,
+                    mainAxisSize: MainAxisSize.min,
                     children: [
                       // Event type badge
                       Container(
@@ -767,36 +769,45 @@ class _HomebodyState extends State<Homebody>
                             color: Colors.white,
                             fontWeight: FontWeight.w600,
                           ),
+                          maxLines: 1,
+                          overflow: TextOverflow.ellipsis,
                         ),
                       ),
-                      const SizedBox(height: 12),
+                      const SizedBox(height: 10),
                       // Event title
-                      Text(
-                        event['Title'] ?? 'No Title',
-                        style: const TextStyle(
-                          fontSize: 18,
-                          color: Colors.white,
-                          fontWeight: FontWeight.bold,
+                      Expanded(
+                        child: Text(
+                          event['Title'] ?? 'No Title',
+                          style: const TextStyle(
+                            fontSize: 17,
+                            color: Colors.white,
+                            fontWeight: FontWeight.bold,
+                            height: 1.2,
+                          ),
+                          maxLines: 2,
+                          overflow: TextOverflow.ellipsis,
                         ),
-                        maxLines: 2,
-                        overflow: TextOverflow.ellipsis,
                       ),
-                      const Spacer(),
+                      const SizedBox(height: 8),
                       // Time with icon
                       Row(
                         children: [
                           const Icon(
                             Icons.access_time_rounded,
                             color: Colors.white70,
-                            size: 18,
+                            size: 16,
                           ),
                           const SizedBox(width: 6),
-                          Text(
-                            _formatTime(event['StartTime'] ?? ''),
-                            style: const TextStyle(
-                              fontSize: 15,
-                              color: Colors.white,
-                              fontWeight: FontWeight.w500,
+                          Flexible(
+                            child: Text(
+                              _formatTime(event['StartTime'] ?? ''),
+                              style: const TextStyle(
+                                fontSize: 14,
+                                color: Colors.white,
+                                fontWeight: FontWeight.w500,
+                              ),
+                              maxLines: 1,
+                              overflow: TextOverflow.ellipsis,
                             ),
                           ),
                         ],
