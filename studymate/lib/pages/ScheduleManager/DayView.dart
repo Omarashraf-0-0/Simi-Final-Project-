@@ -4,6 +4,7 @@ import 'package:hive/hive.dart';
 import 'package:http/http.dart' as http;
 import 'package:studymate/Pop-ups/PopUps_Failed.dart';
 import 'package:studymate/Pop-ups/PopUps_Success.dart';
+import 'package:google_fonts/google_fonts.dart';
 import 'dart:convert';
 
 class DayView extends StatefulWidget {
@@ -214,82 +215,188 @@ class _DayViewState extends State<DayView> {
                   color: Colors.white,
                 ),
               ),
-              child: Card(
-                shape: RoundedRectangleBorder(
-                  borderRadius: BorderRadius.circular(15),
+              child: Container(
+                decoration: BoxDecoration(
+                  gradient: const LinearGradient(
+                    begin: Alignment.topLeft,
+                    end: Alignment.bottomRight,
+                    colors: [
+                      Color(0xFF1c74bb),
+                      Color(0xFF165d96),
+                    ],
+                  ),
+                  borderRadius: BorderRadius.circular(16),
+                  boxShadow: [
+                    BoxShadow(
+                      color: const Color(0xFF1c74bb).withOpacity(0.3),
+                      blurRadius: 12,
+                      offset: const Offset(0, 4),
+                    ),
+                  ],
                 ),
-                elevation: 5,
-                color: const Color(0xFF165D96),
-                child: ListTile(
-                  title: Text(
-                    event['Title'],
-                    style: const TextStyle(color: Colors.white),
+                child: Card(
+                  margin: EdgeInsets.zero,
+                  shape: RoundedRectangleBorder(
+                    borderRadius: BorderRadius.circular(16),
                   ),
-                  subtitle: Text(
-                    event['Description'] ?? '',
-                    style: const TextStyle(color: Colors.white70),
-                  ),
-                  trailing: IconButton(
-                    onPressed: () {
-                      // Show a popup with all the data of the task
-                      showDialog(
-                        context: context,
-                        builder: (BuildContext context) {
-                          // Prepare the repeat information
-                          String repeatInfo = event['Repeatance'] ?? 'None';
-                          if (event['Repeatance'] != null &&
-                              event['Repeatance'] != 'None' &&
-                              event['RepeatEndDate'] != null) {
-                            repeatInfo +=
-                                ' until ${_formatDate(event['RepeatEndDate'])}';
-                          }
+                  elevation: 0,
+                  color: Colors.transparent,
+                  child: ListTile(
+                    contentPadding:
+                        const EdgeInsets.symmetric(horizontal: 16, vertical: 8),
+                    title: Text(
+                      event['Title'],
+                      style: GoogleFonts.poppins(
+                        color: Colors.white,
+                        fontWeight: FontWeight.w600,
+                        fontSize: 16,
+                      ),
+                    ),
+                    subtitle: Padding(
+                      padding: const EdgeInsets.only(top: 4),
+                      child: Text(
+                        event['Description'] ?? '',
+                        style: GoogleFonts.poppins(
+                          color: Colors.white.withOpacity(0.85),
+                          fontSize: 13,
+                        ),
+                        maxLines: 2,
+                        overflow: TextOverflow.ellipsis,
+                      ),
+                    ),
+                    trailing: Container(
+                      decoration: BoxDecoration(
+                        color: Colors.white.withOpacity(0.2),
+                        borderRadius: BorderRadius.circular(10),
+                      ),
+                      child: IconButton(
+                        onPressed: () {
+                          // Show a popup with all the data of the task
+                          showDialog(
+                            context: context,
+                            builder: (BuildContext context) {
+                              // Prepare the repeat information
+                              String repeatInfo = event['Repeatance'] ?? 'None';
+                              if (event['Repeatance'] != null &&
+                                  event['Repeatance'] != 'None' &&
+                                  event['RepeatEndDate'] != null) {
+                                repeatInfo +=
+                                    ' until ${_formatDate(event['RepeatEndDate'])}';
+                              }
 
-                          return AlertDialog(
-                            title: Text(event['Title']),
-                            content: SingleChildScrollView(
-                              child: ListBody(
-                                children: <Widget>[
-                                  // Title (already in title)
-                                  Text(
-                                      'Description: ${event['Description'] ?? 'N/A'}'),
-                                  const SizedBox(height: 10),
-                                  Text('Date: ${_formatDate(event['Date'])}'),
-                                  const SizedBox(height: 10),
-                                  Text(
-                                      'Start Time: ${_formatTime(event['StartTime'])}'),
-                                  const SizedBox(height: 10),
-                                  Text(
-                                      'End Time: ${_formatTime(event['EndTime'])}'),
-                                  const SizedBox(height: 10),
-                                  Text(
-                                      'Location: ${event['Location'] ?? 'N/A'}'),
-                                  const SizedBox(height: 10),
-                                  Text(
-                                      'Category: ${event['Category'] ?? 'N/A'}'),
-                                  const SizedBox(height: 10),
-                                  Text('Repeat: $repeatInfo'),
-                                  const SizedBox(height: 10),
-                                  // Text('Reminder Time: $reminderTime'),
-                                  // Add other task data here if available
-                                ],
-                              ),
-                            ),
-                            actions: <Widget>[
-                              TextButton(
-                                child: const Text('Close'),
-                                onPressed: () {
-                                  Navigator.of(context).pop();
-                                },
-                              ),
-                            ],
+                              return Dialog(
+                                shape: RoundedRectangleBorder(
+                                  borderRadius: BorderRadius.circular(20),
+                                ),
+                                child: Column(
+                                  mainAxisSize: MainAxisSize.min,
+                                  children: [
+                                    Container(
+                                      padding: const EdgeInsets.all(20),
+                                      decoration: const BoxDecoration(
+                                        gradient: LinearGradient(
+                                          colors: [
+                                            Color(0xFF1c74bb),
+                                            Color(0xFF18bebc),
+                                          ],
+                                        ),
+                                        borderRadius: BorderRadius.only(
+                                          topLeft: Radius.circular(20),
+                                          topRight: Radius.circular(20),
+                                        ),
+                                      ),
+                                      child: Row(
+                                        children: [
+                                          const Icon(Icons.event_note_rounded,
+                                              color: Colors.white, size: 28),
+                                          const SizedBox(width: 12),
+                                          Expanded(
+                                            child: Text(
+                                              event['Title'],
+                                              style: GoogleFonts.poppins(
+                                                fontSize: 20,
+                                                fontWeight: FontWeight.bold,
+                                                color: Colors.white,
+                                              ),
+                                            ),
+                                          ),
+                                        ],
+                                      ),
+                                    ),
+                                    Padding(
+                                      padding: const EdgeInsets.all(20),
+                                      child: Column(
+                                        crossAxisAlignment:
+                                            CrossAxisAlignment.start,
+                                        mainAxisSize: MainAxisSize.min,
+                                        children: [
+                                          _buildDetailRow(
+                                              Icons.description,
+                                              'Description',
+                                              event['Description'] ?? 'N/A'),
+                                          _buildDetailRow(
+                                              Icons.calendar_today,
+                                              'Date',
+                                              _formatDate(event['Date'])),
+                                          _buildDetailRow(
+                                              Icons.access_time,
+                                              'Start Time',
+                                              _formatTime(event['StartTime'])),
+                                          _buildDetailRow(
+                                              Icons.access_time,
+                                              'End Time',
+                                              _formatTime(event['EndTime'])),
+                                          _buildDetailRow(
+                                              Icons.location_on,
+                                              'Location',
+                                              event['Location'] ?? 'N/A'),
+                                          _buildDetailRow(
+                                              Icons.category,
+                                              'Category',
+                                              event['Category'] ?? 'N/A'),
+                                          _buildDetailRow(Icons.repeat,
+                                              'Repeat', repeatInfo),
+                                          const SizedBox(height: 16),
+                                          SizedBox(
+                                            width: double.infinity,
+                                            child: ElevatedButton(
+                                              style: ElevatedButton.styleFrom(
+                                                backgroundColor:
+                                                    const Color(0xFF1c74bb),
+                                                padding:
+                                                    const EdgeInsets.symmetric(
+                                                        vertical: 12),
+                                                shape: RoundedRectangleBorder(
+                                                  borderRadius:
+                                                      BorderRadius.circular(12),
+                                                ),
+                                              ),
+                                              onPressed: () =>
+                                                  Navigator.of(context).pop(),
+                                              child: Text(
+                                                'Close',
+                                                style: GoogleFonts.poppins(
+                                                  color: Colors.white,
+                                                  fontWeight: FontWeight.w600,
+                                                ),
+                                              ),
+                                            ),
+                                          ),
+                                        ],
+                                      ),
+                                    ),
+                                  ],
+                                ),
+                              );
+                            },
                           );
                         },
-                      );
-                    },
-                    icon: const Icon(
-                      Icons.arrow_circle_right_outlined,
-                      color: Colors.white,
-                      size: 30,
+                        icon: const Icon(
+                          Icons.info_rounded,
+                          color: Colors.white,
+                          size: 24,
+                        ),
+                      ),
                     ),
                   ),
                 ),
@@ -342,6 +449,43 @@ class _DayViewState extends State<DayView> {
     }
   }
 
+  Widget _buildDetailRow(IconData icon, String label, String value) {
+    return Padding(
+      padding: const EdgeInsets.only(bottom: 12),
+      child: Row(
+        crossAxisAlignment: CrossAxisAlignment.start,
+        children: [
+          Icon(icon, size: 20, color: const Color(0xFF1c74bb)),
+          const SizedBox(width: 12),
+          Expanded(
+            child: Column(
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: [
+                Text(
+                  label,
+                  style: GoogleFonts.poppins(
+                    fontSize: 12,
+                    color: Colors.grey[600],
+                    fontWeight: FontWeight.w500,
+                  ),
+                ),
+                const SizedBox(height: 2),
+                Text(
+                  value,
+                  style: GoogleFonts.poppins(
+                    fontSize: 14,
+                    color: Colors.black87,
+                    fontWeight: FontWeight.w600,
+                  ),
+                ),
+              ],
+            ),
+          ),
+        ],
+      ),
+    );
+  }
+
   @override
   void dispose() {
     // If you have any subscriptions or controllers, dispose of them here
@@ -350,57 +494,123 @@ class _DayViewState extends State<DayView> {
 
   @override
   Widget build(BuildContext context) {
-    final theme = Theme.of(context);
     return Padding(
       padding: const EdgeInsets.symmetric(horizontal: 16),
       child: Column(
         children: [
-          // Top Row: Date Navigation
-          Row(
-            mainAxisAlignment: MainAxisAlignment.spaceBetween,
-            children: [
-              IconButton(
-                onPressed: _previousDay,
-                icon:  Icon(Icons.arrow_back_ios,
-                    size: 25, color: theme.primaryColor),
-              ),
-              GestureDetector(
-                onTap: _pickDate,
-                child: Row(
-                  children: [
-                    Text(
-                      DateFormat('EEEE').format(_selectedDate), // Day name
-                      style: const TextStyle(
-                        fontSize: 24,
-                        fontWeight: FontWeight.bold,
-                      ),
-                    ),
-                    const SizedBox(width: 8),
-                    Text(
-                      "${_selectedDate.day} ${_getMonthName(_selectedDate.month)}",
-                      style: const TextStyle(
-                          fontSize: 24, color: Color(0xFF1BC0C4)),
-                    ),
-                  ],
+          // Modern Date Navigation
+          Container(
+            padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 12),
+            decoration: BoxDecoration(
+              color: Colors.white,
+              borderRadius: BorderRadius.circular(20),
+              boxShadow: [
+                BoxShadow(
+                  color: Colors.black.withOpacity(0.05),
+                  blurRadius: 10,
+                  offset: const Offset(0, 4),
                 ),
-              ),
-              IconButton(
-                onPressed: _nextDay,
-                icon: Icon(Icons.arrow_forward_ios,
-                    size: 25, color: theme.primaryColor),
-              ),
-            ],
+              ],
+            ),
+            child: Row(
+              mainAxisAlignment: MainAxisAlignment.spaceBetween,
+              children: [
+                Container(
+                  decoration: BoxDecoration(
+                    color: const Color(0xFF1c74bb).withOpacity(0.1),
+                    borderRadius: BorderRadius.circular(12),
+                  ),
+                  child: IconButton(
+                    onPressed: _previousDay,
+                    icon: const Icon(Icons.chevron_left_rounded,
+                        size: 28, color: Color(0xFF1c74bb)),
+                  ),
+                ),
+                GestureDetector(
+                  onTap: _pickDate,
+                  child: Row(
+                    children: [
+                      const Icon(Icons.calendar_today_rounded,
+                          color: Color(0xFF1c74bb), size: 20),
+                      const SizedBox(width: 8),
+                      Text(
+                        DateFormat('EEEE').format(_selectedDate),
+                        style: GoogleFonts.poppins(
+                          fontSize: 18,
+                          fontWeight: FontWeight.w600,
+                          color: Colors.black87,
+                        ),
+                      ),
+                      const SizedBox(width: 8),
+                      Text(
+                        "${_selectedDate.day} ${_getMonthName(_selectedDate.month)}",
+                        style: GoogleFonts.poppins(
+                          fontSize: 18,
+                          fontWeight: FontWeight.w600,
+                          color: const Color(0xFF18bebc),
+                        ),
+                      ),
+                    ],
+                  ),
+                ),
+                Container(
+                  decoration: BoxDecoration(
+                    color: const Color(0xFF1c74bb).withOpacity(0.1),
+                    borderRadius: BorderRadius.circular(12),
+                  ),
+                  child: IconButton(
+                    onPressed: _nextDay,
+                    icon: const Icon(Icons.chevron_right_rounded,
+                        size: 28, color: Color(0xFF1c74bb)),
+                  ),
+                ),
+              ],
+            ),
           ),
           const SizedBox(height: 20),
           // Task List View
           Expanded(
             child: _isLoading
-                ? const Center(child: CircularProgressIndicator())
+                ? const Center(
+                    child: CircularProgressIndicator(
+                      color: Color(0xFF1c74bb),
+                    ),
+                  )
                 : _events.isEmpty
-                    ? const Center(
-                        child: Text(
-                          "No tasks for this day.",
-                          style: TextStyle(fontSize: 18, color: Colors.grey),
+                    ? Center(
+                        child: Column(
+                          mainAxisAlignment: MainAxisAlignment.center,
+                          children: [
+                            Container(
+                              padding: const EdgeInsets.all(24),
+                              decoration: BoxDecoration(
+                                color: const Color(0xFF1c74bb).withOpacity(0.1),
+                                shape: BoxShape.circle,
+                              ),
+                              child: const Icon(
+                                Icons.event_busy_rounded,
+                                size: 64,
+                                color: Color(0xFF1c74bb),
+                              ),
+                            ),
+                            const SizedBox(height: 16),
+                            Text(
+                              "No events scheduled",
+                              style: GoogleFonts.poppins(
+                                fontSize: 18,
+                                fontWeight: FontWeight.w600,
+                                color: Colors.black87,
+                              ),
+                            ),
+                            const SizedBox(height: 8),
+                            Text(
+                              "Tap + to add a new event",
+                              style: GoogleFonts.poppins(
+                                fontSize: 14,
+                                color: Colors.grey[600],
+                              ),
+                            ),
+                          ],
                         ),
                       )
                     : ListView.builder(
