@@ -3,11 +3,12 @@ import 'package:google_fonts/google_fonts.dart';
 import 'package:http/http.dart' as http; // Import the http package
 import 'dart:async'; // Import for Timer
 import 'dart:convert'; // Import for JSON decoding if needed
+import 'package:go_router/go_router.dart';
 import '../Classes/User.dart';
 import '../Pop-ups/PopUps_Failed.dart';
 import '../Pop-ups/PopUps_Success.dart';
-import '../pages/LoginPage.dart';
 import '../theme/app_constants.dart';
+import '../router/app_router.dart';
 
 class OTP extends StatefulWidget {
   final Student? user;
@@ -111,23 +112,20 @@ class _OTPState extends State<OTP> {
       );
 
       if (response.statusCode == 200) {
-        final responseData = json.decode(response.body);
-        ScaffoldMessenger.of(context).showSnackBar(
-          SnackBar(content: Text(responseData['message'])),
-        );
-        // Navigate back to login page
-        Navigator.pushAndRemoveUntil(
-          context,
-          MaterialPageRoute(builder: (context) => LoginPage()),
-          (route) => false,
-        );
-        // Optionally, you can show a success popup
+        // Show success popup
         showSuccessPopup(
           context,
           'Registration Successful',
           'Your account has been created successfully!',
           'Continue',
         );
+
+        // Navigate to login using GoRouter after delay
+        Future.delayed(Duration(seconds: 2), () {
+          if (context.mounted) {
+            context.go(AppRoutes.login);
+          }
+        });
       } else {
         final responseData = json.decode(response.body);
         showFailedPopup(

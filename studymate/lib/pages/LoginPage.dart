@@ -283,19 +283,19 @@ class _LoginPageState extends State<LoginPage> {
           student.title = jsonResponse['title'];
           student.registrationNumber = jsonResponse['registrationNumber'];
           student.birthDate = jsonResponse['birthDate'];
-          Navigator.pushAndRemoveUntil(
-            context,
-            MaterialPageRoute(
-              builder: (context) => DonePopUp(
-                user: student,
-                title: 'Woo Hoo!',
-                description: 'Welcome back, ${jsonResponse['name']}!',
-                color: const Color(0xff3BBD5E),
-                textColor: Theme.of(context).colorScheme.secondary,
-                routeName: AppRoutes.home,
-              ),
+
+          // Show success dialog
+          showDialog(
+            context: context,
+            barrierDismissible: false,
+            builder: (dialogContext) => DonePopUp(
+              user: student,
+              title: 'Woo Hoo!',
+              description: 'Welcome back, ${jsonResponse['name']}!',
+              color: const Color(0xff3BBD5E),
+              textColor: Theme.of(context).colorScheme.secondary,
+              routeName: AppRoutes.home,
             ),
-            (Route<dynamic> route) => false,
           );
         } else {
           // Failed login, show error message

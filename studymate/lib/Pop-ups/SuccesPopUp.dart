@@ -33,18 +33,15 @@ class DonePopUp extends StatefulWidget {
 class _DonePopUpState extends State<DonePopUp> {
   @override
   Widget build(BuildContext context) {
-    return Scaffold(
-      body: SafeArea(
-        child: Center(
-          child: CircularWidget(
-            title: widget.title ?? 'Default Title',
-            description: widget.description ?? 'Default Description',
-            color: widget.color ?? Color(0xff3BBD5E),
-            textColor: widget.textColor ?? Colors.black,
-            routeName: widget.routeName ?? "/HomePage",
-            user: widget.user,
-          ),
-        ),
+    return Dialog(
+      backgroundColor: Colors.transparent,
+      child: CircularWidget(
+        title: widget.title ?? 'Default Title',
+        description: widget.description ?? 'Default Description',
+        color: widget.color ?? Color(0xff3BBD5E),
+        textColor: widget.textColor ?? Colors.black,
+        routeName: widget.routeName ?? "/HomePage",
+        user: widget.user,
       ),
     );
   }
@@ -69,69 +66,75 @@ class CircularWidget extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return Scaffold(
-      backgroundColor: Theme.of(context)
-          .scaffoldBackgroundColor, // This will follow the app theme
-      body: Center(
-        child: Column(
-          mainAxisAlignment: MainAxisAlignment.center,
-          children: [
-            SizedBox(height: 60),
-            // Lottie animation
-            Lottie.asset(
-              'assets/animations/SuccesAnimation.json',
-              height: 375,
-              width: 375,
-              fit: BoxFit.fill,
-            ),
-            SizedBox(height: 40), // Space between animation and title
-            // Dynamic title text
-            Text(
-              title,
-              style: Theme.of(context).textTheme.displaySmall?.copyWith(
-                    fontSize: 35,
-                    fontWeight: FontWeight.bold,
-                  ),
-              textAlign: TextAlign.center,
-            ),
-            SizedBox(height: 20), // Space between title and description
-            // Dynamic description text
-            Text(
-              description,
-              style: Theme.of(context).textTheme.bodyLarge?.copyWith(
-                    fontSize: 16,
-                  ),
-              textAlign: TextAlign.center,
-            ),
-            SizedBox(height: 30), // Space between text and button
-            // Elevated Button for "Done"
-            ElevatedButton(
-              onPressed: () {
-                // Navigate using GoRouter
-                if (routeName == "/HomePage" || routeName == "/home") {
-                  context.go(AppRoutes.home);
-                } else if (routeName == "/login") {
-                  context.go(AppRoutes.login);
-                } else {
-                  // Default to home if unknown route
-                  context.go(AppRoutes.home);
-                }
-              },
-              style: ElevatedButton.styleFrom(
-                backgroundColor: color, // Button color
-                minimumSize: Size(320, 60),
-              ),
-              child: Text(
-                "Done",
-                style: TextStyle(
-                  color: Colors.white,
-                  fontSize: 25,
-                  fontWeight: FontWeight.w800,
+    return Container(
+      decoration: BoxDecoration(
+        color: Theme.of(context).scaffoldBackgroundColor,
+        borderRadius: BorderRadius.circular(20),
+      ),
+      padding: EdgeInsets.all(20),
+      child: Column(
+        mainAxisSize: MainAxisSize.min,
+        mainAxisAlignment: MainAxisAlignment.center,
+        children: [
+          // Lottie animation
+          Lottie.asset(
+            'assets/animations/SuccesAnimation.json',
+            height: 200,
+            width: 200,
+            fit: BoxFit.fill,
+          ),
+          SizedBox(height: 20),
+          // Dynamic title text
+          Text(
+            title,
+            style: Theme.of(context).textTheme.displaySmall?.copyWith(
+                  fontSize: 28,
+                  fontWeight: FontWeight.bold,
                 ),
+            textAlign: TextAlign.center,
+          ),
+          SizedBox(height: 15),
+          // Dynamic description text
+          Text(
+            description,
+            style: Theme.of(context).textTheme.bodyLarge?.copyWith(
+                  fontSize: 16,
+                ),
+            textAlign: TextAlign.center,
+          ),
+          SizedBox(height: 25),
+          // Elevated Button for "Done"
+          ElevatedButton(
+            onPressed: () {
+              // Close dialog first
+              Navigator.of(context).pop();
+              // Navigate using GoRouter
+              if (routeName == "/HomePage" || routeName == "/home") {
+                context.go(AppRoutes.home);
+              } else if (routeName == "/login") {
+                context.go(AppRoutes.login);
+              } else {
+                // Default to home if unknown route
+                context.go(AppRoutes.home);
+              }
+            },
+            style: ElevatedButton.styleFrom(
+              backgroundColor: color,
+              minimumSize: Size(280, 50),
+              shape: RoundedRectangleBorder(
+                borderRadius: BorderRadius.circular(15),
               ),
             ),
-          ],
-        ),
+            child: Text(
+              "Done",
+              style: TextStyle(
+                color: Colors.white,
+                fontSize: 20,
+                fontWeight: FontWeight.w800,
+              ),
+            ),
+          ),
+        ],
       ),
     );
   }

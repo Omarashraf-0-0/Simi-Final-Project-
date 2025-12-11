@@ -73,10 +73,10 @@ if (Test-Path "lib/assets") {
 Write-Host "`n[6/8] Checking Android configuration..." -ForegroundColor Yellow
 if (Test-Path "android/settings.gradle") {
     $settingsGradle = Get-Content "android/settings.gradle" -Raw
-    if ($settingsGradle -match 'version.*8\.9\.1') {
-        Write-Host "  ✓ Android Gradle Plugin version is correct (8.9.1)" -ForegroundColor Green
+    if ($settingsGradle -match 'version.*2\.0') {
+        Write-Host "  ✓ Kotlin version is correct (2.0.x)" -ForegroundColor Green
     } else {
-        Write-Host "  ✗ Android Gradle Plugin version mismatch" -ForegroundColor Red
+        Write-Host "  ✗ Kotlin version may need update" -ForegroundColor Red
         $hasIssues = $true
     }
 } else {
@@ -155,7 +155,7 @@ if ($hasIssues) {
     Write-Host "✓ All checks passed! Your environment looks healthy." -ForegroundColor Green
     Write-Host "  If you still have issues, try:" -ForegroundColor White
     Write-Host "  1. Stop the app completely" -ForegroundColor Gray
-    Write-Host "  2. Run: flutter clean && flutter pub get" -ForegroundColor Gray
+    Write-Host "  2. Run: flutter clean; flutter pub get" -ForegroundColor Gray
     Write-Host "  3. Restart your app (not hot reload)`n" -ForegroundColor Gray
 }
 
