@@ -19,7 +19,7 @@ class _GameRanksState extends State<GameRanks> with TickerProviderStateMixin {
   final List<Map<String, dynamic>> ranks = [
     {
       'name': 'NewComer',
-      'xpRange': '0 - 99 XP',
+      'xpRange': '0 - 149 XP',
       'color': const Color(0xFF808080),
       'image': 'assets/img/GameCharacters/NewCommer.png',
       'description': 'Begin your journey',
@@ -27,7 +27,7 @@ class _GameRanksState extends State<GameRanks> with TickerProviderStateMixin {
     },
     {
       'name': 'Explorer',
-      'xpRange': '100 - 299 XP',
+      'xpRange': '150 - 349 XP',
       'color': const Color(0xFF007BFF),
       'image': 'assets/img/GameCharacters/Explorer.png',
       'description': 'Discover new paths',
@@ -35,7 +35,7 @@ class _GameRanksState extends State<GameRanks> with TickerProviderStateMixin {
     },
     {
       'name': 'Achiever',
-      'xpRange': '300 - 599 XP',
+      'xpRange': '350 - 649 XP',
       'color': const Color(0xFF28A745),
       'image': 'assets/img/GameCharacters/Achiever.png',
       'description': 'Unlock achievements',
@@ -43,7 +43,7 @@ class _GameRanksState extends State<GameRanks> with TickerProviderStateMixin {
     },
     {
       'name': 'Challenger',
-      'xpRange': '600 - 999 XP',
+      'xpRange': '650 - 1099 XP',
       'color': const Color(0xFFFFC107),
       'image': 'assets/img/GameCharacters/Challenger.png',
       'description': 'Face the challenge',
@@ -51,7 +51,7 @@ class _GameRanksState extends State<GameRanks> with TickerProviderStateMixin {
     },
     {
       'name': 'Expert',
-      'xpRange': '1000 - 1499 XP',
+      'xpRange': '1100 - 1699 XP',
       'color': const Color(0xFFFD7E14),
       'image': 'assets/img/GameCharacters/Expert.png',
       'description': 'Master your skills',
@@ -59,7 +59,7 @@ class _GameRanksState extends State<GameRanks> with TickerProviderStateMixin {
     },
     {
       'name': 'Mentor',
-      'xpRange': '1500 - 2199 XP',
+      'xpRange': '1700 - 2499 XP',
       'color': const Color(0xFF6F42C1),
       'image': 'assets/img/GameCharacters/Mentor.png',
       'description': 'Guide others',
@@ -67,7 +67,7 @@ class _GameRanksState extends State<GameRanks> with TickerProviderStateMixin {
     },
     {
       'name': 'Legend',
-      'xpRange': '2200 - 2999 XP',
+      'xpRange': '2500 - 3499 XP',
       'color': const Color(0xFFFFD700),
       'image': 'assets/img/GameCharacters/Legend.png',
       'description': 'Become legendary',
@@ -75,7 +75,7 @@ class _GameRanksState extends State<GameRanks> with TickerProviderStateMixin {
     },
     {
       'name': 'El Batal',
-      'xpRange': '3000+ XP',
+      'xpRange': '3500+ XP',
       'color': const Color(0xFFb3141c),
       'image': 'assets/img/GameCharacters/ElBatal.png',
       'description': 'The Ultimate Hero',
@@ -101,9 +101,30 @@ class _GameRanksState extends State<GameRanks> with TickerProviderStateMixin {
     _navigateToCurrentRank();
   }
 
+  String _calculateRankFromXP(int xp) {
+    if (xp >= 3500) {
+      return 'El Batal';
+    } else if (xp >= 2500) {
+      return 'Legend';
+    } else if (xp >= 1700) {
+      return 'Mentor';
+    } else if (xp >= 1100) {
+      return 'Expert';
+    } else if (xp >= 650) {
+      return 'Challenger';
+    } else if (xp >= 350) {
+      return 'Achiever';
+    } else if (xp >= 150) {
+      return 'Explorer';
+    } else {
+      return 'NewComer';
+    }
+  }
+
   void _navigateToCurrentRank() {
     final userBox = Hive.box('userBox');
-    final userTitle = userBox.get('title', defaultValue: 'NewComer');
+    final userXp = userBox.get('xp', defaultValue: 0);
+    final userTitle = _calculateRankFromXP(userXp);
 
     final rankIndex = ranks.indexWhere((rank) => rank['name'] == userTitle);
     if (rankIndex != -1) {
@@ -124,7 +145,8 @@ class _GameRanksState extends State<GameRanks> with TickerProviderStateMixin {
   Widget build(BuildContext context) {
     final size = MediaQuery.of(context).size;
     final userBox = Hive.box('userBox');
-    final userTitle = userBox.get('title', defaultValue: 'NewComer');
+    final userXp = userBox.get('xp', defaultValue: 0);
+    final userTitle = _calculateRankFromXP(userXp);
 
     return Scaffold(
       backgroundColor: const Color(0xFF0a0e27),
@@ -481,6 +503,9 @@ class _GameRanksState extends State<GameRanks> with TickerProviderStateMixin {
                       child: Image.asset(
                         'assets/img/bg7.jpg',
                         fit: BoxFit.cover,
+                        errorBuilder: (context, error, stackTrace) {
+                          return Container();
+                        },
                       ),
                     ),
                   ),
@@ -534,6 +559,28 @@ class _GameRanksState extends State<GameRanks> with TickerProviderStateMixin {
                             child: Image.asset(
                               rank['image'],
                               fit: BoxFit.contain,
+                              errorBuilder: (context, error, stackTrace) {
+                                print('Failed to load image: ${rank['image']}');
+                                print('Error: $error');
+                                return Column(
+                                  mainAxisAlignment: MainAxisAlignment.center,
+                                  children: [
+                                    Icon(
+                                      rank['icon'],
+                                      color: Colors.white,
+                                      size: 100,
+                                    ),
+                                    const SizedBox(height: 10),
+                                    Text(
+                                      'Image not found',
+                                      style: TextStyle(
+                                        color: Colors.white.withOpacity(0.7),
+                                        fontSize: 12,
+                                      ),
+                                    ),
+                                  ],
+                                );
+                              },
                             ),
                           ),
                         ),

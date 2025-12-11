@@ -111,6 +111,27 @@ class _GameLeaderBoardState extends State<GameLeaderBoard>
     return const AssetImage('assets/img/default.jpeg');
   }
 
+  // Calculate rank dynamically based on XP (matches updated system)
+  String _calculateRankFromXP(int xp) {
+    if (xp >= 3500) {
+      return 'El Batal';
+    } else if (xp >= 2500) {
+      return 'Legend';
+    } else if (xp >= 1700) {
+      return 'Mentor';
+    } else if (xp >= 1100) {
+      return 'Expert';
+    } else if (xp >= 650) {
+      return 'Challenger';
+    } else if (xp >= 350) {
+      return 'Achiever';
+    } else if (xp >= 150) {
+      return 'Explorer';
+    } else {
+      return 'NewComer';
+    }
+  }
+
   Color _getRankColor(String rank) {
     switch (rank) {
       case 'El Batal':
@@ -542,7 +563,8 @@ class _GameLeaderBoardState extends State<GameLeaderBoard>
     required Map<String, dynamic> user,
     required double height,
   }) {
-    final rankColor = _getRankColor(user['title']);
+    final userRank = _calculateRankFromXP(user['xp']);
+    final rankColor = _getRankColor(userRank);
     Color podiumColor;
     IconData medalIcon;
     Color medalColor;
@@ -730,7 +752,8 @@ class _GameLeaderBoardState extends State<GameLeaderBoard>
     required Map<String, dynamic> user,
     required bool isCurrentUser,
   }) {
-    final rankColor = _getRankColor(user['title']);
+    final userRank = _calculateRankFromXP(user['xp']);
+    final rankColor = _getRankColor(userRank);
 
     return RepaintBoundary(
       child: Container(
@@ -894,7 +917,7 @@ class _GameLeaderBoardState extends State<GameLeaderBoard>
                 ),
                 const SizedBox(width: 4),
                 Text(
-                  user['title'],
+                  userRank,
                   style: AppConstants.smallText.copyWith(
                     color: rankColor,
                     fontWeight: FontWeight.w700,

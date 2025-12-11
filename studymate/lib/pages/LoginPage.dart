@@ -48,7 +48,7 @@ class _LoginPageState extends State<LoginPage> {
     const titleUrl = 'https://alyibrahim.pythonanywhere.com/set_title';
     final username = Hive.box('userBox').get('username');
 
-    int newXp = currentXp + 5; // Add 5 XP
+    int newXp = currentXp + 10; // Add 10 XP for daily login
 
     // Update XP on the server
     final xpResponse = await http.post(
@@ -64,19 +64,19 @@ class _LoginPageState extends State<LoginPage> {
 
       // Determine new title based on XP
       String newTitle;
-      if (newXp >= 3000) {
+      if (newXp >= 3500) {
         newTitle = 'El Batal';
-      } else if (newXp >= 2200) {
+      } else if (newXp >= 2500) {
         newTitle = 'Legend';
-      } else if (newXp >= 1500) {
+      } else if (newXp >= 1700) {
         newTitle = 'Mentor';
-      } else if (newXp >= 1000) {
+      } else if (newXp >= 1100) {
         newTitle = 'Expert';
-      } else if (newXp >= 600) {
+      } else if (newXp >= 650) {
         newTitle = 'Challenger';
-      } else if (newXp >= 300) {
+      } else if (newXp >= 350) {
         newTitle = 'Achiever';
-      } else if (newXp >= 100) {
+      } else if (newXp >= 150) {
         newTitle = 'Explorer';
       } else {
         newTitle = 'NewComer';
@@ -237,7 +237,8 @@ class _LoginPageState extends State<LoginPage> {
             int currentXp =
                 jsonResponse['xp'] ?? 0; // Get current XP, default to 0 if null
             await updateXpAndTitle(currentXp);
-            showXPChangePopup(context, 5, 'You have gained 5 XP!');
+            showXPChangePopup(
+                context, 10, 'Welcome back! You earned 10 XP for daily login!');
           }
 
           // User? user = User(

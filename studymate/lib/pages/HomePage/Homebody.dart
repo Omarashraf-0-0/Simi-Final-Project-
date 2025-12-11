@@ -270,6 +270,27 @@ class _HomebodyState extends State<Homebody>
     );
   }
 
+  // Calculate rank dynamically based on XP (matches updated system)
+  String _calculateRankFromXP(int xp) {
+    if (xp >= 3500) {
+      return 'El Batal';
+    } else if (xp >= 2500) {
+      return 'Legend';
+    } else if (xp >= 1700) {
+      return 'Mentor';
+    } else if (xp >= 1100) {
+      return 'Expert';
+    } else if (xp >= 650) {
+      return 'Challenger';
+    } else if (xp >= 350) {
+      return 'Achiever';
+    } else if (xp >= 150) {
+      return 'Explorer';
+    } else {
+      return 'NewComer';
+    }
+  }
+
   // Get gradient colors based on rank title (matching Gamification colors)
   List<Color> _getRankGradientColors(String title) {
     switch (title.toLowerCase()) {
@@ -299,7 +320,8 @@ class _HomebodyState extends State<Homebody>
   // Hero Section with user info and gradient
   Widget _buildHeroSection() {
     final username = Hive.box('userBox').get('username') ?? 'User';
-    final title = Hive.box('userBox').get('title') ?? 'Newcomer';
+    final xp = Hive.box('userBox').get('xp') ?? 0;
+    final title = _calculateRankFromXP(xp); // Calculate rank dynamically
 
     final hour = DateTime.now().hour;
     final greeting = hour < 12

@@ -52,11 +52,33 @@ class _GameHomeState extends State<GameHome> with TickerProviderStateMixin {
   // Helper function to get user data from Hive
   Map<String, dynamic> _getUserData() {
     final userBox = Hive.box('userBox');
+    final xp = userBox.get('xp', defaultValue: 0);
     return {
       'username': userBox.get('username', defaultValue: 'Player'),
-      'xp': userBox.get('xp', defaultValue: 0),
-      'title': userBox.get('title', defaultValue: 'NewComer'),
+      'xp': xp,
+      'title': _calculateRankFromXP(xp), // Calculate rank dynamically
     };
+  }
+
+  // Calculate rank dynamically based on XP (matches updated system)
+  String _calculateRankFromXP(int xp) {
+    if (xp >= 3500) {
+      return 'El Batal';
+    } else if (xp >= 2500) {
+      return 'Legend';
+    } else if (xp >= 1700) {
+      return 'Mentor';
+    } else if (xp >= 1100) {
+      return 'Expert';
+    } else if (xp >= 650) {
+      return 'Challenger';
+    } else if (xp >= 350) {
+      return 'Achiever';
+    } else if (xp >= 150) {
+      return 'Explorer';
+    } else {
+      return 'NewComer';
+    }
   }
 
   Color _getRankColor(String rank) {

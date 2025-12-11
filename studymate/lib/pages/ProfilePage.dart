@@ -148,8 +148,8 @@ class _ProfilepageState extends State<Profilepage> {
   void _loadUserData() {
     final userBox = Hive.box('userBox');
     _fullName = userBox.get('fullName') ?? '';
-    _title = userBox.get('title') ?? 'NewComer';
     _xp = userBox.get('xp') ?? 0;
+    _title = _calculateRankFromXP(_xp); // Calculate rank dynamically
     _email = userBox.get('email') ?? '';
     _phoneNumber = userBox.get('phone_number') ?? '';
     _registrationNumber = userBox.get('Registration_Number') ?? '';
@@ -238,24 +238,45 @@ class _ProfilepageState extends State<Profilepage> {
     }
   }
 
+  // Calculate rank dynamically based on XP (matches updated system)
+  String _calculateRankFromXP(int xp) {
+    if (xp >= 3500) {
+      return 'El Batal';
+    } else if (xp >= 2500) {
+      return 'Legend';
+    } else if (xp >= 1700) {
+      return 'Mentor';
+    } else if (xp >= 1100) {
+      return 'Expert';
+    } else if (xp >= 650) {
+      return 'Challenger';
+    } else if (xp >= 350) {
+      return 'Achiever';
+    } else if (xp >= 150) {
+      return 'Explorer';
+    } else {
+      return 'NewComer';
+    }
+  }
+
   double _getProgressValue(int xp, String rank) {
     switch (rank) {
       case 'El Batal':
-        return (xp - 3000) / 1000;
+        return (xp - 3500) / 1000;
       case 'Legend':
-        return (xp - 2200) / 800;
+        return (xp - 2500) / 1000;
       case 'Mentor':
-        return (xp - 1500) / 700;
+        return (xp - 1700) / 800;
       case 'Expert':
-        return (xp - 1000) / 500;
+        return (xp - 1100) / 600;
       case 'Challenger':
-        return (xp - 600) / 400;
+        return (xp - 650) / 450;
       case 'Achiever':
-        return (xp - 300) / 300;
+        return (xp - 350) / 300;
       case 'Explorer':
-        return (xp - 100) / 200;
+        return (xp - 150) / 200;
       case 'NewComer':
-        return xp / 100;
+        return xp / 150;
       default:
         return 0.0;
     }
