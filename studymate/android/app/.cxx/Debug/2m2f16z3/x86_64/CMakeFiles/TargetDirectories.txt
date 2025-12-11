@@ -1,2 +1,0 @@
-F:/Project/studymate/android/app/.cxx/Debug/2m2f16z3/x86_64/CMakeFiles/edit_cache.dir
-F:/Project/studymate/android/app/.cxx/Debug/2m2f16z3/x86_64/CMakeFiles/rebuild_cache.dir

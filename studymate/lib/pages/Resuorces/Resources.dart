@@ -3,9 +3,9 @@ import 'package:flutter/material.dart';
 import 'package:hive_flutter/hive_flutter.dart';
 import 'package:http/http.dart' as http;
 import 'package:shimmer/shimmer.dart';
-import 'package:studymate/main.dart';
 import 'package:studymate/pages/Resuorces/CourseContent.dart';
 import 'package:studymate/pages/Resuorces/Courses.dart';
+import 'package:studymate/theme/app_constants.dart';
 
 class Resources extends StatefulWidget {
   const Resources({super.key});
@@ -19,14 +19,6 @@ class _ResourcesState extends State<Resources> {
   List<String> coursesIndex = [];
   bool isLoading = false; // To show a loading indicator
   bool isError = false; // To track if an error occurred
-
-  // Branding colors
-  final Color blue1 = const Color(0xFF1c74bb);
-  final Color blue2 = const Color(0xFF165d96);
-  final Color cyan1 = const Color(0xFF18bebc);
-  final Color cyan2 = const Color(0xFF139896);
-  final Color black = const Color(0xFF000000);
-  final Color white = const Color(0xFFFFFFFF);
 
   @override
   void initState() {
@@ -68,7 +60,7 @@ class _ResourcesState extends State<Resources> {
       if (response.statusCode == 200) {
         final jsonResponse = jsonDecode(response.body);
         print("JSON Response: $jsonResponse");
-        if(jsonResponse['error'] != null) {
+        if (jsonResponse['error'] != null) {
           if (mounted) {
             setState(() {
               isLoading = false;
@@ -87,7 +79,8 @@ class _ResourcesState extends State<Resources> {
           });
         }
       } else {
-        print('Request failed with status: ${response.statusCode}. Error: ${response.body}');
+        print(
+            'Request failed with status: ${response.statusCode}. Error: ${response.body}');
         if (mounted) {
           setState(() {
             isLoading = false;
@@ -102,20 +95,21 @@ class _ResourcesState extends State<Resources> {
         isLoading = false;
         isError = true;
       });
-      _showErrorDialog('An error occurred. Please check your connection and try again.');
+      _showErrorDialog(
+          'An error occurred. Please check your connection and try again.');
     }
   }
 
   String _getCourseBackground(int index) {
     final List<String> backgrounds = [
-      'lib/assets/img/bg1.jpg',
-      'lib/assets/img/bg2.jpg',
-      'lib/assets/img/bg3.jpg',
-      'lib/assets/img/bg4.jpg',
-      'lib/assets/img/bg5.jpg',
-      'lib/assets/img/bg6.jpg',
-      'lib/assets/img/bg7.jpg',
-      'lib/assets/img/bg8.jpg',
+      'assets/img/bg1.jpg',
+      'assets/img/bg2.jpg',
+      'assets/img/bg3.jpg',
+      'assets/img/bg4.jpg',
+      'assets/img/bg5.jpg',
+      'assets/img/bg6.jpg',
+      'assets/img/bg7.jpg',
+      'assets/img/bg8.jpg',
     ];
     return backgrounds[index % backgrounds.length];
   }
@@ -128,8 +122,8 @@ class _ResourcesState extends State<Resources> {
       context: context,
       builder: (context) {
         return AlertDialog(
-          title: Text("Error", style: TextStyle(color: black)),
-          content: Text(message, style: TextStyle(color: black)),
+          title: Text("Error", style: AppConstants.subtitle),
+          content: Text(message, style: AppConstants.bodyText),
           actions: [
             TextButton(
               onPressed: () {
@@ -138,7 +132,8 @@ class _ResourcesState extends State<Resources> {
                   fetchCourses(); // Retry fetching courses
                 }
               },
-              child: Text("Retry", style: TextStyle(color: blue2)),
+              child: Text("Retry",
+                  style: TextStyle(color: AppConstants.primaryBlueDark)),
             ),
             TextButton(
               onPressed: () {
@@ -146,7 +141,8 @@ class _ResourcesState extends State<Resources> {
                   Navigator.of(context).pop();
                 }
               },
-              child: Text("Cancel", style: TextStyle(color: blue2)),
+              child: Text("Cancel",
+                  style: TextStyle(color: AppConstants.primaryBlueDark)),
             ),
           ],
         );
@@ -159,19 +155,11 @@ class _ResourcesState extends State<Resources> {
     final size = MediaQuery.of(context).size;
 
     return Scaffold(
-      appBar: AppBar(
-        backgroundColor: blue2,
-        title: Text(
-          'Resources',
-          style: TextStyle(
-            color: white,
-            fontWeight: FontWeight.bold,
-          ),
-        ),
-        centerTitle: true,
+      appBar: AppConstants.buildAppBar(
+        title: 'Resources',
         actions: [
           IconButton(
-            icon: Icon(Icons.refresh, color: white),
+            icon: Icon(Icons.refresh, color: AppConstants.textOnPrimary),
             onPressed: fetchCourses,
           ),
         ],
@@ -179,8 +167,7 @@ class _ResourcesState extends State<Resources> {
       body: isLoading
           ? Padding(
               padding: EdgeInsets.symmetric(
-                  horizontal: size.width * 0.05,
-                  vertical: size.height * 0.02),
+                  horizontal: size.width * 0.05, vertical: size.height * 0.02),
               child: Column(
                 crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
@@ -232,7 +219,7 @@ class _ResourcesState extends State<Resources> {
               ? Center(
                   child: Text(
                     'An error occurred. Please try again.',
-                    style: TextStyle(color: black),
+                    style: AppConstants.bodyText,
                   ),
                 )
               : courses.isEmpty
@@ -258,22 +245,24 @@ class _ResourcesState extends State<Resources> {
                                 onPressed: () {
                                   Navigator.push(
                                     context,
-                                    MaterialPageRoute(builder: (context) => Courses()),
+                                    MaterialPageRoute(
+                                        builder: (context) => Courses()),
                                   );
                                 },
                                 style: ElevatedButton.styleFrom(
-                                  backgroundColor: blue2,
-                                  padding: EdgeInsets.symmetric(vertical: 15),
+                                  backgroundColor: AppConstants.primaryBlueDark,
+                                  padding: EdgeInsets.symmetric(
+                                      vertical: AppConstants.spacingM + 3),
                                   shape: RoundedRectangleBorder(
-                                    borderRadius: BorderRadius.circular(10),
+                                    borderRadius: BorderRadius.circular(
+                                        AppConstants.radiusM + 2),
                                   ),
                                 ),
                                 child: Text(
                                   'View All Courses',
-                                  style: TextStyle(
-                                    color: white,
-                                    fontSize: 16,
-                                    fontWeight: FontWeight.bold,
+                                  style: AppConstants.bodyText.copyWith(
+                                    color: AppConstants.textOnPrimary,
+                                    fontWeight: AppConstants.fontWeightBold,
                                   ),
                                 ),
                               ),
@@ -304,22 +293,25 @@ class _ResourcesState extends State<Resources> {
                             width: double.infinity,
                             child: ElevatedButton(
                               onPressed: () {
-                                Navigator.push(context,
-                                    MaterialPageRoute(builder: (context) => Courses()));
+                                Navigator.push(
+                                    context,
+                                    MaterialPageRoute(
+                                        builder: (context) => Courses()));
                               },
                               style: ElevatedButton.styleFrom(
-                                backgroundColor: blue2,
-                                padding: EdgeInsets.symmetric(vertical: 15),
+                                backgroundColor: AppConstants.primaryBlueDark,
+                                padding: EdgeInsets.symmetric(
+                                    vertical: AppConstants.spacingM + 3),
                                 shape: RoundedRectangleBorder(
-                                  borderRadius: BorderRadius.circular(10),
+                                  borderRadius: BorderRadius.circular(
+                                      AppConstants.radiusM + 2),
                                 ),
                               ),
                               child: Text(
                                 'View All Courses',
-                                style: TextStyle(
-                                  color: white,
-                                  fontSize: 16,
-                                  fontWeight: FontWeight.bold,
+                                style: AppConstants.bodyText.copyWith(
+                                  color: AppConstants.textOnPrimary,
+                                  fontWeight: AppConstants.fontWeightBold,
                                 ),
                               ),
                             ),
@@ -338,12 +330,10 @@ class _ResourcesState extends State<Resources> {
       onTap: () {
         if (!mounted) return; // Ensure widget is still mounted
         // Handle course card tap
-        String title = "Welcome to ${courses[index]}";
-        String body = "Get started with the course content";
-        // showNotification(title, body);
         Hive.box('userBox').put('COId', coursesIndex[index]);
         print("Course: ${courses[index]}, ${coursesIndex[index]}");
-        Navigator.push(context, MaterialPageRoute(builder: (context) => CourseContent()));
+        Navigator.push(
+            context, MaterialPageRoute(builder: (context) => CourseContent()));
       },
       child: Container(
         margin: EdgeInsets.only(bottom: size.height * 0.02),
@@ -375,25 +365,24 @@ class _ResourcesState extends State<Resources> {
               children: [
                 Text(
                   courses[index],
-                  style: TextStyle(
-                    fontSize: 22,
-                    color: white,
-                    fontWeight: FontWeight.bold,
+                  style: AppConstants.sectionHeader.copyWith(
+                    color: AppConstants.textOnPrimary,
                   ),
                 ),
                 SizedBox(height: size.height * 0.01),
                 Container(
                   decoration: BoxDecoration(
-                    color: cyan1,
-                    borderRadius: BorderRadius.circular(8),
+                    color: AppConstants.primaryCyan,
+                    borderRadius: BorderRadius.circular(AppConstants.radiusS),
                   ),
-                  padding: EdgeInsets.symmetric(vertical: 8, horizontal: 16),
+                  padding: EdgeInsets.symmetric(
+                      vertical: AppConstants.spacingXS,
+                      horizontal: AppConstants.spacingM),
                   child: Text(
                     'Start',
-                    style: TextStyle(
-                      color: white,
-                      fontSize: 16,
-                      fontWeight: FontWeight.bold,
+                    style: AppConstants.bodyText.copyWith(
+                      color: AppConstants.textOnPrimary,
+                      fontWeight: AppConstants.fontWeightBold,
                     ),
                   ),
                 ),

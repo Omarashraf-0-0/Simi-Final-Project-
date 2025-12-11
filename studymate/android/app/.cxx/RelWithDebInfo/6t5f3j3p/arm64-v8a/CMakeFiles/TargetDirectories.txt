@@ -1,2 +1,0 @@
-F:/Project/studymate/android/app/.cxx/RelWithDebInfo/6t5f3j3p/arm64-v8a/CMakeFiles/edit_cache.dir
-F:/Project/studymate/android/app/.cxx/RelWithDebInfo/6t5f3j3p/arm64-v8a/CMakeFiles/rebuild_cache.dir

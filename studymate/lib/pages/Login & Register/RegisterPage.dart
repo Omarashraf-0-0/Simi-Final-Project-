@@ -1,5 +1,4 @@
 import 'package:flutter/material.dart';
-import 'package:google_fonts/google_fonts.dart';
 import 'package:studymate/pages/LoginPage.dart';
 import '../../Classes/User.dart';
 import '../CollageInformatio.dart';
@@ -20,14 +19,6 @@ class _RegisterPageState extends State<RegisterPage> {
   final TextEditingController phoneController = TextEditingController();
   final TextEditingController addressController = TextEditingController();
   final TextEditingController birthDateController = TextEditingController();
-
-  // ألوان البراندينج
-  final Color blue1 = Color(0xFF1c74bb);
-  final Color blue2 = Color(0xFF165d96);
-  final Color cyan1 = Color(0xFF18bebc);
-  final Color cyan2 = Color(0xFF139896);
-  final Color black = Color(0xFF000000);
-  final Color white = Color(0xFFFFFFFF);
 
   final _formKey = GlobalKey<FormState>(); // مفتاح النموذج للتحقق
 
@@ -50,8 +41,7 @@ class _RegisterPageState extends State<RegisterPage> {
       widget.user.birthDate = birthDateController.text;
 
       // الانتقال إلى الصفحة التالية
-      Navigator.push(
-        context,
+      Navigator.of(context).push(
         MaterialPageRoute(
           builder: (context) => CollageInformation(
             user: widget.user,
@@ -73,208 +63,530 @@ class _RegisterPageState extends State<RegisterPage> {
     );
     if (pickedDate != null) {
       setState(() {
-        birthDateController.text = pickedDate.toLocal().toString().split(' ')[0];
+        birthDateController.text =
+            pickedDate.toLocal().toString().split(' ')[0];
       });
     }
   }
 
   @override
   Widget build(BuildContext context) {
-    // حجم الشاشة للتصميم المتجاوب
     final size = MediaQuery.of(context).size;
 
     return Scaffold(
-      backgroundColor: white,
-      body: SingleChildScrollView(
-        child: Padding(
-          padding: EdgeInsets.symmetric(horizontal: size.width * 0.08, vertical: size.height * 0.05),
-          child: Column(
-            crossAxisAlignment: CrossAxisAlignment.start,
-            children: [
-              // زر العودة
-              IconButton(
-                icon: Icon(Icons.arrow_back_ios_new, color: black),
-                onPressed: () {
-                  Navigator.pop(context);
-                },
-              ),
-              SizedBox(height: size.height * 0.02),
-              // العنوان
-              Center(
-                child: Column(
-                  children: [
-                    Text(
-                      'Almost There!',
-                      style: GoogleFonts.leagueSpartan(
-                        fontSize: 32,
-                        fontWeight: FontWeight.bold,
-                        color: black,
-                      ),
-                    ),
-                    SizedBox(height: 8),
-                    Text(
-                      'Personal Information',
-                      style: GoogleFonts.leagueSpartan(
-                        fontSize: 18,
-                        color: Colors.grey[700],
-                      ),
-                    ),
-                  ],
-                ),
-              ),
-              SizedBox(height: size.height * 0.04),
-              // نموذج التسجيل
-              Form(
-                key: _formKey,
-                child: Column(
-                  children: [
-                    // حقل الاسم الكامل
-                    TextFormField(
-                      controller: fullNameController,
-                      decoration: InputDecoration(
-                        labelText: 'Full Name',
-                        prefixIcon: Icon(Icons.person_outline),
-                        border: OutlineInputBorder(
-                          borderRadius: BorderRadius.circular(15),
-                        ),
-                      ),
-                      validator: (value) {
-                        if (value == null || value.isEmpty) {
-                          return 'Please enter your full name.';
-                        }
-                        return null;
-                      },
-                    ),
-                    SizedBox(height: size.height * 0.025),
-                    // حقل رقم الهاتف
-                    TextFormField(
-                      controller: phoneController,
-                      decoration: InputDecoration(
-                        labelText: 'Phone Number',
-                        prefixIcon: Icon(Icons.phone_outlined),
-                        border: OutlineInputBorder(
-                          borderRadius: BorderRadius.circular(15),
-                        ),
-                      ),
-                      keyboardType: TextInputType.phone,
-                      validator: (value) {
-                        if (value == null || value.isEmpty) {
-                          return 'Please enter your phone number.';
-                        } else if (!RegExp(r'^(010|011|012|015)\d{8}$').hasMatch(value)) {
-                          return 'Phone number must be 11 digits and start with 010, 011, 012, or 015.';
-                        }
-                        return null;
-                      },
-                    ),
-                    SizedBox(height: size.height * 0.025),
-                    // حقل تاريخ الميلاد مع منتقي التاريخ
-                    TextFormField(
-                      controller: birthDateController,
-                      decoration: InputDecoration(
-                        labelText: 'Date of Birth',
-                        prefixIcon: Icon(Icons.calendar_today_outlined),
-                        border: OutlineInputBorder(
-                          borderRadius: BorderRadius.circular(15),
-                        ),
-                      ),
-                      readOnly: true,
-                      onTap: () => _selectDate(context),
-                      validator: (value) {
-                        if (value == null || value.isEmpty) {
-                          return 'Please select your date of birth.';
-                        }
-                        DateTime dob = DateTime.parse(value);
-                        if (dob.isAfter(DateTime.now())) {
-                          return 'Date of birth must be in the past.';
-                        }
-                        return null;
-                      },
-                    ),
-                    SizedBox(height: size.height * 0.025),
-                    // حقل العنوان
-                    TextFormField(
-                      controller: addressController,
-                      decoration: InputDecoration(
-                        labelText: 'Address',
-                        prefixIcon: Icon(Icons.home_outlined),
-                        border: OutlineInputBorder(
-                          borderRadius: BorderRadius.circular(15),
-                        ),
-                      ),
-                      validator: (value) {
-                        if (value == null || value.isEmpty) {
-                          return 'Please enter your address.';
-                        }
-                        return null;
-                      },
-                    ),
-                    SizedBox(height: size.height * 0.04),
-                    // زر التالي
-                    SizedBox(
-                      width: double.infinity,
-                      child: ElevatedButton(
-                        onPressed: validateAndProceed,
-                        style: ElevatedButton.styleFrom(
-                          backgroundColor: blue2,
-                          padding: EdgeInsets.symmetric(vertical: 15),
-                          shape: RoundedRectangleBorder(
-                            borderRadius: BorderRadius.circular(15),
-                          ),
-                        ),
-                        child: Text(
-                          'Next',
-                          style: GoogleFonts.leagueSpartan(
-                            fontSize: 18,
-                            fontWeight: FontWeight.bold,
-                            color: white,
-                          ),
-                        ),
-                      ),
-                    ),
-                  ],
-                ),
-              ),
-              SizedBox(height: size.height * 0.05),
-              // لديك حساب بالفعل؟
-              Center(
-                child: Column(
-                  children: [
-                    Text(
-                      'Already have an account?',
-                      style: GoogleFonts.leagueSpartan(
-                        fontSize: 16,
-                        color: black,
-                      ),
-                    ),
-                    SizedBox(height: 8),
-                    OutlinedButton(
-                      onPressed: () {
-                        // الرجوع إلى صفحة تسجيل الدخول
-                        Navigator.pushReplacement(
-                          context,
-                          MaterialPageRoute(builder: (context) => LoginPage()),
-                        );
-                      },
-                      style: OutlinedButton.styleFrom(
-                        side: BorderSide(color: blue2, width: 2),
-                        padding: EdgeInsets.symmetric(horizontal: 40, vertical: 12),
-                        shape: RoundedRectangleBorder(
-                          borderRadius: BorderRadius.circular(15),
-                        ),
-                      ),
-                      child: Text(
-                        'Login',
-                        style: GoogleFonts.leagueSpartan(
-                          fontSize: 16,
-                          color: blue2,
-                        ),
-                      ),
-                    ),
-                  ],
-                ),
-              ),
+      body: Container(
+        width: double.infinity,
+        height: double.infinity,
+        decoration: BoxDecoration(
+          gradient: LinearGradient(
+            begin: Alignment.topLeft,
+            end: Alignment.bottomRight,
+            colors: [
+              Color(0xFF1c74bb),
+              Color(0xFF165d96),
+              Color(0xFF18bebc),
             ],
+            stops: [0.0, 0.5, 1.0],
           ),
+        ),
+        child: Stack(
+          children: [
+            // Decorative circles
+            Positioned(
+              top: -100,
+              right: -100,
+              child: Container(
+                width: 300,
+                height: 300,
+                decoration: BoxDecoration(
+                  shape: BoxShape.circle,
+                  color: Colors.white.withOpacity(0.05),
+                ),
+              ),
+            ),
+            Positioned(
+              bottom: -150,
+              left: -150,
+              child: Container(
+                width: 400,
+                height: 400,
+                decoration: BoxDecoration(
+                  shape: BoxShape.circle,
+                  color: Colors.white.withOpacity(0.05),
+                ),
+              ),
+            ),
+
+            // Main content
+            SafeArea(
+              child: SingleChildScrollView(
+                child: Padding(
+                  padding: EdgeInsets.symmetric(horizontal: size.width * 0.08),
+                  child: Column(
+                    children: [
+                      SizedBox(height: size.height * 0.03),
+
+                      // Back Button
+                      Align(
+                        alignment: Alignment.centerLeft,
+                        child: Container(
+                          decoration: BoxDecoration(
+                            color: Colors.white.withOpacity(0.2),
+                            shape: BoxShape.circle,
+                          ),
+                          child: IconButton(
+                            icon: Icon(Icons.arrow_back_ios_new,
+                                color: Colors.white),
+                            onPressed: () => Navigator.pop(context),
+                          ),
+                        ),
+                      ),
+
+                      SizedBox(height: size.height * 0.02),
+
+                      // Title
+                      Text(
+                        'Almost There!',
+                        style: TextStyle(
+                          fontSize: 36,
+                          fontWeight: FontWeight.bold,
+                          color: Colors.white,
+                          fontFamily: 'Poppins',
+                          letterSpacing: 1,
+                          shadows: [
+                            Shadow(
+                              color: Colors.black.withOpacity(0.3),
+                              blurRadius: 10,
+                              offset: Offset(0, 4),
+                            ),
+                          ],
+                        ),
+                      ),
+
+                      SizedBox(height: 8),
+
+                      Text(
+                        'Personal Information',
+                        style: TextStyle(
+                          fontSize: 16,
+                          color: Colors.white.withOpacity(0.9),
+                          fontFamily: 'Poppins',
+                          letterSpacing: 0.5,
+                        ),
+                      ),
+
+                      SizedBox(height: size.height * 0.04),
+
+                      // White container for form
+                      Container(
+                        padding: EdgeInsets.all(30),
+                        decoration: BoxDecoration(
+                          color: Colors.white,
+                          borderRadius: BorderRadius.circular(30),
+                          boxShadow: [
+                            BoxShadow(
+                              color: Colors.black.withOpacity(0.2),
+                              blurRadius: 30,
+                              offset: Offset(0, 15),
+                            ),
+                          ],
+                        ),
+                        child: Form(
+                          key: _formKey,
+                          child: Column(
+                            children: [
+                              // Full Name Field
+                              TextFormField(
+                                controller: fullNameController,
+                                decoration: InputDecoration(
+                                  labelText: 'Full Name',
+                                  labelStyle: TextStyle(
+                                    color: Colors.grey[600],
+                                    fontFamily: 'Poppins',
+                                  ),
+                                  floatingLabelStyle: TextStyle(
+                                    color: Color(0xFF1c74bb),
+                                    fontFamily: 'Poppins',
+                                    fontWeight: FontWeight.w600,
+                                  ),
+                                  prefixIcon: Container(
+                                    margin: EdgeInsets.all(12),
+                                    padding: EdgeInsets.all(8),
+                                    decoration: BoxDecoration(
+                                      gradient: LinearGradient(
+                                        colors: [
+                                          Color(0xFF1c74bb),
+                                          Color(0xFF18bebc),
+                                        ],
+                                      ),
+                                      borderRadius: BorderRadius.circular(10),
+                                    ),
+                                    child: Icon(
+                                      Icons.person_outline,
+                                      color: Colors.white,
+                                      size: 20,
+                                    ),
+                                  ),
+                                  filled: true,
+                                  fillColor: Colors.grey[50],
+                                  border: OutlineInputBorder(
+                                    borderRadius: BorderRadius.circular(15),
+                                    borderSide: BorderSide.none,
+                                  ),
+                                  enabledBorder: OutlineInputBorder(
+                                    borderRadius: BorderRadius.circular(15),
+                                    borderSide: BorderSide(
+                                      color: Colors.grey[200]!,
+                                      width: 1,
+                                    ),
+                                  ),
+                                  focusedBorder: OutlineInputBorder(
+                                    borderRadius: BorderRadius.circular(15),
+                                    borderSide: BorderSide(
+                                      color: Color(0xFF1c74bb),
+                                      width: 2,
+                                    ),
+                                  ),
+                                ),
+                                validator: (value) {
+                                  if (value == null || value.isEmpty) {
+                                    return 'Please enter your full name.';
+                                  }
+                                  return null;
+                                },
+                              ),
+
+                              SizedBox(height: 20),
+
+                              // Phone Field
+                              TextFormField(
+                                controller: phoneController,
+                                keyboardType: TextInputType.phone,
+                                decoration: InputDecoration(
+                                  labelText: 'Phone Number',
+                                  labelStyle: TextStyle(
+                                    color: Colors.grey[600],
+                                    fontFamily: 'Poppins',
+                                  ),
+                                  floatingLabelStyle: TextStyle(
+                                    color: Color(0xFF1c74bb),
+                                    fontFamily: 'Poppins',
+                                    fontWeight: FontWeight.w600,
+                                  ),
+                                  prefixIcon: Container(
+                                    margin: EdgeInsets.all(12),
+                                    padding: EdgeInsets.all(8),
+                                    decoration: BoxDecoration(
+                                      gradient: LinearGradient(
+                                        colors: [
+                                          Color(0xFF1c74bb),
+                                          Color(0xFF18bebc),
+                                        ],
+                                      ),
+                                      borderRadius: BorderRadius.circular(10),
+                                    ),
+                                    child: Icon(
+                                      Icons.phone_outlined,
+                                      color: Colors.white,
+                                      size: 20,
+                                    ),
+                                  ),
+                                  filled: true,
+                                  fillColor: Colors.grey[50],
+                                  border: OutlineInputBorder(
+                                    borderRadius: BorderRadius.circular(15),
+                                    borderSide: BorderSide.none,
+                                  ),
+                                  enabledBorder: OutlineInputBorder(
+                                    borderRadius: BorderRadius.circular(15),
+                                    borderSide: BorderSide(
+                                      color: Colors.grey[200]!,
+                                      width: 1,
+                                    ),
+                                  ),
+                                  focusedBorder: OutlineInputBorder(
+                                    borderRadius: BorderRadius.circular(15),
+                                    borderSide: BorderSide(
+                                      color: Color(0xFF1c74bb),
+                                      width: 2,
+                                    ),
+                                  ),
+                                ),
+                                validator: (value) {
+                                  if (value == null || value.isEmpty) {
+                                    return 'Please enter your phone number.';
+                                  } else if (!RegExp(
+                                          r'^(010|011|012|015)\d{8}$')
+                                      .hasMatch(value)) {
+                                    return '11 digits: 010/011/012/015';
+                                  }
+                                  return null;
+                                },
+                              ),
+
+                              SizedBox(height: 20),
+
+                              // Birth Date Field
+                              TextFormField(
+                                controller: birthDateController,
+                                readOnly: true,
+                                onTap: () => _selectDate(context),
+                                decoration: InputDecoration(
+                                  labelText: 'Date of Birth',
+                                  labelStyle: TextStyle(
+                                    color: Colors.grey[600],
+                                    fontFamily: 'Poppins',
+                                  ),
+                                  floatingLabelStyle: TextStyle(
+                                    color: Color(0xFF1c74bb),
+                                    fontFamily: 'Poppins',
+                                    fontWeight: FontWeight.w600,
+                                  ),
+                                  prefixIcon: Container(
+                                    margin: EdgeInsets.all(12),
+                                    padding: EdgeInsets.all(8),
+                                    decoration: BoxDecoration(
+                                      gradient: LinearGradient(
+                                        colors: [
+                                          Color(0xFF1c74bb),
+                                          Color(0xFF18bebc),
+                                        ],
+                                      ),
+                                      borderRadius: BorderRadius.circular(10),
+                                    ),
+                                    child: Icon(
+                                      Icons.calendar_today_outlined,
+                                      color: Colors.white,
+                                      size: 20,
+                                    ),
+                                  ),
+                                  filled: true,
+                                  fillColor: Colors.grey[50],
+                                  border: OutlineInputBorder(
+                                    borderRadius: BorderRadius.circular(15),
+                                    borderSide: BorderSide.none,
+                                  ),
+                                  enabledBorder: OutlineInputBorder(
+                                    borderRadius: BorderRadius.circular(15),
+                                    borderSide: BorderSide(
+                                      color: Colors.grey[200]!,
+                                      width: 1,
+                                    ),
+                                  ),
+                                  focusedBorder: OutlineInputBorder(
+                                    borderRadius: BorderRadius.circular(15),
+                                    borderSide: BorderSide(
+                                      color: Color(0xFF1c74bb),
+                                      width: 2,
+                                    ),
+                                  ),
+                                ),
+                                validator: (value) {
+                                  if (value == null || value.isEmpty) {
+                                    return 'Please select your date of birth.';
+                                  }
+                                  DateTime dob = DateTime.parse(value);
+                                  if (dob.isAfter(DateTime.now())) {
+                                    return 'Date of birth must be in the past.';
+                                  }
+                                  return null;
+                                },
+                              ),
+
+                              SizedBox(height: 20),
+
+                              // Address Field
+                              TextFormField(
+                                controller: addressController,
+                                decoration: InputDecoration(
+                                  labelText: 'Address',
+                                  labelStyle: TextStyle(
+                                    color: Colors.grey[600],
+                                    fontFamily: 'Poppins',
+                                  ),
+                                  floatingLabelStyle: TextStyle(
+                                    color: Color(0xFF1c74bb),
+                                    fontFamily: 'Poppins',
+                                    fontWeight: FontWeight.w600,
+                                  ),
+                                  prefixIcon: Container(
+                                    margin: EdgeInsets.all(12),
+                                    padding: EdgeInsets.all(8),
+                                    decoration: BoxDecoration(
+                                      gradient: LinearGradient(
+                                        colors: [
+                                          Color(0xFF1c74bb),
+                                          Color(0xFF18bebc),
+                                        ],
+                                      ),
+                                      borderRadius: BorderRadius.circular(10),
+                                    ),
+                                    child: Icon(
+                                      Icons.home_outlined,
+                                      color: Colors.white,
+                                      size: 20,
+                                    ),
+                                  ),
+                                  filled: true,
+                                  fillColor: Colors.grey[50],
+                                  border: OutlineInputBorder(
+                                    borderRadius: BorderRadius.circular(15),
+                                    borderSide: BorderSide.none,
+                                  ),
+                                  enabledBorder: OutlineInputBorder(
+                                    borderRadius: BorderRadius.circular(15),
+                                    borderSide: BorderSide(
+                                      color: Colors.grey[200]!,
+                                      width: 1,
+                                    ),
+                                  ),
+                                  focusedBorder: OutlineInputBorder(
+                                    borderRadius: BorderRadius.circular(15),
+                                    borderSide: BorderSide(
+                                      color: Color(0xFF1c74bb),
+                                      width: 2,
+                                    ),
+                                  ),
+                                ),
+                                validator: (value) {
+                                  if (value == null || value.isEmpty) {
+                                    return 'Please enter your address.';
+                                  }
+                                  return null;
+                                },
+                              ),
+
+                              SizedBox(height: 30),
+
+                              // Next Button
+                              Container(
+                                width: double.infinity,
+                                height: 56,
+                                decoration: BoxDecoration(
+                                  gradient: LinearGradient(
+                                    colors: [
+                                      Color(0xFF1c74bb),
+                                      Color(0xFF165d96),
+                                    ],
+                                  ),
+                                  borderRadius: BorderRadius.circular(15),
+                                  boxShadow: [
+                                    BoxShadow(
+                                      color: Color(0xFF1c74bb).withOpacity(0.4),
+                                      blurRadius: 15,
+                                      offset: Offset(0, 8),
+                                    ),
+                                  ],
+                                ),
+                                child: ElevatedButton(
+                                  onPressed: validateAndProceed,
+                                  style: ElevatedButton.styleFrom(
+                                    backgroundColor: Colors.transparent,
+                                    shadowColor: Colors.transparent,
+                                    shape: RoundedRectangleBorder(
+                                      borderRadius: BorderRadius.circular(15),
+                                    ),
+                                  ),
+                                  child: Text(
+                                    'Next',
+                                    style: TextStyle(
+                                      color: Colors.white,
+                                      fontSize: 18,
+                                      fontFamily: 'Poppins',
+                                      fontWeight: FontWeight.bold,
+                                      letterSpacing: 1,
+                                    ),
+                                  ),
+                                ),
+                              ),
+                            ],
+                          ),
+                        ),
+                      ),
+
+                      SizedBox(height: size.height * 0.03),
+
+                      // Divider
+                      Row(
+                        children: [
+                          Expanded(
+                            child: Container(
+                              height: 1,
+                              color: Colors.white.withOpacity(0.3),
+                            ),
+                          ),
+                          Padding(
+                            padding: EdgeInsets.symmetric(horizontal: 15),
+                            child: Text(
+                              'OR',
+                              style: TextStyle(
+                                color: Colors.white.withOpacity(0.8),
+                                fontFamily: 'Poppins',
+                                fontSize: 14,
+                                fontWeight: FontWeight.w500,
+                              ),
+                            ),
+                          ),
+                          Expanded(
+                            child: Container(
+                              height: 1,
+                              color: Colors.white.withOpacity(0.3),
+                            ),
+                          ),
+                        ],
+                      ),
+
+                      SizedBox(height: size.height * 0.03),
+
+                      // Login button
+                      Container(
+                        width: double.infinity,
+                        height: 56,
+                        decoration: BoxDecoration(
+                          color: Colors.white,
+                          borderRadius: BorderRadius.circular(15),
+                          boxShadow: [
+                            BoxShadow(
+                              color: Colors.black.withOpacity(0.1),
+                              blurRadius: 15,
+                              offset: Offset(0, 8),
+                            ),
+                          ],
+                        ),
+                        child: OutlinedButton(
+                          onPressed: () {
+                            Navigator.of(context).pushReplacement(
+                              MaterialPageRoute(
+                                  builder: (context) => LoginPage()),
+                            );
+                          },
+                          style: OutlinedButton.styleFrom(
+                            backgroundColor: Colors.transparent,
+                            side: BorderSide.none,
+                            shape: RoundedRectangleBorder(
+                              borderRadius: BorderRadius.circular(15),
+                            ),
+                          ),
+                          child: Text(
+                            'Already have an account? Login',
+                            style: TextStyle(
+                              color: Color(0xFF1c74bb),
+                              fontFamily: 'Poppins',
+                              fontSize: 16,
+                              fontWeight: FontWeight.bold,
+                              letterSpacing: 0.5,
+                            ),
+                          ),
+                        ),
+                      ),
+
+                      SizedBox(height: size.height * 0.04),
+                    ],
+                  ),
+                ),
+              ),
+            ),
+          ],
         ),
       ),
     );

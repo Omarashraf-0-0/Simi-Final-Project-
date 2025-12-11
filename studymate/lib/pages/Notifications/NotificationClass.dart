@@ -2,7 +2,6 @@ import 'dart:io';
 import 'package:flutter_local_notifications/flutter_local_notifications.dart';
 import 'package:firebase_messaging/firebase_messaging.dart';
 import 'package:permission_handler/permission_handler.dart';
-import 'package:studymate/main.dart';
 import 'package:timezone/data/latest.dart' as tz;
 import 'package:timezone/timezone.dart' as tz;
 
@@ -35,7 +34,8 @@ class NotificationService {
 
     if (settings.authorizationStatus == AuthorizationStatus.authorized) {
       print('✅ Firebase: Permission granted');
-    } else if (settings.authorizationStatus == AuthorizationStatus.provisional) {
+    } else if (settings.authorizationStatus ==
+        AuthorizationStatus.provisional) {
       print('⚠️ Firebase: Provisional permission granted');
     } else {
       print('❌ Firebase: Permission denied');
@@ -51,7 +51,8 @@ class NotificationService {
           : '❌ Android: Notification permission denied');
     } else if (Platform.isIOS) {
       final iosPlugin = _flutterLocalNotificationsPlugin
-          .resolvePlatformSpecificImplementation<IOSFlutterLocalNotificationsPlugin>();
+          .resolvePlatformSpecificImplementation<
+              IOSFlutterLocalNotificationsPlugin>();
       if (iosPlugin != null) {
         final granted = await iosPlugin.requestPermissions(
           alert: true,
@@ -87,7 +88,8 @@ class NotificationService {
     required String title,
     required String body,
   }) async {
-    const AndroidNotificationDetails androidDetails = AndroidNotificationDetails(
+    const AndroidNotificationDetails androidDetails =
+        AndroidNotificationDetails(
       'default_channel_id',
       'Default Channel',
       channelDescription: 'This is the default notification channel',
@@ -103,7 +105,7 @@ class NotificationService {
   }
 
   // ✅ Schedule notification for a specific time
-     Future<void> scheduleNotification({
+  Future<void> scheduleNotification({
     required String title,
     required String body,
     required DateTime scheduledDate,
@@ -112,7 +114,7 @@ class NotificationService {
     final tz.TZDateTime tzScheduledDate =
         tz.TZDateTime.from(scheduledDate, tz.local);
 
-    await flutterLocalNotificationsPlugin.zonedSchedule(
+    await _flutterLocalNotificationsPlugin.zonedSchedule(
       scheduledDate.millisecondsSinceEpoch ~/ 1000, // Unique notification ID
       title, // Notification title
       body, // Notification body
@@ -121,14 +123,13 @@ class NotificationService {
         android: AndroidNotificationDetails(
           '1', // Replace with your channel ID
           'Your Channel Name', // Replace with your channel name
-          channelDescription: 'Your channel description', // Optional description
+          channelDescription:
+              'Your channel description', // Optional description
           importance: Importance.max, // High visibility
           priority: Priority.high, // High priority
         ),
       ),
       androidScheduleMode: AndroidScheduleMode.exactAllowWhileIdle,
-      uiLocalNotificationDateInterpretation:
-          UILocalNotificationDateInterpretation.absoluteTime,
     );
 
     // print('Notification scheduled for: $tzScheduledDate');
@@ -165,5 +166,4 @@ class NotificationService {
 //       matchDateTimeComponents: DateTimeComponents.time, // Optional
 //     );
 //   }
-  
 }

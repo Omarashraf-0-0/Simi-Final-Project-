@@ -2,7 +2,7 @@ import 'dart:convert';
 import 'package:flutter/material.dart';
 import 'package:hive/hive.dart';
 import 'package:http/http.dart' as http;
-import 'package:google_fonts/google_fonts.dart';
+import 'package:studymate/theme/app_constants.dart';
 
 class Courses extends StatefulWidget {
   const Courses({super.key});
@@ -14,14 +14,6 @@ class Courses extends StatefulWidget {
 class _CoursesState extends State<Courses> {
   // List to store selected courses
   List<String> selectedCourses = [];
-
-  // Branding colors
-  final Color blue1 = const Color(0xFF1c74bb);
-  final Color blue2 = const Color(0xFF165d96);
-  final Color cyan1 = const Color(0xFF18bebc);
-  final Color cyan2 = const Color(0xFF139896);
-  final Color black = const Color(0xFF000000);
-  final Color white = const Color(0xFFFFFFFF);
 
   // Function to handle the course selection toggle
   void _toggleCourseSelection(String course) {
@@ -71,14 +63,16 @@ class _CoursesState extends State<Courses> {
     showDialog(
       context: context,
       builder: (_) => AlertDialog(
-        title: Text('Error', style: TextStyle(color: black)),
-        content: Text(message, style: TextStyle(color: black)),
+        title: Text('Error', style: TextStyle(color: AppConstants.textPrimary)),
+        content:
+            Text(message, style: TextStyle(color: AppConstants.textPrimary)),
         actions: [
           TextButton(
             onPressed: () {
               Navigator.pop(context);
             },
-            child: Text('OK', style: TextStyle(color: blue2)),
+            child: Text('OK',
+                style: TextStyle(color: AppConstants.primaryBlueDark)),
           ),
         ],
       ),
@@ -90,15 +84,18 @@ class _CoursesState extends State<Courses> {
     showDialog(
       context: context,
       builder: (_) => AlertDialog(
-        title: Text('Success', style: TextStyle(color: black)),
-        content: Text(message, style: TextStyle(color: black)),
+        title:
+            Text('Success', style: TextStyle(color: AppConstants.textPrimary)),
+        content:
+            Text(message, style: TextStyle(color: AppConstants.textPrimary)),
         actions: [
           TextButton(
             onPressed: () {
               Navigator.pop(context);
               Navigator.pop(context); // Navigate back after success
             },
-            child: Text('OK', style: TextStyle(color: blue2)),
+            child: Text('OK',
+                style: TextStyle(color: AppConstants.primaryBlueDark)),
           ),
         ],
       ),
@@ -112,16 +109,8 @@ class _CoursesState extends State<Courses> {
 
     return Scaffold(
       backgroundColor: Theme.of(context).scaffoldBackgroundColor,
-      appBar: AppBar(
-        backgroundColor: blue2,
-        title: Text(
-          'Courses',
-          style: GoogleFonts.leagueSpartan(
-            color: white,
-            fontWeight: FontWeight.bold,
-          ),
-        ),
-        centerTitle: true,
+      appBar: AppConstants.buildAppBar(
+        title: 'Courses',
       ),
       body: Padding(
         padding: EdgeInsets.symmetric(
@@ -211,7 +200,7 @@ class _CoursesState extends State<Courses> {
                 child: ElevatedButton(
                   onPressed: _registerCourses,
                   style: ElevatedButton.styleFrom(
-                    backgroundColor: blue2,
+                    backgroundColor: AppConstants.primaryBlueDark,
                     padding: EdgeInsets.symmetric(vertical: 15),
                     shape: RoundedRectangleBorder(
                       borderRadius: BorderRadius.circular(10),
@@ -219,9 +208,8 @@ class _CoursesState extends State<Courses> {
                   ),
                   child: Text(
                     'Add Courses',
-                    style: GoogleFonts.leagueSpartan(
-                      color: white,
-                      fontSize: 16,
+                    style: AppConstants.bodyText.copyWith(
+                      color: AppConstants.textOnPrimary,
                       fontWeight: FontWeight.bold,
                     ),
                   ),
@@ -245,13 +233,12 @@ class _CoursesState extends State<Courses> {
         child: ExpansionTile(
           title: Row(
             children: [
-              Icon(Icons.menu_book_outlined, color: Theme.of(context).textTheme.bodyMedium!.color), // Icon
+              Icon(Icons.menu_book_outlined,
+                  color: Theme.of(context).textTheme.bodyMedium!.color), // Icon
               const SizedBox(width: 15),
               Text(
                 term,
-                style: GoogleFonts.leagueSpartan(
-                  fontSize: 18,
-                  fontWeight: FontWeight.bold,
+                style: AppConstants.subtitle.copyWith(
                   color: Theme.of(context).textTheme.bodyMedium!.color,
                 ),
               ),
@@ -264,8 +251,9 @@ class _CoursesState extends State<Courses> {
                     selectedCourses.contains(subject)
                         ? Icons.check_circle
                         : Icons.check_circle_outline,
-                    color:
-                        selectedCourses.contains(subject) ? blue2 : Colors.grey,
+                    color: selectedCourses.contains(subject)
+                        ? AppConstants.primaryBlueDark
+                        : Colors.grey,
                   ),
                   title: Text(
                     subject,

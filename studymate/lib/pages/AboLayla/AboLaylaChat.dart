@@ -212,7 +212,7 @@ class _AboLaylaChatState extends State<AboLaylaChat> {
           Positioned.fill(
             child: Opacity(
               opacity: 0.1,
-              child: Image.asset('lib/assets/img/AboLayla.jpg'),
+              child: Image.asset('assets/img/AboLayla.jpg'),
             ),
           ),
           Column(
@@ -250,7 +250,7 @@ class _AboLaylaChatState extends State<AboLaylaChat> {
                             children: [
                               CircleAvatar(
                                 backgroundImage:
-                                    AssetImage('lib/assets/img/AboLayla.jpg'),
+                                    AssetImage('assets/img/AboLayla.jpg'),
                                 radius: 16,
                               ),
                               const SizedBox(width: 12),
@@ -277,7 +277,7 @@ class _AboLaylaChatState extends State<AboLaylaChat> {
                             if (!isUser)
                               CircleAvatar(
                                 backgroundImage:
-                                    AssetImage('lib/assets/img/AboLayla.jpg'),
+                                    AssetImage('assets/img/AboLayla.jpg'),
                                 radius: 16,
                               ),
                             if (!isUser) const SizedBox(width: 12),

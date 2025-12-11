@@ -1,8 +1,8 @@
 // Import necessary packages
 import 'package:flutter/material.dart';
-import 'package:google_fonts/google_fonts.dart';
 import 'CareerJob.dart'; // Import the CareerJob page
 import 'CV.dart';
+import '../../theme/app_constants.dart';
 
 class CareerHome extends StatefulWidget {
   const CareerHome({super.key});
@@ -20,21 +20,12 @@ class _CareerHomeState extends State<CareerHome> {
     var size = MediaQuery.of(context).size;
 
     return Scaffold(
-      appBar: AppBar(
-        title: Text(
-          'Career Options',
-          style: TextStyle(
-            fontFamily: 'League Spartan',
-            fontSize: 24,
-            fontWeight: FontWeight.bold,
-            color: Colors.white,
-          ),
-        ),
-        backgroundColor: const Color(0xFF165D96),
-        centerTitle: true,
+      appBar: AppConstants.buildAppBar(
+        title: 'Career Options',
       ),
       body: SingleChildScrollView(
-        padding: const EdgeInsets.only(top: 20, left: 16, right: 16, bottom: 20),
+        padding:
+            const EdgeInsets.only(top: 20, left: 16, right: 16, bottom: 20),
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.center,
           children: [
@@ -43,28 +34,25 @@ class _CareerHomeState extends State<CareerHome> {
               height: size.height * 0.33,
               width: double.infinity,
               child: Image.asset(
-                'lib/assets/img/career.png',
+                'assets/img/career.png',
                 fit: BoxFit.cover,
               ),
             ),
-            const SizedBox(height: 20),
+            SizedBox(height: AppConstants.spacingL),
             // Prompt text with 'career path' in blue
             Row(
               children: [
                 RichText(
                   text: TextSpan(
-                    style: TextStyle(
-                      fontSize: 23,
-                      fontWeight: FontWeight.bold,
-                      fontFamily: GoogleFonts.leagueSpartan().fontFamily,
-                      color: Colors.black,
+                    style: AppConstants.cardTitle.copyWith(
+                      color: AppConstants.textPrimary,
                     ),
                     children: [
                       TextSpan(text: 'Choose your '),
                       TextSpan(
                         text: 'career path',
                         style: TextStyle(
-                          color: Colors.blue, // Set 'career path' to blue
+                          color: AppConstants.primaryBlue,
                         ),
                       ),
                     ],
@@ -72,7 +60,7 @@ class _CareerHomeState extends State<CareerHome> {
                 ),
               ],
             ),
-            const SizedBox(height: 20),
+            SizedBox(height: AppConstants.spacingL),
             // Two boxes beside each other
             Row(
               children: [
@@ -90,11 +78,12 @@ class _CareerHomeState extends State<CareerHome> {
                       decoration: BoxDecoration(
                         border: Border.all(
                           color: selectedBox == 'Find a Job'
-                              ? Colors.blue
+                              ? AppConstants.primaryBlue
                               : Colors.grey,
                           width: 2,
                         ),
-                        borderRadius: BorderRadius.circular(10),
+                        borderRadius:
+                            BorderRadius.circular(AppConstants.radiusM),
                       ),
                       child: Column(
                         mainAxisAlignment: MainAxisAlignment.center,
@@ -102,31 +91,25 @@ class _CareerHomeState extends State<CareerHome> {
                           // Circle with light blue color
                           CircleAvatar(
                             radius: 30,
-                            backgroundColor: const Color.fromARGB(255, 255, 255, 255),
+                            backgroundColor:
+                                const Color.fromARGB(255, 255, 255, 255),
                             child: Image.asset(
-                              'lib/assets/img/career2.png',
+                              'assets/img/career2.png',
                               fit: BoxFit.cover,
                             ),
                           ),
-                          SizedBox(height: 16),
+                          SizedBox(height: AppConstants.spacingM),
                           Text(
                             'Find a Job',
-                            style: TextStyle(
-                              fontSize: 20,
-                              fontWeight: FontWeight.bold,
-                              fontFamily:
-                                  GoogleFonts.leagueSpartan().fontFamily,
+                            style: AppConstants.subtitle.copyWith(
+                              fontWeight: AppConstants.fontWeightBold,
                             ),
                           ),
-                          SizedBox(height: 8),
+                          SizedBox(height: AppConstants.spacingXS),
                           Text(
                             'Search and apply\nfor jobs',
                             textAlign: TextAlign.center,
-                            style: TextStyle(
-                              fontSize: 16,
-                              fontFamily:
-                                  GoogleFonts.leagueSpartan().fontFamily,
-                            ),
+                            style: AppConstants.bodyText,
                           ),
                         ],
                       ),
@@ -148,11 +131,12 @@ class _CareerHomeState extends State<CareerHome> {
                       decoration: BoxDecoration(
                         border: Border.all(
                           color: selectedBox == 'Create a CV'
-                              ? Colors.blue
+                              ? AppConstants.primaryBlue
                               : Colors.grey,
                           width: 2,
                         ),
-                        borderRadius: BorderRadius.circular(10),
+                        borderRadius:
+                            BorderRadius.circular(AppConstants.radiusM),
                       ),
                       child: Column(
                         mainAxisAlignment: MainAxisAlignment.center,
@@ -160,31 +144,25 @@ class _CareerHomeState extends State<CareerHome> {
                           // Circle with light blue color
                           CircleAvatar(
                             radius: 30,
-                            backgroundColor: const Color.fromARGB(255, 255, 255, 255),
+                            backgroundColor:
+                                const Color.fromARGB(255, 255, 255, 255),
                             child: Image.asset(
-                              'lib/assets/img/cv2.png',
+                              'assets/img/cv2.png',
                               fit: BoxFit.cover,
                             ),
                           ),
-                          SizedBox(height: 16),
+                          SizedBox(height: AppConstants.spacingM),
                           Text(
                             'Create a CV',
-                            style: TextStyle(
-                              fontSize: 20,
-                              fontWeight: FontWeight.bold,
-                              fontFamily:
-                                  GoogleFonts.leagueSpartan().fontFamily,
+                            style: AppConstants.subtitle.copyWith(
+                              fontWeight: AppConstants.fontWeightBold,
                             ),
                           ),
-                          SizedBox(height: 8),
+                          SizedBox(height: AppConstants.spacingXS),
                           Text(
                             'Build your\nprofessional CV',
                             textAlign: TextAlign.center,
-                            style: TextStyle(
-                              fontSize: 16,
-                              fontFamily:
-                                  GoogleFonts.leagueSpartan().fontFamily,
-                            ),
+                            style: AppConstants.bodyText,
                           ),
                         ],
                       ),
@@ -203,34 +181,33 @@ class _CareerHomeState extends State<CareerHome> {
                         // Navigate to CareerJob page directly without using named routes
                         Navigator.push(
                           context,
-                          MaterialPageRoute(
-                              builder: (context) => CareerJob()),
+                          MaterialPageRoute(builder: (context) => CareerJob()),
                         );
                       } else if (selectedBox == 'Create a CV') {
                         // Navigate to CreateCVPage (implement this page)
                         Navigator.push(
                           context,
-                          MaterialPageRoute(
-                              builder: (context) => CV()),
+                          MaterialPageRoute(builder: (context) => CV()),
                         );
                       }
                     }
                   : null, // Disable button if no selection
               style: ElevatedButton.styleFrom(
-                backgroundColor: const Color(0xFF165D96),
-                padding:
-                    const EdgeInsets.symmetric(horizontal: 70, vertical: 10),
+                backgroundColor: AppConstants.primaryBlueDark,
+                padding: EdgeInsets.symmetric(
+                  horizontal:
+                      AppConstants.spacingXXL + AppConstants.spacingXL + 6,
+                  vertical: AppConstants.spacingM - 6,
+                ),
                 shape: RoundedRectangleBorder(
-                  borderRadius: BorderRadius.circular(10),
+                  borderRadius: BorderRadius.circular(AppConstants.radiusM),
                 ),
               ),
-              child: const Text(
+              child: Text(
                 'Continue',
-                style: TextStyle(
-                  fontSize: 30,
-                  fontWeight: FontWeight.bold,
-                  color: Colors.white,
-                  fontFamily: 'League Spartan',
+                style: AppConstants.pageTitle.copyWith(
+                  fontSize: AppConstants.fontSizeXL + 2,
+                  color: AppConstants.textOnPrimary,
                 ),
               ),
             ),

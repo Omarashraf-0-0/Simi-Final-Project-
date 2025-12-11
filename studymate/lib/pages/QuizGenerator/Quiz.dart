@@ -1,6 +1,5 @@
 // Quiz.dart
 
-import 'package:studymate/pages/XPChangePopup.dart';
 import 'dart:async';
 import 'dart:convert';
 import 'package:flutter/material.dart';
@@ -133,7 +132,7 @@ class _QuizState extends State<Quiz> {
     List<String> userAnsList = [];
     List<String> quizAnsList = [];
     List<String> lectureNumbers = [];
-    
+
     // NEW: Prepare quiz analysis data for recommendation system
     List<Map<String, dynamic>> quizAnalysisData = [];
 
@@ -141,7 +140,8 @@ class _QuizState extends State<Quiz> {
       int selectedOptionIndex = questions[i]["selectedOption"];
       String correctAnswer = questions[i]["correctAnswer"];
       String lectureNum = questions[i]["lecture"]?.toString() ?? 'Unknown';
-      String topic = questions[i]["topic"] ?? 'General Topic';  // Get topic from question
+      String topic =
+          questions[i]["topic"] ?? 'General Topic'; // Get topic from question
 
       lectureNumbers.add(lectureNum);
       quizAnsList.add(correctAnswer);
@@ -181,7 +181,7 @@ class _QuizState extends State<Quiz> {
       } else {
         userAnsList.add('');
       }
-      
+
       // Add to quiz analysis data for recommendation system
       quizAnalysisData.add({
         "Lecture": lectureNum,
@@ -211,7 +211,7 @@ class _QuizState extends State<Quiz> {
     try {
       // Submit quiz results to both endpoints
       await submitToServer(submissionData);
-      await submitQuizAnalysis(analysisData);  // Send to recommendation system
+      await submitQuizAnalysis(analysisData); // Send to recommendation system
 
       // Calculate XP changes based on the quiz result
       int xpChange = 0;
@@ -223,21 +223,26 @@ class _QuizState extends State<Quiz> {
       String message = ''; // Initialize message variable
 
       if (isPassed) {
-        // User passed the quiz
-        xpChange = correctAnswers; // 1 XP for each correct answer
-
-        // Check for perfect score bonus
-        if (scorePercentage == 100 && totalQuestions >= 10) {
-          xpChange += 5; // Add 5 bonus XP
+        // User passed the quiz - XP based on performance level
+        if (scorePercentage == 100) {
+          // Perfect score: 2 XP per question + 10 bonus
+          xpChange = (correctAnswers * 2) + 10;
           message =
-              'Congratulations! You earned $xpChange XP and a 5 XP bonus for a perfect score!';
+              'Perfect! You earned $xpChange XP (${correctAnswers * 2} + 10 bonus)!';
+        } else if (scorePercentage >= 80) {
+          // Excellent: 1.5 XP per correct answer (rounded)
+          xpChange = (correctAnswers * 1.5).round();
+          message =
+              'Excellent! You earned $xpChange XP for scoring ${scorePercentage.toInt()}%!';
         } else {
-          message = 'Congratulations! You earned $xpChange XP.';
+          // Good: 1 XP per correct answer
+          xpChange = correctAnswers;
+          message = 'Good job! You earned $xpChange XP.';
         }
       } else {
-        // User failed the quiz
-        xpChange = -5; // Deduct 5 XP
-        message = 'You lost 5 XP for failing the quiz.';
+        // User failed the quiz - reduced penalty
+        xpChange = -3; // Deduct 3 XP (reduced from 5)
+        message = 'Keep trying! You lost 3 XP. Practice makes perfect!';
       }
 
       // Update XP on the server
@@ -299,7 +304,8 @@ class _QuizState extends State<Quiz> {
       );
 
       if (response.statusCode == 200) {
-        print('✅ Quiz analysis submitted successfully to AI recommendation system.');
+        print(
+            '✅ Quiz analysis submitted successfully to AI recommendation system.');
       } else {
         print('❌ Failed to submit quiz analysis: ${response.statusCode}');
         print('Response: ${response.body}');
@@ -339,19 +345,19 @@ class _QuizState extends State<Quiz> {
 
       // Determine new title based on XP
       String newTitle;
-      if (newXp >= 3000) {
+      if (newXp >= 3500) {
         newTitle = 'El Batal';
-      } else if (newXp >= 2200) {
+      } else if (newXp >= 2500) {
         newTitle = 'Legend';
-      } else if (newXp >= 1500) {
+      } else if (newXp >= 1700) {
         newTitle = 'Mentor';
-      } else if (newXp >= 1000) {
+      } else if (newXp >= 1100) {
         newTitle = 'Expert';
-      } else if (newXp >= 600) {
+      } else if (newXp >= 650) {
         newTitle = 'Challenger';
-      } else if (newXp >= 300) {
+      } else if (newXp >= 350) {
         newTitle = 'Achiever';
-      } else if (newXp >= 100) {
+      } else if (newXp >= 150) {
         newTitle = 'Explorer';
       } else {
         newTitle = 'NewComer';

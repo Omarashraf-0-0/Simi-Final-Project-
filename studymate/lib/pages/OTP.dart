@@ -3,32 +3,26 @@ import 'package:google_fonts/google_fonts.dart';
 import 'package:http/http.dart' as http; // Import the http package
 import 'dart:async'; // Import for Timer
 import 'dart:convert'; // Import for JSON decoding if needed
+import 'package:go_router/go_router.dart';
 import '../Classes/User.dart';
 import '../Pop-ups/PopUps_Failed.dart';
 import '../Pop-ups/PopUps_Success.dart';
-import '../pages/LoginPage.dart';
+import '../theme/app_constants.dart';
+import '../router/app_router.dart';
 
 class OTP extends StatefulWidget {
-  Student? user;
-  OTP({super.key, this.user});
+  final Student? user;
+  const OTP({super.key, this.user});
 
   @override
   State<OTP> createState() => _OTPState();
 }
 
 class _OTPState extends State<OTP> {
-  // ألوان البراندينج
-  final Color blue1 = const Color(0xFF1c74bb);
-  final Color blue2 = const Color(0xFF165d96);
-  final Color cyan1 = const Color(0xFF18bebc);
-  final Color cyan2 = const Color(0xFF139896);
-  final Color black = const Color(0xFF000000);
-  final Color white = const Color(0xFFFFFFFF);
-
   final _formKey = GlobalKey<FormState>();
   final List<FocusNode> _focusNodes = List.generate(6, (index) => FocusNode());
   final List<TextEditingController> _controllers =
-  List.generate(6, (index) => TextEditingController());
+      List.generate(6, (index) => TextEditingController());
 
   String _serverOTP = ''; // Variable to store the OTP from the server
   Timer? _timer;
@@ -118,23 +112,20 @@ class _OTPState extends State<OTP> {
       );
 
       if (response.statusCode == 200) {
-        final responseData = json.decode(response.body);
-        ScaffoldMessenger.of(context).showSnackBar(
-          SnackBar(content: Text(responseData['message'])),
-        );
-        // Navigate back to login page
-        Navigator.pushAndRemoveUntil(
-          context,
-          MaterialPageRoute(builder: (context) => LoginPage()),
-              (route) => false,
-        );
-        // Optionally, you can show a success popup
+        // Show success popup
         showSuccessPopup(
           context,
           'Registration Successful',
           'Your account has been created successfully!',
           'Continue',
         );
+
+        // Navigate to login using GoRouter after delay
+        Future.delayed(Duration(seconds: 2), () {
+          if (context.mounted) {
+            context.go(AppRoutes.login);
+          }
+        });
       } else {
         final responseData = json.decode(response.body);
         showFailedPopup(
@@ -161,11 +152,10 @@ class _OTPState extends State<OTP> {
         'fullname': widget.user?.fullName,
         'email': widget.user?.email,
       };
-      final response =
-      await http.post(
-          Uri.parse('https://alyibrahim.pythonanywhere.com/Send_OTP'),
-          headers: {'Content-Type': 'application/json'},
-          body: jsonEncode(requestBody),
+      final response = await http.post(
+        Uri.parse('https://alyibrahim.pythonanywhere.com/Send_OTP'),
+        headers: {'Content-Type': 'application/json'},
+        body: jsonEncode(requestBody),
       );
 
       if (response.statusCode == 200) {
@@ -176,7 +166,8 @@ class _OTPState extends State<OTP> {
           _serverOTP = jsonResponse['OTP']; // Store the OTP from the server
           _isOTPLoaded = true;
           _startTimer(); // Start the timer after OTP is received
-          _isResendEnabled = false; // Disable resend button while timer is running
+          _isResendEnabled =
+              false; // Disable resend button while timer is running
         });
         print('OTP Received from Server: $_serverOTP');
       } else {
@@ -207,7 +198,7 @@ class _OTPState extends State<OTP> {
     const oneSec = Duration(seconds: 1);
     _timer = Timer.periodic(
       oneSec,
-          (Timer timer) {
+      (Timer timer) {
         if (mounted) {
           setState(() {
             if (_start == 0) {
@@ -233,7 +224,7 @@ class _OTPState extends State<OTP> {
     ScaffoldMessenger.of(context).showSnackBar(
       SnackBar(
         content: Text('OTP Resent Successfully!'),
-        backgroundColor: blue2,
+        backgroundColor: AppConstants.primaryBlueDark,
       ),
     );
   }
@@ -244,27 +235,14 @@ class _OTPState extends State<OTP> {
     final size = MediaQuery.of(context).size;
 
     return Scaffold(
-      backgroundColor: white,
-      appBar: AppBar(
-        backgroundColor: blue2,
-        title: Text(
-          'Verify OTP',
-          style: GoogleFonts.leagueSpartan(
-            color: white,
-            fontWeight: FontWeight.bold,
-          ),
-        ),
-        centerTitle: true,
-        leading: IconButton(
-          icon: Icon(Icons.arrow_back_ios_new, color: white),
-          onPressed: () {
-            Navigator.pop(context);
-          },
-        ),
+      backgroundColor: Theme.of(context).scaffoldBackgroundColor,
+      appBar: AppConstants.buildAppBar(
+        title: 'Verify OTP',
+        leading: AppConstants.buildBackButton(context),
       ),
       body: Padding(
-        padding:
-        EdgeInsets.symmetric(horizontal: size.width * 0.08, vertical: size.height * 0.05),
+        padding: EdgeInsets.symmetric(
+            horizontal: size.width * 0.08, vertical: size.height * 0.05),
         child: Form(
           key: _formKey,
           child: Column(
@@ -274,7 +252,7 @@ class _OTPState extends State<OTP> {
                 'Enter the 6-digit code sent to your email',
                 style: GoogleFonts.leagueSpartan(
                   fontSize: 18,
-                  color: black,
+                  color: AppConstants.textPrimary,
                 ),
                 textAlign: TextAlign.center,
               ),
@@ -282,12 +260,12 @@ class _OTPState extends State<OTP> {
               // Timer display
               _isTimerRunning
                   ? Text(
-                'Time remaining: $_start secs',
-                style: GoogleFonts.leagueSpartan(
-                  fontSize: 16,
-                  color: Colors.red,
-                ),
-              )
+                      'Time remaining: $_start secs',
+                      style: GoogleFonts.leagueSpartan(
+                        fontSize: 16,
+                        color: Colors.red,
+                      ),
+                    )
                   : SizedBox.shrink(),
               SizedBox(height: size.height * 0.02),
               // حقول إدخال OTP
@@ -304,10 +282,12 @@ class _OTPState extends State<OTP> {
                 child: ElevatedButton(
                   onPressed: _isOTPLoaded ? _submitOTP : null,
                   style: ElevatedButton.styleFrom(
-                    backgroundColor: blue2,
-                    padding: EdgeInsets.symmetric(vertical: 15),
+                    backgroundColor: AppConstants.primaryBlueDark,
+                    padding: EdgeInsets.symmetric(
+                        vertical: AppConstants.spacingM + 3),
                     shape: RoundedRectangleBorder(
-                      borderRadius: BorderRadius.circular(15),
+                      borderRadius:
+                          BorderRadius.circular(AppConstants.radiusM + 7),
                     ),
                   ),
                   child: Text(
@@ -315,7 +295,7 @@ class _OTPState extends State<OTP> {
                     style: GoogleFonts.leagueSpartan(
                       fontSize: 18,
                       fontWeight: FontWeight.bold,
-                      color: white,
+                      color: AppConstants.textOnPrimary,
                     ),
                   ),
                 ),
@@ -325,16 +305,19 @@ class _OTPState extends State<OTP> {
               TextButton(
                 onPressed: _isResendEnabled
                     ? () {
-                  _resendOTP();
-                }
+                        _resendOTP();
+                      }
                     : null,
                 child: Text(
                   'Resend Code',
                   style: GoogleFonts.leagueSpartan(
                     fontSize: 16,
-                    color: _isResendEnabled ? blue2 : Colors.grey,
-                    decoration:
-                    _isResendEnabled ? TextDecoration.underline : TextDecoration.none,
+                    color: _isResendEnabled
+                        ? AppConstants.primaryBlueDark
+                        : Colors.grey,
+                    decoration: _isResendEnabled
+                        ? TextDecoration.underline
+                        : TextDecoration.none,
                   ),
                 ),
               ),
@@ -361,7 +344,7 @@ class _OTPState extends State<OTP> {
         style: GoogleFonts.leagueSpartan(
           fontSize: 24,
           fontWeight: FontWeight.bold,
-          color: black,
+          color: AppConstants.textPrimary,
         ),
         textAlign: TextAlign.center,
         keyboardType: TextInputType.number,

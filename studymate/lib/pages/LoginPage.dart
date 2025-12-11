@@ -3,16 +3,15 @@ import 'dart:convert';
 
 import 'package:flutter/material.dart';
 import 'package:hive/hive.dart';
+import 'package:http/http.dart' as http;
 import 'package:studymate/Pop-ups/PopUps_Failed.dart';
 import 'package:studymate/Pop-ups/PopUps_Warning.dart';
+import 'package:studymate/pages/XPChangePopup.dart';
 import '../Classes/User.dart';
 import '../Pop-ups/SuccesPopUp.dart';
-import 'Login & Register/Forget_Pass.dart';
-import 'package:http/http.dart' as http;
-import 'package:studymate/pages/XPChangePopup.dart';
-import 'dart:convert';
-import 'package:studymate/theme/text_theme.dart';
-import 'Login & Register/Register_login.dart';
+import '../util/semantics_keys.dart';
+import 'package:go_router/go_router.dart';
+import '../router/app_router.dart';
 
 class LoginPage extends StatefulWidget {
   const LoginPage({super.key});
@@ -30,14 +29,6 @@ class _LoginPageState extends State<LoginPage> {
 
   // Add a boolean to manage the password visibility
   bool isPasswordVisible = false;
-
-  // Colors according to your branding
-  final Color blue1 = Color(0xFF1c74bb);
-  final Color blue2 = Color(0xFF165d96);
-  final Color cyan1 = Color(0xFF18bebc);
-  final Color cyan2 = Color(0xFF139896);
-  final Color black = Color(0xFF000000);
-  final Color white = Color(0xFFFFFFFF);
 
   void showXPChangePopup(BuildContext context, int xpChange, String message) {
     showDialog(
@@ -57,7 +48,7 @@ class _LoginPageState extends State<LoginPage> {
     const titleUrl = 'https://alyibrahim.pythonanywhere.com/set_title';
     final username = Hive.box('userBox').get('username');
 
-    int newXp = currentXp + 5; // Add 5 XP
+    int newXp = currentXp + 10; // Add 10 XP for daily login
 
     // Update XP on the server
     final xpResponse = await http.post(
@@ -73,19 +64,19 @@ class _LoginPageState extends State<LoginPage> {
 
       // Determine new title based on XP
       String newTitle;
-      if (newXp >= 3000) {
+      if (newXp >= 3500) {
         newTitle = 'El Batal';
-      } else if (newXp >= 2200) {
+      } else if (newXp >= 2500) {
         newTitle = 'Legend';
-      } else if (newXp >= 1500) {
+      } else if (newXp >= 1700) {
         newTitle = 'Mentor';
-      } else if (newXp >= 1000) {
+      } else if (newXp >= 1100) {
         newTitle = 'Expert';
-      } else if (newXp >= 600) {
+      } else if (newXp >= 650) {
         newTitle = 'Challenger';
-      } else if (newXp >= 300) {
+      } else if (newXp >= 350) {
         newTitle = 'Achiever';
-      } else if (newXp >= 100) {
+      } else if (newXp >= 150) {
         newTitle = 'Explorer';
       } else {
         newTitle = 'NewComer';
@@ -246,31 +237,32 @@ class _LoginPageState extends State<LoginPage> {
             int currentXp =
                 jsonResponse['xp'] ?? 0; // Get current XP, default to 0 if null
             await updateXpAndTitle(currentXp);
-            showXPChangePopup(context, 5, 'You have gained 5 XP!');
+            showXPChangePopup(
+                context, 10, 'Welcome back! You earned 10 XP for daily login!');
           }
 
-            // User? user = User(
-            //   id: jsonResponse['id'],
-            //   username: jsonResponse['username'],
-            //   password: jsonResponse['password'],
-            //   fullName: jsonResponse['name'],
-            //   role: jsonResponse['role'],
-            //   email: jsonResponse['email'],
-            //   phoneNumber: jsonResponse['phone_number'],
-            //   address: jsonResponse['address'],
-            //   gender: jsonResponse['gender'],
-            //   collage: jsonResponse['collage'],
-            //   university: jsonResponse['university'],
-            //   major: jsonResponse['major'],
-            //   term_level: jsonResponse['term_level'],
-            //   pfp: jsonResponse['pfp'],
-            //   xp: jsonResponse['xp'],
-            //   level: jsonResponse['level'],
-            //   title: jsonResponse['title'],
-            //   registrationNumber: jsonResponse['registrationNumber'],
-            //   birthDate: jsonResponse['birthDate'],
-            // );
-            Student student = Student();
+          // User? user = User(
+          //   id: jsonResponse['id'],
+          //   username: jsonResponse['username'],
+          //   password: jsonResponse['password'],
+          //   fullName: jsonResponse['name'],
+          //   role: jsonResponse['role'],
+          //   email: jsonResponse['email'],
+          //   phoneNumber: jsonResponse['phone_number'],
+          //   address: jsonResponse['address'],
+          //   gender: jsonResponse['gender'],
+          //   collage: jsonResponse['collage'],
+          //   university: jsonResponse['university'],
+          //   major: jsonResponse['major'],
+          //   term_level: jsonResponse['term_level'],
+          //   pfp: jsonResponse['pfp'],
+          //   xp: jsonResponse['xp'],
+          //   level: jsonResponse['level'],
+          //   title: jsonResponse['title'],
+          //   registrationNumber: jsonResponse['registrationNumber'],
+          //   birthDate: jsonResponse['birthDate'],
+          // );
+          Student student = Student();
 
           student.id = jsonResponse['id'];
           student.username = jsonResponse['username'];
@@ -291,19 +283,19 @@ class _LoginPageState extends State<LoginPage> {
           student.title = jsonResponse['title'];
           student.registrationNumber = jsonResponse['registrationNumber'];
           student.birthDate = jsonResponse['birthDate'];
-           Navigator.pushAndRemoveUntil(
-            context,
-            MaterialPageRoute(
-              builder: (context) => DonePopUp(
-                user: student,
-                title: 'Woo Hoo!',
-                description: 'Welcome back, ${jsonResponse['name']}!',
-                color: const Color(0xff3BBD5E),
-                textColor: Theme.of(context).colorScheme.secondary,
-                routeName: '/HomePage',
-              ),
+
+          // Show success dialog
+          showDialog(
+            context: context,
+            barrierDismissible: false,
+            builder: (dialogContext) => DonePopUp(
+              user: student,
+              title: 'Woo Hoo!',
+              description: 'Welcome back, ${jsonResponse['name']}!',
+              color: const Color(0xff3BBD5E),
+              textColor: Theme.of(context).colorScheme.secondary,
+              routeName: AppRoutes.home,
             ),
-            (Route<dynamic> route) => false,
           );
         } else {
           // Failed login, show error message
@@ -336,195 +328,524 @@ class _LoginPageState extends State<LoginPage> {
   @override
   Widget build(BuildContext context) {
     final size = MediaQuery.of(context).size;
-    final theme = Theme.of(context);
     return Scaffold(
-      backgroundColor: Theme.of(context).scaffoldBackgroundColor,
-      body: SingleChildScrollView(
-        child: Center(
-          child: Padding(
-            padding: EdgeInsets.symmetric(horizontal: size.width * 0.08),
-            child: Column(
-              mainAxisAlignment: MainAxisAlignment.center,
-              children: [
-                // Logo Image
-                SizedBox(height: size.height * 0.08),
-                Image.asset(
-                  'lib/assets/img/El_Batal_Study_Mate_Light_Mode-removebg-preview.png',
-                  height: size.height * 0.25,
+      body: Container(
+        width: double.infinity,
+        height: double.infinity,
+        decoration: BoxDecoration(
+          gradient: LinearGradient(
+            begin: Alignment.topLeft,
+            end: Alignment.bottomRight,
+            colors: [
+              Color(0xFF1c74bb), // Primary Blue
+              Color(0xFF165d96), // Primary Blue Dark
+              Color(0xFF18bebc), // Primary Cyan
+            ],
+            stops: [0.0, 0.5, 1.0],
+          ),
+        ),
+        child: Stack(
+          children: [
+            // Decorative circles
+            Positioned(
+              top: -100,
+              right: -100,
+              child: Container(
+                width: 300,
+                height: 300,
+                decoration: BoxDecoration(
+                  shape: BoxShape.circle,
+                  color: Colors.white.withOpacity(0.05),
                 ),
-                SizedBox(height: size.height * 0.02),
-
-                // Welcome Text
-                Text(
-                  'Nawart ya Mate',
-                  style: Theme.of(context).textTheme.displaySmall?.copyWith(
-                        fontSize: 40,
-                        fontFamily: 'Poppins',
-                      ),
+              ),
+            ),
+            Positioned(
+              bottom: -150,
+              left: -150,
+              child: Container(
+                width: 400,
+                height: 400,
+                decoration: BoxDecoration(
+                  shape: BoxShape.circle,
+                  color: Colors.white.withOpacity(0.05),
                 ),
-
-                // Username TextField
-                SizedBox(height: size.height * 0.04),
-                TextField(
-                  controller: usernameController,
-                  decoration: InputDecoration(
-                    labelText: 'Username',
-                    prefixIcon: Icon(Icons.person_outline),
-                    border: OutlineInputBorder(
-                      borderRadius: BorderRadius.circular(15),
-                    ),
-                    floatingLabelStyle: TextStyle(color: theme.primaryColor),
-                    focusedBorder: OutlineInputBorder(
-                      borderRadius: BorderRadius.circular(15),
-                      borderSide: BorderSide(color: theme.primaryColor),
-                    ),
-                  ),
+              ),
+            ),
+            Positioned(
+              top: size.height * 0.4,
+              right: -80,
+              child: Container(
+                width: 200,
+                height: 200,
+                decoration: BoxDecoration(
+                  shape: BoxShape.circle,
+                  color: Colors.white.withOpacity(0.03),
                 ),
+              ),
+            ),
 
-                // Password TextField
-                SizedBox(height: size.height * 0.025),
-                TextField(
-                  controller: passwordController,
-                  decoration: InputDecoration(
-                    labelText: 'Password',
-                    prefixIcon: Icon(Icons.lock_outline),
-                    suffixIcon: IconButton(
-                      icon: Icon(
-                        isPasswordVisible
-                            ? Icons.visibility
-                            : Icons.visibility_off,
-                      ),
-                      onPressed: () {
-                        setState(() {
-                          isPasswordVisible = !isPasswordVisible;
-                        });
-                      },
-                    ),
-                    border: OutlineInputBorder(
-                      borderRadius: BorderRadius.circular(15),
-                    ),
-                    floatingLabelStyle: TextStyle(color: theme.primaryColor),
-                    focusedBorder: OutlineInputBorder(
-                      borderRadius: BorderRadius.circular(15),
-                      borderSide: BorderSide(color: theme.primaryColor),
-                    ),
-                  ),
-                  obscureText: !isPasswordVisible,
-                ),
-
-                // Remember Me and Forgot Password Row
-                SizedBox(height: size.height * 0.02),
-                Row(
-                  mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                  children: [
-                    Row(
+            // Main content
+            SafeArea(
+              child: SingleChildScrollView(
+                child: Center(
+                  child: Padding(
+                    padding:
+                        EdgeInsets.symmetric(horizontal: size.width * 0.08),
+                    child: Column(
+                      mainAxisAlignment: MainAxisAlignment.center,
                       children: [
-                        Checkbox(
-                          value: isRememberMeChecked,
-                          activeColor: cyan1,
-                          onChanged: (value) {
-                            setState(() {
-                              isRememberMeChecked = value!;
-                            });
-                          },
-                        ),
-                        Text(
-                          'Remember Me',
-                          style:
-                              Theme.of(context).textTheme.labelLarge?.copyWith(
-                                    fontFamily: 'Poppins',
+                        SizedBox(height: size.height * 0.04),
+
+                        // Logo with elegant design
+                        Container(
+                          width: 180,
+                          height: 180,
+                          decoration: BoxDecoration(
+                            shape: BoxShape.circle,
+                            gradient: LinearGradient(
+                              begin: Alignment.topLeft,
+                              end: Alignment.bottomRight,
+                              colors: [
+                                Colors.white.withOpacity(0.25),
+                                Colors.white.withOpacity(0.1),
+                              ],
+                            ),
+                            boxShadow: [
+                              BoxShadow(
+                                color: Colors.black.withOpacity(0.15),
+                                blurRadius: 40,
+                                offset: Offset(0, 20),
+                              ),
+                              BoxShadow(
+                                color: Colors.white.withOpacity(0.4),
+                                blurRadius: 30,
+                                spreadRadius: -5,
+                                offset: Offset(-10, -10),
+                              ),
+                            ],
+                          ),
+                          child: Center(
+                            child: Container(
+                              width: 150,
+                              height: 150,
+                              padding: EdgeInsets.all(20),
+                              decoration: BoxDecoration(
+                                gradient: LinearGradient(
+                                  begin: Alignment.topLeft,
+                                  end: Alignment.bottomRight,
+                                  colors: [
+                                    Colors.white.withOpacity(0.9),
+                                    Colors.white.withOpacity(0.7),
+                                  ],
+                                ),
+                                shape: BoxShape.circle,
+                                border: Border.all(
+                                  color: Colors.white.withOpacity(0.5),
+                                  width: 2,
+                                ),
+                                boxShadow: [
+                                  BoxShadow(
+                                    color: Color(0xFF18bebc).withOpacity(0.4),
+                                    blurRadius: 30,
+                                    spreadRadius: 8,
                                   ),
+                                ],
+                              ),
+                              child: Image.asset(
+                                'assets/img/El_Batal_Study_Mate_Light_Mode-removebg-preview.png',
+                                fit: BoxFit.contain,
+                              ),
+                            ),
+                          ),
                         ),
+
+                        SizedBox(height: size.height * 0.025),
+
+                        // Welcome Text
+                        Text(
+                          'Nawart ya Mate',
+                          style: TextStyle(
+                            fontSize: 36,
+                            fontWeight: FontWeight.bold,
+                            color: Colors.white,
+                            fontFamily: 'Poppins',
+                            letterSpacing: 1,
+                            shadows: [
+                              Shadow(
+                                color: Colors.black.withOpacity(0.3),
+                                blurRadius: 10,
+                                offset: Offset(0, 4),
+                              ),
+                            ],
+                          ),
+                        ),
+
+                        SizedBox(height: size.height * 0.04),
+
+                        // White container for form
+                        Container(
+                          padding: EdgeInsets.all(30),
+                          decoration: BoxDecoration(
+                            color: Colors.white,
+                            borderRadius: BorderRadius.circular(30),
+                            boxShadow: [
+                              BoxShadow(
+                                color: Colors.black.withOpacity(0.2),
+                                blurRadius: 30,
+                                offset: Offset(0, 15),
+                              ),
+                            ],
+                          ),
+                          child: Column(
+                            children: [
+                              Semantics(
+                                label: SemanticsKeys.loginUsernameField,
+                                textField: true,
+                                child: TextField(
+                                  controller: usernameController,
+                                  decoration: InputDecoration(
+                                    labelText: 'Username',
+                                    labelStyle: TextStyle(
+                                      color: Colors.grey[600],
+                                      fontFamily: 'Poppins',
+                                    ),
+                                    floatingLabelStyle: TextStyle(
+                                      color: Color(0xFF1c74bb),
+                                      fontFamily: 'Poppins',
+                                      fontWeight: FontWeight.w600,
+                                    ),
+                                    prefixIcon: Container(
+                                      margin: EdgeInsets.all(12),
+                                      padding: EdgeInsets.all(8),
+                                      decoration: BoxDecoration(
+                                        gradient: LinearGradient(
+                                          colors: [
+                                            Color(0xFF1c74bb),
+                                            Color(0xFF18bebc),
+                                          ],
+                                        ),
+                                        borderRadius: BorderRadius.circular(10),
+                                      ),
+                                      child: Icon(
+                                        Icons.person_outline,
+                                        color: Colors.white,
+                                        size: 20,
+                                      ),
+                                    ),
+                                    filled: true,
+                                    fillColor: Colors.grey[50],
+                                    border: OutlineInputBorder(
+                                      borderRadius: BorderRadius.circular(15),
+                                      borderSide: BorderSide.none,
+                                    ),
+                                    enabledBorder: OutlineInputBorder(
+                                      borderRadius: BorderRadius.circular(15),
+                                      borderSide: BorderSide(
+                                        color: Colors.grey[200]!,
+                                        width: 1,
+                                      ),
+                                    ),
+                                    focusedBorder: OutlineInputBorder(
+                                      borderRadius: BorderRadius.circular(15),
+                                      borderSide: BorderSide(
+                                        color: Color(0xFF1c74bb),
+                                        width: 2,
+                                      ),
+                                    ),
+                                  ),
+                                ),
+                              ),
+
+                              SizedBox(height: 20),
+
+                              // Password TextField
+                              Semantics(
+                                label: SemanticsKeys.loginPasswordField,
+                                child: TextField(
+                                  controller: passwordController,
+                                  obscureText: !isPasswordVisible,
+                                  decoration: InputDecoration(
+                                    labelText: 'Password',
+                                    labelStyle: TextStyle(
+                                      color: Colors.grey[600],
+                                      fontFamily: 'Poppins',
+                                    ),
+                                    floatingLabelStyle: TextStyle(
+                                      color: Color(0xFF1c74bb),
+                                      fontFamily: 'Poppins',
+                                      fontWeight: FontWeight.w600,
+                                    ),
+                                    prefixIcon: Container(
+                                      margin: EdgeInsets.all(12),
+                                      padding: EdgeInsets.all(8),
+                                      decoration: BoxDecoration(
+                                        gradient: LinearGradient(
+                                          colors: [
+                                            Color(0xFF1c74bb),
+                                            Color(0xFF18bebc),
+                                          ],
+                                        ),
+                                        borderRadius: BorderRadius.circular(10),
+                                      ),
+                                      child: Icon(
+                                        Icons.lock_outline,
+                                        color: Colors.white,
+                                        size: 20,
+                                      ),
+                                    ),
+                                    suffixIcon: Semantics(
+                                      label: SemanticsKeys
+                                          .loginPasswordVisibilityToggle,
+                                      child: IconButton(
+                                        icon: Icon(
+                                          isPasswordVisible
+                                              ? Icons.visibility_rounded
+                                              : Icons.visibility_off_rounded,
+                                          color: Colors.grey[600],
+                                        ),
+                                        onPressed: () {
+                                          setState(() {
+                                            isPasswordVisible =
+                                                !isPasswordVisible;
+                                          });
+                                        },
+                                      ),
+                                    ),
+                                    filled: true,
+                                    fillColor: Colors.grey[50],
+                                    border: OutlineInputBorder(
+                                      borderRadius: BorderRadius.circular(15),
+                                      borderSide: BorderSide.none,
+                                    ),
+                                    enabledBorder: OutlineInputBorder(
+                                      borderRadius: BorderRadius.circular(15),
+                                      borderSide: BorderSide(
+                                        color: Colors.grey[200]!,
+                                        width: 1,
+                                      ),
+                                    ),
+                                    focusedBorder: OutlineInputBorder(
+                                      borderRadius: BorderRadius.circular(15),
+                                      borderSide: BorderSide(
+                                        color: Color(0xFF1c74bb),
+                                        width: 2,
+                                      ),
+                                    ),
+                                  ),
+                                ),
+                              ),
+
+                              SizedBox(height: 15),
+
+                              // Remember Me and Forgot Password
+                              Row(
+                                mainAxisAlignment:
+                                    MainAxisAlignment.spaceBetween,
+                                children: [
+                                  InkWell(
+                                    onTap: () {
+                                      setState(() {
+                                        isRememberMeChecked =
+                                            !isRememberMeChecked;
+                                      });
+                                    },
+                                    child: Row(
+                                      children: [
+                                        Semantics(
+                                          label: SemanticsKeys
+                                              .loginRememberMeCheckbox,
+                                          child: Container(
+                                            width: 24,
+                                            height: 24,
+                                            decoration: BoxDecoration(
+                                              gradient: isRememberMeChecked
+                                                  ? LinearGradient(
+                                                      colors: [
+                                                        Color(0xFF1c74bb),
+                                                        Color(0xFF18bebc),
+                                                      ],
+                                                    )
+                                                  : null,
+                                              color: isRememberMeChecked
+                                                  ? null
+                                                  : Colors.grey[300],
+                                              borderRadius:
+                                                  BorderRadius.circular(6),
+                                            ),
+                                            child: isRememberMeChecked
+                                                ? Icon(
+                                                    Icons.check,
+                                                    color: Colors.white,
+                                                    size: 18,
+                                                  )
+                                                : null,
+                                          ),
+                                        ),
+                                        SizedBox(width: 8),
+                                        Text(
+                                          'Remember Me',
+                                          style: TextStyle(
+                                            color: Colors.grey[700],
+                                            fontFamily: 'Poppins',
+                                            fontSize: 14,
+                                          ),
+                                        ),
+                                      ],
+                                    ),
+                                  ),
+                                  Semantics(
+                                    label:
+                                        SemanticsKeys.loginForgotPasswordButton,
+                                    child: InkWell(
+                                      onTap: () => context
+                                          .push(AppRoutes.forgotPassword),
+                                      child: Text(
+                                        'Forgot Password?',
+                                        style: TextStyle(
+                                          color: Color(0xFF1c74bb),
+                                          fontFamily: 'Poppins',
+                                          fontSize: 14,
+                                          fontWeight: FontWeight.w600,
+                                        ),
+                                      ),
+                                    ),
+                                  ),
+                                ],
+                              ),
+
+                              SizedBox(height: 30),
+
+                              // Login Button
+                              Semantics(
+                                label: SemanticsKeys.loginButton,
+                                child: Container(
+                                  width: double.infinity,
+                                  height: 56,
+                                  decoration: BoxDecoration(
+                                    gradient: LinearGradient(
+                                      colors: [
+                                        Color(0xFF1c74bb),
+                                        Color(0xFF165d96),
+                                      ],
+                                    ),
+                                    borderRadius: BorderRadius.circular(15),
+                                    boxShadow: [
+                                      BoxShadow(
+                                        color:
+                                            Color(0xFF1c74bb).withOpacity(0.4),
+                                        blurRadius: 15,
+                                        offset: Offset(0, 8),
+                                      ),
+                                    ],
+                                  ),
+                                  child: ElevatedButton(
+                                    onPressed: login,
+                                    style: ElevatedButton.styleFrom(
+                                      backgroundColor: Colors.transparent,
+                                      shadowColor: Colors.transparent,
+                                      shape: RoundedRectangleBorder(
+                                        borderRadius: BorderRadius.circular(15),
+                                      ),
+                                    ),
+                                    child: Text(
+                                      'Login',
+                                      style: TextStyle(
+                                        color: Colors.white,
+                                        fontSize: 18,
+                                        fontFamily: 'Poppins',
+                                        fontWeight: FontWeight.bold,
+                                        letterSpacing: 1,
+                                      ),
+                                    ),
+                                  ),
+                                ),
+                              ),
+                            ],
+                          ),
+                        ),
+
+                        SizedBox(height: size.height * 0.03),
+
+                        // Divider with text
+                        Row(
+                          children: [
+                            Expanded(
+                              child: Container(
+                                height: 1,
+                                color: Colors.white.withOpacity(0.3),
+                              ),
+                            ),
+                            Padding(
+                              padding: EdgeInsets.symmetric(horizontal: 15),
+                              child: Text(
+                                'OR',
+                                style: TextStyle(
+                                  color: Colors.white.withOpacity(0.8),
+                                  fontFamily: 'Poppins',
+                                  fontSize: 14,
+                                  fontWeight: FontWeight.w500,
+                                ),
+                              ),
+                            ),
+                            Expanded(
+                              child: Container(
+                                height: 1,
+                                color: Colors.white.withOpacity(0.3),
+                              ),
+                            ),
+                          ],
+                        ),
+
+                        SizedBox(height: size.height * 0.03),
+
+                        // Create Account Button
+                        Semantics(
+                          label: SemanticsKeys.loginRegisterButton,
+                          child: Container(
+                            width: double.infinity,
+                            height: 56,
+                            decoration: BoxDecoration(
+                              color: Colors.white,
+                              borderRadius: BorderRadius.circular(15),
+                              boxShadow: [
+                                BoxShadow(
+                                  color: Colors.black.withOpacity(0.1),
+                                  blurRadius: 15,
+                                  offset: Offset(0, 8),
+                                ),
+                              ],
+                            ),
+                            child: OutlinedButton(
+                              onPressed: () => context.push(AppRoutes.register),
+                              style: OutlinedButton.styleFrom(
+                                backgroundColor: Colors.transparent,
+                                side: BorderSide.none,
+                                shape: RoundedRectangleBorder(
+                                  borderRadius: BorderRadius.circular(15),
+                                ),
+                              ),
+                              child: Text(
+                                'Create an Account',
+                                style: TextStyle(
+                                  color: Color(0xFF1c74bb),
+                                  fontFamily: 'Poppins',
+                                  fontSize: 18,
+                                  fontWeight: FontWeight.bold,
+                                  letterSpacing: 0.5,
+                                ),
+                              ),
+                            ),
+                          ),
+                        ),
+
+                        SizedBox(height: size.height * 0.04),
                       ],
                     ),
-                    InkWell(
-                      onTap: () {
-                        Navigator.push(
-                          context,
-                          MaterialPageRoute(
-                            builder: (context) => ForgetPass(),
-                          ),
-                        );
-                      },
-                      child: Text(
-                        'Forgot Password?',
-                        style: TextStyle(
-                          color: Colors.redAccent,
-                          decoration: TextDecoration.underline,
-                          fontFamily: 'Poppins',
-                        ),
-                      ),
-                    ),
-                  ],
-                ),
-
-                // Login Button
-                SizedBox(height: size.height * 0.04),
-                SizedBox(
-                  width: double.infinity,
-                  child: ElevatedButton(
-                    onPressed: login,
-                    style: ElevatedButton.styleFrom(
-                      backgroundColor: blue2,
-                      padding: EdgeInsets.symmetric(vertical: 15),
-                      shape: RoundedRectangleBorder(
-                        borderRadius: BorderRadius.circular(15),
-                      ),
-                    ),
-                    child: Text(
-                      'Login',
-                      style: TextStyle(
-                        color: white,
-                        fontSize: 18,
-                        fontFamily: 'Poppins',
-                        fontWeight: FontWeight.bold,
-                      ),
-                    ),
                   ),
                 ),
-
-                // Sign Up Section
-                SizedBox(height: size.height * 0.06),
-                Text(
-                  "Don't have an account?",
-                  style: Theme.of(context).textTheme.titleLarge?.copyWith(
-                        fontSize: 20,
-                        fontFamily: 'Poppins',
-                      ),
-                ),
-                SizedBox(height: size.height * 0.02),
-                SizedBox(
-                  width: double.infinity,
-                  child: OutlinedButton(
-                    onPressed: () {
-                      Navigator.push(
-                        context,
-                        MaterialPageRoute(
-                          builder: (context) => RegisterLogin(),
-                        ),
-                      );
-                    },
-                    style: OutlinedButton.styleFrom(
-                      side: BorderSide(color: blue2, width: 2),
-                      padding: EdgeInsets.symmetric(vertical: 15),
-                      shape: RoundedRectangleBorder(
-                        borderRadius: BorderRadius.circular(15),
-                      ),
-                    ),
-                    child: Text(
-                      'Create an Account',
-                      style: TextStyle(
-                        color: blue2,
-                        fontFamily: 'Poppins',
-                        fontSize: 18,
-                      ),
-                    ),
-                  ),
-                ),
-                SizedBox(height: size.height * 0.04),
-              ],
+              ),
             ),
-          ),
+          ],
         ),
       ),
     );

@@ -3,7 +3,7 @@ import 'package:flutter/material.dart';
 class Textfield extends StatefulWidget {
   final TextEditingController controller;
   final String hintText;
-  bool obscureText;
+  final bool obscureText;
   final Widget? prefixIcon;
   final Widget? suffixIcon;
   final Color? fillColor;
@@ -11,7 +11,7 @@ class Textfield extends StatefulWidget {
   final double borderRadius;
   final TextInputType? keyboardType;
   final TextStyle? hintStyle;
-  bool toggleVisability;
+  final bool toggleVisability;
   final bool isDateField;
   final bool isTimeField;
   final bool isFutureDate;
@@ -39,12 +39,22 @@ class Textfield extends StatefulWidget {
 }
 
 class _TextfieldState extends State<Textfield> {
+  late bool _isObscured;
+
+  @override
+  void initState() {
+    super.initState();
+    _isObscured = widget.obscureText;
+  }
+
   Future<void> _selectDate(BuildContext context) async {
     DateTime? pickedDate = await showDatePicker(
       context: context,
       initialDate: DateTime.now(),
       firstDate: DateTime(1900), // Earliest selectable date
-      lastDate: widget.isFutureDate ? DateTime(2101) : DateTime.now(), // Latest selectable date (today)
+      lastDate: widget.isFutureDate
+          ? DateTime(2101)
+          : DateTime.now(), // Latest selectable date (today)
     );
 
     if (pickedDate != null) {
@@ -53,7 +63,6 @@ class _TextfieldState extends State<Textfield> {
       });
     }
   }
-
 
   Future<void> _selectTime(BuildContext context) async {
     TimeOfDay? pickedTime = await showTimePicker(
@@ -72,22 +81,20 @@ class _TextfieldState extends State<Textfield> {
   Widget build(BuildContext context) {
     return TextField(
       controller: widget.controller,
-      obscureText: !widget.toggleVisability,
+      obscureText: _isObscured,
       keyboardType: widget.keyboardType,
       decoration: InputDecoration(
-        labelText: widget.hintText,
-        hintStyle: widget.hintStyle ?? TextStyle(color: Colors.grey),
+        hintText: widget.hintText,
+        hintStyle: widget.hintStyle,
         prefixIcon: widget.prefixIcon,
-        suffixIcon: widget.obscureText
+        suffixIcon: widget.obscureText && widget.toggleVisability
             ? IconButton(
                 icon: Icon(
-                  widget.toggleVisability
-                      ? Icons.visibility_off
-                      : Icons.visibility,
+                  _isObscured ? Icons.visibility_off : Icons.visibility,
                 ),
                 onPressed: () {
                   setState(() {
-                    widget.toggleVisability = !widget.toggleVisability;
+                    _isObscured = !_isObscured;
                   });
                 },
               )

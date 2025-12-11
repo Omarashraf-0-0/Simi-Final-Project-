@@ -50,6 +50,7 @@ dependencies:
   url_launcher: any # Updated to the latest version compatible with Dart SDK 3.5.3
   url_launcher_linux: any # Added with a compatible version
   syncfusion_flutter_pdfviewer: ^28.1.38
+  go_router: any
 
 dev_dependencies:
   flutter_lints: any # Updated to a version compatible with Dart SDK 3.5.3
@@ -60,31 +61,16 @@ flutter:
   uses-material-design: true
 
   assets:
-    - lib/assets/img/
-    - lib/assets/animations/
-    - lib/assets/img/AboLayla.jpg
-    - lib/assets/img/TheRock.jpg
-    - lib/assets/img/default.jpeg
-    - lib/assets/img/QuizTime.png
-    - lib/assets/img/GameCharacters/ElBatal.png
-    - lib/assets/img/GameCharacters/NewCommer.png
-    - lib/assets/img/GameCharacters/Explorer.png
-    - lib/assets/img/GameCharacters/Achiever.png
-    - lib/assets/img/GameCharacters/Challenger.png
-    - lib/assets/img/GameCharacters/Expert.png
-    - lib/assets/img/GameCharacters/Mentor.png
-    - lib/assets/img/GameCharacters/Legend.png
-    - lib/assets/img/Job.png
-    - lib/assets/img/cv.png
-    - lib/assets/img/cv2.png
-    - lib/assets/img/career.png
-    - lib/assets/img/career2.png
+    - assets/
+    - assets/img/
+    - assets/img/GameCharacters/
+    - assets/animations/
 
   fonts:
     - family: Poppins
       fonts:
-        - asset: lib/assets/fonts/Poppins/Poppins-Regular.ttf
-        - asset: lib/assets/fonts/Poppins/Poppins-Bold.ttf
+        - asset: assets/fonts/Poppins/Poppins-Regular.ttf
+        - asset: assets/fonts/Poppins/Poppins-Bold.ttf
           weight: 700
-        - asset: lib/assets/fonts/Poppins/Poppins-Italic.ttf
+        - asset: assets/fonts/Poppins/Poppins-Italic.ttf
           style: italic

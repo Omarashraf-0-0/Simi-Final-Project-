@@ -218,85 +218,122 @@ class _WeekViewState extends State<WeekView> {
                   color: Colors.white,
                 ),
               ),
-              child: Card(
-                shape: RoundedRectangleBorder(
-                  borderRadius: BorderRadius.circular(15),
+              child: Container(
+                decoration: BoxDecoration(
+                  gradient: const LinearGradient(
+                    begin: Alignment.topLeft,
+                    end: Alignment.bottomRight,
+                    colors: [
+                      Color(0xFF1c74bb),
+                      Color(0xFF165d96),
+                    ],
+                  ),
+                  borderRadius: BorderRadius.circular(16),
+                  boxShadow: [
+                    BoxShadow(
+                      color: const Color(0xFF1c74bb).withOpacity(0.3),
+                      blurRadius: 12,
+                      offset: const Offset(0, 4),
+                    ),
+                  ],
                 ),
-                elevation: 5,
-                color: const Color(0xFF165D96),
-                child: ListTile(
-                  title: Text(
-                    task['Title'],
-                    style: const TextStyle(color: Colors.white),
+                child: Card(
+                  margin: EdgeInsets.zero,
+                  shape: RoundedRectangleBorder(
+                    borderRadius: BorderRadius.circular(16),
                   ),
-                  subtitle: Text(
-                    task['Description'] ?? '',
-                    style: const TextStyle(color: Colors.white70),
-                  ),
-                  trailing: IconButton(
-                    onPressed: () {
-                      // Show a popup with all the data of the task
-                      showDialog(
-                        context: context,
-                        builder: (BuildContext context) {
-                          // Prepare the repeat information
-                          String repeatInfo = task['Repeatance'] ?? 'None';
-                          if (task['Repeatance'] != null &&
-                              task['Repeatance'] != 'None' &&
-                              task['RepeatEndDate'] != null) {
-                            repeatInfo +=
-                                ' until ${_formatDate(task['RepeatEndDate'])}';
-                          }
+                  elevation: 0,
+                  color: Colors.transparent,
+                  child: ListTile(
+                    contentPadding:
+                        const EdgeInsets.symmetric(horizontal: 16, vertical: 8),
+                    title: Text(
+                      task['Title'],
+                      style: GoogleFonts.poppins(
+                        color: Colors.white,
+                        fontWeight: FontWeight.w600,
+                        fontSize: 16,
+                      ),
+                    ),
+                    subtitle: Padding(
+                      padding: const EdgeInsets.only(top: 4),
+                      child: Text(
+                        task['Description'] ?? '',
+                        style: GoogleFonts.poppins(
+                          color: Colors.white.withOpacity(0.85),
+                          fontSize: 13,
+                        ),
+                        maxLines: 2,
+                        overflow: TextOverflow.ellipsis,
+                      ),
+                    ),
+                    trailing: Container(
+                      decoration: BoxDecoration(
+                        color: Colors.white.withOpacity(0.2),
+                        borderRadius: BorderRadius.circular(10),
+                      ),
+                      child: IconButton(
+                        onPressed: () {
+                          // Show a popup with all the data of the task
+                          showDialog(
+                            context: context,
+                            builder: (BuildContext context) {
+                              // Prepare the repeat information
+                              String repeatInfo = task['Repeatance'] ?? 'None';
+                              if (task['Repeatance'] != null &&
+                                  task['Repeatance'] != 'None' &&
+                                  task['RepeatEndDate'] != null) {
+                                repeatInfo +=
+                                    ' until ${_formatDate(task['RepeatEndDate'])}';
+                              }
 
-                          // Prepare the reminder time
-                          String reminderTime = task['ReminderBefore'] != null
-                              ? '${task['ReminderBefore']} minutes before'
-                              : 'None';
-
-                          return AlertDialog(
-                            title: Text(task['Title']),
-                            content: SingleChildScrollView(
-                              child: ListBody(
-                                children: <Widget>[
-                                  Text(
-                                      'Description: ${task['Description'] ?? 'N/A'}'),
-                                  const SizedBox(height: 10),
-                                  Text('Date: ${_formatDate(task['Date'])}'),
-                                  const SizedBox(height: 10),
-                                  Text(
-                                      'Start Time: ${_formatTime(task['StartTime'])}'),
-                                  const SizedBox(height: 10),
-                                  Text(
-                                      'End Time: ${_formatTime(task['EndTime'])}'),
-                                  const SizedBox(height: 10),
-                                  Text(
-                                      'Location: ${task['Location'] ?? 'N/A'}'),
-                                  const SizedBox(height: 10),
-                                  Text(
-                                      'Category: ${task['Category'] ?? 'N/A'}'),
-                                  const SizedBox(height: 10),
-                                  Text('Repeat: $repeatInfo'),
-                                  const SizedBox(height: 10),
-                                  // Add other task data here if available
+                              return AlertDialog(
+                                title: Text(task['Title']),
+                                content: SingleChildScrollView(
+                                  child: ListBody(
+                                    children: <Widget>[
+                                      Text(
+                                          'Description: ${task['Description'] ?? 'N/A'}'),
+                                      const SizedBox(height: 10),
+                                      Text(
+                                          'Date: ${_formatDate(task['Date'])}'),
+                                      const SizedBox(height: 10),
+                                      Text(
+                                          'Start Time: ${_formatTime(task['StartTime'])}'),
+                                      const SizedBox(height: 10),
+                                      Text(
+                                          'End Time: ${_formatTime(task['EndTime'])}'),
+                                      const SizedBox(height: 10),
+                                      Text(
+                                          'Location: ${task['Location'] ?? 'N/A'}'),
+                                      const SizedBox(height: 10),
+                                      Text(
+                                          'Category: ${task['Category'] ?? 'N/A'}'),
+                                      const SizedBox(height: 10),
+                                      Text('Repeat: $repeatInfo'),
+                                      const SizedBox(height: 10),
+                                      // Add other task data here if available
+                                    ],
+                                  ),
+                                ),
+                                actions: <Widget>[
+                                  TextButton(
+                                    child: const Text('Close'),
+                                    onPressed: () {
+                                      Navigator.of(context).pop();
+                                    },
+                                  ),
                                 ],
-                              ),
-                            ),
-                            actions: <Widget>[
-                              TextButton(
-                                child: const Text('Close'),
-                                onPressed: () {
-                                  Navigator.of(context).pop();
-                                },
-                              ),
-                            ],
+                              );
+                            },
                           );
                         },
-                      );
-                    },
-                    icon: Icon(
-                      Icons.arrow_circle_right_outlined,
-                      color: Colors.white,
-                      size: 30,
+                        icon: const Icon(
+                          Icons.info_rounded,
+                          color: Colors.white,
+                          size: 24,
+                        ),
+                      ),
                     ),
                   ),
                 ),
@@ -397,91 +434,150 @@ class _WeekViewState extends State<WeekView> {
       padding: const EdgeInsets.symmetric(horizontal: 16),
       child: Column(
         children: [
-          // Week Selector
-          Row(
-            mainAxisAlignment: MainAxisAlignment.spaceBetween,
-            children: [
-              IconButton(
-                onPressed: _previousWeek,
-                icon: Icon(Icons.arrow_back_ios,
-                    size: 25, color: Theme.of(context).primaryColor),
-              ),
-              GestureDetector(
-                onTap: _pickDate,
-                child: Row(
-                  children: [
-                    Text(
-                      _formatDateShort(weekStart),
-                      style: const TextStyle(
-                        fontSize: 24,
-                        fontWeight: FontWeight.bold,
-                      ),
-                    ),
-                    const Text(
-                      " - ",
-                      style: TextStyle(
-                        fontSize: 24,
-                        fontWeight: FontWeight.bold,
-                      ),
-                    ),
-                    Text(
-                      _formatDateShort(weekEnd),
-                      style: const TextStyle(
-                        fontSize: 24,
-                        fontWeight: FontWeight.bold,
-                        color: Color(0xFF1BC0C4),
-                      ),
-                    ),
-                  ],
+          // Modern Week Navigation
+          Container(
+            padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 12),
+            decoration: BoxDecoration(
+              color: Colors.white,
+              borderRadius: BorderRadius.circular(20),
+              boxShadow: [
+                BoxShadow(
+                  color: Colors.black.withOpacity(0.05),
+                  blurRadius: 10,
+                  offset: const Offset(0, 4),
                 ),
-              ),
-              IconButton(
-                onPressed: _nextWeek,
-                icon: Icon(Icons.arrow_forward_ios,
-                    size: 25, color: Theme.of(context).primaryColor),
-              ),
-            ],
-          ),
-          const SizedBox(height: 20),
-          // Day Selector (Horizontal Scroll)
-          SingleChildScrollView(
-            scrollDirection: Axis.horizontal,
+              ],
+            ),
             child: Row(
-              children: List.generate(
-                7,
-                (index) {
-                  DateTime day = weekStart.add(Duration(days: index));
-                  return GestureDetector(
-                    onTap: () {
-                      setState(() {
-                        _selectedDay = index; // Update selected day
-                      });
-                    },
-                    child: Container(
-                      width: 75,
-                      height: 35,
-                      margin: const EdgeInsets.only(right: 10),
-                      decoration: BoxDecoration(
-                        color: _selectedDay == index
-                            ? const Color(0xFF165D96)
-                            : Colors.white,
-                        borderRadius: BorderRadius.circular(15),
-                      ),
-                      alignment: Alignment.center,
-                      child: Text(
-                        _formatDateShort(day, format: 'EEE'),
-                        style: TextStyle(
-                          fontSize: 18,
-                          fontFamily: GoogleFonts.leagueSpartan().fontFamily,
-                          color: _selectedDay == index
-                              ? Colors.white
-                              : Colors.black,
+              mainAxisAlignment: MainAxisAlignment.spaceBetween,
+              children: [
+                Container(
+                  decoration: BoxDecoration(
+                    color: const Color(0xFF1c74bb).withOpacity(0.1),
+                    borderRadius: BorderRadius.circular(12),
+                  ),
+                  child: IconButton(
+                    onPressed: _previousWeek,
+                    icon: const Icon(Icons.chevron_left_rounded,
+                        size: 28, color: Color(0xFF1c74bb)),
+                  ),
+                ),
+                GestureDetector(
+                  onTap: _pickDate,
+                  child: Row(
+                    children: [
+                      const Icon(Icons.calendar_today_rounded,
+                          color: Color(0xFF1c74bb), size: 20),
+                      const SizedBox(width: 8),
+                      Text(
+                        _formatDateShort(weekStart),
+                        style: GoogleFonts.poppins(
+                          fontSize: 16,
+                          fontWeight: FontWeight.w600,
+                          color: Colors.black87,
                         ),
                       ),
+                      Text(
+                        " - ",
+                        style: GoogleFonts.poppins(
+                          fontSize: 16,
+                          fontWeight: FontWeight.w600,
+                          color: Colors.grey[400],
+                        ),
+                      ),
+                      Text(
+                        _formatDateShort(weekEnd),
+                        style: GoogleFonts.poppins(
+                          fontSize: 16,
+                          fontWeight: FontWeight.w600,
+                          color: const Color(0xFF18bebc),
+                        ),
+                      ),
+                    ],
+                  ),
+                ),
+                Container(
+                  decoration: BoxDecoration(
+                    color: const Color(0xFF1c74bb).withOpacity(0.1),
+                    borderRadius: BorderRadius.circular(12),
+                  ),
+                  child: IconButton(
+                    onPressed: _nextWeek,
+                    icon: const Icon(Icons.chevron_right_rounded,
+                        size: 28, color: Color(0xFF1c74bb)),
+                  ),
+                ),
+              ],
+            ),
+          ),
+          const SizedBox(height: 16),
+          // Modern Day Selector
+          SizedBox(
+            height: 70,
+            child: ListView.builder(
+              scrollDirection: Axis.horizontal,
+              itemCount: 7,
+              itemBuilder: (context, index) {
+                DateTime day = weekStart.add(Duration(days: index));
+                bool isSelected = _selectedDay == index;
+                return GestureDetector(
+                  onTap: () {
+                    setState(() {
+                      _selectedDay = index;
+                    });
+                  },
+                  child: AnimatedContainer(
+                    duration: const Duration(milliseconds: 300),
+                    width: 60,
+                    margin: const EdgeInsets.only(right: 12),
+                    decoration: BoxDecoration(
+                      gradient: isSelected
+                          ? const LinearGradient(
+                              begin: Alignment.topLeft,
+                              end: Alignment.bottomRight,
+                              colors: [
+                                Color(0xFF1c74bb),
+                                Color(0xFF165d96),
+                              ],
+                            )
+                          : null,
+                      color: isSelected ? null : Colors.white,
+                      borderRadius: BorderRadius.circular(16),
+                      boxShadow: [
+                        BoxShadow(
+                          color: isSelected
+                              ? const Color(0xFF1c74bb).withOpacity(0.3)
+                              : Colors.black.withOpacity(0.05),
+                          blurRadius: isSelected ? 12 : 8,
+                          offset: Offset(0, isSelected ? 4 : 2),
+                        ),
+                      ],
                     ),
-                  );
-                },
-              ),
+                    child: Column(
+                      mainAxisAlignment: MainAxisAlignment.center,
+                      children: [
+                        Text(
+                          DateFormat('EEE').format(day),
+                          style: GoogleFonts.poppins(
+                            fontSize: 12,
+                            fontWeight: FontWeight.w500,
+                            color: isSelected ? Colors.white : Colors.grey[600],
+                          ),
+                        ),
+                        const SizedBox(height: 4),
+                        Text(
+                          day.day.toString(),
+                          style: GoogleFonts.poppins(
+                            fontSize: 18,
+                            fontWeight: FontWeight.bold,
+                            color: isSelected ? Colors.white : Colors.black87,
+                          ),
+                        ),
+                      ],
+                    ),
+                  ),
+                );
+              },
             ),
           ),
           const SizedBox(height: 20),
