@@ -16,6 +16,14 @@ class QuizOptions extends StatefulWidget {
 }
 
 class _QuizOptionsState extends State<QuizOptions> {
+  // Define your branding colors
+  final Color blue1 = Color(0xFF1c74bb);
+  final Color blue2 = Color(0xFF165d96);
+  final Color cyan1 = Color(0xFF18bebc);
+  final Color cyan2 = Color(0xFF139896);
+  final Color black = Color(0xFF000000);
+  final Color white = Color(0xFFFFFFFF);
+
   String? selectedCourse;
   String? selectedCourseId;
   TextEditingController questionsController = TextEditingController();
