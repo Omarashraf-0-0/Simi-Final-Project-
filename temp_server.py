@@ -534,6 +534,48 @@ CACHE_EXPIRY_HOURS = 1
 CONVERSATION_HISTORY = {}
 MAX_HISTORY_LENGTH = 5  # Keep last 5 exchanges
 
+# Pre-loading status tracking
+PRELOAD_STATUS = {}  # {course_id: 'loading'|'ready'|'error'}
+
+# ============================================================================
+# GREETING DETECTION - For instant responses
+# ============================================================================
+
+GREETING_PATTERNS = {
+    'ar': ['مرحبا', 'اهلا', 'السلام', 'هاي', 'صباح', 'مساء', 'ازيك', 'عامل ايه', 'كيف حالك', 'شكرا', 'يا', 'ابو ليلى', 'ابوليلى'],
+    'en': ['hello', 'hi', 'hey', 'good morning', 'good evening', 'thanks', 'thank you', 'sup', 'yo', 'abolayla', 'abo layla']
+}
+
+GREETING_RESPONSES = {
+    'ar': [
+        "أهلاً! أنا AboLayla، مساعدك في المادة. اسألني أي سؤال عن المحاضرات",
+        "مرحباً! إزيك؟ أنا هنا عشان أساعدك في أي حاجة عن الكورس",
+        "يا هلا! جاهز أساعدك. إيه اللي محتاج تعرفه؟"
+    ],
+    'en': [
+        "Hello! I'm AboLayla, your study assistant. Ask me anything about the lectures!",
+        "Hey there! Ready to help you with the course. What do you need?",
+        "Hi! I'm here to help. What would you like to know?"
+    ]
+}
+
+def is_greeting_message(message):
+    """Check if message is just a greeting (no real question)."""
+    msg_lower = message.lower().strip()
+    
+    # Very short messages are likely greetings
+    if len(msg_lower) < 15:
+        for lang, patterns in GREETING_PATTERNS.items():
+            for pattern in patterns:
+                if pattern in msg_lower:
+                    return True, lang
+    return False, None
+
+def get_instant_greeting(language='ar'):
+    """Return a random greeting response instantly."""
+    lang_key = 'ar' if language.lower() in ['arabic', 'مصري', 'ar'] else 'en'
+    return random.choice(GREETING_RESPONSES[lang_key])
+
 # ============================================================================
 # AI MODEL ROTATION SYSTEM (3 Free APIs)
 # ============================================================================
@@ -1037,8 +1079,9 @@ def chat_endpoint(app, get_connection, BASE_DIR, allowed_file, extract_lecture_n
     def chat():
         """
         AboLayla chatbot with RAG + Conversation History.
-        First time: ~30 seconds (processes PDFs)
-        After that: ~3-5 seconds (uses cache)
+        - Greetings: INSTANT (<100ms)
+        - Cached questions: ~3-5 seconds
+        - First time: ~30 seconds (use /preload_chat first!)
 
         Expected JSON:
         {
@@ -1072,7 +1115,27 @@ def chat_endpoint(app, get_connection, BASE_DIR, allowed_file, extract_lecture_n
             print(f"💬 AboLayla Chat - Course: {co_id}, Session: {session_id}, Q: {question}")
             print(f"{'='*60}\n")
 
-            # Check cache first
+            # ============ INSTANT GREETING CHECK ============
+            # If it's just a greeting, respond INSTANTLY (no RAG needed)
+            is_greeting, detected_lang = is_greeting_message(question)
+            if is_greeting:
+                greeting_response = get_instant_greeting(language)
+                processing_time = time.time() - start_time
+                print(f"⚡ Instant greeting in {processing_time:.3f}s")
+                
+                # Still track conversation
+                add_to_conversation_history(session_id, question, greeting_response)
+                
+                return jsonify({
+                    'status': 'success',
+                    'answer': greeting_response,
+                    'sources': [],
+                    'cache_used': True,
+                    'processing_time': processing_time,
+                    'model_used': 'instant_greeting'
+                }), 200
+
+            # ============ CHECK CACHE ============
             cached_data = get_cached_course(co_id)
             cache_used = False
 
@@ -1234,6 +1297,136 @@ def chat_endpoint(app, get_connection, BASE_DIR, allowed_file, extract_lecture_n
             'cache_expiry_hours': CACHE_EXPIRY_HOURS
         }), 200
 
+
+    @app.route('/preload_chat', methods=['POST'])
+    def preload_chat():
+        """
+        Pre-load course data into cache BEFORE user starts chatting.
+        Call this when user opens the chat screen for instant responses.
+        
+        Expected JSON:
+        {
+            "co_id": 27
+        }
+        
+        Response:
+        - If already cached: instant success
+        - If loading: returns status
+        - If new: loads in background, returns quickly
+        """
+        start_time = time.time()
+        
+        try:
+            data = request.get_json()
+            co_id = data.get('co_id')
+            
+            if not co_id:
+                return jsonify({'status': 'error', 'message': 'Missing co_id'}), 400
+            
+            # Check if already cached
+            cached_data = get_cached_course(co_id)
+            if cached_data:
+                return jsonify({
+                    'status': 'success',
+                    'message': 'Course already cached',
+                    'cached': True,
+                    'chunks_count': len(cached_data['chunks']),
+                    'processing_time': time.time() - start_time
+                }), 200
+            
+            # Check if currently loading
+            if PRELOAD_STATUS.get(co_id) == 'loading':
+                return jsonify({
+                    'status': 'loading',
+                    'message': 'Course is being loaded',
+                    'cached': False
+                }), 202
+            
+            # Mark as loading
+            PRELOAD_STATUS[co_id] = 'loading'
+            print(f"📚 Pre-loading course {co_id}...")
+            
+            # Get course name from database
+            conn = get_connection()
+            if not conn:
+                PRELOAD_STATUS[co_id] = 'error'
+                return jsonify({'status': 'error', 'message': 'Database error'}), 500
+            
+            try:
+                cursor = conn.cursor()
+                cursor.execute("SELECT COName FROM Courses WHERE COId = %s", (co_id,))
+                result = cursor.fetchone()
+                cursor.close()
+                conn.close()
+                
+                if not result:
+                    PRELOAD_STATUS[co_id] = 'error'
+                    return jsonify({'status': 'error', 'message': 'Course not found'}), 404
+                
+                course_name = result[0]
+            except Exception as e:
+                PRELOAD_STATUS[co_id] = 'error'
+                return jsonify({'status': 'error', 'message': f'Database error: {e}'}), 500
+            
+            # Build path to PDFs
+            course_dir = os.path.join(BASE_DIR, 'lectures', course_name.strip().replace(' ', ''))
+            
+            if not os.path.exists(course_dir):
+                PRELOAD_STATUS[co_id] = 'error'
+                return jsonify({'status': 'error', 'message': 'Course directory not found'}), 404
+            
+            # Get PDF files
+            all_files = os.listdir(course_dir)
+            pdf_files = [f for f in all_files if f.lower().endswith('.pdf')]
+            
+            if not pdf_files:
+                PRELOAD_STATUS[co_id] = 'error'
+                return jsonify({'status': 'error', 'message': 'No PDFs found'}), 404
+            
+            # Build PDF paths
+            pdf_paths = []
+            for filename in pdf_files:
+                lecture_number = extract_lecture_number(filename)
+                if lecture_number is not None:
+                    file_path = os.path.join(course_dir, filename)
+                    pdf_paths.append((file_path, lecture_number))
+            
+            if not pdf_paths:
+                PRELOAD_STATUS[co_id] = 'error'
+                return jsonify({'status': 'error', 'message': 'No valid PDFs'}), 404
+            
+            # Extract text
+            lecture_texts = extract_text_from_pdfs_for_chat(pdf_paths)
+            
+            if not lecture_texts:
+                PRELOAD_STATUS[co_id] = 'error'
+                return jsonify({'status': 'error', 'message': 'Could not extract text'}), 500
+            
+            # Create searchable chunks
+            chunks = split_text_into_chunks_with_metadata(lecture_texts)
+            
+            # Cache it
+            cache_course_data(co_id, lecture_texts, chunks)
+            
+            PRELOAD_STATUS[co_id] = 'ready'
+            processing_time = time.time() - start_time
+            
+            print(f"✅ Course {co_id} pre-loaded in {processing_time:.2f}s ({len(chunks)} chunks)")
+            
+            return jsonify({
+                'status': 'success',
+                'message': 'Course pre-loaded successfully',
+                'cached': True,
+                'chunks_count': len(chunks),
+                'lectures_count': len(lecture_texts),
+                'processing_time': processing_time
+            }), 200
+            
+        except Exception as e:
+            PRELOAD_STATUS[co_id] = 'error' if co_id else 'error'
+            print(f"❌ Preload error: {e}")
+            traceback.print_exc()
+            return jsonify({'status': 'error', 'message': str(e)}), 500
 
 
 ##END OF CHATBOT (DONT EDIT BETWEEN THEM)------------------------------
