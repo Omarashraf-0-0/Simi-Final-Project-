@@ -21,6 +21,8 @@ class _RegisterLoginState extends State<RegisterLogin> {
       TextEditingController();
 
   String? gender;
+  bool _obscurePassword = true;
+  bool _obscureConfirmPassword = true;
 
   final _formKey = GlobalKey<FormState>(); // Form key for validation
 
@@ -362,7 +364,7 @@ class _RegisterLoginState extends State<RegisterLogin> {
                               // Password Field
                               TextFormField(
                                 controller: passwordController,
-                                obscureText: true,
+                                obscureText: _obscurePassword,
                                 decoration: InputDecoration(
                                   labelText: 'Password',
                                   labelStyle: TextStyle(
@@ -391,6 +393,19 @@ class _RegisterLoginState extends State<RegisterLogin> {
                                       color: Colors.white,
                                       size: 20,
                                     ),
+                                  ),
+                                  suffixIcon: IconButton(
+                                    icon: Icon(
+                                      _obscurePassword
+                                          ? Icons.visibility_off
+                                          : Icons.visibility,
+                                      color: Colors.grey[600],
+                                    ),
+                                    onPressed: () {
+                                      setState(() {
+                                        _obscurePassword = !_obscurePassword;
+                                      });
+                                    },
                                   ),
                                   filled: true,
                                   fillColor: Colors.grey[50],
@@ -431,7 +446,7 @@ class _RegisterLoginState extends State<RegisterLogin> {
                               // Confirm Password Field
                               TextFormField(
                                 controller: confirmPasswordController,
-                                obscureText: true,
+                                obscureText: _obscureConfirmPassword,
                                 decoration: InputDecoration(
                                   labelText: 'Confirm Password',
                                   labelStyle: TextStyle(
@@ -460,6 +475,20 @@ class _RegisterLoginState extends State<RegisterLogin> {
                                       color: Colors.white,
                                       size: 20,
                                     ),
+                                  ),
+                                  suffixIcon: IconButton(
+                                    icon: Icon(
+                                      _obscureConfirmPassword
+                                          ? Icons.visibility_off
+                                          : Icons.visibility,
+                                      color: Colors.grey[600],
+                                    ),
+                                    onPressed: () {
+                                      setState(() {
+                                        _obscureConfirmPassword =
+                                            !_obscureConfirmPassword;
+                                      });
+                                    },
                                   ),
                                   filled: true,
                                   fillColor: Colors.grey[50],

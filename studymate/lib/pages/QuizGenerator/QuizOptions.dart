@@ -16,20 +16,30 @@ class QuizOptions extends StatefulWidget {
 }
 
 class _QuizOptionsState extends State<QuizOptions> {
+  // Define your branding colors
+  final Color blue1 = Color(0xFF1c74bb);
+  final Color blue2 = Color(0xFF165d96);
+  final Color cyan1 = Color(0xFF18bebc);
+  final Color cyan2 = Color(0xFF139896);
+  final Color black = Color(0xFF000000);
+  final Color white = Color(0xFFFFFFFF);
+
   String? selectedCourse;
   String? selectedCourseId;
   TextEditingController questionsController = TextEditingController();
   TextEditingController mcqController = TextEditingController();
   TextEditingController tfController = TextEditingController();
-  TextEditingController lectureFromController = TextEditingController();
-  TextEditingController lectureToController = TextEditingController();
 
   // Variables to hold fetched courses and lectures
   List<String> courses = [];
   List<String> coursesIndex = [];
   List<Map<String, String>> lectures = []; // List of lectures with their URLs
+  Set<int> selectedLectures = {}; // Selected lecture indices (0-based)
   bool isLoading = true; // To handle loading state
   bool isGenerating = false; // For the generating state
+  
+  // Consistent font size for all input fields
+  final double inputFontSize = 16.0;
 
   @override
   void initState() {
@@ -108,8 +118,6 @@ class _QuizOptionsState extends State<QuizOptions> {
     int totalQuestions = int.tryParse(questionsController.text) ?? -1;
     int mcqCount = int.tryParse(mcqController.text) ?? -1;
     int tfCount = int.tryParse(tfController.text) ?? -1;
-    int lectureFrom = int.tryParse(lectureFromController.text) ?? -1;
-    int lectureTo = int.tryParse(lectureToController.text) ?? -1;
 
     // Check if a course is selected
     if (selectedCourse == null) {
@@ -156,37 +164,14 @@ class _QuizOptionsState extends State<QuizOptions> {
       return;
     }
 
-    // Validate lecture range inputs
-    if (lectureFrom <= 0 || lectureTo <= 0 || lectureFrom > lectureTo) {
+    // Validate that at least one lecture is selected
+    if (selectedLectures.isEmpty) {
       showDialog(
         context: context,
         builder: (BuildContext dialogContext) {
           return AlertDialog(
             title: const Text("Error"),
-            content: const Text("Please enter a valid lecture range."),
-            actions: [
-              TextButton(
-                onPressed: () {
-                  Navigator.of(dialogContext).pop();
-                },
-                child: const Text("OK"),
-              ),
-            ],
-          );
-        },
-      );
-      return;
-    }
-
-    // Check if lecture numbers exceed available lectures
-    if (lectureFrom > lectures.length || lectureTo > lectures.length) {
-      showDialog(
-        context: context,
-        builder: (BuildContext dialogContext) {
-          return AlertDialog(
-            title: const Text("Error"),
-            content: Text(
-                "Lecture numbers exceed available lectures. Please select between 1 and ${lectures.length}."),
+            content: const Text("Please select at least one lecture."),
             actions: [
               TextButton(
                 onPressed: () {
@@ -274,12 +259,18 @@ class _QuizOptionsState extends State<QuizOptions> {
       print('isGenerating set to true');
     });
 
+    // Convert selected lectures to sorted list (1-based for server)
+    List<int> selectedLecturesList = selectedLectures.map((i) => i + 1).toList()..sort();
+    int lectureStart = selectedLecturesList.first;
+    int lectureEnd = selectedLecturesList.last;
+
     // Prepare data to send to the server
     Map<String, dynamic> requestData = {
       'course_name': selectedCourse!.replaceAll(' ', ''),
       'co_id': selectedCourseId,
-      'lecture_start': lectureFrom,
-      'lecture_end': lectureTo,
+      'lecture_start': lectureStart,
+      'lecture_end': lectureEnd,
+      'selected_lectures': selectedLecturesList,
       'number_of_questions': totalQuestions,
       'num_mcq': mcqCount,
       'num_true_false': tfCount,
@@ -422,8 +413,10 @@ class _QuizOptionsState extends State<QuizOptions> {
                       alignment: Alignment.centerLeft,
                       child: Text(
                         'Choose Course',
-                        style: AppConstants.bodyText.copyWith(
-                          color: AppConstants.primaryBlueDark,
+                        style: TextStyle(
+                          color: blue2, // Set the placeholder text color to blue
+                          fontSize: inputFontSize,
+                          fontFamily: 'League Spartan',
                         ),
                       ),
                     ),
@@ -438,14 +431,15 @@ class _QuizOptionsState extends State<QuizOptions> {
                       ),
                     ),
                     icon: const Icon(Icons.arrow_drop_down, color: Colors.grey),
-                    items: courses.asMap().entries.map((entry) {
-                      String value = entry.value;
+                    items: courses.map((value) {
                       return DropdownMenuItem<String>(
                         value: value,
                         child: Text(
                           value,
-                          style: AppConstants.bodyText.copyWith(
-                            color: Theme.of(context).colorScheme.primary,
+                          style: TextStyle(
+                            color: blue2, // Changed from light blue to normal blue
+                            fontSize: inputFontSize,
+                            fontFamily: 'League Spartan',
                           ),
                         ),
                       );
@@ -456,8 +450,7 @@ class _QuizOptionsState extends State<QuizOptions> {
                         int index = courses.indexOf(newValue!);
                         selectedCourseId = coursesIndex[index];
                         lectures = []; // Clear previous lectures
-                        lectureFromController.clear();
-                        lectureToController.clear();
+                        selectedLectures.clear(); // Clear selected lectures
                       });
                       // Fetch lectures for the selected course
                       getLectures(selectedCourseId!);
@@ -466,108 +459,96 @@ class _QuizOptionsState extends State<QuizOptions> {
                   const SizedBox(height: 30),
                   // Display Lectures
                   if (lectures.isNotEmpty) ...[
-                    Text(
-                      'Lectures (${lectures.length}):',
-                      style: TextStyle(
-                        fontSize: 20,
-                        fontWeight: FontWeight.bold,
-                        fontFamily: 'League Spartan',
-                        color: Theme.of(context).colorScheme.onSurface,
-                      ),
+                    Row(
+                      mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                      children: [
+                        Text(
+                          'Select Lectures',
+                          style: TextStyle(
+                            fontSize: 24,
+                            fontWeight: FontWeight.bold,
+                            fontFamily: 'League Spartan',
+                            color: Theme.of(context).colorScheme.onSurface,
+                          ),
+                        ),
+                        // Select All / Deselect All button
+                        TextButton(
+                          onPressed: () {
+                            setState(() {
+                              if (selectedLectures.length == lectures.length) {
+                                selectedLectures.clear();
+                              } else {
+                                selectedLectures = Set.from(List.generate(lectures.length, (i) => i));
+                              }
+                            });
+                          },
+                          child: Text(
+                            selectedLectures.length == lectures.length ? 'Deselect All' : 'Select All',
+                            style: TextStyle(
+                              fontSize: inputFontSize,
+                              fontFamily: 'League Spartan',
+                              color: blue2,
+                            ),
+                          ),
+                        ),
+                      ],
                     ),
                     const SizedBox(height: 10),
+                    // Chip-based lecture selection
                     Container(
-                      height: 150,
+                      width: double.infinity,
+                      padding: EdgeInsets.all(12),
                       decoration: BoxDecoration(
-                        color: AppConstants.backgroundLight,
+                        color: Colors.grey[200],
                         borderRadius: BorderRadius.circular(15),
-                        border: Border.all(color: Colors.grey[300]!),
                       ),
-                      child: ListView.builder(
-                        itemCount: lectures.length,
-                        itemBuilder: (context, index) {
-                          return ListTile(
-                            leading: Icon(Icons.book,
-                                color: AppConstants.primaryBlueDark),
-                            title: Text(
-                              lectures[index]['name']!,
-                              style: AppConstants.bodyText.copyWith(
-                                color: AppConstants.textPrimary,
+                      child: Wrap(
+                        spacing: 8,
+                        runSpacing: 8,
+                        children: List.generate(lectures.length, (index) {
+                          bool isSelected = selectedLectures.contains(index);
+                          return FilterChip(
+                            label: Text(
+                              'Lecture ${index + 1}',
+                              style: TextStyle(
+                                fontSize: inputFontSize,
+                                fontFamily: 'League Spartan',
+                                color: isSelected ? white : blue2,
                               ),
                             ),
+                            selected: isSelected,
+                            onSelected: (selected) {
+                              setState(() {
+                                if (selected) {
+                                  selectedLectures.add(index);
+                                } else {
+                                  selectedLectures.remove(index);
+                                }
+                              });
+                            },
+                            selectedColor: blue2,
+                            backgroundColor: white,
+                            checkmarkColor: white,
+                            shape: RoundedRectangleBorder(
+                              borderRadius: BorderRadius.circular(20),
+                              side: BorderSide(color: blue2),
+                            ),
                           );
-                        },
+                        }),
+                      ),
+                    ),
+                    const SizedBox(height: 8),
+                    // Selected count indicator
+                    Text(
+                      '${selectedLectures.length} of ${lectures.length} lectures selected',
+                      style: TextStyle(
+                        fontSize: 14,
+                        fontFamily: 'League Spartan',
+                        color: Colors.grey[600],
                       ),
                     ),
                     const SizedBox(height: 30),
                   ],
-                  // Section: Lecture Range
-                  Text(
-                    'Lecture Range',
-                    style: AppConstants.cardTitle.copyWith(
-                      color: Theme.of(context).colorScheme.onSurface,
-                    ),
-                  ),
-                  const SizedBox(height: 15),
-                  // Lecture Range 'From' and 'To' boxes
-                  Row(
-                    children: [
-                      Expanded(
-                        child: TextField(
-                          controller: lectureFromController,
-                          keyboardType: TextInputType.number,
-                          decoration: InputDecoration(
-                            labelText: 'From',
-                            labelStyle: AppConstants.bodyText.copyWith(
-                              color: AppConstants.primaryBlueDark,
-                            ),
-                            contentPadding: EdgeInsets.symmetric(
-                                vertical: 15, horizontal: 20),
-                            filled: true,
-                            fillColor: Colors.grey[200],
-                            border: OutlineInputBorder(
-                              borderRadius: BorderRadius.circular(15),
-                              borderSide: BorderSide.none,
-                            ),
-                          ),
-                          style: TextStyle(
-                            fontWeight: FontWeight.bold,
-                            fontFamily: 'League Spartan',
-                            color: Colors
-                                .black, // User input text color set to black
-                          ),
-                        ),
-                      ),
-                      const SizedBox(width: 20),
-                      Expanded(
-                        child: TextField(
-                          controller: lectureToController,
-                          keyboardType: TextInputType.number,
-                          decoration: InputDecoration(
-                            labelText: 'To',
-                            labelStyle: AppConstants.bodyText.copyWith(
-                              color: AppConstants.primaryBlueDark,
-                            ),
-                            contentPadding: EdgeInsets.symmetric(
-                                vertical: 15, horizontal: 20),
-                            filled: true,
-                            fillColor: Colors.grey[200],
-                            border: OutlineInputBorder(
-                              borderRadius: BorderRadius.circular(15),
-                              borderSide: BorderSide.none,
-                            ),
-                          ),
-                          style: TextStyle(
-                            fontWeight: FontWeight.bold,
-                            fontFamily: 'League Spartan',
-                            color: Colors
-                                .black, // User input text color set to black
-                          ),
-                        ),
-                      ),
-                    ],
-                  ),
-                  const SizedBox(height: 30),
                   // Section: Questions Number
                   Text(
                     'Questions Number',
@@ -582,8 +563,10 @@ class _QuizOptionsState extends State<QuizOptions> {
                     decoration: InputDecoration(
                       labelText:
                           'Total Questions', // Changed from hintText to labelText
-                      labelStyle: AppConstants.bodyText.copyWith(
-                        color: AppConstants.primaryBlueDark,
+                      labelStyle: TextStyle(
+                        color: blue2, // Set the label text color to blue
+                        fontSize: inputFontSize,
+                        fontFamily: 'League Spartan',
                       ),
                       contentPadding:
                           EdgeInsets.symmetric(vertical: 15, horizontal: 20),
@@ -594,7 +577,8 @@ class _QuizOptionsState extends State<QuizOptions> {
                         borderSide: BorderSide.none,
                       ),
                     ),
-                    style: AppConstants.bodyText.copyWith(
+                    style: TextStyle(
+                      fontSize: inputFontSize,
                       fontWeight: FontWeight.bold,
                       color: AppConstants.textPrimary,
                     ),
@@ -616,8 +600,10 @@ class _QuizOptionsState extends State<QuizOptions> {
                           keyboardType: TextInputType.number,
                           decoration: InputDecoration(
                             labelText: 'MCQ',
-                            labelStyle: AppConstants.bodyText.copyWith(
-                              color: AppConstants.primaryBlueDark,
+                            labelStyle: TextStyle(
+                              color: blue2,
+                              fontSize: inputFontSize,
+                              fontFamily: 'League Spartan',
                             ),
                             contentPadding: EdgeInsets.symmetric(
                                 vertical: 15, horizontal: 20),
@@ -629,10 +615,10 @@ class _QuizOptionsState extends State<QuizOptions> {
                             ),
                           ),
                           style: TextStyle(
+                            fontSize: inputFontSize,
                             fontWeight: FontWeight.bold,
                             fontFamily: 'League Spartan',
-                            color: Colors
-                                .black, // User input text color set to black
+                            color: Colors.black,
                           ),
                         ),
                       ),
@@ -643,8 +629,10 @@ class _QuizOptionsState extends State<QuizOptions> {
                           keyboardType: TextInputType.number,
                           decoration: InputDecoration(
                             labelText: 'T/F',
-                            labelStyle: AppConstants.bodyText.copyWith(
-                              color: AppConstants.primaryBlueDark,
+                            labelStyle: TextStyle(
+                              color: blue2,
+                              fontSize: inputFontSize,
+                              fontFamily: 'League Spartan',
                             ),
                             contentPadding: EdgeInsets.symmetric(
                                 vertical: 15, horizontal: 20),
@@ -656,10 +644,10 @@ class _QuizOptionsState extends State<QuizOptions> {
                             ),
                           ),
                           style: TextStyle(
+                            fontSize: inputFontSize,
                             fontWeight: FontWeight.bold,
                             fontFamily: 'League Spartan',
-                            color: Colors
-                                .black, // User input text color set to black
+                            color: Colors.black,
                           ),
                         ),
                       ),

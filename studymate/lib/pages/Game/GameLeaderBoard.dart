@@ -49,12 +49,13 @@ class _GameLeaderBoardState extends State<GameLeaderBoard>
 
     try {
       // Add timeout for faster failure
-      final response = await http.get(Uri.parse(url)).timeout(
-        const Duration(seconds: 10),
-        onTimeout: () {
-          throw Exception('Request timeout');
-        },
-      );
+      final response = await http.get(Uri.parse(url));
+      // .timeout(
+      //   const Duration(seconds: 30),
+      //   onTimeout: () {
+      //     throw Exception('Request timeout');
+      //   },
+      // );
 
       if (response.statusCode == 200) {
         // Parse response
