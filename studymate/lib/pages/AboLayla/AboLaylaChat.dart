@@ -1,7 +1,8 @@
 import 'package:flutter/material.dart';
-import 'package:google_generative_ai/google_generative_ai.dart';
 import 'package:google_fonts/google_fonts.dart';
 import 'package:flutter_markdown/flutter_markdown.dart';
+import 'package:http/http.dart' as http;
+import 'dart:convert';
 
 class AboLaylaChat extends StatefulWidget {
   const AboLaylaChat({
@@ -22,16 +23,20 @@ class AboLaylaChat extends StatefulWidget {
 class _AboLaylaChatState extends State<AboLaylaChat> {
   final TextEditingController _controller = TextEditingController();
   final List<Map<String, dynamic>> _messages = [];
-  final model = GenerativeModel(
-    model: 'gemini-1.5-flash', // Use the appropriate model
-    apiKey: "AIzaSyCtRyYUAupQxyE3gjwNcL0YmbA0HqttxSE",    // Replace with your actual API key
-  );
   final ScrollController _scrollController = ScrollController();
+  final String baseUrl = 'https://alyibrahim.pythonanywhere.com';
+  late String sessionId; // Unique session ID for conversation tracking
 
-  bool isFirstPrompt = true;
   bool isTyping = false;
 
-  void _sendMessage() async {
+  @override
+  void initState() {
+    super.initState();
+    // Generate unique session ID per user+course combination
+    sessionId = 'user_${DateTime.now().millisecondsSinceEpoch}_course_${widget.selectedCourseId}';
+  }
+
+  Future<void> _sendMessage() async {
     if (_controller.text.isEmpty) return;
 
     final userMessage = _controller.text;
@@ -51,59 +56,81 @@ class _AboLaylaChatState extends State<AboLaylaChat> {
       );
     });
 
+    // Add typing indicator
+    setState(() {
+      _messages.add({'sender': 'bot', 'text': 'typing', 'isTyping': true});
+    });
+
+    // Scroll to show typing indicator
+    WidgetsBinding.instance.addPostFrameCallback((_) {
+      _scrollController.animateTo(
+        _scrollController.position.maxScrollExtent,
+        duration: const Duration(milliseconds: 300),
+        curve: Curves.easeOut,
+      );
+    });
+
     try {
-      String conversationContext = _messages
-          .where((msg) => msg['sender'] != 'typing') // Exclude typing indicator
-          .map((msg) =>
-              "${msg['sender'] == 'user' ? 'User' : 'Bot'}: ${msg['text']}")
-          .join("\n");
+      // Call your server's /chat endpoint with session tracking
+      final response = await http.post(
+        Uri.parse('$baseUrl/chat'),
+        headers: {'Content-Type': 'application/json'},
+        body: jsonEncode({
+          'co_id': int.parse(widget.selectedCourseId),
+          'session_id': sessionId, // Enable conversation history
+          'question': userMessage,
+          'language': widget.selectedLanguage == 'مصري' ? 'مصري' : 'English',
+        }),
+      ).timeout(
+        const Duration(seconds: 35), // 35s to allow for PDF processing on first request
+        onTimeout: () {
+          throw Exception('Request timeout - server is processing PDFs, please wait...');
+        },
+      );
 
-      String modifiedMessage;
+      if (response.statusCode == 200) {
+        final data = jsonDecode(response.body);
+        
+        if (data['status'] == 'success') {
+          String answer = data['answer'];
+          List sources = data['sources'] ?? [];
+          bool cacheUsed = data['cache_used'] ?? false;
+          String modelUsed = data['model_used'] ?? 'unknown';
+          
+          // Add friendly greeting if it's the first message
+          if (_messages.where((m) => m['sender'] == 'bot' && m['isTyping'] != true).isEmpty) {
+            if (widget.selectedLanguage == 'مصري') {
+              answer = "يا امبيسا! 🎓\n\n$answer";
+            } else {
+              answer = "Hey there! 🎓\n\n$answer";
+            }
+          }
+          
+          // Add processing info for debug (optional, can remove later)
+          String debugInfo = cacheUsed ? '⚡ (Cached)' : '🔄 (Fresh)';
+          if (modelUsed == 'ai') {
+            debugInfo += ' 🤖 AI';
+          }
 
-      if (isFirstPrompt) {
-        if (widget.selectedLanguage == 'مصري') {
-          modifiedMessage =
-              "$conversationContext\nUser: $userMessage\nBot: أنت تتحدث مع طالب جامعي في مادة ${widget.selectedCourse}. أجب على سؤاله باللغة المصرية العامية، وابدأ بـ (يا امبيسا). استخدم التنسيق مثل القوائم والرموز عند الحاجة.";
+          // Remove typing indicator and add response
+          setState(() {
+            _messages.removeWhere((msg) => msg['isTyping'] == true);
+            _messages.add({
+              "sender": "bot",
+              "text": answer,
+              "sources": sources,
+              "debug": debugInfo,
+            });
+            isTyping = false;
+          });
         } else {
-          modifiedMessage =
-              "$conversationContext\nUser: $userMessage\nBot: You are talking with a college student about ${widget.selectedCourse}. Answer the question in casual English, starting with 'Hey there'. Be friendly and supportive. Use markdown formatting such as bullet points, numbered lists, code blocks when appropriate.";
+          throw Exception(data['message'] ?? 'Unknown error');
         }
-        isFirstPrompt = false;
       } else {
-        if (widget.selectedLanguage == 'مصري') {
-          modifiedMessage =
-              "$conversationContext\nUser: $userMessage\nBot: أجب بشكل طبيعي باللغة المصرية في سياق مادة ${widget.selectedCourse}. استخدم التنسيق مثل القوائم والرموز عند الحاجة.";
-        } else {
-          modifiedMessage =
-              "$conversationContext\nUser: $userMessage\nBot: Reply normally in English about ${widget.selectedCourse}. Use markdown formatting such as bullet points, numbered lists, code blocks when appropriate.";
-        }
+        throw Exception('Server error: ${response.statusCode}');
       }
 
-      // Add typing indicator message to list
-      setState(() {
-        _messages.add({'sender': 'bot', 'text': 'typing', 'isTyping': true});
-      });
-
-      // Scroll to bottom after adding typing indicator
-      WidgetsBinding.instance.addPostFrameCallback((_) {
-        _scrollController.animateTo(
-          _scrollController.position.maxScrollExtent,
-          duration: const Duration(milliseconds: 300),
-          curve: Curves.easeOut,
-        );
-      });
-
-      final content = [Content.text(modifiedMessage)];
-      final response = await model.generateContent(content);
-
-      // Remove typing indicator and add bot's response
-      setState(() {
-        _messages.removeWhere((msg) => msg['isTyping'] == true);
-        _messages.add({"sender": "bot", "text": response.text ?? "No response"});
-        isTyping = false;
-      });
-
-      // Scroll to bottom after adding bot's response
+      // Scroll to bottom after adding response
       WidgetsBinding.instance.addPostFrameCallback((_) {
         if (_scrollController.hasClients) {
           _scrollController.animateTo(
@@ -115,17 +142,34 @@ class _AboLaylaChatState extends State<AboLaylaChat> {
       });
     } catch (e) {
       print('Error occurred: $e');
-      // Remove typing indicator and show error message
+      
+      // Remove typing indicator and show error
       setState(() {
         _messages.removeWhere((msg) => msg['isTyping'] == true);
+        
+        String errorMessage;
+        if (widget.selectedLanguage == 'مصري') {
+          errorMessage = "عذراً يا صاحبي! 😅\nحصل مشكلة. حاول تاني بعد شوية.";
+        } else {
+          errorMessage = "Oops! 😅\nSomething went wrong. Please try again in a moment.";
+        }
+        
+        if (e.toString().contains('timeout')) {
+          if (widget.selectedLanguage == 'مصري') {
+            errorMessage = "استنى شوية يا صاحبي... 🔄\nأول مرة بنحمل المادة دي، ممكن ياخد 30 ثانية. حاول تاني دلوقتي!";
+          } else {
+            errorMessage = "Hold on! 🔄\nFirst time loading this course takes ~30 seconds. Try again now!";
+          }
+        }
+        
         _messages.add({
           "sender": "bot",
-          "text": "Oops! Something went wrong. Please try again later."
+          "text": errorMessage,
         });
         isTyping = false;
       });
 
-      // Scroll to bottom after adding error message
+      // Scroll to bottom
       WidgetsBinding.instance.addPostFrameCallback((_) {
         if (_scrollController.hasClients) {
           _scrollController.animateTo(
