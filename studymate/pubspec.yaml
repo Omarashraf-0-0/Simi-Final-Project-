@@ -37,10 +37,10 @@ dependencies:
   firebase_in_app_messaging: any
 
   # Packages that require specific versions
-  share_plus: any
+  share_plus: ^10.0.3
   # syncfusion_flutter_pdfviewer: any
   flutter_pdfview: any
-  fl_chart: any
+  fl_chart: ^0.69.0
   flutter_markdown: any
   shimmer: any
   percent_indicator: any
