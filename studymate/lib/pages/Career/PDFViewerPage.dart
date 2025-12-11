@@ -5,7 +5,7 @@ import 'package:share_plus/share_plus.dart' as share;
 class PDFViewerPage extends StatefulWidget {
   final String filePath;
 
-  const PDFViewerPage({Key? key, required this.filePath}) : super(key: key);
+  const PDFViewerPage({super.key, required this.filePath});
 
   @override
   _PDFViewerPageState createState() => _PDFViewerPageState();
@@ -48,9 +48,9 @@ class _PDFViewerPageState extends State<PDFViewerPage> {
             swipeHorizontal: true,
             autoSpacing: false,
             pageFling: false,
-            onRender: (_pages) {
+            onRender: (pages) {
               setState(() {
-                pages = _pages!;
+                pages = pages!;
                 isReady = true;
               });
             },
@@ -75,22 +75,22 @@ class _PDFViewerPageState extends State<PDFViewerPage> {
         children: <Widget>[
           FloatingActionButton(
             backgroundColor: const Color(0xFF165D96),
-            child: const Icon(Icons.chevron_left),
             onPressed: currentPage == 0
                 ? null
                 : () async {
                     await controller.setPage(currentPage - 1);
                   },
+            child: const Icon(Icons.chevron_left),
           ),
           const SizedBox(width: 10),
           FloatingActionButton(
             backgroundColor: const Color(0xFF165D96),
-            child: const Icon(Icons.chevron_right),
             onPressed: currentPage == pages - 1
                 ? null
                 : () async {
                     await controller.setPage(currentPage + 1);
                   },
+            child: const Icon(Icons.chevron_right),
           ),
         ],
       ),

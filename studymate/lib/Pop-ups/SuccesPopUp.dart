@@ -15,7 +15,7 @@ class DonePopUp extends StatefulWidget {
   final String? routeName;
   final Student? user;
 
-  DonePopUp({
+  const DonePopUp({
     super.key,
     this.title,
     this.description,
@@ -54,7 +54,7 @@ class CircularWidget extends StatelessWidget {
   final Color textColor;
   final String routeName;
   final Student? user;
-  CircularWidget({
+  const CircularWidget({
     super.key,
     required this.title,
     required this.description,

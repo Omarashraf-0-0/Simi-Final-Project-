@@ -15,14 +15,14 @@ class QuizScore extends StatefulWidget {
   final String xpMessage;
 
   const QuizScore({
-    Key? key,
+    super.key,
     required this.score,
     required this.total,
     required this.userAnswers,
     required this.questions,
     required this.xpChange,
     required this.xpMessage,
-  }) : super(key: key);
+  });
 
   @override
   State<QuizScore> createState() => _QuizScoreState();

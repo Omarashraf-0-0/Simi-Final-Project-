@@ -7,10 +7,10 @@ class ViewAnswer extends StatefulWidget {
   final List<int> userAnswers;
 
   const ViewAnswer({
-    Key? key,
+    super.key,
     required this.questions,
     required this.userAnswers,
-  }) : super(key: key);
+  });
 
   @override
   State<ViewAnswer> createState() => _ViewAnswerState();

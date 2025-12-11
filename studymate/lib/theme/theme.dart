@@ -30,8 +30,6 @@ class TAppTheme {
       onSecondary: white,
       secondaryContainer: blue2,
       onSecondaryContainer: white,
-      background: white,
-      onBackground: black,
       surface: white,
       onSurface: black,
       error: Colors.red,

@@ -31,6 +31,7 @@ class _InsightsPageState extends State<InsightsPage> {
     id = Hive.box('userBox').get('id');
     getInsights();
     getCourses();
+    getRecommendations();
   }
 
   Future<void> getCourses() async {
@@ -101,6 +102,7 @@ class _InsightsPageState extends State<InsightsPage> {
   List<MapEntry<String, int>> topCourses = [];
   int otherSum = 0;
   List<PieChartSectionData> pieSections = [];
+  List<dynamic> recommendations = [];
   List<Color> colorsList = [
     Colors.blue,
     Colors.red,
@@ -214,6 +216,42 @@ class _InsightsPageState extends State<InsightsPage> {
       setState(() {
         isLoading = false;
       });
+    }
+  }
+
+  // Function to fetch recommendations from the backend
+  Future<void> getRecommendations() async {
+    const String url = 'https://alyibrahim.pythonanywhere.com/get_recommendations';
+    if (id == null) {
+      print('User ID is null');
+      return;
+    }
+
+    Map<String, String> headers = {
+      'Content-Type': 'application/json',
+    };
+
+    String body = jsonEncode({
+      'ID': id.toString(),
+    });
+
+    try {
+      final response = await http.post(
+        Uri.parse(url),
+        headers: headers,
+        body: body,
+      );
+
+      if (response.statusCode == 200) {
+        List<dynamic> responseData = jsonDecode(response.body);
+        setState(() {
+          recommendations = responseData;
+        });
+      } else {
+        print('Error fetching recommendations: ${response.statusCode}');
+      }
+    } catch (e) {
+      print('An exception occurred while fetching recommendations: $e');
     }
   }
 
@@ -412,6 +450,69 @@ class _InsightsPageState extends State<InsightsPage> {
                             );
                           }).toList(),
                         ),
+                        SizedBox(height: 40),
+                        // Recent Recommendations Section
+                        Text(
+                          'Your Recent Recommendations',
+                          style: TextStyle(
+                              fontSize: 18, fontWeight: FontWeight.bold),
+                        ),
+                        SizedBox(height: 10),
+                        recommendations.isEmpty
+                            ? Padding(
+                                padding: EdgeInsets.symmetric(vertical: 20),
+                                child: Center(
+                                  child: Text(
+                                    'No recommendations available yet.',
+                                    style: TextStyle(color: Colors.grey),
+                                  ),
+                                ),
+                              )
+                            : Column(
+                                children: recommendations.map((rec) {
+                                  return Card(
+                                    margin: EdgeInsets.symmetric(vertical: 8),
+                                    elevation: 2,
+                                    child: Padding(
+                                      padding: EdgeInsets.all(12.0),
+                                      child: Column(
+                                        crossAxisAlignment:
+                                            CrossAxisAlignment.start,
+                                        children: [
+                                          Text(
+                                            rec['title'] ?? 'Recommendation',
+                                            style: TextStyle(
+                                              fontSize: 16,
+                                              fontWeight: FontWeight.bold,
+                                            ),
+                                          ),
+                                          SizedBox(height: 8),
+                                          Text(
+                                            rec['description'] ?? '',
+                                            style: TextStyle(
+                                              fontSize: 14,
+                                              color: Colors.grey[700],
+                                            ),
+                                            maxLines: 2,
+                                            overflow: TextOverflow.ellipsis,
+                                          ),
+                                          if (rec['type'] != null)
+                                            Padding(
+                                              padding:
+                                                  EdgeInsets.only(top: 8),
+                                              child: Chip(
+                                                label: Text(rec['type']),
+                                                backgroundColor:
+                                                    Colors.blue[100],
+                                              ),
+                                            ),
+                                        ],
+                                      ),
+                                    ),
+                                  );
+                                }).toList(),
+                              ),
+
                       ],
                     ),
                   ),

@@ -451,7 +451,7 @@ class _ProfilepageState extends State<Profilepage> {
                       item['value'] as String,
                       item['icon'] as IconData,
                     ))
-                .toList(),
+                ,
           ],
         ),
       ),
@@ -667,7 +667,7 @@ class _ProfilepageState extends State<Profilepage> {
                         ],
                       ),
                     );
-                  }).toList(),
+                  }),
                 ],
               ),
           ],

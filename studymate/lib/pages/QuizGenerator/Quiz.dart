@@ -17,13 +17,13 @@ class Quiz extends StatefulWidget {
   final String coId;
 
   const Quiz({
-    Key? key,
+    super.key,
     required this.totalQuestions,
     required this.mcqCount,
     required this.tfCount,
     required this.quizData,
     required this.coId,
-  }) : super(key: key);
+  });
 
   @override
   State<Quiz> createState() => _QuizState();

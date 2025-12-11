@@ -1,5 +1,5 @@
 // ignore_for_file: prefer_const_constructors
-import 'dart:convert'; // Added for jsonEncode
+// Added for jsonEncode
 import 'package:flutter/material.dart';
 import 'package:timezone/data/latest_all.dart' as tz;
 import 'package:flutter_downloader/flutter_downloader.dart';

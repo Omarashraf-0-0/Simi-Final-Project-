@@ -1,14 +1,27 @@
 {
 	"configurations": [
-		
-		
 		{
 			"name": "studymate (Flutter)",
 			"program": "lib/main.dart",
 			"cwd": "studymate",
 			"request": "launch",
-			"type": "dart",
-		  // "deviceId": "Medium_Phone_API_35"
+			"type": "dart"
+			// "deviceId": "Medium_Phone_API_35"
+		},
+		{ 
+			"name": "studymate (Flutter Pixel 9 Pro)",
+			"program": "lib/main.dart",
+			"cwd": "studymate",
+			"request": "launch",
+			"type": "dart"
+			// Optional: set a specific device id, e.g. "emulator-5554" or "Pixel_9_Pro"
+		},
+		{
+			"name": "studymate (Flutter V2237)",
+			"program": "lib/main.dart",
+			"cwd": "studymate",
+			"request": "launch",
+			"type": "dart"
 		}
 	]
 }

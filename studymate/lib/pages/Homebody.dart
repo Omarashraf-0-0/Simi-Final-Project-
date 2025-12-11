@@ -450,7 +450,7 @@ class _HomebodyState extends State<Homebody> {
                                           ),
                                         ],
                                       ),
-                                      Container(
+                                      SizedBox(
                                         width: double.infinity,
                                         child: ElevatedButton(
                                           onPressed: () {

@@ -16,7 +16,7 @@ class Textfield extends StatefulWidget {
   final bool isTimeField;
   final bool isFutureDate;
 
-  Textfield({
+  const Textfield({
     super.key,
     required this.controller,
     required this.hintText,
