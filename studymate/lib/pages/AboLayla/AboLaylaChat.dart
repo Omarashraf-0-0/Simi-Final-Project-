@@ -288,24 +288,26 @@ class _AboLaylaChatState extends State<AboLaylaChat>
                             crossAxisAlignment: CrossAxisAlignment.start,
                             mainAxisSize: MainAxisSize.min,
                             children: [
-                              const Text(
-                                'أبو ليلى',
-                                style: TextStyle(
+                              Text(
+                                widget.selectedLanguage == 'مصري'
+                                    ? 'أبو ليلى'
+                                    : 'Abo Layla',
+                                style: const TextStyle(
                                   color: Colors.white,
-                                  fontSize: 19,
+                                  fontSize: 18,
                                   fontWeight: FontWeight.bold,
                                 ),
                               ),
-                              Text(
-                                widget.selectedCourse.length > 25
-                                    ? '${widget.selectedCourse.substring(0, 25)}...'
-                                    : widget.selectedCourse,
-                                style: TextStyle(
-                                  color: Colors.white.withOpacity(0.9),
-                                  fontSize: 11.5,
+                              Flexible(
+                                child: Text(
+                                  widget.selectedCourse,
+                                  style: TextStyle(
+                                    color: Colors.white.withOpacity(0.9),
+                                    fontSize: 11,
+                                  ),
+                                  maxLines: 1,
+                                  overflow: TextOverflow.ellipsis,
                                 ),
-                                maxLines: 1,
-                                overflow: TextOverflow.ellipsis,
                               ),
                               Row(
                                 mainAxisSize: MainAxisSize.min,

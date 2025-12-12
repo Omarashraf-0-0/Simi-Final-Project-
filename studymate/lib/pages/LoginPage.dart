@@ -442,8 +442,8 @@ class _LoginPageState extends State<LoginPage> {
                                       fontWeight: FontWeight.w600,
                                     ),
                                     prefixIcon: Container(
-                                      margin: EdgeInsets.all(12),
-                                      padding: EdgeInsets.all(8),
+                                      margin: EdgeInsets.all(10),
+                                      padding: EdgeInsets.all(6),
                                       decoration: BoxDecoration(
                                         gradient: LinearGradient(
                                           colors: [
@@ -451,12 +451,12 @@ class _LoginPageState extends State<LoginPage> {
                                             Color(0xFF18bebc),
                                           ],
                                         ),
-                                        borderRadius: BorderRadius.circular(10),
+                                        borderRadius: BorderRadius.circular(8),
                                       ),
                                       child: Icon(
                                         Icons.person_outline,
                                         color: Colors.white,
-                                        size: 20,
+                                        size: 18,
                                       ),
                                     ),
                                     filled: true,
@@ -503,8 +503,8 @@ class _LoginPageState extends State<LoginPage> {
                                       fontWeight: FontWeight.w600,
                                     ),
                                     prefixIcon: Container(
-                                      margin: EdgeInsets.all(12),
-                                      padding: EdgeInsets.all(8),
+                                      margin: EdgeInsets.all(10),
+                                      padding: EdgeInsets.all(6),
                                       decoration: BoxDecoration(
                                         gradient: LinearGradient(
                                           colors: [
@@ -512,12 +512,12 @@ class _LoginPageState extends State<LoginPage> {
                                             Color(0xFF18bebc),
                                           ],
                                         ),
-                                        borderRadius: BorderRadius.circular(10),
+                                        borderRadius: BorderRadius.circular(8),
                                       ),
                                       child: Icon(
                                         Icons.lock_outline,
                                         color: Colors.white,
-                                        size: 20,
+                                        size: 18,
                                       ),
                                     ),
                                     suffixIcon: Semantics(

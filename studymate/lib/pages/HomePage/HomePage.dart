@@ -44,14 +44,6 @@ class _HomepageState extends State<Homepage> {
     });
   }
 
-  final List<Widget> pages = [
-    Homebody(),
-    Resources(),
-    AboLayla(),
-    GameLeaderBoard(),
-    CareerHome(),
-  ];
-
   Future<void> Logout() async {
     final confirm = await StylishPopup.question(
       context: context,
@@ -439,7 +431,7 @@ class _HomepageState extends State<Homepage> {
               mainAxisSize: MainAxisSize.min,
               children: [
                 Container(
-                  padding: EdgeInsets.all(8),
+                  padding: EdgeInsets.all(6),
                   decoration: BoxDecoration(
                     gradient: LinearGradient(
                       begin: Alignment.topLeft,
@@ -449,7 +441,7 @@ class _HomepageState extends State<Homepage> {
                         Colors.white.withOpacity(0.1),
                       ],
                     ),
-                    borderRadius: BorderRadius.circular(12),
+                    borderRadius: BorderRadius.circular(10),
                     border: Border.all(
                       color: Colors.white.withOpacity(0.3),
                       width: 1.5,
@@ -464,26 +456,31 @@ class _HomepageState extends State<Homepage> {
                   ),
                   child: Image.asset(
                     'assets/img/El_Batal_Study_Mate_Light_Mode-removebg-preview.png',
-                    height: 26,
-                    width: 26,
+                    height: 22,
+                    width: 22,
                     color: Colors.white,
                   ),
                 ),
-                SizedBox(width: 12),
-                Text(
-                  'Study Mate',
-                  style: TextStyle(
-                    color: Colors.white,
-                    fontSize: 22,
-                    fontWeight: FontWeight.w800,
-                    letterSpacing: 0.5,
-                    shadows: [
-                      Shadow(
-                        color: Colors.black.withOpacity(0.2),
-                        offset: Offset(0, 2),
-                        blurRadius: 4,
+                SizedBox(width: 8),
+                Flexible(
+                  child: FittedBox(
+                    fit: BoxFit.scaleDown,
+                    child: Text(
+                      'StudyMate',
+                      style: TextStyle(
+                        color: Colors.white,
+                        fontSize: 20,
+                        fontWeight: FontWeight.w800,
+                        letterSpacing: 0.3,
+                        shadows: [
+                          Shadow(
+                            color: Colors.black.withOpacity(0.2),
+                            offset: Offset(0, 2),
+                            blurRadius: 4,
+                          ),
+                        ],
                       ),
-                    ],
+                    ),
                   ),
                 ),
               ],
@@ -622,7 +619,7 @@ class _HomepageState extends State<Homepage> {
         ),
       ),
       drawer: _buildDrawer(context, primaryColor, secondaryColor, accentColor),
-      body: pages[idx],
+      body: Homebody(),
       extendBody: true,
       bottomNavigationBar:
           _buildBottomNavigationBar(primaryColor, secondaryColor, accentColor),
@@ -1051,12 +1048,32 @@ class _HomepageState extends State<Homepage> {
           ],
           selectedIndex: idx,
           onTabChange: (index) {
-            setState(() {
-              idx = index;
-            });
+            // Home stays in the main scaffold, others navigate to new pages
             if (index == 0) {
+              // Home - just refresh
+              setState(() {
+                idx = 0;
+              });
               fetchNotifications();
               _fetchTodaysSchedule();
+            } else if (index == 1) {
+              // Courses/Resources - navigate
+              Navigator.push(
+                context,
+                MaterialPageRoute(builder: (context) => Resources()),
+              );
+            } else if (index == 2) {
+              // Abo Layla - navigate
+              Navigator.push(
+                context,
+                MaterialPageRoute(builder: (context) => AboLayla()),
+              );
+            } else if (index == 3) {
+              // Leaderboard - navigate
+              Navigator.push(
+                context,
+                MaterialPageRoute(builder: (context) => GameLeaderBoard()),
+              );
             }
           },
         ),

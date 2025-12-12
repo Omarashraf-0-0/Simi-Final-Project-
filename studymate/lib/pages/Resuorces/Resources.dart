@@ -677,16 +677,18 @@ class _ResourcesState extends State<Resources>
                 ),
                 const Spacer(),
                 // Course name
-                Text(
-                  courses[index],
-                  style: const TextStyle(
-                    fontSize: 16,
-                    fontWeight: FontWeight.bold,
-                    color: Colors.white,
-                    height: 1.3,
+                Flexible(
+                  child: Text(
+                    courses[index],
+                    style: const TextStyle(
+                      fontSize: 14,
+                      fontWeight: FontWeight.bold,
+                      color: Colors.white,
+                      height: 1.2,
+                    ),
+                    maxLines: 2,
+                    overflow: TextOverflow.ellipsis,
                   ),
-                  maxLines: 3,
-                  overflow: TextOverflow.ellipsis,
                 ),
                 const SizedBox(height: 12),
                 // Start button
