@@ -1,10 +1,9 @@
 import 'package:flutter/material.dart';
 import 'package:http/http.dart' as http;
-import 'dart:convert'; // For JSON decoding
+import 'dart:convert';
 import 'package:google_fonts/google_fonts.dart';
-import 'package:url_launcher/url_launcher.dart'; // To open URLs
+import 'package:url_launcher/url_launcher.dart';
 
-// Define a Job class
 class Job {
   final String title;
   final String company;
@@ -33,20 +32,17 @@ class CareerJob extends StatefulWidget {
 }
 
 class _CareerJobState extends State<CareerJob> {
-  // User selections
-  String jobType = 'All'; // Internship, Entry Level, All
-  String workMode = 'All'; // Remote, Onsite, Hybrid, All
-  String countryCode = 'us'; // Default country code
-  String countryName = 'United States'; // Default country name
-  String profession = ''; // Profession or job title (e.g., 'Engineer', 'Doctor')
+  String jobType = 'All';
+  String workMode = 'All';
+  String countryCode = 'us';
+  String countryName = 'United States';
+  String profession = '';
   List<Job> jobs = [];
   bool isLoading = false;
 
-  // Adzuna API credentials
   final String appId = '33a454df';
   final String appKey = '1805cb4c51d733cbe670bcab85c8818f';
 
-  // List of supported countries
   Map<String, String> countries = {
     'Australia': 'au',
     'Austria': 'at',
@@ -69,10 +65,7 @@ class _CareerJobState extends State<CareerJob> {
     'United States': 'us',
   };
 
-  // List of work modes
   List<String> workModes = ['All', 'Remote', 'Onsite', 'Hybrid'];
-
-  // List of job types
   List<String> jobTypes = ['All', 'Internship', 'Entry Level'];
 
   @override
@@ -80,13 +73,11 @@ class _CareerJobState extends State<CareerJob> {
     super.initState();
   }
 
-  // Function to fetch jobs from Adzuna API
   Future<void> fetchJobs() async {
     setState(() {
       isLoading = true;
     });
 
-    // Build the search query by combining profession and job type
     String whatQuery = profession;
     if (jobType != 'All') {
       whatQuery = '$profession $jobType';
@@ -95,35 +86,52 @@ class _CareerJobState extends State<CareerJob> {
       whatQuery = '$whatQuery $workMode';
     }
 
-    // Build the API URL
     String apiUrl = 'https://api.adzuna.com/v1/api/jobs/$countryCode/search/1'
         '?app_id=$appId'
         '&app_key=$appKey'
         '&what=${Uri.encodeComponent(whatQuery)}';
 
-    print('API URL: $apiUrl'); // For debugging
+    print('API URL: $apiUrl');
 
     try {
       final response = await http.get(
         Uri.parse(apiUrl),
         headers: {
-          'User-Agent': 'YourAppName/1.0', // Replace with your app's name and version
+          'User-Agent': 'YourAppName/1.0',
         },
       );
-      print('Response Status Code: ${response.statusCode}'); // For debugging
+      print('Response Status Code: ${response.statusCode}');
       if (response.statusCode == 200) {
         final data = json.decode(response.body);
-        print('Response Data: $data'); // For debugging
+        print('Response Data: $data');
         List<Job> fetchedJobs = [];
         for (var item in data['results']) {
+          // Handle null values safely
+          String company = '';
+          if (item['company'] != null &&
+              item['company']['display_name'] != null) {
+            company = item['company']['display_name'];
+          }
+
+          String location = '';
+          if (item['location'] != null &&
+              item['location']['display_name'] != null) {
+            location = item['location']['display_name'];
+          }
+
+          String category = '';
+          if (item['category'] != null && item['category']['label'] != null) {
+            category = item['category']['label'];
+          }
+
           fetchedJobs.add(Job(
-            title: item['title'] ?? '',
-            company: item['company']['display_name'] ?? '',
-            location: item['location']['display_name'] ?? '',
-            description: item['description'] ?? '',
+            title: item['title'] ?? 'No Title',
+            company: company.isEmpty ? 'Unknown Company' : company,
+            location: location.isEmpty ? 'Location Not Specified' : location,
+            description: item['description'] ?? 'No description available',
             redirectUrl: item['redirect_url'] ?? '',
             contractType: item['contract_type'] ?? '',
-            category: item['category']['label'] ?? '',
+            category: category,
           ));
         }
         setState(() {
@@ -136,253 +144,833 @@ class _CareerJobState extends State<CareerJob> {
         setState(() {
           isLoading = false;
         });
+        // Show error message to user
+        if (mounted) {
+          ScaffoldMessenger.of(context).showSnackBar(
+            SnackBar(
+              content: Text('Failed to load jobs. Please try again.'),
+              backgroundColor: Colors.red,
+            ),
+          );
+        }
       }
     } catch (e) {
       print('Error: $e');
       setState(() {
         isLoading = false;
       });
+      // Show error message to user
+      if (mounted) {
+        ScaffoldMessenger.of(context).showSnackBar(
+          SnackBar(
+            content: Text('An error occurred: ${e.toString()}'),
+            backgroundColor: Colors.red,
+          ),
+        );
+      }
     }
   }
 
-  // Widget to build job list
   Widget buildJobList() {
     if (jobs.isEmpty) {
-      return Center(child: Text('No jobs found.'));
-    } else {
-      return ListView.builder(
-        itemCount: jobs.length,
-        itemBuilder: (context, index) {
-          Job job = jobs[index];
-          return Card(
-            margin: EdgeInsets.symmetric(vertical: 8),
-            child: ListTile(
-              title: Text(job.title),
-              subtitle: Text('${job.company} - ${job.location}'),
-              onTap: () {
-                // Open job details or redirect URL
-                _showJobDetails(job);
-              },
-            ),
-          );
-        },
+      return Center(
+        child: Padding(
+          padding: const EdgeInsets.all(40.0),
+          child: Column(
+            mainAxisAlignment: MainAxisAlignment.center,
+            children: [
+              Icon(
+                Icons.work_off_outlined,
+                size: 60,
+                color: Color(0xFF165d96).withOpacity(0.3),
+              ),
+              SizedBox(height: 15),
+              Text(
+                'No jobs found',
+                style: GoogleFonts.leagueSpartan(
+                  fontSize: 18,
+                  fontWeight: FontWeight.w600,
+                  color: Color(0xFF165d96),
+                ),
+              ),
+              SizedBox(height: 8),
+              Text(
+                'Try adjusting your search',
+                style: GoogleFonts.leagueSpartan(
+                  fontSize: 14,
+                  color: Colors.grey[600],
+                ),
+              ),
+            ],
+          ),
+        ),
       );
     }
+
+    return ListView.builder(
+      shrinkWrap: true,
+      physics: NeverScrollableScrollPhysics(),
+      itemCount: jobs.length,
+      itemBuilder: (context, index) {
+        Job job = jobs[index];
+        return Container(
+          margin: EdgeInsets.only(bottom: 15),
+          decoration: BoxDecoration(
+            color: Colors.white,
+            borderRadius: BorderRadius.circular(15),
+            boxShadow: [
+              BoxShadow(
+                color: Colors.black.withOpacity(0.08),
+                blurRadius: 10,
+                offset: Offset(0, 2),
+              ),
+            ],
+          ),
+          child: Material(
+            color: Colors.transparent,
+            child: InkWell(
+              borderRadius: BorderRadius.circular(15),
+              onTap: () => _showJobDetails(job),
+              child: Padding(
+                padding: EdgeInsets.all(16),
+                child: Column(
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  children: [
+                    Row(
+                      children: [
+                        Container(
+                          padding: EdgeInsets.all(12),
+                          decoration: BoxDecoration(
+                            color: Color(0xFF1c74bb).withOpacity(0.1),
+                            borderRadius: BorderRadius.circular(12),
+                          ),
+                          child: Icon(
+                            Icons.work_outline,
+                            color: Color(0xFF1c74bb),
+                            size: 24,
+                          ),
+                        ),
+                        SizedBox(width: 12),
+                        Expanded(
+                          child: Column(
+                            crossAxisAlignment: CrossAxisAlignment.start,
+                            children: [
+                              Text(
+                                job.title,
+                                style: GoogleFonts.leagueSpartan(
+                                  fontSize: 16,
+                                  fontWeight: FontWeight.bold,
+                                  color: Color(0xFF165d96),
+                                ),
+                                maxLines: 2,
+                                overflow: TextOverflow.ellipsis,
+                              ),
+                              SizedBox(height: 4),
+                              Text(
+                                job.company,
+                                style: GoogleFonts.leagueSpartan(
+                                  fontSize: 14,
+                                  color: Colors.grey[600],
+                                  fontWeight: FontWeight.w500,
+                                ),
+                              ),
+                            ],
+                          ),
+                        ),
+                      ],
+                    ),
+                    SizedBox(height: 12),
+                    Row(
+                      children: [
+                        Icon(
+                          Icons.location_on_outlined,
+                          size: 16,
+                          color: Colors.grey[600],
+                        ),
+                        SizedBox(width: 4),
+                        Expanded(
+                          child: Text(
+                            job.location,
+                            style: GoogleFonts.leagueSpartan(
+                              fontSize: 13,
+                              color: Colors.grey[600],
+                            ),
+                            maxLines: 1,
+                            overflow: TextOverflow.ellipsis,
+                          ),
+                        ),
+                        if (job.contractType.isNotEmpty)
+                          Container(
+                            padding: EdgeInsets.symmetric(
+                                horizontal: 10, vertical: 4),
+                            decoration: BoxDecoration(
+                              color: Color(0xFF18bebc).withOpacity(0.1),
+                              borderRadius: BorderRadius.circular(8),
+                            ),
+                            child: Text(
+                              job.contractType,
+                              style: GoogleFonts.leagueSpartan(
+                                fontSize: 12,
+                                color: Color(0xFF18bebc),
+                                fontWeight: FontWeight.w600,
+                              ),
+                            ),
+                          ),
+                      ],
+                    ),
+                  ],
+                ),
+              ),
+            ),
+          ),
+        );
+      },
+    );
   }
 
   void _showJobDetails(Job job) {
     showDialog(
       context: context,
       builder: (context) {
-        return AlertDialog(
-          title: Text(
-            job.title,
-            style: TextStyle(
-              fontSize: 20,
-              fontWeight: FontWeight.bold,
-              fontFamily: GoogleFonts.leagueSpartan().fontFamily,
-            ),
+        return Dialog(
+          shape: RoundedRectangleBorder(
+            borderRadius: BorderRadius.circular(25),
           ),
-          content: SingleChildScrollView(
-            // Wrap content in SingleChildScrollView
+          child: Container(
+            decoration: BoxDecoration(
+              borderRadius: BorderRadius.circular(25),
+              gradient: LinearGradient(
+                begin: Alignment.topLeft,
+                end: Alignment.bottomRight,
+                colors: [
+                  Colors.white,
+                  Color(0xFF1c74bb).withOpacity(0.05),
+                ],
+              ),
+            ),
             child: Column(
-              crossAxisAlignment: CrossAxisAlignment.start,
+              mainAxisSize: MainAxisSize.min,
               children: [
-                Text(
-                  'Company: ${job.company}',
-                  style: TextStyle(
-                    fontSize: 16,
-                    fontFamily: GoogleFonts.leagueSpartan().fontFamily,
+                Container(
+                  padding: EdgeInsets.all(20),
+                  decoration: BoxDecoration(
+                    gradient: LinearGradient(
+                      colors: [
+                        Color(0xFF1c74bb),
+                        Color(0xFF165d96),
+                      ],
+                    ),
+                    borderRadius: BorderRadius.only(
+                      topLeft: Radius.circular(25),
+                      topRight: Radius.circular(25),
+                    ),
+                  ),
+                  child: Row(
+                    children: [
+                      Container(
+                        padding: EdgeInsets.all(12),
+                        decoration: BoxDecoration(
+                          color: Colors.white.withOpacity(0.2),
+                          borderRadius: BorderRadius.circular(12),
+                        ),
+                        child: Icon(
+                          Icons.work,
+                          color: Colors.white,
+                          size: 28,
+                        ),
+                      ),
+                      SizedBox(width: 15),
+                      Expanded(
+                        child: Text(
+                          job.title,
+                          style: TextStyle(
+                            fontSize: 20,
+                            fontWeight: FontWeight.bold,
+                            color: Colors.white,
+                            fontFamily: GoogleFonts.leagueSpartan().fontFamily,
+                          ),
+                          maxLines: 2,
+                          overflow: TextOverflow.ellipsis,
+                        ),
+                      ),
+                    ],
                   ),
                 ),
-                SizedBox(height: 5),
-                Text(
-                  'Location: ${job.location}',
-                  style: TextStyle(
-                    fontSize: 16,
-                    fontFamily: GoogleFonts.leagueSpartan().fontFamily,
+                Flexible(
+                  child: SingleChildScrollView(
+                    padding: EdgeInsets.all(20),
+                    child: Column(
+                      crossAxisAlignment: CrossAxisAlignment.start,
+                      children: [
+                        _buildDetailRow(Icons.business, 'Company', job.company),
+                        SizedBox(height: 15),
+                        _buildDetailRow(
+                            Icons.location_on, 'Location', job.location),
+                        if (job.contractType.isNotEmpty) ...[
+                          SizedBox(height: 15),
+                          _buildDetailRow(Icons.work_outline, 'Contract Type',
+                              job.contractType),
+                        ],
+                        if (job.category.isNotEmpty) ...[
+                          SizedBox(height: 15),
+                          _buildDetailRow(
+                              Icons.category, 'Category', job.category),
+                        ],
+                        SizedBox(height: 20),
+                        Text(
+                          'Description',
+                          style: TextStyle(
+                            fontSize: 16,
+                            fontWeight: FontWeight.bold,
+                            color: Color(0xFF1c74bb),
+                            fontFamily: GoogleFonts.leagueSpartan().fontFamily,
+                          ),
+                        ),
+                        SizedBox(height: 10),
+                        Text(
+                          job.description,
+                          style: TextStyle(
+                            fontSize: 14,
+                            color: Colors.grey[700],
+                            height: 1.5,
+                            fontFamily: GoogleFonts.leagueSpartan().fontFamily,
+                          ),
+                        ),
+                      ],
+                    ),
                   ),
                 ),
-                SizedBox(height: 10),
-                Text(
-                  job.description,
-                  style: TextStyle(
-                    fontSize: 14,
-                    fontFamily: GoogleFonts.leagueSpartan().fontFamily,
+                Padding(
+                  padding: EdgeInsets.all(20),
+                  child: Row(
+                    children: [
+                      Expanded(
+                        child: OutlinedButton(
+                          onPressed: () => Navigator.pop(context),
+                          style: OutlinedButton.styleFrom(
+                            padding: EdgeInsets.symmetric(vertical: 15),
+                            side:
+                                BorderSide(color: Color(0xFF1c74bb), width: 2),
+                            shape: RoundedRectangleBorder(
+                              borderRadius: BorderRadius.circular(12),
+                            ),
+                          ),
+                          child: Text(
+                            'Close',
+                            style: TextStyle(
+                              fontSize: 16,
+                              color: Color(0xFF1c74bb),
+                              fontWeight: FontWeight.bold,
+                              fontFamily:
+                                  GoogleFonts.leagueSpartan().fontFamily,
+                            ),
+                          ),
+                        ),
+                      ),
+                      SizedBox(width: 12),
+                      Expanded(
+                        flex: 2,
+                        child: Container(
+                          decoration: BoxDecoration(
+                            gradient: LinearGradient(
+                              colors: [
+                                Color(0xFF1c74bb),
+                                Color(0xFF165d96),
+                              ],
+                            ),
+                            borderRadius: BorderRadius.circular(12),
+                            boxShadow: [
+                              BoxShadow(
+                                color: Color(0xFF1c74bb).withOpacity(0.4),
+                                blurRadius: 10,
+                                offset: Offset(0, 5),
+                              ),
+                            ],
+                          ),
+                          child: Material(
+                            color: Colors.transparent,
+                            child: InkWell(
+                              borderRadius: BorderRadius.circular(12),
+                              onTap: () async {
+                                if (job.redirectUrl.isEmpty) {
+                                  ScaffoldMessenger.of(context).showSnackBar(
+                                    SnackBar(
+                                      content:
+                                          Text('No application link available'),
+                                      backgroundColor: Colors.orange,
+                                    ),
+                                  );
+                                  return;
+                                }
+                                Navigator.pop(context);
+                                Uri url = Uri.parse(job.redirectUrl);
+                                if (await canLaunchUrl(url)) {
+                                  await launchUrl(url,
+                                      mode: LaunchMode.externalApplication);
+                                } else {
+                                  print('Could not launch ${job.redirectUrl}');
+                                  if (context.mounted) {
+                                    ScaffoldMessenger.of(context).showSnackBar(
+                                      SnackBar(
+                                        content:
+                                            Text('Could not open job link'),
+                                        backgroundColor: Colors.red,
+                                      ),
+                                    );
+                                  }
+                                }
+                              },
+                              child: Padding(
+                                padding: EdgeInsets.symmetric(vertical: 15),
+                                child: Row(
+                                  mainAxisAlignment: MainAxisAlignment.center,
+                                  children: [
+                                    Icon(Icons.open_in_new,
+                                        color: Colors.white, size: 20),
+                                    SizedBox(width: 8),
+                                    Text(
+                                      'Apply Now',
+                                      style: TextStyle(
+                                        fontSize: 16,
+                                        color: Colors.white,
+                                        fontWeight: FontWeight.bold,
+                                        fontFamily: GoogleFonts.leagueSpartan()
+                                            .fontFamily,
+                                      ),
+                                    ),
+                                  ],
+                                ),
+                              ),
+                            ),
+                          ),
+                        ),
+                      ),
+                    ],
                   ),
                 ),
               ],
             ),
           ),
-          actions: [
-            TextButton(
-              onPressed: () {
-                Navigator.pop(context);
-              },
-              child: Text('Close'),
-            ),
-            SizedBox(width: 8),
-            ElevatedButton(
-              onPressed: () async {
-                // Redirect to job application URL
-                Navigator.pop(context);
-                Uri url = Uri.parse(job.redirectUrl);
-                if (await canLaunchUrl(url)) {
-                  await launchUrl(url);
-                } else {
-                  print('Could not launch ${job.redirectUrl}');
-                }
-              },
-              style: ElevatedButton.styleFrom(
-                backgroundColor: const Color(0xFF165D96),
-                padding: const EdgeInsets.symmetric(horizontal: 20, vertical: 10),
-              ),
-              child: Text(
-                'Apply',
-                style: TextStyle(
-                  fontSize: 16,
-                  color: Colors.white,
-                  fontFamily: GoogleFonts.leagueSpartan().fontFamily,
-                ),
-              ),
-            ),
-          ],
         );
       },
     );
   }
 
-  // Build the UI
-  @override
-  Widget build(BuildContext context) {
-    return Scaffold(
-      appBar: AppBar(
-        title: Text(
-          'Find a Job',
-          style: TextStyle(
-            fontFamily: 'League Spartan',
-            fontSize: 24,
-            fontWeight: FontWeight.bold,
-            color: Colors.white,
+  Widget _buildDetailRow(IconData icon, String label, String value) {
+    return Row(
+      crossAxisAlignment: CrossAxisAlignment.start,
+      children: [
+        Container(
+          padding: EdgeInsets.all(8),
+          decoration: BoxDecoration(
+            color: Color(0xFF1c74bb).withOpacity(0.1),
+            borderRadius: BorderRadius.circular(8),
+          ),
+          child: Icon(
+            icon,
+            size: 20,
+            color: Color(0xFF1c74bb),
           ),
         ),
-        backgroundColor: const Color(0xFF165D96),
-        centerTitle: true,
-      ),
-      body: Padding(
-        padding: const EdgeInsets.all(16),
-        child: Column(
-          children: [
-            // Profession Input Field
-            TextField(
-              decoration: InputDecoration(
-                labelText: 'Profession (e.g., Engineer, Doctor)',
-                prefixIcon: Icon(Icons.work),
-                border: OutlineInputBorder(),
-                contentPadding: EdgeInsets.all(8),
-              ),
-              onChanged: (value) {
-                profession = value;
-              },
-            ),
-            SizedBox(height: 20),
-            // Job Type Selection
-            DropdownButtonFormField<String>(
-              value: jobType,
-              decoration: InputDecoration(
-                labelText: 'Job Type',
-                prefixIcon: Icon(Icons.work_outline),
-                border: OutlineInputBorder(),
-                contentPadding: EdgeInsets.all(8),
-              ),
-              items: jobTypes.map((type) {
-                return DropdownMenuItem<String>(
-                  value: type,
-                  child: Text(type),
-                );
-              }).toList(),
-              onChanged: (value) {
-                setState(() {
-                  jobType = value!;
-                });
-              },
-            ),
-            SizedBox(height: 20),
-            // Work Mode Selection
-            DropdownButtonFormField<String>(
-              value: workMode,
-              decoration: InputDecoration(
-                labelText: 'Work Mode',
-                prefixIcon: Icon(Icons.location_city),
-                border: OutlineInputBorder(),
-                contentPadding: EdgeInsets.all(8),
-              ),
-              items: workModes.map((mode) {
-                return DropdownMenuItem<String>(
-                  value: mode,
-                  child: Text(mode),
-                );
-              }).toList(),
-              onChanged: (value) {
-                setState(() {
-                  workMode = value!;
-                });
-              },
-            ),
-            SizedBox(height: 20),
-            // Country Selection using DropdownButtonFormField with menuMaxHeight
-            DropdownButtonFormField<String>(
-              value: countryName,
-              menuMaxHeight: MediaQuery.of(context).size.height * 0.25,
-              decoration: InputDecoration(
-                labelText: 'Country',
-                prefixIcon: Icon(Icons.public),
-                border: OutlineInputBorder(),
-                contentPadding: EdgeInsets.all(8),
-              ),
-              items: countries.keys.map((country) {
-                return DropdownMenuItem<String>(
-                  value: country,
-                  child: Text(country),
-                );
-              }).toList(),
-              onChanged: (value) {
-                setState(() {
-                  countryName = value!;
-                  countryCode = countries[countryName]!;
-                });
-              },
-            ),
-            SizedBox(height: 20),
-            // Search Button
-            ElevatedButton(
-              onPressed: fetchJobs,
-              style: ElevatedButton.styleFrom(
-                backgroundColor: const Color(0xFF165D96),
-                padding: const EdgeInsets.symmetric(horizontal: 70, vertical: 15),
-                shape: RoundedRectangleBorder(
-                  borderRadius: BorderRadius.circular(10),
-                ),
-              ),
-              child: const Text(
-                'Search Jobs',
+        SizedBox(width: 12),
+        Expanded(
+          child: Column(
+            crossAxisAlignment: CrossAxisAlignment.start,
+            children: [
+              Text(
+                label,
                 style: TextStyle(
-                  fontSize: 24,
-                  fontWeight: FontWeight.bold,
+                  fontSize: 12,
+                  color: Colors.grey[600],
+                  fontFamily: GoogleFonts.leagueSpartan().fontFamily,
+                ),
+              ),
+              SizedBox(height: 2),
+              Text(
+                value,
+                style: TextStyle(
+                  fontSize: 15,
+                  fontWeight: FontWeight.w600,
+                  color: Colors.grey[800],
+                  fontFamily: GoogleFonts.leagueSpartan().fontFamily,
+                ),
+              ),
+            ],
+          ),
+        ),
+      ],
+    );
+  }
+
+  @override
+  Widget build(BuildContext context) {
+    const Color primaryColor = Color(0xFF1c74bb);
+    const Color secondaryColor = Color(0xFF165d96);
+    const Color accentColor = Color(0xFF18bebc);
+    const Color backgroundColor = Color(0xFFF5F7FA);
+
+    return Scaffold(
+      backgroundColor: backgroundColor,
+      body: CustomScrollView(
+        slivers: [
+          // Modern Gradient AppBar
+          SliverAppBar(
+            expandedHeight: 160,
+            floating: false,
+            pinned: true,
+            elevation: 0,
+            backgroundColor: primaryColor,
+            leading: IconButton(
+              icon: Container(
+                padding: const EdgeInsets.all(8),
+                decoration: BoxDecoration(
+                  color: Colors.white.withOpacity(0.2),
+                  borderRadius: BorderRadius.circular(12),
+                ),
+                child: const Icon(
+                  Icons.arrow_back_ios_new_rounded,
                   color: Colors.white,
-                  fontFamily: 'League Spartan',
+                  size: 20,
+                ),
+              ),
+              onPressed: () => Navigator.pop(context),
+            ),
+            flexibleSpace: FlexibleSpaceBar(
+              background: Container(
+                decoration: const BoxDecoration(
+                  gradient: LinearGradient(
+                    begin: Alignment.topLeft,
+                    end: Alignment.bottomRight,
+                    colors: [primaryColor, secondaryColor, accentColor],
+                  ),
+                ),
+                child: SafeArea(
+                  child: Padding(
+                    padding: const EdgeInsets.fromLTRB(20, 60, 20, 20),
+                    child: Row(
+                      children: [
+                        Container(
+                          padding: const EdgeInsets.all(16),
+                          decoration: BoxDecoration(
+                            color: Colors.white.withOpacity(0.2),
+                            borderRadius: BorderRadius.circular(20),
+                            border: Border.all(
+                              color: Colors.white.withOpacity(0.3),
+                              width: 2,
+                            ),
+                          ),
+                          child: const Icon(
+                            Icons.work_outline_rounded,
+                            color: Colors.white,
+                            size: 32,
+                          ),
+                        ),
+                        const SizedBox(width: 16),
+                        Expanded(
+                          child: Column(
+                            crossAxisAlignment: CrossAxisAlignment.start,
+                            mainAxisSize: MainAxisSize.min,
+                            children: [
+                              Text(
+                                'Find a Job',
+                                style: GoogleFonts.leagueSpartan(
+                                  color: Colors.white,
+                                  fontSize: 24,
+                                  fontWeight: FontWeight.bold,
+                                ),
+                              ),
+                              const SizedBox(height: 4),
+                              Text(
+                                'Discover your career path',
+                                style: GoogleFonts.leagueSpartan(
+                                  color: Colors.white70,
+                                  fontSize: 14,
+                                ),
+                              ),
+                            ],
+                          ),
+                        ),
+                      ],
+                    ),
+                  ),
                 ),
               ),
             ),
-            SizedBox(height: 20),
-            // Display Jobs
-            Expanded(
-              child: isLoading
-                  ? Center(child: CircularProgressIndicator())
-                  : buildJobList(),
+          ),
+
+          // Content
+          SliverToBoxAdapter(
+            child: Padding(
+              padding: EdgeInsets.all(20),
+              child: Column(
+                children: [
+                  // Profession Field
+                  TextField(
+                    decoration: InputDecoration(
+                      labelText: 'Profession',
+                      hintText: 'e.g., Engineer, Doctor',
+                      hintStyle: GoogleFonts.leagueSpartan(
+                        color: Colors.grey[400],
+                        fontSize: 14,
+                      ),
+                      labelStyle: GoogleFonts.leagueSpartan(
+                        color: Color(0xFF1c74bb),
+                        fontWeight: FontWeight.w600,
+                        fontSize: 14,
+                      ),
+                      floatingLabelStyle: GoogleFonts.leagueSpartan(
+                        color: Color(0xFF1c74bb),
+                        fontWeight: FontWeight.w600,
+                        fontSize: 16,
+                      ),
+                      prefixIcon:
+                          Icon(Icons.work_outline, color: Color(0xFF1c74bb)),
+                      border: OutlineInputBorder(
+                        borderRadius: BorderRadius.circular(15),
+                        borderSide: BorderSide(color: Colors.grey[300]!),
+                      ),
+                      enabledBorder: OutlineInputBorder(
+                        borderRadius: BorderRadius.circular(15),
+                        borderSide: BorderSide(color: Colors.grey[300]!),
+                      ),
+                      focusedBorder: OutlineInputBorder(
+                        borderRadius: BorderRadius.circular(15),
+                        borderSide:
+                            BorderSide(color: Color(0xFF1c74bb), width: 2),
+                      ),
+                      filled: true,
+                      fillColor: Colors.white,
+                      contentPadding:
+                          EdgeInsets.symmetric(horizontal: 16, vertical: 16),
+                    ),
+                    style: GoogleFonts.leagueSpartan(
+                      fontSize: 15,
+                      color: Colors.black87,
+                    ),
+                    onChanged: (value) {
+                      profession = value;
+                    },
+                  ),
+                  SizedBox(height: 16),
+                  // Job Type Field
+                  DropdownButtonFormField<String>(
+                    value: jobType,
+                    decoration: InputDecoration(
+                      labelText: 'Job Type',
+                      labelStyle: GoogleFonts.leagueSpartan(
+                        color: Color(0xFF1c74bb),
+                        fontWeight: FontWeight.w600,
+                        fontSize: 14,
+                      ),
+                      floatingLabelStyle: GoogleFonts.leagueSpartan(
+                        color: Color(0xFF1c74bb),
+                        fontWeight: FontWeight.w600,
+                        fontSize: 16,
+                      ),
+                      prefixIcon: Icon(Icons.business_center_outlined,
+                          color: Color(0xFF1c74bb)),
+                      border: OutlineInputBorder(
+                        borderRadius: BorderRadius.circular(15),
+                        borderSide: BorderSide(color: Colors.grey[300]!),
+                      ),
+                      enabledBorder: OutlineInputBorder(
+                        borderRadius: BorderRadius.circular(15),
+                        borderSide: BorderSide(color: Colors.grey[300]!),
+                      ),
+                      focusedBorder: OutlineInputBorder(
+                        borderRadius: BorderRadius.circular(15),
+                        borderSide:
+                            BorderSide(color: Color(0xFF1c74bb), width: 2),
+                      ),
+                      filled: true,
+                      fillColor: Colors.white,
+                      contentPadding:
+                          EdgeInsets.symmetric(horizontal: 16, vertical: 16),
+                    ),
+                    style: GoogleFonts.leagueSpartan(
+                      fontSize: 15,
+                      color: Colors.black87,
+                    ),
+                    items: jobTypes.map((type) {
+                      return DropdownMenuItem<String>(
+                        value: type,
+                        child: Text(type),
+                      );
+                    }).toList(),
+                    onChanged: (value) {
+                      setState(() {
+                        jobType = value!;
+                      });
+                    },
+                  ),
+                  SizedBox(height: 16),
+                  // Work Mode Field
+                  DropdownButtonFormField<String>(
+                    value: workMode,
+                    decoration: InputDecoration(
+                      labelText: 'Work Mode',
+                      labelStyle: GoogleFonts.leagueSpartan(
+                        color: Color(0xFF1c74bb),
+                        fontWeight: FontWeight.w600,
+                        fontSize: 14,
+                      ),
+                      floatingLabelStyle: GoogleFonts.leagueSpartan(
+                        color: Color(0xFF1c74bb),
+                        fontWeight: FontWeight.w600,
+                        fontSize: 16,
+                      ),
+                      prefixIcon: Icon(Icons.laptop_mac_outlined,
+                          color: Color(0xFF1c74bb)),
+                      border: OutlineInputBorder(
+                        borderRadius: BorderRadius.circular(15),
+                        borderSide: BorderSide(color: Colors.grey[300]!),
+                      ),
+                      enabledBorder: OutlineInputBorder(
+                        borderRadius: BorderRadius.circular(15),
+                        borderSide: BorderSide(color: Colors.grey[300]!),
+                      ),
+                      focusedBorder: OutlineInputBorder(
+                        borderRadius: BorderRadius.circular(15),
+                        borderSide:
+                            BorderSide(color: Color(0xFF1c74bb), width: 2),
+                      ),
+                      filled: true,
+                      fillColor: Colors.white,
+                      contentPadding:
+                          EdgeInsets.symmetric(horizontal: 16, vertical: 16),
+                    ),
+                    style: GoogleFonts.leagueSpartan(
+                      fontSize: 15,
+                      color: Colors.black87,
+                    ),
+                    items: workModes.map((mode) {
+                      return DropdownMenuItem<String>(
+                        value: mode,
+                        child: Text(mode),
+                      );
+                    }).toList(),
+                    onChanged: (value) {
+                      setState(() {
+                        workMode = value!;
+                      });
+                    },
+                  ),
+                  SizedBox(height: 16),
+                  // Country Field
+                  DropdownButtonFormField<String>(
+                    value: countryName,
+                    menuMaxHeight: MediaQuery.of(context).size.height * 0.25,
+                    decoration: InputDecoration(
+                      labelText: 'Country',
+                      labelStyle: GoogleFonts.leagueSpartan(
+                        color: Color(0xFF1c74bb),
+                        fontWeight: FontWeight.w600,
+                        fontSize: 14,
+                      ),
+                      floatingLabelStyle: GoogleFonts.leagueSpartan(
+                        color: Color(0xFF1c74bb),
+                        fontWeight: FontWeight.w600,
+                        fontSize: 16,
+                      ),
+                      prefixIcon:
+                          Icon(Icons.public_outlined, color: Color(0xFF1c74bb)),
+                      border: OutlineInputBorder(
+                        borderRadius: BorderRadius.circular(15),
+                        borderSide: BorderSide(color: Colors.grey[300]!),
+                      ),
+                      enabledBorder: OutlineInputBorder(
+                        borderRadius: BorderRadius.circular(15),
+                        borderSide: BorderSide(color: Colors.grey[300]!),
+                      ),
+                      focusedBorder: OutlineInputBorder(
+                        borderRadius: BorderRadius.circular(15),
+                        borderSide:
+                            BorderSide(color: Color(0xFF1c74bb), width: 2),
+                      ),
+                      filled: true,
+                      fillColor: Colors.white,
+                      contentPadding:
+                          EdgeInsets.symmetric(horizontal: 16, vertical: 16),
+                    ),
+                    style: GoogleFonts.leagueSpartan(
+                      fontSize: 15,
+                      color: Colors.black87,
+                    ),
+                    items: countries.keys.map((country) {
+                      return DropdownMenuItem<String>(
+                        value: country,
+                        child: Text(country),
+                      );
+                    }).toList(),
+                    onChanged: (value) {
+                      setState(() {
+                        countryName = value!;
+                        countryCode = countries[countryName]!;
+                      });
+                    },
+                  ),
+                  SizedBox(height: 24),
+                  // Search Button
+                  Container(
+                    width: double.infinity,
+                    height: 55,
+                    decoration: BoxDecoration(
+                      gradient: LinearGradient(
+                        colors: [
+                          Color(0xFF1c74bb),
+                          Color(0xFF165d96),
+                        ],
+                      ),
+                      borderRadius: BorderRadius.circular(15),
+                      boxShadow: [
+                        BoxShadow(
+                          color: Color(0xFF1c74bb).withOpacity(0.3),
+                          blurRadius: 10,
+                          offset: Offset(0, 4),
+                        ),
+                      ],
+                    ),
+                    child: Material(
+                      color: Colors.transparent,
+                      child: InkWell(
+                        borderRadius: BorderRadius.circular(15),
+                        onTap: fetchJobs,
+                        child: Center(
+                          child: Row(
+                            mainAxisSize: MainAxisSize.min,
+                            children: [
+                              Icon(Icons.search, color: Colors.white, size: 24),
+                              SizedBox(width: 10),
+                              Text(
+                                'Search Jobs',
+                                style: GoogleFonts.leagueSpartan(
+                                  fontSize: 18,
+                                  fontWeight: FontWeight.bold,
+                                  color: Colors.white,
+                                ),
+                              ),
+                            ],
+                          ),
+                        ),
+                      ),
+                    ),
+                  ),
+                  SizedBox(height: 24),
+                  // Jobs List
+                  if (isLoading)
+                    Padding(
+                      padding: const EdgeInsets.all(40.0),
+                      child: CircularProgressIndicator(
+                        color: Color(0xFF1c74bb),
+                      ),
+                    )
+                  else
+                    buildJobList(),
+                ],
+              ),
             ),
-          ],
-        ),
+          ),
+        ],
       ),
     );
   }

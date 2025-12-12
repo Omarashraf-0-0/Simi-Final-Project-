@@ -235,360 +235,880 @@ class _CVState extends State<CV> {
 
   @override
   Widget build(BuildContext context) {
+    const Color primaryColor = Color(0xFF1c74bb);
+    const Color secondaryColor = Color(0xFF165d96);
+    const Color accentColor = Color(0xFF18bebc);
+    const Color backgroundColor = Color(0xFFF5F7FA);
+
     return Scaffold(
-      appBar: AppBar(
-        title: Text(
-          'CV Maker',
-          style: GoogleFonts.leagueSpartan(
-            textStyle: TextStyle(
-              color: Colors.white, // Change title color to white
-              fontWeight: FontWeight.bold, // Make the font bold
+      backgroundColor: backgroundColor,
+      body: CustomScrollView(
+        slivers: [
+          // Modern Gradient AppBar
+          SliverAppBar(
+            expandedHeight: 160,
+            floating: false,
+            pinned: true,
+            elevation: 0,
+            backgroundColor: primaryColor,
+            leading: IconButton(
+              icon: Container(
+                padding: const EdgeInsets.all(8),
+                decoration: BoxDecoration(
+                  color: Colors.white.withOpacity(0.2),
+                  borderRadius: BorderRadius.circular(12),
+                ),
+                child: const Icon(
+                  Icons.arrow_back_ios_new_rounded,
+                  color: Colors.white,
+                  size: 20,
+                ),
+              ),
+              onPressed: () => Navigator.pop(context),
+            ),
+            flexibleSpace: FlexibleSpaceBar(
+              background: Container(
+                decoration: const BoxDecoration(
+                  gradient: LinearGradient(
+                    begin: Alignment.topLeft,
+                    end: Alignment.bottomRight,
+                    colors: [primaryColor, secondaryColor, accentColor],
+                  ),
+                ),
+                child: SafeArea(
+                  child: Padding(
+                    padding: const EdgeInsets.fromLTRB(20, 60, 20, 20),
+                    child: Row(
+                      children: [
+                        Container(
+                          padding: const EdgeInsets.all(16),
+                          decoration: BoxDecoration(
+                            color: Colors.white.withOpacity(0.2),
+                            borderRadius: BorderRadius.circular(20),
+                            border: Border.all(
+                              color: Colors.white.withOpacity(0.3),
+                              width: 2,
+                            ),
+                          ),
+                          child: const Icon(
+                            Icons.description_rounded,
+                            color: Colors.white,
+                            size: 32,
+                          ),
+                        ),
+                        const SizedBox(width: 16),
+                        Expanded(
+                          child: Column(
+                            crossAxisAlignment: CrossAxisAlignment.start,
+                            mainAxisSize: MainAxisSize.min,
+                            children: [
+                              Text(
+                                'CV Maker',
+                                style: GoogleFonts.leagueSpartan(
+                                  color: Colors.white,
+                                  fontSize: 24,
+                                  fontWeight: FontWeight.bold,
+                                ),
+                              ),
+                              const SizedBox(height: 4),
+                              Text(
+                                'Build your professional CV',
+                                style: GoogleFonts.leagueSpartan(
+                                  color: Colors.white70,
+                                  fontSize: 14,
+                                ),
+                              ),
+                            ],
+                          ),
+                        ),
+                      ],
+                    ),
+                  ),
+                ),
+              ),
             ),
           ),
-        ),
-        centerTitle: true,
-        backgroundColor: Color(0xFF165D96),
-        iconTheme: IconThemeData(
-          color: Colors.white, // Change back arrow color to white
-        ),
-      ),
-      body: SingleChildScrollView(
-        padding: EdgeInsets.all(16.0),
-        child: Form(
-          key: _formKey,
-          child: Column(
-            children: [
-              // Personal Information
-              SectionHeader(title: 'Personal Information'),
-              TextFormField(
-                initialValue: name,
-                decoration: InputDecoration(
-                  labelText: 'Name',
-                  border: OutlineInputBorder(),
-                ),
-                validator: (value) =>
-                    value == null || value.isEmpty ? 'Required' : null,
-                onSaved: (value) => name = value!,
-              ),
-              SizedBox(height: 10),
-              InputDatePickerFormField(
-                firstDate: DateTime(1900),
-                lastDate: DateTime.now(),
-                initialDate: birthdate ?? DateTime(2000),
-                fieldLabelText: 'Birthdate',
-                onDateSaved: (date) => birthdate = date,
-                onDateSubmitted: (date) {},
-              ),
-              SizedBox(height: 10),
-              TextFormField(
-                initialValue: phoneNumber,
-                decoration: InputDecoration(
-                  labelText: 'Phone Number',
-                  border: OutlineInputBorder(),
-                ),
-                keyboardType: TextInputType.phone,
-                validator: (value) =>
-                    value == null || value.isEmpty ? 'Required' : null,
-                onSaved: (value) => phoneNumber = value!,
-              ),
-              SizedBox(height: 10),
-              TextFormField(
-                initialValue: email,
-                decoration: InputDecoration(
-                  labelText: 'Email',
-                  border: OutlineInputBorder(),
-                ),
-                keyboardType: TextInputType.emailAddress,
-                validator: (value) {
-                  if (value == null || value.isEmpty) return 'Required';
-                  final regex = RegExp(r'^[^@]+@[^@]+\.[^@]+');
-                  if (!regex.hasMatch(value)) return 'Enter a valid email';
-                  return null;
-                },
-                onSaved: (value) => email = value!,
-              ),
-              SizedBox(height: 20),
-
-              // LinkedIn & GitHub
-              SectionHeader(title: 'LinkedIn & GitHub'),
-              CheckboxListTile(
-                title: Text('Add LinkedIn'),
-                value: addLinkedIn,
-                onChanged: (value) {
-                  setState(() {
-                    addLinkedIn = value!;
-                    if (!addLinkedIn) linkedInLink = '';
-                  });
-                },
-              ),
-              if (addLinkedIn)
-                Column(
+          // Content
+          SliverToBoxAdapter(
+            child: Padding(
+              padding: EdgeInsets.all(20.0),
+              child: Form(
+                key: _formKey,
+                child: Column(
                   children: [
+                    // Personal Information
+                    SectionHeader(title: 'Personal Information'),
+                    TextFormField(
+                      initialValue: name,
+                      decoration: InputDecoration(
+                        labelText: 'Name',
+                        labelStyle: GoogleFonts.leagueSpartan(
+                          color: Color(0xFF1c74bb),
+                          fontWeight: FontWeight.w600,
+                        ),
+                        prefixIcon: Icon(Icons.person_outline,
+                            color: Color(0xFF1c74bb)),
+                        border: OutlineInputBorder(
+                          borderRadius: BorderRadius.circular(12),
+                          borderSide: BorderSide(color: Colors.grey[300]!),
+                        ),
+                        enabledBorder: OutlineInputBorder(
+                          borderRadius: BorderRadius.circular(12),
+                          borderSide: BorderSide(color: Colors.grey[300]!),
+                        ),
+                        focusedBorder: OutlineInputBorder(
+                          borderRadius: BorderRadius.circular(12),
+                          borderSide:
+                              BorderSide(color: Color(0xFF1c74bb), width: 2),
+                        ),
+                        filled: true,
+                        fillColor: Colors.white,
+                      ),
+                      style: GoogleFonts.leagueSpartan(fontSize: 15),
+                      validator: (value) =>
+                          value == null || value.isEmpty ? 'Required' : null,
+                      onSaved: (value) => name = value!,
+                    ),
+                    SizedBox(height: 16),
+                    TextFormField(
+                      readOnly: true,
+                      decoration: InputDecoration(
+                        labelText: 'Birthdate',
+                        labelStyle: GoogleFonts.leagueSpartan(
+                          color: Color(0xFF1c74bb),
+                          fontWeight: FontWeight.w600,
+                        ),
+                        floatingLabelStyle: GoogleFonts.leagueSpartan(
+                          color: Color(0xFF1c74bb),
+                          fontWeight: FontWeight.w600,
+                        ),
+                        prefixIcon:
+                            Icon(Icons.cake_outlined, color: Color(0xFF1c74bb)),
+                        suffixIcon: Icon(Icons.calendar_today,
+                            color: Color(0xFF1c74bb)),
+                        border: OutlineInputBorder(
+                          borderRadius: BorderRadius.circular(12),
+                          borderSide: BorderSide(color: Colors.grey[300]!),
+                        ),
+                        enabledBorder: OutlineInputBorder(
+                          borderRadius: BorderRadius.circular(12),
+                          borderSide: BorderSide(color: Colors.grey[300]!),
+                        ),
+                        focusedBorder: OutlineInputBorder(
+                          borderRadius: BorderRadius.circular(12),
+                          borderSide:
+                              BorderSide(color: Color(0xFF1c74bb), width: 2),
+                        ),
+                        filled: true,
+                        fillColor: Colors.white,
+                      ),
+                      style: GoogleFonts.leagueSpartan(fontSize: 15),
+                      controller: TextEditingController(
+                        text: birthdate != null
+                            ? DateFormat('MMMM d, yyyy').format(birthdate!)
+                            : '',
+                      ),
+                      onTap: () async {
+                        final DateTime? picked = await showDatePicker(
+                          context: context,
+                          initialDate: birthdate ?? DateTime(2000),
+                          firstDate: DateTime(1900),
+                          lastDate: DateTime.now(),
+                          builder: (context, child) {
+                            return Theme(
+                              data: Theme.of(context).copyWith(
+                                colorScheme: ColorScheme.light(
+                                  primary: Color(0xFF1c74bb),
+                                  onPrimary: Colors.white,
+                                  onSurface: Colors.black,
+                                ),
+                              ),
+                              child: child!,
+                            );
+                          },
+                        );
+                        if (picked != null) {
+                          setState(() {
+                            birthdate = picked;
+                          });
+                        }
+                      },
+                    ),
+                    SizedBox(height: 16),
+                    TextFormField(
+                      initialValue: phoneNumber,
+                      decoration: InputDecoration(
+                        labelText: 'Phone Number',
+                        labelStyle: GoogleFonts.leagueSpartan(
+                          color: Color(0xFF1c74bb),
+                          fontWeight: FontWeight.w600,
+                        ),
+                        floatingLabelStyle: GoogleFonts.leagueSpartan(
+                          color: Color(0xFF1c74bb),
+                          fontWeight: FontWeight.w600,
+                        ),
+                        prefixIcon: Icon(Icons.phone_outlined,
+                            color: Color(0xFF1c74bb)),
+                        border: OutlineInputBorder(
+                          borderRadius: BorderRadius.circular(12),
+                          borderSide: BorderSide(color: Colors.grey[300]!),
+                        ),
+                        enabledBorder: OutlineInputBorder(
+                          borderRadius: BorderRadius.circular(12),
+                          borderSide: BorderSide(color: Colors.grey[300]!),
+                        ),
+                        focusedBorder: OutlineInputBorder(
+                          borderRadius: BorderRadius.circular(12),
+                          borderSide:
+                              BorderSide(color: Color(0xFF1c74bb), width: 2),
+                        ),
+                        filled: true,
+                        fillColor: Colors.white,
+                      ),
+                      style: GoogleFonts.leagueSpartan(fontSize: 15),
+                      keyboardType: TextInputType.phone,
+                      validator: (value) =>
+                          value == null || value.isEmpty ? 'Required' : null,
+                      onSaved: (value) => phoneNumber = value!,
+                    ),
+                    SizedBox(height: 16),
+                    TextFormField(
+                      initialValue: email,
+                      decoration: InputDecoration(
+                        labelText: 'Email',
+                        labelStyle: GoogleFonts.leagueSpartan(
+                          color: Color(0xFF1c74bb),
+                          fontWeight: FontWeight.w600,
+                        ),
+                        floatingLabelStyle: GoogleFonts.leagueSpartan(
+                          color: Color(0xFF1c74bb),
+                          fontWeight: FontWeight.w600,
+                        ),
+                        prefixIcon: Icon(Icons.email_outlined,
+                            color: Color(0xFF1c74bb)),
+                        border: OutlineInputBorder(
+                          borderRadius: BorderRadius.circular(12),
+                          borderSide: BorderSide(color: Colors.grey[300]!),
+                        ),
+                        enabledBorder: OutlineInputBorder(
+                          borderRadius: BorderRadius.circular(12),
+                          borderSide: BorderSide(color: Colors.grey[300]!),
+                        ),
+                        focusedBorder: OutlineInputBorder(
+                          borderRadius: BorderRadius.circular(12),
+                          borderSide:
+                              BorderSide(color: Color(0xFF1c74bb), width: 2),
+                        ),
+                        filled: true,
+                        fillColor: Colors.white,
+                      ),
+                      style: GoogleFonts.leagueSpartan(fontSize: 15),
+                      keyboardType: TextInputType.emailAddress,
+                      validator: (value) {
+                        if (value == null || value.isEmpty) return 'Required';
+                        final regex = RegExp(r'^[^@]+@[^@]+\.[^@]+');
+                        if (!regex.hasMatch(value))
+                          return 'Enter a valid email';
+                        return null;
+                      },
+                      onSaved: (value) => email = value!,
+                    ),
+                    SizedBox(height: 20),
+
+                    // LinkedIn & GitHub
+                    SectionHeader(title: 'LinkedIn & GitHub'),
+                    Container(
+                      decoration: BoxDecoration(
+                        color: Colors.white,
+                        borderRadius: BorderRadius.circular(12),
+                        border: Border.all(
+                          color: addLinkedIn
+                              ? Color(0xFF1c74bb)
+                              : Colors.grey[300]!,
+                          width: addLinkedIn ? 2 : 1,
+                        ),
+                      ),
+                      child: CheckboxListTile(
+                        title: Text(
+                          'Add LinkedIn',
+                          style: GoogleFonts.leagueSpartan(
+                            fontWeight: FontWeight.w600,
+                            color: Color(0xFF165d96),
+                          ),
+                        ),
+                        secondary: Icon(
+                          Icons.work,
+                          color: Color(0xFF1c74bb),
+                        ),
+                        activeColor: Color(0xFF1c74bb),
+                        value: addLinkedIn,
+                        onChanged: (value) {
+                          setState(() {
+                            addLinkedIn = value!;
+                            if (!addLinkedIn) linkedInLink = '';
+                          });
+                        },
+                      ),
+                    ),
+                    if (addLinkedIn)
+                      Column(
+                        children: [
+                          SizedBox(height: 16),
+                          TextFormField(
+                            decoration: InputDecoration(
+                              labelText: 'LinkedIn Username',
+                              labelStyle: GoogleFonts.leagueSpartan(
+                                color: Color(0xFF1c74bb),
+                                fontWeight: FontWeight.w600,
+                              ),
+                              floatingLabelStyle: GoogleFonts.leagueSpartan(
+                                color: Color(0xFF1c74bb),
+                                fontWeight: FontWeight.w600,
+                              ),
+                              prefixIcon:
+                                  Icon(Icons.person, color: Color(0xFF1c74bb)),
+                              border: OutlineInputBorder(
+                                borderRadius: BorderRadius.circular(12),
+                              ),
+                              enabledBorder: OutlineInputBorder(
+                                borderRadius: BorderRadius.circular(12),
+                                borderSide:
+                                    BorderSide(color: Colors.grey[300]!),
+                              ),
+                              focusedBorder: OutlineInputBorder(
+                                borderRadius: BorderRadius.circular(12),
+                                borderSide: BorderSide(
+                                    color: Color(0xFF1c74bb), width: 2),
+                              ),
+                              filled: true,
+                              fillColor: Colors.white,
+                            ),
+                            style: GoogleFonts.leagueSpartan(fontSize: 15),
+                            validator: (value) =>
+                                addLinkedIn && (value == null || value.isEmpty)
+                                    ? 'Required'
+                                    : null,
+                            onSaved: (value) => linkedInUsername = value!,
+                          ),
+                          SizedBox(height: 12),
+                          TextFormField(
+                            decoration: InputDecoration(
+                              labelText: 'LinkedIn Profile URL',
+                              labelStyle: GoogleFonts.leagueSpartan(
+                                color: Color(0xFF1c74bb),
+                                fontWeight: FontWeight.w600,
+                              ),
+                              floatingLabelStyle: GoogleFonts.leagueSpartan(
+                                color: Color(0xFF1c74bb),
+                                fontWeight: FontWeight.w600,
+                              ),
+                              prefixIcon:
+                                  Icon(Icons.link, color: Color(0xFF1c74bb)),
+                              border: OutlineInputBorder(
+                                borderRadius: BorderRadius.circular(12),
+                              ),
+                              enabledBorder: OutlineInputBorder(
+                                borderRadius: BorderRadius.circular(12),
+                                borderSide:
+                                    BorderSide(color: Colors.grey[300]!),
+                              ),
+                              focusedBorder: OutlineInputBorder(
+                                borderRadius: BorderRadius.circular(12),
+                                borderSide: BorderSide(
+                                    color: Color(0xFF1c74bb), width: 2),
+                              ),
+                              filled: true,
+                              fillColor: Colors.white,
+                            ),
+                            style: GoogleFonts.leagueSpartan(fontSize: 15),
+                            initialValue: linkedInLink,
+                            validator: (value) =>
+                                addLinkedIn && (value == null || value.isEmpty)
+                                    ? 'Required'
+                                    : null,
+                            onSaved: (value) => linkedInLink = value!,
+                          ),
+                        ],
+                      ),
+                    SizedBox(height: 16),
+                    Container(
+                      decoration: BoxDecoration(
+                        color: Colors.white,
+                        borderRadius: BorderRadius.circular(12),
+                        border: Border.all(
+                          color:
+                              addGitHub ? Color(0xFF1c74bb) : Colors.grey[300]!,
+                          width: addGitHub ? 2 : 1,
+                        ),
+                      ),
+                      child: CheckboxListTile(
+                        title: Text(
+                          'Add GitHub',
+                          style: GoogleFonts.leagueSpartan(
+                            fontWeight: FontWeight.w600,
+                            color: Color(0xFF165d96),
+                          ),
+                        ),
+                        secondary: Icon(
+                          Icons.code,
+                          color: Color(0xFF1c74bb),
+                        ),
+                        activeColor: Color(0xFF1c74bb),
+                        value: addGitHub,
+                        onChanged: (value) {
+                          setState(() {
+                            addGitHub = value!;
+                            if (!addGitHub) gitHubLink = '';
+                          });
+                        },
+                      ),
+                    ),
+                    if (addGitHub)
+                      Column(
+                        children: [
+                          SizedBox(height: 16),
+                          TextFormField(
+                            decoration: InputDecoration(
+                              labelText: 'GitHub Username',
+                              labelStyle: GoogleFonts.leagueSpartan(
+                                color: Color(0xFF1c74bb),
+                                fontWeight: FontWeight.w600,
+                              ),
+                              floatingLabelStyle: GoogleFonts.leagueSpartan(
+                                color: Color(0xFF1c74bb),
+                                fontWeight: FontWeight.w600,
+                              ),
+                              prefixIcon:
+                                  Icon(Icons.code, color: Color(0xFF1c74bb)),
+                              border: OutlineInputBorder(
+                                borderRadius: BorderRadius.circular(12),
+                              ),
+                              enabledBorder: OutlineInputBorder(
+                                borderRadius: BorderRadius.circular(12),
+                                borderSide:
+                                    BorderSide(color: Colors.grey[300]!),
+                              ),
+                              focusedBorder: OutlineInputBorder(
+                                borderRadius: BorderRadius.circular(12),
+                                borderSide: BorderSide(
+                                    color: Color(0xFF1c74bb), width: 2),
+                              ),
+                              filled: true,
+                              fillColor: Colors.white,
+                            ),
+                            style: GoogleFonts.leagueSpartan(fontSize: 15),
+                            validator: (value) =>
+                                addGitHub && (value == null || value.isEmpty)
+                                    ? 'Required'
+                                    : null,
+                            onSaved: (value) => gitHubUsername = value!,
+                          ),
+                          SizedBox(height: 12),
+                          TextFormField(
+                            decoration: InputDecoration(
+                              labelText: 'GitHub Profile URL',
+                              labelStyle: GoogleFonts.leagueSpartan(
+                                color: Color(0xFF1c74bb),
+                                fontWeight: FontWeight.w600,
+                              ),
+                              floatingLabelStyle: GoogleFonts.leagueSpartan(
+                                color: Color(0xFF1c74bb),
+                                fontWeight: FontWeight.w600,
+                              ),
+                              prefixIcon:
+                                  Icon(Icons.link, color: Color(0xFF1c74bb)),
+                              border: OutlineInputBorder(
+                                borderRadius: BorderRadius.circular(12),
+                              ),
+                              enabledBorder: OutlineInputBorder(
+                                borderRadius: BorderRadius.circular(12),
+                                borderSide:
+                                    BorderSide(color: Colors.grey[300]!),
+                              ),
+                              focusedBorder: OutlineInputBorder(
+                                borderRadius: BorderRadius.circular(12),
+                                borderSide: BorderSide(
+                                    color: Color(0xFF1c74bb), width: 2),
+                              ),
+                              filled: true,
+                              fillColor: Colors.white,
+                            ),
+                            style: GoogleFonts.leagueSpartan(fontSize: 15),
+                            initialValue: gitHubLink,
+                            validator: (value) =>
+                                addGitHub && (value == null || value.isEmpty)
+                                    ? 'Required'
+                                    : null,
+                            onSaved: (value) => gitHubLink = value!,
+                          ),
+                        ],
+                      ),
+                    SizedBox(height: 20),
+
+                    // Objective
+                    SectionHeader(title: 'Objective'),
+                    SizedBox(height: 16),
                     TextFormField(
                       decoration: InputDecoration(
-                        labelText: 'LinkedIn Username',
-                        border: OutlineInputBorder(),
+                        labelText: 'Objective',
+                        hintText: 'Describe your career goals...',
+                        hintStyle: GoogleFonts.leagueSpartan(
+                          color: Colors.grey[400],
+                        ),
+                        labelStyle: GoogleFonts.leagueSpartan(
+                          color: Color(0xFF1c74bb),
+                          fontWeight: FontWeight.w600,
+                        ),
+                        floatingLabelStyle: GoogleFonts.leagueSpartan(
+                          color: Color(0xFF1c74bb),
+                          fontWeight: FontWeight.w600,
+                        ),
+                        prefixIcon: Padding(
+                          padding: EdgeInsets.only(bottom: 48),
+                          child: Icon(Icons.flag_outlined,
+                              color: Color(0xFF1c74bb)),
+                        ),
+                        border: OutlineInputBorder(
+                          borderRadius: BorderRadius.circular(12),
+                          borderSide: BorderSide(color: Colors.grey[300]!),
+                        ),
+                        enabledBorder: OutlineInputBorder(
+                          borderRadius: BorderRadius.circular(12),
+                          borderSide: BorderSide(color: Colors.grey[300]!),
+                        ),
+                        focusedBorder: OutlineInputBorder(
+                          borderRadius: BorderRadius.circular(12),
+                          borderSide:
+                              BorderSide(color: Color(0xFF1c74bb), width: 2),
+                        ),
+                        filled: true,
+                        fillColor: Colors.white,
                       ),
+                      style: GoogleFonts.leagueSpartan(fontSize: 15),
+                      maxLines: 4,
                       validator: (value) =>
-                          addLinkedIn && (value == null || value.isEmpty)
-                              ? 'Required'
-                              : null,
-                      onSaved: (value) => linkedInUsername = value!,
+                          value == null || value.isEmpty ? 'Required' : null,
+                      onSaved: (value) => objective = value!,
+                    ),
+                    SizedBox(height: 20),
+
+                    // Education
+                    SectionHeader(title: 'Education'),
+                    SizedBox(height: 16),
+                    DropdownButtonFormField<int>(
+                      decoration: InputDecoration(
+                        labelText: 'Number of Education Entries',
+                        labelStyle: GoogleFonts.leagueSpartan(
+                          color: Color(0xFF1c74bb),
+                          fontWeight: FontWeight.w600,
+                        ),
+                        floatingLabelStyle: GoogleFonts.leagueSpartan(
+                          color: Color(0xFF1c74bb),
+                          fontWeight: FontWeight.w600,
+                        ),
+                        prefixIcon: Icon(Icons.format_list_numbered,
+                            color: Color(0xFF1c74bb)),
+                        border: OutlineInputBorder(
+                          borderRadius: BorderRadius.circular(12),
+                        ),
+                        enabledBorder: OutlineInputBorder(
+                          borderRadius: BorderRadius.circular(12),
+                          borderSide: BorderSide(color: Colors.grey[300]!),
+                        ),
+                        focusedBorder: OutlineInputBorder(
+                          borderRadius: BorderRadius.circular(12),
+                          borderSide:
+                              BorderSide(color: Color(0xFF1c74bb), width: 2),
+                        ),
+                        filled: true,
+                        fillColor: Colors.white,
+                      ),
+                      style: GoogleFonts.leagueSpartan(
+                          fontSize: 15, color: Colors.black),
+                      value: educationCount,
+                      items: List.generate(
+                        3,
+                        (index) => DropdownMenuItem(
+                          value: index + 1,
+                          child: Text('${index + 1}',
+                              style: GoogleFonts.leagueSpartan()),
+                        ),
+                      ),
+                      onChanged: (value) {
+                        setState(() {
+                          educationCount = value!;
+                          _addEducationField(value);
+                        });
+                      },
+                      validator: (value) => value == null || value < 1
+                          ? 'At least 1 required'
+                          : null,
                     ),
                     SizedBox(height: 10),
-                    TextFormField(
+                    ListView.builder(
+                      shrinkWrap: true,
+                      physics: NeverScrollableScrollPhysics(),
+                      itemCount: educationCount,
+                      itemBuilder: (context, index) {
+                        return EducationForm(
+                          index: index + 1,
+                          education: educations[index],
+                        );
+                      },
+                    ),
+                    SizedBox(height: 20),
+
+                    // Skills
+                    SectionHeader(title: 'Skills'),
+                    SizedBox(height: 16),
+                    DropdownButtonFormField<int>(
                       decoration: InputDecoration(
-                        labelText: 'LinkedIn Profile URL',
-                        border: OutlineInputBorder(),
+                        labelText: 'Number of Skill Sections',
+                        labelStyle: GoogleFonts.leagueSpartan(
+                          color: Color(0xFF1c74bb),
+                          fontWeight: FontWeight.w600,
+                        ),
+                        floatingLabelStyle: GoogleFonts.leagueSpartan(
+                          color: Color(0xFF1c74bb),
+                          fontWeight: FontWeight.w600,
+                        ),
+                        prefixIcon: Icon(Icons.format_list_numbered,
+                            color: Color(0xFF1c74bb)),
+                        border: OutlineInputBorder(
+                          borderRadius: BorderRadius.circular(12),
+                        ),
+                        enabledBorder: OutlineInputBorder(
+                          borderRadius: BorderRadius.circular(12),
+                          borderSide: BorderSide(color: Colors.grey[300]!),
+                        ),
+                        focusedBorder: OutlineInputBorder(
+                          borderRadius: BorderRadius.circular(12),
+                          borderSide:
+                              BorderSide(color: Color(0xFF1c74bb), width: 2),
+                        ),
+                        filled: true,
+                        fillColor: Colors.white,
                       ),
-                      initialValue: linkedInLink,
-                      validator: (value) =>
-                          addLinkedIn && (value == null || value.isEmpty)
-                              ? 'Required'
-                              : null,
-                      onSaved: (value) => linkedInLink = value!,
+                      style: GoogleFonts.leagueSpartan(
+                          fontSize: 15, color: Colors.black),
+                      value: skillsCount,
+                      items: List.generate(
+                        5,
+                        (index) => DropdownMenuItem(
+                          value: index + 1,
+                          child: Text('${index + 1}',
+                              style: GoogleFonts.leagueSpartan()),
+                        ),
+                      ),
+                      onChanged: (value) {
+                        setState(() {
+                          skillsCount = value!;
+                          _addSkillField(value);
+                        });
+                      },
+                      validator: (value) => value == null || value < 1
+                          ? 'At least 1 required'
+                          : null,
+                    ),
+                    SizedBox(height: 10),
+                    ListView.builder(
+                      shrinkWrap: true,
+                      physics: NeverScrollableScrollPhysics(),
+                      itemCount: skillsCount,
+                      itemBuilder: (context, index) {
+                        return SkillForm(
+                          index: index + 1,
+                          skill: skills[index],
+                        );
+                      },
+                    ),
+                    SizedBox(height: 20),
+
+                    // Projects
+                    SectionHeader(title: 'Projects'),
+                    SizedBox(height: 16),
+                    DropdownButtonFormField<int>(
+                      decoration: InputDecoration(
+                        labelText: 'Number of Projects',
+                        labelStyle: GoogleFonts.leagueSpartan(
+                          color: Color(0xFF1c74bb),
+                          fontWeight: FontWeight.w600,
+                        ),
+                        floatingLabelStyle: GoogleFonts.leagueSpartan(
+                          color: Color(0xFF1c74bb),
+                          fontWeight: FontWeight.w600,
+                        ),
+                        prefixIcon: Icon(Icons.format_list_numbered,
+                            color: Color(0xFF1c74bb)),
+                        border: OutlineInputBorder(
+                          borderRadius: BorderRadius.circular(12),
+                        ),
+                        enabledBorder: OutlineInputBorder(
+                          borderRadius: BorderRadius.circular(12),
+                          borderSide: BorderSide(color: Colors.grey[300]!),
+                        ),
+                        focusedBorder: OutlineInputBorder(
+                          borderRadius: BorderRadius.circular(12),
+                          borderSide:
+                              BorderSide(color: Color(0xFF1c74bb), width: 2),
+                        ),
+                        filled: true,
+                        fillColor: Colors.white,
+                      ),
+                      style: GoogleFonts.leagueSpartan(
+                          fontSize: 15, color: Colors.black),
+                      value: projectsCount,
+                      items: List.generate(
+                        3,
+                        (index) => DropdownMenuItem(
+                          value: index + 1,
+                          child: Text('${index + 1}',
+                              style: GoogleFonts.leagueSpartan()),
+                        ),
+                      ),
+                      onChanged: (value) {
+                        setState(() {
+                          projectsCount = value!;
+                          _addProjectField(value);
+                        });
+                      },
+                      validator: (value) => value == null || value < 1
+                          ? 'At least 1 required'
+                          : null,
+                    ),
+                    SizedBox(height: 10),
+                    ListView.builder(
+                      shrinkWrap: true,
+                      physics: NeverScrollableScrollPhysics(),
+                      itemCount: projectsCount,
+                      itemBuilder: (context, index) {
+                        return ProjectForm(
+                          index: index + 1,
+                          project: projects[index],
+                        );
+                      },
+                    ),
+                    SizedBox(height: 20),
+
+                    // Experience
+                    SectionHeader(title: 'Experience'),
+                    SizedBox(height: 16),
+                    DropdownButtonFormField<int>(
+                      decoration: InputDecoration(
+                        labelText: 'Number of Experiences',
+                        labelStyle: GoogleFonts.leagueSpartan(
+                          color: Color(0xFF1c74bb),
+                          fontWeight: FontWeight.w600,
+                        ),
+                        floatingLabelStyle: GoogleFonts.leagueSpartan(
+                          color: Color(0xFF1c74bb),
+                          fontWeight: FontWeight.w600,
+                        ),
+                        prefixIcon: Icon(Icons.format_list_numbered,
+                            color: Color(0xFF1c74bb)),
+                        border: OutlineInputBorder(
+                          borderRadius: BorderRadius.circular(12),
+                        ),
+                        enabledBorder: OutlineInputBorder(
+                          borderRadius: BorderRadius.circular(12),
+                          borderSide: BorderSide(color: Colors.grey[300]!),
+                        ),
+                        focusedBorder: OutlineInputBorder(
+                          borderRadius: BorderRadius.circular(12),
+                          borderSide:
+                              BorderSide(color: Color(0xFF1c74bb), width: 2),
+                        ),
+                        filled: true,
+                        fillColor: Colors.white,
+                      ),
+                      style: GoogleFonts.leagueSpartan(
+                          fontSize: 15, color: Colors.black),
+                      value: experienceCount,
+                      items: List.generate(
+                        5,
+                        (index) => DropdownMenuItem(
+                          value: index + 1,
+                          child: Text('${index + 1}',
+                              style: GoogleFonts.leagueSpartan()),
+                        ),
+                      ),
+                      onChanged: (value) {
+                        setState(() {
+                          experienceCount = value!;
+                          _addExperienceField(value);
+                        });
+                      },
+                      validator: (value) => value == null || value < 1
+                          ? 'At least 1 required'
+                          : null,
+                    ),
+                    SizedBox(height: 10),
+                    ListView.builder(
+                      shrinkWrap: true,
+                      physics: NeverScrollableScrollPhysics(),
+                      itemCount: experienceCount,
+                      itemBuilder: (context, index) {
+                        return ExperienceForm(
+                          index: index + 1,
+                          experience: experiences[index],
+                        );
+                      },
+                    ),
+                    SizedBox(height: 20),
+
+                    // Submit Button
+                    Container(
+                      width: double.infinity,
+                      height: 60,
+                      margin: EdgeInsets.only(top: 10, bottom: 20),
+                      decoration: BoxDecoration(
+                        gradient: LinearGradient(
+                          colors: [
+                            Color(0xFF1c74bb),
+                            Color(0xFF165d96),
+                          ],
+                        ),
+                        borderRadius: BorderRadius.circular(15),
+                        boxShadow: [
+                          BoxShadow(
+                            color: Color(0xFF1c74bb).withOpacity(0.4),
+                            blurRadius: 15,
+                            offset: Offset(0, 8),
+                          ),
+                        ],
+                      ),
+                      child: Material(
+                        color: Colors.transparent,
+                        child: InkWell(
+                          borderRadius: BorderRadius.circular(15),
+                          onTap: _submitForm,
+                          child: Center(
+                            child: Row(
+                              mainAxisSize: MainAxisSize.min,
+                              children: [
+                                Icon(Icons.picture_as_pdf_rounded,
+                                    color: Colors.white, size: 28),
+                                SizedBox(width: 12),
+                                Text(
+                                  'Generate CV',
+                                  style: GoogleFonts.leagueSpartan(
+                                    color: Colors.white,
+                                    fontWeight: FontWeight.bold,
+                                    fontSize: 20,
+                                  ),
+                                ),
+                              ],
+                            ),
+                          ),
+                        ),
+                      ),
                     ),
                   ],
                 ),
-              SizedBox(height: 10),
-              CheckboxListTile(
-                title: Text('Add GitHub'),
-                value: addGitHub,
-                onChanged: (value) {
-                  setState(() {
-                    addGitHub = value!;
-                    if (!addGitHub) gitHubLink = '';
-                  });
-                },
               ),
-              if (addGitHub)
-                Column(
-                  children: [
-                    TextFormField(
-                      decoration: InputDecoration(
-                        labelText: 'GitHub Username',
-                        border: OutlineInputBorder(),
-                      ),
-                      validator: (value) =>
-                          addGitHub && (value == null || value.isEmpty)
-                              ? 'Required'
-                              : null,
-                      onSaved: (value) => gitHubUsername = value!,
-                    ),
-                    SizedBox(height: 10),
-                    TextFormField(
-                      decoration: InputDecoration(
-                        labelText: 'GitHub Profile URL',
-                        border: OutlineInputBorder(),
-                      ),
-                      initialValue: gitHubLink,
-                      validator: (value) =>
-                          addGitHub && (value == null || value.isEmpty)
-                              ? 'Required'
-                              : null,
-                      onSaved: (value) => gitHubLink = value!,
-                    ),
-                  ],
-                ),
-              SizedBox(height: 20),
-
-              // Objective
-              SectionHeader(title: 'Objective'),
-              SizedBox(height: 10),
-              TextFormField(
-                decoration: InputDecoration(
-                  labelText: 'Objective',
-                  border: OutlineInputBorder(),
-                ),
-                maxLines: 3,
-                validator: (value) =>
-                    value == null || value.isEmpty ? 'Required' : null,
-                onSaved: (value) => objective = value!,
-              ),
-              SizedBox(height: 20),
-
-              // Education
-              SectionHeader(title: 'Education'),
-              SizedBox(height: 10),
-              DropdownButtonFormField<int>(
-                decoration: InputDecoration(
-                  labelText: 'Number of Education Entries',
-                  border: OutlineInputBorder(),
-                ),
-                value: educationCount,
-                items: List.generate(
-                  3,
-                  (index) => DropdownMenuItem(
-                    value: index + 1,
-                    child: Text('${index + 1}'),
-                  ),
-                ),
-                onChanged: (value) {
-                  setState(() {
-                    educationCount = value!;
-                    _addEducationField(value);
-                  });
-                },
-                validator: (value) =>
-                    value == null || value < 1 ? 'At least 1 required' : null,
-              ),
-              SizedBox(height: 10),
-              ListView.builder(
-                shrinkWrap: true,
-                physics: NeverScrollableScrollPhysics(),
-                itemCount: educationCount,
-                itemBuilder: (context, index) {
-                  return EducationForm(
-                    index: index + 1,
-                    education: educations[index],
-                  );
-                },
-              ),
-              SizedBox(height: 20),
-
-              // Skills
-              SectionHeader(title: 'Skills'),
-              SizedBox(height: 10),
-              DropdownButtonFormField<int>(
-                decoration: InputDecoration(
-                  labelText: 'Number of Skill Sections',
-                  border: OutlineInputBorder(),
-                ),
-                value: skillsCount,
-                items: List.generate(
-                  5,
-                  (index) => DropdownMenuItem(
-                    value: index + 1,
-                    child: Text('${index + 1}'),
-                  ),
-                ),
-                onChanged: (value) {
-                  setState(() {
-                    skillsCount = value!;
-                    _addSkillField(value);
-                  });
-                },
-                validator: (value) =>
-                    value == null || value < 1 ? 'At least 1 required' : null,
-              ),
-              SizedBox(height: 10),
-              ListView.builder(
-                shrinkWrap: true,
-                physics: NeverScrollableScrollPhysics(),
-                itemCount: skillsCount,
-                itemBuilder: (context, index) {
-                  return SkillForm(
-                    index: index + 1,
-                    skill: skills[index],
-                  );
-                },
-              ),
-              SizedBox(height: 20),
-
-              // Projects
-              SectionHeader(title: 'Projects'),
-              SizedBox(height: 20),
-              DropdownButtonFormField<int>(
-                decoration: InputDecoration(
-                  labelText: 'Number of Projects',
-                  border: OutlineInputBorder(),
-                ),
-                value: projectsCount,
-                items: List.generate(
-                  3,
-                  (index) => DropdownMenuItem(
-                    value: index + 1,
-                    child: Text('${index + 1}'),
-                  ),
-                ),
-                onChanged: (value) {
-                  setState(() {
-                    projectsCount = value!;
-                    _addProjectField(value);
-                  });
-                },
-                validator: (value) =>
-                    value == null || value < 1 ? 'At least 1 required' : null,
-              ),
-              SizedBox(height: 10),
-              ListView.builder(
-                shrinkWrap: true,
-                physics: NeverScrollableScrollPhysics(),
-                itemCount: projectsCount,
-                itemBuilder: (context, index) {
-                  return ProjectForm(
-                    index: index + 1,
-                    project: projects[index],
-                  );
-                },
-              ),
-              SizedBox(height: 20),
-
-              // Experience
-              SectionHeader(title: 'Experience'),
-              SizedBox(height: 10),
-              DropdownButtonFormField<int>(
-                decoration: InputDecoration(
-                  labelText: 'Number of Experiences',
-                  border: OutlineInputBorder(),
-                ),
-                value: experienceCount,
-                items: List.generate(
-                  5,
-                  (index) => DropdownMenuItem(
-                    value: index + 1,
-                    child: Text('${index + 1}'),
-                  ),
-                ),
-                onChanged: (value) {
-                  setState(() {
-                    experienceCount = value!;
-                    _addExperienceField(value);
-                  });
-                },
-                validator: (value) =>
-                    value == null || value < 1 ? 'At least 1 required' : null,
-              ),
-              SizedBox(height: 10),
-              ListView.builder(
-                shrinkWrap: true,
-                physics: NeverScrollableScrollPhysics(),
-                itemCount: experienceCount,
-                itemBuilder: (context, index) {
-                  return ExperienceForm(
-                    index: index + 1,
-                    experience: experiences[index],
-                  );
-                },
-              ),
-              SizedBox(height: 20),
-
-              // Submit Button
-              ElevatedButton(
-                onPressed: _submitForm,
-                style: ElevatedButton.styleFrom(
-                  padding:
-                      EdgeInsets.symmetric(horizontal: 50.0, vertical: 15.0),
-                  backgroundColor: Color(
-                      0xFF165D96), // Use backgroundColor instead of primary
-                  shape: RoundedRectangleBorder(
-                    borderRadius: BorderRadius.circular(10),
-                  ),
-                ),
-                child: Text(
-                  'Generate CV',
-                  style: GoogleFonts.leagueSpartan(
-                    textStyle: TextStyle(
-                      color: Colors.white, // Change text color to white
-                      fontWeight: FontWeight.bold, // Make the font bold
-                      fontSize: 18,
-                    ),
-                  ),
-                ),
-              ),
-            ],
+            ),
           ),
-        ),
+        ],
       ),
     );
   }
@@ -659,17 +1179,65 @@ class SectionHeader extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return Align(
-      alignment: Alignment.centerLeft,
-      child: Text(
-        title,
-        style: TextStyle(
-          fontSize: 20.0,
-          fontWeight: FontWeight.bold,
-          color: Color(0xFF165D96),
+    return Container(
+      width: double.infinity,
+      padding: EdgeInsets.symmetric(vertical: 12, horizontal: 16),
+      margin: EdgeInsets.only(bottom: 16),
+      decoration: BoxDecoration(
+        gradient: LinearGradient(
+          colors: [
+            Color(0xFF1c74bb).withOpacity(0.1),
+            Color(0xFF18bebc).withOpacity(0.05),
+          ],
+        ),
+        borderRadius: BorderRadius.circular(12),
+        border: Border(
+          left: BorderSide(
+            color: Color(0xFF1c74bb),
+            width: 4,
+          ),
         ),
       ),
+      child: Row(
+        children: [
+          Icon(
+            _getIconForTitle(title),
+            color: Color(0xFF1c74bb),
+            size: 24,
+          ),
+          SizedBox(width: 12),
+          Text(
+            title,
+            style: GoogleFonts.leagueSpartan(
+              fontSize: 20.0,
+              fontWeight: FontWeight.bold,
+              color: Color(0xFF165D96),
+            ),
+          ),
+        ],
+      ),
     );
+  }
+
+  IconData _getIconForTitle(String title) {
+    switch (title.toLowerCase()) {
+      case 'personal information':
+        return Icons.person_outline_rounded;
+      case 'linkedin & github':
+        return Icons.link_rounded;
+      case 'objective':
+        return Icons.flag_outlined;
+      case 'education':
+        return Icons.school_outlined;
+      case 'skills':
+        return Icons.stars_outlined;
+      case 'projects':
+        return Icons.work_outline_rounded;
+      case 'experience':
+        return Icons.business_center_outlined;
+      default:
+        return Icons.info_outline;
+    }
   }
 }
 
@@ -683,74 +1251,225 @@ class EducationForm extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return Column(
-      crossAxisAlignment: CrossAxisAlignment.start,
-      children: [
-        Text(
-          'Education $index',
-          style: TextStyle(fontSize: 16, fontWeight: FontWeight.w600),
-        ),
-        SizedBox(height: 5),
-        TextFormField(
-          decoration: InputDecoration(
-            labelText: 'University Name',
-            border: OutlineInputBorder(),
+    return Container(
+      margin: EdgeInsets.only(bottom: 16),
+      padding: EdgeInsets.all(16),
+      decoration: BoxDecoration(
+        color: Colors.white,
+        borderRadius: BorderRadius.circular(12),
+        border: Border.all(color: Color(0xFF1c74bb).withOpacity(0.3)),
+        boxShadow: [
+          BoxShadow(
+            color: Colors.black.withOpacity(0.05),
+            blurRadius: 10,
+            offset: Offset(0, 4),
           ),
-          validator: (value) =>
-              value == null || value.isEmpty ? 'Required' : null,
-          onSaved: (value) => education.universityName = value!,
-        ),
-        SizedBox(height: 10),
-        TextFormField(
-          decoration: InputDecoration(
-            labelText: 'Degree',
-            border: OutlineInputBorder(),
-          ),
-          validator: (value) =>
-              value == null || value.isEmpty ? 'Required' : null,
-          onSaved: (value) => education.degree = value!,
-        ),
-        SizedBox(height: 10),
-        Row(
-          children: [
-            Expanded(
-              child: TextFormField(
-                decoration: InputDecoration(
-                  labelText: 'From',
-                  border: OutlineInputBorder(),
+        ],
+      ),
+      child: Column(
+        crossAxisAlignment: CrossAxisAlignment.start,
+        children: [
+          Row(
+            children: [
+              Container(
+                padding: EdgeInsets.all(8),
+                decoration: BoxDecoration(
+                  color: Color(0xFF1c74bb).withOpacity(0.1),
+                  borderRadius: BorderRadius.circular(8),
                 ),
-                validator: (value) =>
-                    value == null || value.isEmpty ? 'Required' : null,
-                onSaved: (value) => education.from = value!,
+                child: Icon(Icons.school, color: Color(0xFF1c74bb), size: 20),
               ),
-            ),
-            SizedBox(width: 10),
-            Expanded(
-              child: TextFormField(
-                decoration: InputDecoration(
-                  labelText: 'To',
-                  border: OutlineInputBorder(),
+              SizedBox(width: 12),
+              Text(
+                'Education $index',
+                style: GoogleFonts.leagueSpartan(
+                  fontSize: 18,
+                  fontWeight: FontWeight.bold,
+                  color: Color(0xFF165d96),
                 ),
-                validator: (value) =>
-                    value == null || value.isEmpty ? 'Required' : null,
-                onSaved: (value) => education.to = value!,
               ),
-            ),
-          ],
-        ),
-        SizedBox(height: 10),
-        TextFormField(
-          decoration: InputDecoration(
-            labelText: 'Description',
-            border: OutlineInputBorder(),
+            ],
           ),
-          maxLines: 3,
-          validator: (value) =>
-              value == null || value.isEmpty ? 'Required' : null,
-          onSaved: (value) => education.description = value!,
-        ),
-        SizedBox(height: 20),
-      ],
+          SizedBox(height: 16),
+          TextFormField(
+            decoration: InputDecoration(
+              labelText: 'University Name',
+              labelStyle: GoogleFonts.leagueSpartan(
+                color: Color(0xFF1c74bb),
+                fontWeight: FontWeight.w600,
+              ),
+              floatingLabelStyle: GoogleFonts.leagueSpartan(
+                color: Color(0xFF1c74bb),
+                fontWeight: FontWeight.w600,
+              ),
+              prefixIcon: Icon(Icons.location_city, color: Color(0xFF1c74bb)),
+              border: OutlineInputBorder(
+                borderRadius: BorderRadius.circular(12),
+              ),
+              enabledBorder: OutlineInputBorder(
+                borderRadius: BorderRadius.circular(12),
+                borderSide: BorderSide(color: Colors.grey[300]!),
+              ),
+              focusedBorder: OutlineInputBorder(
+                borderRadius: BorderRadius.circular(12),
+                borderSide: BorderSide(color: Color(0xFF1c74bb), width: 2),
+              ),
+              filled: true,
+              fillColor: Colors.grey[50],
+            ),
+            style: GoogleFonts.leagueSpartan(fontSize: 15),
+            validator: (value) =>
+                value == null || value.isEmpty ? 'Required' : null,
+            onSaved: (value) => education.universityName = value!,
+          ),
+          SizedBox(height: 12),
+          TextFormField(
+            decoration: InputDecoration(
+              labelText: 'Degree',
+              labelStyle: GoogleFonts.leagueSpartan(
+                color: Color(0xFF1c74bb),
+                fontWeight: FontWeight.w600,
+              ),
+              floatingLabelStyle: GoogleFonts.leagueSpartan(
+                color: Color(0xFF1c74bb),
+                fontWeight: FontWeight.w600,
+              ),
+              prefixIcon: Icon(Icons.school_outlined, color: Color(0xFF1c74bb)),
+              border: OutlineInputBorder(
+                borderRadius: BorderRadius.circular(12),
+              ),
+              enabledBorder: OutlineInputBorder(
+                borderRadius: BorderRadius.circular(12),
+                borderSide: BorderSide(color: Colors.grey[300]!),
+              ),
+              focusedBorder: OutlineInputBorder(
+                borderRadius: BorderRadius.circular(12),
+                borderSide: BorderSide(color: Color(0xFF1c74bb), width: 2),
+              ),
+              filled: true,
+              fillColor: Colors.grey[50],
+            ),
+            style: GoogleFonts.leagueSpartan(fontSize: 15),
+            validator: (value) =>
+                value == null || value.isEmpty ? 'Required' : null,
+            onSaved: (value) => education.degree = value!,
+          ),
+          SizedBox(height: 12),
+          Row(
+            children: [
+              Expanded(
+                child: TextFormField(
+                  decoration: InputDecoration(
+                    labelText: 'From',
+                    labelStyle: GoogleFonts.leagueSpartan(
+                      color: Color(0xFF1c74bb),
+                      fontWeight: FontWeight.w600,
+                    ),
+                    floatingLabelStyle: GoogleFonts.leagueSpartan(
+                      color: Color(0xFF1c74bb),
+                      fontWeight: FontWeight.w600,
+                    ),
+                    prefixIcon: Icon(Icons.calendar_today,
+                        color: Color(0xFF1c74bb), size: 20),
+                    border: OutlineInputBorder(
+                      borderRadius: BorderRadius.circular(12),
+                    ),
+                    enabledBorder: OutlineInputBorder(
+                      borderRadius: BorderRadius.circular(12),
+                      borderSide: BorderSide(color: Colors.grey[300]!),
+                    ),
+                    focusedBorder: OutlineInputBorder(
+                      borderRadius: BorderRadius.circular(12),
+                      borderSide:
+                          BorderSide(color: Color(0xFF1c74bb), width: 2),
+                    ),
+                    filled: true,
+                    fillColor: Colors.grey[50],
+                  ),
+                  style: GoogleFonts.leagueSpartan(fontSize: 15),
+                  validator: (value) =>
+                      value == null || value.isEmpty ? 'Required' : null,
+                  onSaved: (value) => education.from = value!,
+                ),
+              ),
+              SizedBox(width: 12),
+              Expanded(
+                child: TextFormField(
+                  decoration: InputDecoration(
+                    labelText: 'To',
+                    labelStyle: GoogleFonts.leagueSpartan(
+                      color: Color(0xFF1c74bb),
+                      fontWeight: FontWeight.w600,
+                    ),
+                    floatingLabelStyle: GoogleFonts.leagueSpartan(
+                      color: Color(0xFF1c74bb),
+                      fontWeight: FontWeight.w600,
+                    ),
+                    prefixIcon: Icon(Icons.calendar_today,
+                        color: Color(0xFF1c74bb), size: 20),
+                    border: OutlineInputBorder(
+                      borderRadius: BorderRadius.circular(12),
+                    ),
+                    enabledBorder: OutlineInputBorder(
+                      borderRadius: BorderRadius.circular(12),
+                      borderSide: BorderSide(color: Colors.grey[300]!),
+                    ),
+                    focusedBorder: OutlineInputBorder(
+                      borderRadius: BorderRadius.circular(12),
+                      borderSide:
+                          BorderSide(color: Color(0xFF1c74bb), width: 2),
+                    ),
+                    filled: true,
+                    fillColor: Colors.grey[50],
+                  ),
+                  style: GoogleFonts.leagueSpartan(fontSize: 15),
+                  validator: (value) =>
+                      value == null || value.isEmpty ? 'Required' : null,
+                  onSaved: (value) => education.to = value!,
+                ),
+              ),
+            ],
+          ),
+          SizedBox(height: 12),
+          TextFormField(
+            decoration: InputDecoration(
+              labelText: 'Description',
+              hintText: 'Describe your achievements...',
+              hintStyle: GoogleFonts.leagueSpartan(color: Colors.grey[400]),
+              labelStyle: GoogleFonts.leagueSpartan(
+                color: Color(0xFF1c74bb),
+                fontWeight: FontWeight.w600,
+              ),
+              floatingLabelStyle: GoogleFonts.leagueSpartan(
+                color: Color(0xFF1c74bb),
+                fontWeight: FontWeight.w600,
+              ),
+              prefixIcon: Padding(
+                padding: EdgeInsets.only(bottom: 48),
+                child: Icon(Icons.description, color: Color(0xFF1c74bb)),
+              ),
+              border: OutlineInputBorder(
+                borderRadius: BorderRadius.circular(12),
+              ),
+              enabledBorder: OutlineInputBorder(
+                borderRadius: BorderRadius.circular(12),
+                borderSide: BorderSide(color: Colors.grey[300]!),
+              ),
+              focusedBorder: OutlineInputBorder(
+                borderRadius: BorderRadius.circular(12),
+                borderSide: BorderSide(color: Color(0xFF1c74bb), width: 2),
+              ),
+              filled: true,
+              fillColor: Colors.grey[50],
+            ),
+            style: GoogleFonts.leagueSpartan(fontSize: 15),
+            maxLines: 3,
+            validator: (value) =>
+                value == null || value.isEmpty ? 'Required' : null,
+            onSaved: (value) => education.description = value!,
+          ),
+        ],
+      ),
     );
   }
 }
@@ -764,35 +1483,115 @@ class SkillForm extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return Column(
-      crossAxisAlignment: CrossAxisAlignment.start,
-      children: [
-        Text(
-          'Skill Section $index',
-          style: TextStyle(fontSize: 16, fontWeight: FontWeight.w600),
-        ),
-        SizedBox(height: 5),
-        TextFormField(
-          decoration: InputDecoration(
-            labelText: 'Head',
-            border: OutlineInputBorder(),
+    return Container(
+      margin: EdgeInsets.only(bottom: 16),
+      padding: EdgeInsets.all(16),
+      decoration: BoxDecoration(
+        color: Colors.white,
+        borderRadius: BorderRadius.circular(12),
+        border: Border.all(color: Color(0xFF1c74bb).withOpacity(0.3)),
+        boxShadow: [
+          BoxShadow(
+            color: Colors.black.withOpacity(0.05),
+            blurRadius: 10,
+            offset: Offset(0, 4),
           ),
-          validator: (value) =>
-              value == null || value.isEmpty ? 'Required' : null,
-          onSaved: (value) => skill.head = value!,
-        ),
-        SizedBox(height: 10),
-        TextFormField(
-          decoration: InputDecoration(
-            labelText: 'Skills (separated by comma)',
-            border: OutlineInputBorder(),
+        ],
+      ),
+      child: Column(
+        crossAxisAlignment: CrossAxisAlignment.start,
+        children: [
+          Row(
+            children: [
+              Container(
+                padding: EdgeInsets.all(8),
+                decoration: BoxDecoration(
+                  color: Color(0xFF1c74bb).withOpacity(0.1),
+                  borderRadius: BorderRadius.circular(8),
+                ),
+                child: Icon(Icons.stars, color: Color(0xFF1c74bb), size: 20),
+              ),
+              SizedBox(width: 12),
+              Text(
+                'Skill Section $index',
+                style: GoogleFonts.leagueSpartan(
+                  fontSize: 18,
+                  fontWeight: FontWeight.bold,
+                  color: Color(0xFF165d96),
+                ),
+              ),
+            ],
           ),
-          validator: (value) =>
-              value == null || value.isEmpty ? 'Required' : null,
-          onSaved: (value) => skill.skills = value!,
-        ),
-        SizedBox(height: 20),
-      ],
+          SizedBox(height: 16),
+          TextFormField(
+            decoration: InputDecoration(
+              labelText: 'Head',
+              hintText: 'e.g., Programming Languages',
+              hintStyle: GoogleFonts.leagueSpartan(color: Colors.grey[400]),
+              labelStyle: GoogleFonts.leagueSpartan(
+                color: Color(0xFF1c74bb),
+                fontWeight: FontWeight.w600,
+              ),
+              floatingLabelStyle: GoogleFonts.leagueSpartan(
+                color: Color(0xFF1c74bb),
+                fontWeight: FontWeight.w600,
+              ),
+              prefixIcon: Icon(Icons.title, color: Color(0xFF1c74bb)),
+              border: OutlineInputBorder(
+                borderRadius: BorderRadius.circular(12),
+              ),
+              enabledBorder: OutlineInputBorder(
+                borderRadius: BorderRadius.circular(12),
+                borderSide: BorderSide(color: Colors.grey[300]!),
+              ),
+              focusedBorder: OutlineInputBorder(
+                borderRadius: BorderRadius.circular(12),
+                borderSide: BorderSide(color: Color(0xFF1c74bb), width: 2),
+              ),
+              filled: true,
+              fillColor: Colors.grey[50],
+            ),
+            style: GoogleFonts.leagueSpartan(fontSize: 15),
+            validator: (value) =>
+                value == null || value.isEmpty ? 'Required' : null,
+            onSaved: (value) => skill.head = value!,
+          ),
+          SizedBox(height: 12),
+          TextFormField(
+            decoration: InputDecoration(
+              labelText: 'Skills (separated by comma)',
+              hintText: 'Python, Java, C++',
+              hintStyle: GoogleFonts.leagueSpartan(color: Colors.grey[400]),
+              labelStyle: GoogleFonts.leagueSpartan(
+                color: Color(0xFF1c74bb),
+                fontWeight: FontWeight.w600,
+              ),
+              floatingLabelStyle: GoogleFonts.leagueSpartan(
+                color: Color(0xFF1c74bb),
+                fontWeight: FontWeight.w600,
+              ),
+              prefixIcon: Icon(Icons.list, color: Color(0xFF1c74bb)),
+              border: OutlineInputBorder(
+                borderRadius: BorderRadius.circular(12),
+              ),
+              enabledBorder: OutlineInputBorder(
+                borderRadius: BorderRadius.circular(12),
+                borderSide: BorderSide(color: Colors.grey[300]!),
+              ),
+              focusedBorder: OutlineInputBorder(
+                borderRadius: BorderRadius.circular(12),
+                borderSide: BorderSide(color: Color(0xFF1c74bb), width: 2),
+              ),
+              filled: true,
+              fillColor: Colors.grey[50],
+            ),
+            style: GoogleFonts.leagueSpartan(fontSize: 15),
+            validator: (value) =>
+                value == null || value.isEmpty ? 'Required' : null,
+            onSaved: (value) => skill.skills = value!,
+          ),
+        ],
+      ),
     );
   }
 }
@@ -806,36 +1605,120 @@ class ProjectForm extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return Column(
-      crossAxisAlignment: CrossAxisAlignment.start,
-      children: [
-        Text(
-          'Project $index',
-          style: TextStyle(fontSize: 16, fontWeight: FontWeight.w600),
-        ),
-        SizedBox(height: 5),
-        TextFormField(
-          decoration: InputDecoration(
-            labelText: 'Head',
-            border: OutlineInputBorder(),
+    return Container(
+      margin: EdgeInsets.only(bottom: 16),
+      padding: EdgeInsets.all(16),
+      decoration: BoxDecoration(
+        color: Colors.white,
+        borderRadius: BorderRadius.circular(12),
+        border: Border.all(color: Color(0xFF1c74bb).withOpacity(0.3)),
+        boxShadow: [
+          BoxShadow(
+            color: Colors.black.withOpacity(0.05),
+            blurRadius: 10,
+            offset: Offset(0, 4),
           ),
-          validator: (value) =>
-              value == null || value.isEmpty ? 'Required' : null,
-          onSaved: (value) => project.head = value!,
-        ),
-        SizedBox(height: 10),
-        TextFormField(
-          decoration: InputDecoration(
-            labelText: 'Description',
-            border: OutlineInputBorder(),
+        ],
+      ),
+      child: Column(
+        crossAxisAlignment: CrossAxisAlignment.start,
+        children: [
+          Row(
+            children: [
+              Container(
+                padding: EdgeInsets.all(8),
+                decoration: BoxDecoration(
+                  color: Color(0xFF1c74bb).withOpacity(0.1),
+                  borderRadius: BorderRadius.circular(8),
+                ),
+                child: Icon(Icons.work_outline,
+                    color: Color(0xFF1c74bb), size: 20),
+              ),
+              SizedBox(width: 12),
+              Text(
+                'Project $index',
+                style: GoogleFonts.leagueSpartan(
+                  fontSize: 18,
+                  fontWeight: FontWeight.bold,
+                  color: Color(0xFF165d96),
+                ),
+              ),
+            ],
           ),
-          maxLines: 3,
-          validator: (value) =>
-              value == null || value.isEmpty ? 'Required' : null,
-          onSaved: (value) => project.description = value!,
-        ),
-        SizedBox(height: 20),
-      ],
+          SizedBox(height: 16),
+          TextFormField(
+            decoration: InputDecoration(
+              labelText: 'Project Name',
+              hintText: 'e.g., E-Commerce Website',
+              hintStyle: GoogleFonts.leagueSpartan(color: Colors.grey[400]),
+              labelStyle: GoogleFonts.leagueSpartan(
+                color: Color(0xFF1c74bb),
+                fontWeight: FontWeight.w600,
+              ),
+              floatingLabelStyle: GoogleFonts.leagueSpartan(
+                color: Color(0xFF1c74bb),
+                fontWeight: FontWeight.w600,
+              ),
+              prefixIcon: Icon(Icons.folder, color: Color(0xFF1c74bb)),
+              border: OutlineInputBorder(
+                borderRadius: BorderRadius.circular(12),
+              ),
+              enabledBorder: OutlineInputBorder(
+                borderRadius: BorderRadius.circular(12),
+                borderSide: BorderSide(color: Colors.grey[300]!),
+              ),
+              focusedBorder: OutlineInputBorder(
+                borderRadius: BorderRadius.circular(12),
+                borderSide: BorderSide(color: Color(0xFF1c74bb), width: 2),
+              ),
+              filled: true,
+              fillColor: Colors.grey[50],
+            ),
+            style: GoogleFonts.leagueSpartan(fontSize: 15),
+            validator: (value) =>
+                value == null || value.isEmpty ? 'Required' : null,
+            onSaved: (value) => project.head = value!,
+          ),
+          SizedBox(height: 12),
+          TextFormField(
+            decoration: InputDecoration(
+              labelText: 'Description',
+              hintText: 'Describe your project...',
+              hintStyle: GoogleFonts.leagueSpartan(color: Colors.grey[400]),
+              labelStyle: GoogleFonts.leagueSpartan(
+                color: Color(0xFF1c74bb),
+                fontWeight: FontWeight.w600,
+              ),
+              floatingLabelStyle: GoogleFonts.leagueSpartan(
+                color: Color(0xFF1c74bb),
+                fontWeight: FontWeight.w600,
+              ),
+              prefixIcon: Padding(
+                padding: EdgeInsets.only(bottom: 48),
+                child: Icon(Icons.description, color: Color(0xFF1c74bb)),
+              ),
+              border: OutlineInputBorder(
+                borderRadius: BorderRadius.circular(12),
+              ),
+              enabledBorder: OutlineInputBorder(
+                borderRadius: BorderRadius.circular(12),
+                borderSide: BorderSide(color: Colors.grey[300]!),
+              ),
+              focusedBorder: OutlineInputBorder(
+                borderRadius: BorderRadius.circular(12),
+                borderSide: BorderSide(color: Color(0xFF1c74bb), width: 2),
+              ),
+              filled: true,
+              fillColor: Colors.grey[50],
+            ),
+            style: GoogleFonts.leagueSpartan(fontSize: 15),
+            maxLines: 3,
+            validator: (value) =>
+                value == null || value.isEmpty ? 'Required' : null,
+            onSaved: (value) => project.description = value!,
+          ),
+        ],
+      ),
     );
   }
 }
@@ -850,26 +1733,86 @@ class ExperienceForm extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return Column(
-      crossAxisAlignment: CrossAxisAlignment.start,
-      children: [
-        Text(
-          'Experience $index',
-          style: TextStyle(fontSize: 16, fontWeight: FontWeight.w600),
-        ),
-        SizedBox(height: 5),
-        TextFormField(
-          decoration: InputDecoration(
-            labelText: 'Description',
-            border: OutlineInputBorder(),
+    return Container(
+      margin: EdgeInsets.only(bottom: 16),
+      padding: EdgeInsets.all(16),
+      decoration: BoxDecoration(
+        color: Colors.white,
+        borderRadius: BorderRadius.circular(12),
+        border: Border.all(color: Color(0xFF1c74bb).withOpacity(0.3)),
+        boxShadow: [
+          BoxShadow(
+            color: Colors.black.withOpacity(0.05),
+            blurRadius: 10,
+            offset: Offset(0, 4),
           ),
-          maxLines: 3,
-          validator: (value) =>
-              value == null || value.isEmpty ? 'Required' : null,
-          onSaved: (value) => experience.description = value!,
-        ),
-        SizedBox(height: 20),
-      ],
+        ],
+      ),
+      child: Column(
+        crossAxisAlignment: CrossAxisAlignment.start,
+        children: [
+          Row(
+            children: [
+              Container(
+                padding: EdgeInsets.all(8),
+                decoration: BoxDecoration(
+                  color: Color(0xFF1c74bb).withOpacity(0.1),
+                  borderRadius: BorderRadius.circular(8),
+                ),
+                child: Icon(Icons.business_center,
+                    color: Color(0xFF1c74bb), size: 20),
+              ),
+              SizedBox(width: 12),
+              Text(
+                'Experience $index',
+                style: GoogleFonts.leagueSpartan(
+                  fontSize: 18,
+                  fontWeight: FontWeight.bold,
+                  color: Color(0xFF165d96),
+                ),
+              ),
+            ],
+          ),
+          SizedBox(height: 16),
+          TextFormField(
+            decoration: InputDecoration(
+              labelText: 'Description',
+              hintText: 'Describe your work experience...',
+              hintStyle: GoogleFonts.leagueSpartan(color: Colors.grey[400]),
+              labelStyle: GoogleFonts.leagueSpartan(
+                color: Color(0xFF1c74bb),
+                fontWeight: FontWeight.w600,
+              ),
+              floatingLabelStyle: GoogleFonts.leagueSpartan(
+                color: Color(0xFF1c74bb),
+                fontWeight: FontWeight.w600,
+              ),
+              prefixIcon: Padding(
+                padding: EdgeInsets.only(bottom: 48),
+                child: Icon(Icons.work, color: Color(0xFF1c74bb)),
+              ),
+              border: OutlineInputBorder(
+                borderRadius: BorderRadius.circular(12),
+              ),
+              enabledBorder: OutlineInputBorder(
+                borderRadius: BorderRadius.circular(12),
+                borderSide: BorderSide(color: Colors.grey[300]!),
+              ),
+              focusedBorder: OutlineInputBorder(
+                borderRadius: BorderRadius.circular(12),
+                borderSide: BorderSide(color: Color(0xFF1c74bb), width: 2),
+              ),
+              filled: true,
+              fillColor: Colors.grey[50],
+            ),
+            style: GoogleFonts.leagueSpartan(fontSize: 15),
+            maxLines: 4,
+            validator: (value) =>
+                value == null || value.isEmpty ? 'Required' : null,
+            onSaved: (value) => experience.description = value!,
+          ),
+        ],
+      ),
     );
   }
 }
