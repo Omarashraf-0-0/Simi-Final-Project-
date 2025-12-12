@@ -29,19 +29,36 @@ class Quiz extends StatefulWidget {
   State<Quiz> createState() => _QuizState();
 }
 
-class _QuizState extends State<Quiz> {
+class _QuizState extends State<Quiz> with SingleTickerProviderStateMixin {
   int currentQuestion = 0;
   int correctAnswers = 0;
   List<int> userAnswers = [];
   late int totalSecondsRemaining;
   Timer? timer;
+  late AnimationController _animationController;
+  late Animation<double> _fadeAnimation;
 
   late List<Map<String, dynamic>> questions;
+
+  final Color primaryColor = const Color(0xFF1c74bb);
+  final Color secondaryColor = const Color(0xFF165d96);
+  final Color accentColor = const Color(0xFF18bebc);
+  final Color backgroundColor = const Color(0xFFF5F7FA);
 
   @override
   void initState() {
     super.initState();
     totalSecondsRemaining = 60 * widget.totalQuestions;
+
+    _animationController = AnimationController(
+      duration: const Duration(milliseconds: 600),
+      vsync: this,
+    );
+    _fadeAnimation = CurvedAnimation(
+      parent: _animationController,
+      curve: Curves.easeOut,
+    );
+    _animationController.forward();
 
     questions = [];
     List<dynamic> quizQuestions = widget.quizData['questions'];
@@ -104,6 +121,7 @@ class _QuizState extends State<Quiz> {
   @override
   void dispose() {
     stopTimer();
+    _animationController.dispose();
     super.dispose();
   }
 
@@ -416,302 +434,655 @@ class _QuizState extends State<Quiz> {
   Widget build(BuildContext context) {
     if (questions.isEmpty) {
       return Scaffold(
-        appBar: AppBar(
-          backgroundColor: Color(0xFF165D96),
-          title: Text('Quiz'),
-        ),
-        body: Center(
-          child: Text('No questions available.'),
+        backgroundColor: backgroundColor,
+        body: CustomScrollView(
+          slivers: [
+            SliverAppBar(
+              expandedHeight: 140,
+              floating: false,
+              pinned: true,
+              elevation: 0,
+              backgroundColor: primaryColor,
+              flexibleSpace: FlexibleSpaceBar(
+                background: Container(
+                  decoration: BoxDecoration(
+                    gradient: LinearGradient(
+                      begin: Alignment.topLeft,
+                      end: Alignment.bottomRight,
+                      colors: [primaryColor, secondaryColor, accentColor],
+                    ),
+                  ),
+                ),
+              ),
+            ),
+            const SliverFillRemaining(
+              child: Center(
+                child: Text(
+                  'No questions available.',
+                  style: TextStyle(fontSize: 18),
+                ),
+              ),
+            ),
+          ],
         ),
       );
     }
 
     return Scaffold(
-      backgroundColor: Theme.of(context).scaffoldBackgroundColor,
-      appBar: AppBar(
-        backgroundColor: Color(0xFF165D96),
-        title: Text(
-          'Quiz',
-          style: TextStyle(
-            fontFamily: 'League Spartan',
-            fontSize: 25,
-            fontWeight: FontWeight.bold,
-            color: Colors.white,
-          ),
-        ),
-        centerTitle: true,
-        actions: [
-          Container(
-            padding: const EdgeInsets.all(8),
-            decoration: BoxDecoration(
-              color: Colors.grey.shade200,
-              borderRadius: BorderRadius.circular(20),
-            ),
-            child: Row(
-              mainAxisSize: MainAxisSize.min,
-              children: [
-                Icon(
-                  Icons.watch_later,
-                  color: Color(0xFF165D96),
-                  size: 24,
+      backgroundColor: backgroundColor,
+      body: CustomScrollView(
+        slivers: [
+          // Modern Gradient AppBar with Timer
+          SliverAppBar(
+            expandedHeight: 160,
+            floating: false,
+            pinned: true,
+            elevation: 0,
+            backgroundColor: primaryColor,
+            leading: IconButton(
+              icon: Container(
+                padding: const EdgeInsets.all(8),
+                decoration: BoxDecoration(
+                  color: Colors.white.withOpacity(0.2),
+                  borderRadius: BorderRadius.circular(12),
                 ),
-                SizedBox(width: 5),
-                Text(
-                  '${totalSecondsRemaining ~/ 60}:${(totalSecondsRemaining % 60).toString().padLeft(2, '0')}',
-                  style: TextStyle(
-                    fontFamily: 'League Spartan',
-                    fontSize: 14,
-                    fontWeight: FontWeight.bold,
-                    color: Color(0xFF165D96),
+                child: const Icon(
+                  Icons.arrow_back_ios_new_rounded,
+                  color: Colors.white,
+                  size: 20,
+                ),
+              ),
+              onPressed: () => Navigator.pop(context),
+            ),
+            flexibleSpace: FlexibleSpaceBar(
+              background: Container(
+                decoration: BoxDecoration(
+                  gradient: LinearGradient(
+                    begin: Alignment.topLeft,
+                    end: Alignment.bottomRight,
+                    colors: [primaryColor, secondaryColor, accentColor],
                   ),
                 ),
-              ],
-            ),
-          ),
-        ],
-      ),
-      body: SafeArea(
-        child: Column(
-          crossAxisAlignment: CrossAxisAlignment.start,
-          children: [
-            const SizedBox(height: 15),
-            // Question navigation bar
-            Padding(
-              padding: const EdgeInsets.symmetric(horizontal: 16.0),
-              child: SizedBox(
-                height: 50,
-                child: ListView.builder(
-                  scrollDirection: Axis.horizontal,
-                  itemCount: questions.length,
-                  itemBuilder: (context, index) {
-                    return GestureDetector(
-                      onTap: () {
-                        setState(() {
-                          currentQuestion = index;
-                        });
-                      },
-                      child: Column(
-                        children: [
-                          Container(
-                            width: 50,
-                            margin: const EdgeInsets.symmetric(horizontal: 4),
-                            padding: const EdgeInsets.all(10),
-                            decoration: BoxDecoration(
-                              color: currentQuestion == index
-                                  ? Color(0xFF165D96)
-                                  : Colors.grey.shade400,
-                              shape: BoxShape.circle,
-                            ),
-                            child: Center(
-                              child: Text(
-                                (index + 1).toString(),
-                                style: TextStyle(
-                                  fontFamily: 'League Spartan',
-                                  color: Colors.white,
-                                  fontWeight: FontWeight.bold,
-                                ),
-                              ),
-                            ),
-                          ),
-                          SizedBox(height: 4),
-                          Container(
-                            width: 50,
-                            height: 2,
-                            color: currentQuestion == index
-                                ? Color(0xFF165D96)
-                                : Colors.grey.shade400,
-                          ),
-                        ],
-                      ),
-                    );
-                  },
-                ),
-              ),
-            ),
-            const SizedBox(height: 16),
-            // Question text
-            Padding(
-              padding: const EdgeInsets.all(16.0),
-              child: Text(
-                questions[currentQuestion]["question"],
-                style: Theme.of(context).textTheme.headlineSmall?.copyWith(
-                      fontFamily: 'League Spartan',
-                    ),
-              ),
-            ),
-            // Options
-            ...List.generate(
-              questions[currentQuestion]["options"] != null
-                  ? questions[currentQuestion]["options"].length
-                  : 0,
-              (index) {
-                bool isSelected =
-                    questions[currentQuestion]["selectedOption"] == index;
-
-                // Process the option text to remove leading letters and dots
-                String optionText =
-                    questions[currentQuestion]["options"][index];
-                // Remove leading 'A. ', 'B. ', 'C. ', or 'D. '
-                optionText = optionText.replaceFirst(
-                    RegExp(r'^[A-D]\.\s*', caseSensitive: false), '');
-
-                return GestureDetector(
-                  onTap: () => selectOption(index),
-                  child: Container(
-                    margin:
-                        const EdgeInsets.symmetric(vertical: 8, horizontal: 16),
-                    padding: const EdgeInsets.all(12),
-                    decoration: BoxDecoration(
-                      color: Colors.transparent,
-                      borderRadius: BorderRadius.circular(12),
-                      border: Border.all(
-                        color: isSelected
-                            ? Color(0xFF165D96)
-                            : Colors.grey.shade400,
-                        width: 2,
-                      ),
-                    ),
+                child: SafeArea(
+                  child: Padding(
+                    padding: const EdgeInsets.fromLTRB(20, 60, 20, 20),
                     child: Row(
-                      crossAxisAlignment:
-                          CrossAxisAlignment.start, // Align at the top
                       children: [
                         Container(
-                          width: 50,
-                          height: 50,
+                          padding: const EdgeInsets.all(16),
                           decoration: BoxDecoration(
-                            color: isSelected
-                                ? Color(0xFF165D96)
-                                : Colors.grey.shade400,
-                            shape: BoxShape.circle,
-                          ),
-                          child: Center(
-                            child: Text(
-                              questions[currentQuestion]["type"] == "MCQ"
-                                  ? String.fromCharCode(65 + index)
-                                  : questions[currentQuestion]["options"][index]
-                                      .substring(0, 1)
-                                      .toUpperCase(),
-                              style: TextStyle(
-                                fontFamily: 'League Spartan',
-                                color: Colors.white,
-                                fontWeight: FontWeight.bold,
-                              ),
+                            color: Colors.white.withOpacity(0.2),
+                            borderRadius: BorderRadius.circular(20),
+                            border: Border.all(
+                              color: Colors.white.withOpacity(0.3),
+                              width: 2,
                             ),
+                          ),
+                          child: const Icon(
+                            Icons.quiz_rounded,
+                            color: Colors.white,
+                            size: 32,
                           ),
                         ),
                         const SizedBox(width: 16),
                         Expanded(
-                          child: Text(
-                            optionText,
-                            style: Theme.of(context)
-                                .textTheme
-                                .titleLarge
-                                ?.copyWith(
-                                  fontFamily: 'League Spartan',
+                          child: Column(
+                            crossAxisAlignment: CrossAxisAlignment.start,
+                            mainAxisSize: MainAxisSize.min,
+                            children: [
+                              const Text(
+                                'Quiz Time',
+                                style: TextStyle(
+                                  color: Colors.white,
+                                  fontSize: 24,
+                                  fontWeight: FontWeight.bold,
+                                ),
+                              ),
+                              const SizedBox(height: 4),
+                              Text(
+                                'Question ${currentQuestion + 1} of ${questions.length}',
+                                style: const TextStyle(
+                                  color: Colors.white70,
+                                  fontSize: 14,
+                                ),
+                              ),
+                            ],
+                          ),
+                        ),
+                        // Timer
+                        Container(
+                          padding: const EdgeInsets.symmetric(
+                              horizontal: 16, vertical: 10),
+                          decoration: BoxDecoration(
+                            color: Colors.white,
+                            borderRadius: BorderRadius.circular(16),
+                            boxShadow: [
+                              BoxShadow(
+                                color: Colors.black.withOpacity(0.1),
+                                blurRadius: 10,
+                                offset: const Offset(0, 2),
+                              ),
+                            ],
+                          ),
+                          child: Row(
+                            mainAxisSize: MainAxisSize.min,
+                            children: [
+                              Icon(
+                                Icons.timer_rounded,
+                                color: totalSecondsRemaining < 60
+                                    ? Colors.red
+                                    : primaryColor,
+                                size: 24,
+                              ),
+                              const SizedBox(width: 8),
+                              Text(
+                                '${totalSecondsRemaining ~/ 60}:${(totalSecondsRemaining % 60).toString().padLeft(2, '0')}',
+                                style: TextStyle(
                                   fontSize: 16,
                                   fontWeight: FontWeight.bold,
-                                  color: isSelected
-                                      ? Color(0xFF165D96)
-                                      : Theme.of(context).colorScheme.secondary,
+                                  color: totalSecondsRemaining < 60
+                                      ? Colors.red
+                                      : primaryColor,
                                 ),
+                              ),
+                            ],
                           ),
                         ),
                       ],
                     ),
                   ),
-                );
-              },
+                ),
+              ),
             ),
-            const Spacer(),
-            // Navigation buttons and Submit button
-            Padding(
-              padding: const EdgeInsets.symmetric(horizontal: 16.0),
-              child: Row(
-                mainAxisAlignment: MainAxisAlignment.spaceBetween,
+          ),
+
+          // Content
+          SliverToBoxAdapter(
+            child: FadeTransition(
+              opacity: _fadeAnimation,
+              child: Column(
                 children: [
-                  // Previous Question Button
-                  GestureDetector(
-                    onTap: currentQuestion > 0 ? previousQuestion : null,
-                    child: Container(
-                      width: 50,
-                      height: 50,
-                      decoration: BoxDecoration(
-                        color: currentQuestion > 0
-                            ? Color(0xFF165D96)
-                            : Colors.grey.shade400,
-                        shape: BoxShape.circle,
-                      ),
-                      child: Center(
-                        child: Icon(
-                          Icons.arrow_back_ios,
-                          color: Colors.white,
-                        ),
-                      ),
+                  const SizedBox(height: 20),
+
+                  // Question Navigation Bar
+                  Container(
+                    height: 70,
+                    margin: const EdgeInsets.symmetric(horizontal: 16),
+                    child: ListView.builder(
+                      scrollDirection: Axis.horizontal,
+                      itemCount: questions.length,
+                      itemBuilder: (context, index) {
+                        bool isAnswered =
+                            questions[index]["selectedOption"] != -1;
+                        bool isCurrent = currentQuestion == index;
+                        return GestureDetector(
+                          onTap: () {
+                            setState(() {
+                              currentQuestion = index;
+                              _animationController.reset();
+                              _animationController.forward();
+                            });
+                          },
+                          child: Container(
+                            width: 60,
+                            margin: const EdgeInsets.symmetric(horizontal: 6),
+                            child: Column(
+                              mainAxisSize: MainAxisSize.min,
+                              children: [
+                                Container(
+                                  width: 48,
+                                  height: 48,
+                                  decoration: BoxDecoration(
+                                    gradient: isCurrent
+                                        ? LinearGradient(
+                                            colors: [primaryColor, accentColor],
+                                          )
+                                        : null,
+                                    color: isCurrent
+                                        ? null
+                                        : isAnswered
+                                            ? accentColor.withOpacity(0.3)
+                                            : Colors.grey.shade300,
+                                    shape: BoxShape.circle,
+                                    border: Border.all(
+                                      color: isCurrent
+                                          ? Colors.white
+                                          : isAnswered
+                                              ? accentColor
+                                              : Colors.grey.shade400,
+                                      width: isCurrent ? 3 : 2,
+                                    ),
+                                    boxShadow: isCurrent
+                                        ? [
+                                            BoxShadow(
+                                              color:
+                                                  primaryColor.withOpacity(0.4),
+                                              blurRadius: 8,
+                                              offset: const Offset(0, 4),
+                                            ),
+                                          ]
+                                        : null,
+                                  ),
+                                  child: Center(
+                                    child: Text(
+                                      (index + 1).toString(),
+                                      style: TextStyle(
+                                        color: isCurrent
+                                            ? Colors.white
+                                            : isAnswered
+                                                ? accentColor
+                                                : Colors.grey.shade600,
+                                        fontWeight: FontWeight.bold,
+                                        fontSize: 16,
+                                      ),
+                                    ),
+                                  ),
+                                ),
+                                const SizedBox(height: 4),
+                                if (isAnswered)
+                                  Icon(
+                                    Icons.check_circle,
+                                    color:
+                                        isCurrent ? primaryColor : accentColor,
+                                    size: 14,
+                                  ),
+                              ],
+                            ),
+                          ),
+                        );
+                      },
                     ),
                   ),
-                  // Submit Button with Confirmation Dialog
-                  ElevatedButton(
-                    onPressed: () {
-                      // Show confirmation popup
-                      showDialog(
-                        context: context,
-                        builder: (context) => ConfirmationPopUp(
-                          onConfirm: () {
-                            Navigator.of(context).pop(); // Close the dialog
-                            submitQuiz();
-                          },
-                          onCancel: () {
-                            Navigator.of(context).pop(); // Close the dialog
-                            // Do nothing, return to quiz
-                          },
+
+                  const SizedBox(height: 24),
+
+                  // Question Card
+                  Container(
+                    margin: const EdgeInsets.symmetric(horizontal: 16),
+                    padding: const EdgeInsets.all(24),
+                    decoration: BoxDecoration(
+                      color: Colors.white,
+                      borderRadius: BorderRadius.circular(24),
+                      boxShadow: [
+                        BoxShadow(
+                          color: Colors.black.withOpacity(0.05),
+                          blurRadius: 20,
+                          offset: const Offset(0, 4),
+                        ),
+                      ],
+                    ),
+                    child: Column(
+                      crossAxisAlignment: CrossAxisAlignment.start,
+                      children: [
+                        Row(
+                          children: [
+                            Container(
+                              padding: const EdgeInsets.symmetric(
+                                  horizontal: 12, vertical: 6),
+                              decoration: BoxDecoration(
+                                gradient: LinearGradient(
+                                  colors: [
+                                    primaryColor.withOpacity(0.2),
+                                    accentColor.withOpacity(0.2),
+                                  ],
+                                ),
+                                borderRadius: BorderRadius.circular(12),
+                              ),
+                              child: Text(
+                                questions[currentQuestion]["type"] == "MCQ"
+                                    ? 'Multiple Choice'
+                                    : 'True/False',
+                                style: TextStyle(
+                                  fontSize: 12,
+                                  fontWeight: FontWeight.w600,
+                                  color: primaryColor,
+                                ),
+                              ),
+                            ),
+                            const Spacer(),
+                            Container(
+                              padding: const EdgeInsets.symmetric(
+                                  horizontal: 12, vertical: 6),
+                              decoration: BoxDecoration(
+                                color: accentColor.withOpacity(0.1),
+                                borderRadius: BorderRadius.circular(12),
+                              ),
+                              child: Row(
+                                children: [
+                                  Icon(
+                                    Icons.class_rounded,
+                                    size: 16,
+                                    color: accentColor,
+                                  ),
+                                  const SizedBox(width: 4),
+                                  Text(
+                                    'Lec ${questions[currentQuestion]["lecture"]}',
+                                    style: TextStyle(
+                                      fontSize: 12,
+                                      fontWeight: FontWeight.w600,
+                                      color: accentColor,
+                                    ),
+                                  ),
+                                ],
+                              ),
+                            ),
+                          ],
+                        ),
+                        const SizedBox(height: 20),
+                        Text(
+                          questions[currentQuestion]["question"],
+                          style: const TextStyle(
+                            fontSize: 18,
+                            fontWeight: FontWeight.bold,
+                            height: 1.5,
+                          ),
+                        ),
+                      ],
+                    ),
+                  ),
+
+                  const SizedBox(height: 20),
+
+                  // Options
+                  ...List.generate(
+                    questions[currentQuestion]["options"] != null
+                        ? questions[currentQuestion]["options"].length
+                        : 0,
+                    (index) {
+                      bool isSelected =
+                          questions[currentQuestion]["selectedOption"] == index;
+
+                      String optionText =
+                          questions[currentQuestion]["options"][index];
+                      optionText = optionText.replaceFirst(
+                          RegExp(r'^[A-D]\.\s*', caseSensitive: false), '');
+
+                      return GestureDetector(
+                        onTap: () {
+                          selectOption(index);
+                          _animationController.reset();
+                          _animationController.forward();
+                        },
+                        child: Container(
+                          margin: const EdgeInsets.symmetric(
+                              vertical: 8, horizontal: 16),
+                          padding: const EdgeInsets.all(16),
+                          decoration: BoxDecoration(
+                            gradient: isSelected
+                                ? LinearGradient(
+                                    colors: [
+                                      primaryColor.withOpacity(0.1),
+                                      accentColor.withOpacity(0.05),
+                                    ],
+                                  )
+                                : null,
+                            color: isSelected ? null : Colors.white,
+                            borderRadius: BorderRadius.circular(20),
+                            border: Border.all(
+                              color: isSelected
+                                  ? primaryColor
+                                  : Colors.grey.shade300,
+                              width: isSelected ? 2.5 : 2,
+                            ),
+                            boxShadow: isSelected
+                                ? [
+                                    BoxShadow(
+                                      color: primaryColor.withOpacity(0.2),
+                                      blurRadius: 12,
+                                      offset: const Offset(0, 4),
+                                    ),
+                                  ]
+                                : [
+                                    BoxShadow(
+                                      color: Colors.black.withOpacity(0.03),
+                                      blurRadius: 8,
+                                      offset: const Offset(0, 2),
+                                    ),
+                                  ],
+                          ),
+                          child: Row(
+                            children: [
+                              Container(
+                                width: 50,
+                                height: 50,
+                                decoration: BoxDecoration(
+                                  gradient: isSelected
+                                      ? LinearGradient(
+                                          colors: [primaryColor, accentColor],
+                                        )
+                                      : null,
+                                  color:
+                                      isSelected ? null : Colors.grey.shade200,
+                                  shape: BoxShape.circle,
+                                  boxShadow: isSelected
+                                      ? [
+                                          BoxShadow(
+                                            color:
+                                                primaryColor.withOpacity(0.3),
+                                            blurRadius: 8,
+                                            offset: const Offset(0, 2),
+                                          ),
+                                        ]
+                                      : null,
+                                ),
+                                child: Center(
+                                  child: Text(
+                                    questions[currentQuestion]["type"] == "MCQ"
+                                        ? String.fromCharCode(65 + index)
+                                        : questions[currentQuestion]["options"]
+                                                [index]
+                                            .substring(0, 1)
+                                            .toUpperCase(),
+                                    style: TextStyle(
+                                      color: isSelected
+                                          ? Colors.white
+                                          : Colors.grey.shade600,
+                                      fontWeight: FontWeight.bold,
+                                      fontSize: 18,
+                                    ),
+                                  ),
+                                ),
+                              ),
+                              const SizedBox(width: 16),
+                              Expanded(
+                                child: Text(
+                                  optionText,
+                                  style: TextStyle(
+                                    fontSize: 16,
+                                    fontWeight: isSelected
+                                        ? FontWeight.w600
+                                        : FontWeight.w500,
+                                    color: isSelected
+                                        ? primaryColor
+                                        : Colors.black87,
+                                    height: 1.4,
+                                  ),
+                                ),
+                              ),
+                              if (isSelected)
+                                Icon(
+                                  Icons.check_circle_rounded,
+                                  color: primaryColor,
+                                  size: 28,
+                                ),
+                            ],
+                          ),
                         ),
                       );
                     },
-                    style: ElevatedButton.styleFrom(
-                      backgroundColor: Color(0xFF165D96),
-                      padding:
-                          EdgeInsets.symmetric(horizontal: 70, vertical: 10),
-                      shape: RoundedRectangleBorder(
-                        borderRadius: BorderRadius.circular(10),
-                      ),
-                    ),
-                    child: Text(
-                      'Submit',
-                      style: TextStyle(
-                        fontFamily: 'League Spartan',
-                        fontSize: 25,
-                        fontWeight: FontWeight.bold,
-                        color: Colors.white,
-                      ),
-                    ),
                   ),
-                  // Next Question Button
-                  GestureDetector(
-                    onTap: currentQuestion < questions.length - 1
-                        ? nextQuestion
-                        : null,
-                    child: Container(
-                      width: 50,
-                      height: 50,
-                      decoration: BoxDecoration(
-                        color: currentQuestion < questions.length - 1
-                            ? Color(0xFF165D96)
-                            : Colors.grey.shade400,
-                        shape: BoxShape.circle,
-                      ),
-                      child: Center(
-                        child: Icon(
-                          Icons.arrow_forward_ios,
-                          color: Colors.white,
-                        ),
-                      ),
-                    ),
-                  ),
+
+                  const SizedBox(height: 100),
                 ],
               ),
             ),
-            const SizedBox(height: 16),
+          ),
+        ],
+      ),
+
+      // Bottom Navigation
+      bottomNavigationBar: Container(
+        decoration: BoxDecoration(
+          color: Colors.white,
+          boxShadow: [
+            BoxShadow(
+              color: Colors.black.withOpacity(0.05),
+              blurRadius: 10,
+              offset: const Offset(0, -2),
+            ),
           ],
+        ),
+        child: SafeArea(
+          child: Padding(
+            padding: const EdgeInsets.all(16),
+            child: Row(
+              mainAxisAlignment: MainAxisAlignment.spaceBetween,
+              children: [
+                // Previous Button
+                Container(
+                  width: 56,
+                  height: 56,
+                  decoration: BoxDecoration(
+                    gradient: currentQuestion > 0
+                        ? LinearGradient(
+                            colors: [secondaryColor, primaryColor],
+                          )
+                        : null,
+                    color: currentQuestion > 0 ? null : Colors.grey.shade300,
+                    shape: BoxShape.circle,
+                    boxShadow: currentQuestion > 0
+                        ? [
+                            BoxShadow(
+                              color: primaryColor.withOpacity(0.3),
+                              blurRadius: 12,
+                              offset: const Offset(0, 4),
+                            ),
+                          ]
+                        : null,
+                  ),
+                  child: Material(
+                    color: Colors.transparent,
+                    child: InkWell(
+                      onTap: currentQuestion > 0 ? previousQuestion : null,
+                      customBorder: const CircleBorder(),
+                      child: Icon(
+                        Icons.arrow_back_ios_new_rounded,
+                        color: currentQuestion > 0
+                            ? Colors.white
+                            : Colors.grey.shade500,
+                        size: 24,
+                      ),
+                    ),
+                  ),
+                ),
+
+                // Submit Button
+                Expanded(
+                  child: Container(
+                    height: 56,
+                    margin: const EdgeInsets.symmetric(horizontal: 16),
+                    decoration: BoxDecoration(
+                      gradient: LinearGradient(
+                        colors: [primaryColor, accentColor],
+                      ),
+                      borderRadius: BorderRadius.circular(16),
+                      boxShadow: [
+                        BoxShadow(
+                          color: primaryColor.withOpacity(0.4),
+                          blurRadius: 12,
+                          offset: const Offset(0, 4),
+                        ),
+                      ],
+                    ),
+                    child: ElevatedButton(
+                      onPressed: () {
+                        showDialog(
+                          context: context,
+                          builder: (context) => ConfirmationPopUp(
+                            onConfirm: () {
+                              Navigator.of(context).pop();
+                              submitQuiz();
+                            },
+                            onCancel: () {
+                              Navigator.of(context).pop();
+                            },
+                          ),
+                        );
+                      },
+                      style: ElevatedButton.styleFrom(
+                        backgroundColor: Colors.transparent,
+                        shadowColor: Colors.transparent,
+                        shape: RoundedRectangleBorder(
+                          borderRadius: BorderRadius.circular(16),
+                        ),
+                      ),
+                      child: const Row(
+                        mainAxisAlignment: MainAxisAlignment.center,
+                        children: [
+                          Icon(
+                            Icons.send_rounded,
+                            color: Colors.white,
+                            size: 24,
+                          ),
+                          SizedBox(width: 12),
+                          Text(
+                            'Submit Quiz',
+                            style: TextStyle(
+                              color: Colors.white,
+                              fontSize: 18,
+                              fontWeight: FontWeight.bold,
+                            ),
+                          ),
+                        ],
+                      ),
+                    ),
+                  ),
+                ),
+
+                // Next Button
+                Container(
+                  width: 56,
+                  height: 56,
+                  decoration: BoxDecoration(
+                    gradient: currentQuestion < questions.length - 1
+                        ? LinearGradient(
+                            colors: [primaryColor, accentColor],
+                          )
+                        : null,
+                    color: currentQuestion < questions.length - 1
+                        ? null
+                        : Colors.grey.shade300,
+                    shape: BoxShape.circle,
+                    boxShadow: currentQuestion < questions.length - 1
+                        ? [
+                            BoxShadow(
+                              color: primaryColor.withOpacity(0.3),
+                              blurRadius: 12,
+                              offset: const Offset(0, 4),
+                            ),
+                          ]
+                        : null,
+                  ),
+                  child: Material(
+                    color: Colors.transparent,
+                    child: InkWell(
+                      onTap: currentQuestion < questions.length - 1
+                          ? nextQuestion
+                          : null,
+                      customBorder: const CircleBorder(),
+                      child: Icon(
+                        Icons.arrow_forward_ios_rounded,
+                        color: currentQuestion < questions.length - 1
+                            ? Colors.white
+                            : Colors.grey.shade500,
+                        size: 24,
+                      ),
+                    ),
+                  ),
+                ),
+              ],
+            ),
+          ),
         ),
       ),
     );

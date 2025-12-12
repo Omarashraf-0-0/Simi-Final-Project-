@@ -746,17 +746,18 @@ class _HomebodyState extends State<Homebody>
           ),
           child: Center(
             child: Column(
+              mainAxisSize: MainAxisSize.min,
               children: [
                 Icon(
                   Icons.event_available_rounded,
-                  size: 50,
+                  size: 44,
                   color: Colors.grey[300],
                 ),
-                const SizedBox(height: 12),
+                const SizedBox(height: 8),
                 Text(
                   'No tasks for today.',
                   style: TextStyle(
-                    fontSize: 16,
+                    fontSize: 15,
                     color: Colors.grey[600],
                     fontWeight: FontWeight.w500,
                   ),

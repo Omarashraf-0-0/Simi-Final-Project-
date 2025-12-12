@@ -1311,8 +1311,6 @@ class _ScheduleViewState extends State<ScheduleView> {
         ),
       ),
       androidScheduleMode: AndroidScheduleMode.exactAllowWhileIdle,
-      uiLocalNotificationDateInterpretation:
-          UILocalNotificationDateInterpretation.absoluteTime,
     );
 
     // print('Notification scheduled for: $tzScheduledDate');

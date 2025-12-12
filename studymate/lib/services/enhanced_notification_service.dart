@@ -16,15 +16,17 @@ import '../main.dart' show handleNotificationNavigation;
 /// Handles: Scheduled notifications, FCM, Rank achievements, Quiz reminders, etc.
 class EnhancedNotificationService {
   // Singleton pattern
-  static final EnhancedNotificationService _instance = EnhancedNotificationService._internal();
+  static final EnhancedNotificationService _instance =
+      EnhancedNotificationService._internal();
   factory EnhancedNotificationService() => _instance;
   EnhancedNotificationService._internal();
 
   final FirebaseMessaging _firebaseMessaging = FirebaseMessaging.instance;
-  final FlutterLocalNotificationsPlugin _localNotifications = FlutterLocalNotificationsPlugin();
-  
+  final FlutterLocalNotificationsPlugin _localNotifications =
+      FlutterLocalNotificationsPlugin();
+
   String? _fcmToken;
-  
+
   // Notification channels
   static const String _scheduleChannelId = 'schedule_notifications';
   static const String _rankChannelId = 'rank_notifications';
@@ -36,7 +38,7 @@ class EnhancedNotificationService {
   Future<void> initialize() async {
     tz.initializeTimeZones();
     tz.setLocalLocation(tz.getLocation('Africa/Cairo')); // Set your timezone
-    
+
     await _requestPermissions();
     await _initializeLocalNotifications();
     await _createNotificationChannels();
@@ -62,7 +64,7 @@ class EnhancedNotificationService {
     if (Platform.isAndroid) {
       var status = await Permission.notification.request();
       print('✅ Android Notification Permission: ${status.isGranted}');
-      
+
       // Request exact alarm permission for scheduled notifications
       if (await Permission.scheduleExactAlarm.isDenied) {
         await Permission.scheduleExactAlarm.request();
@@ -71,8 +73,9 @@ class EnhancedNotificationService {
 
     // iOS specific permissions
     if (Platform.isIOS) {
-      final iosPlugin = _localNotifications.resolvePlatformSpecificImplementation<
-          IOSFlutterLocalNotificationsPlugin>();
+      final iosPlugin =
+          _localNotifications.resolvePlatformSpecificImplementation<
+              IOSFlutterLocalNotificationsPlugin>();
       await iosPlugin?.requestPermissions(
         alert: true,
         badge: true,
@@ -86,7 +89,8 @@ class EnhancedNotificationService {
     const AndroidInitializationSettings androidSettings =
         AndroidInitializationSettings('@mipmap/ic_launcher');
 
-    final DarwinInitializationSettings iosSettings = DarwinInitializationSettings(
+    final DarwinInitializationSettings iosSettings =
+        DarwinInitializationSettings(
       requestAlertPermission: true,
       requestBadgePermission: true,
       requestSoundPermission: true,
@@ -128,8 +132,9 @@ class EnhancedNotificationService {
   /// Create notification channels for Android
   Future<void> _createNotificationChannels() async {
     if (Platform.isAndroid) {
-      final androidPlugin = _localNotifications.resolvePlatformSpecificImplementation<
-          AndroidFlutterLocalNotificationsPlugin>();
+      final androidPlugin =
+          _localNotifications.resolvePlatformSpecificImplementation<
+              AndroidFlutterLocalNotificationsPlugin>();
 
       // Schedule Channel
       await androidPlugin?.createNotificationChannel(
@@ -194,7 +199,7 @@ class EnhancedNotificationService {
     // Get FCM token
     _fcmToken = await _firebaseMessaging.getToken();
     print('📱 FCM Token: $_fcmToken');
-    
+
     // Save token to backend
     if (_fcmToken != null) {
       await _saveFCMTokenToBackend(_fcmToken!);
@@ -227,7 +232,7 @@ class EnhancedNotificationService {
     try {
       final userBox = Hive.box('userBox');
       final username = userBox.get('username');
-      
+
       if (username == null) return;
 
       await http.post(
@@ -239,7 +244,7 @@ class EnhancedNotificationService {
           'platform': Platform.isIOS ? 'ios' : 'android',
         }),
       );
-      
+
       print('✅ FCM token saved to backend');
     } catch (e) {
       print('❌ Error saving FCM token: $e');
@@ -249,7 +254,7 @@ class EnhancedNotificationService {
   /// Handle foreground messages
   void _handleForegroundMessage(RemoteMessage message) {
     print('📩 Foreground message: ${message.notification?.title}');
-    
+
     if (message.notification != null) {
       _showNotification(
         id: message.hashCode,
@@ -276,7 +281,8 @@ class EnhancedNotificationService {
     String? payload,
     String? largeIcon,
   }) async {
-    final AndroidNotificationDetails androidDetails = AndroidNotificationDetails(
+    final AndroidNotificationDetails androidDetails =
+        AndroidNotificationDetails(
       channelId,
       _getChannelName(channelId),
       channelDescription: _getChannelDescription(channelId),
@@ -307,9 +313,11 @@ class EnhancedNotificationService {
     required String channelId,
     Map<String, dynamic>? data,
   }) async {
-    final tz.TZDateTime tzScheduledDate = tz.TZDateTime.from(scheduledDate, tz.local);
+    final tz.TZDateTime tzScheduledDate =
+        tz.TZDateTime.from(scheduledDate, tz.local);
 
-    final AndroidNotificationDetails androidDetails = AndroidNotificationDetails(
+    final AndroidNotificationDetails androidDetails =
+        AndroidNotificationDetails(
       channelId,
       _getChannelName(channelId),
       channelDescription: _getChannelDescription(channelId),
@@ -330,14 +338,13 @@ class EnhancedNotificationService {
       tzScheduledDate,
       details,
       androidScheduleMode: AndroidScheduleMode.exactAllowWhileIdle,
-      uiLocalNotificationDateInterpretation: UILocalNotificationDateInterpretation.absoluteTime,
       payload: data != null ? jsonEncode(data) : null,
     );
 
     // Store scheduled notification in database with appropriate type
     final notificationType = _getNotificationTypeFromChannel(channelId);
     await _storeNotificationInDatabase(
-      title: title, 
+      title: title,
       body: body,
       type: notificationType,
       metadata: data,
@@ -353,7 +360,7 @@ class EnhancedNotificationService {
     required String location,
   }) async {
     final notificationTime = classTime.subtract(const Duration(minutes: 15));
-    
+
     if (notificationTime.isAfter(DateTime.now())) {
       await scheduleNotification(
         id: classTime.millisecondsSinceEpoch ~/ 1000,
@@ -382,7 +389,8 @@ class EnhancedNotificationService {
       await scheduleNotification(
         id: (quizTime.millisecondsSinceEpoch ~/ 1000) - 86400,
         title: '📝 Quiz Tomorrow!',
-        body: 'Don\'t forget: $quizName is tomorrow at ${_formatTime(quizTime)}',
+        body:
+            'Don\'t forget: $quizName is tomorrow at ${_formatTime(quizTime)}',
         scheduledDate: dayBeforeTime,
         channelId: _quizChannelId,
         data: {
@@ -463,7 +471,8 @@ class EnhancedNotificationService {
   }
 
   /// Show rank up notification
-  Future<void> _showRankUpNotification(String oldRank, String newRank, int xp) async {
+  Future<void> _showRankUpNotification(
+      String oldRank, String newRank, int xp) async {
     final messages = {
       'Explorer': '🎯 You\'re now an Explorer! Keep discovering!',
       'Achiever': '⭐ Amazing! You\'ve reached Achiever status!',
@@ -494,8 +503,9 @@ class EnhancedNotificationService {
     String? customMessage,
   }) async {
     final now = DateTime.now();
-    var scheduledDate = DateTime(now.year, now.month, now.day, time.hour, time.minute);
-    
+    var scheduledDate =
+        DateTime(now.year, now.month, now.day, time.hour, time.minute);
+
     if (scheduledDate.isBefore(now)) {
       scheduledDate = scheduledDate.add(const Duration(days: 1));
     }
@@ -534,15 +544,19 @@ class EnhancedNotificationService {
 
   /// Show streak notification
   Future<void> showStreakNotification(int days) async {
-    String emoji = days >= 30 ? '🔥🔥🔥' : days >= 7 ? '🔥🔥' : '🔥';
-    
+    String emoji = days >= 30
+        ? '🔥🔥🔥'
+        : days >= 7
+            ? '🔥🔥'
+            : '🔥';
+
     await _showNotification(
       id: DateTime.now().millisecondsSinceEpoch ~/ 1000,
       title: '$emoji $days Day Streak!',
-      body: days >= 30 
-          ? 'Incredible! You\'re unstoppable!' 
-          : days >= 7 
-              ? 'A week strong! Keep it going!' 
+      body: days >= 30
+          ? 'Incredible! You\'re unstoppable!'
+          : days >= 7
+              ? 'A week strong! Keep it going!'
               : 'Great start! Don\'t break the chain!',
       channelId: _rankChannelId,
       payload: jsonEncode({'type': 'streak', 'days': days}),
@@ -572,26 +586,26 @@ class EnhancedNotificationService {
     try {
       final userBox = Hive.box('userBox');
       final userId = userBox.get('id');
-      
+
       if (userId == null) {
         print('User ID not found, cannot store notification');
         return;
       }
 
       const url = 'https://alyibrahim.pythonanywhere.com/storeNotification';
-      
+
       final requestBody = {
         'user_id': userId,
         'title': title,
         'body': body,
         'type': type,
       };
-      
+
       // Add metadata if provided
       if (metadata != null) {
         requestBody['metadata'] = metadata;
       }
-      
+
       final response = await http.post(
         Uri.parse(url),
         headers: {'Content-Type': 'application/json'},
@@ -675,7 +689,7 @@ class EnhancedNotificationService {
     final userBox = Hive.box('userBox');
     final xp = userBox.get('xp', defaultValue: 0);
     final currentRank = _calculateRankFromXP(xp);
-    
+
     if (!userBox.containsKey('lastNotifiedRank')) {
       await userBox.put('lastNotifiedRank', currentRank);
     }

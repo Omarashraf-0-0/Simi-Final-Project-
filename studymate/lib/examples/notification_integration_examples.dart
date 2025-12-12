@@ -6,45 +6,47 @@
  */
 
 import 'package:flutter/material.dart';
-import 'package:go_router/go_router.dart';
+import 'package:hive/hive.dart';
 import '../helpers/notification_helpers.dart';
-import '../router/app_router.dart';
+import '../services/enhanced_notification_service.dart';
 
 class QuizCompletionExample extends StatefulWidget {
-  const QuizCompletionExample({Key? key}) : super(key: key);
+  const QuizCompletionExample({super.key});
 
   @override
   State<QuizCompletionExample> createState() => _QuizCompletionExampleState();
 }
 
-class _QuizCompletionExampleState extends State<QuizCompletionExample> 
-    with NotificationHelpers {  // <-- Add this mixin to use notification helpers
-  
+class _QuizCompletionExampleState extends State<QuizCompletionExample>
+    with NotificationHelpers {
+  // <-- Add this mixin to use notification helpers
+
   int _userScore = 0;
-  int _maxScore = 10;
+  final int _maxScore = 10;
 
   /// Call this when user completes a quiz
   Future<void> handleQuizCompletion(int score, int maxScore) async {
     // Award XP based on quiz performance
     await awardQuizXP(score, maxScore);
-    
+
     // Perfect score: 100 XP + rank check + milestone check
     // Regular completion: 50 XP + rank check + milestone check
-    
+
     // Show success dialog
     if (mounted) {
       showDialog(
         context: context,
         builder: (context) => AlertDialog(
-          title: Text(score == maxScore ? '🎉 Perfect Score!' : '✅ Quiz Completed'),
+          title: Text(
+              score == maxScore ? '🎉 Perfect Score!' : '✅ Quiz Completed'),
           content: Column(
             mainAxisSize: MainAxisSize.min,
             children: [
               Text('Score: $score/$maxScore'),
               const SizedBox(height: 16),
               Text(
-                score == maxScore 
-                    ? '+100 XP for perfect score!' 
+                score == maxScore
+                    ? '+100 XP for perfect score!'
                     : '+50 XP for completion!',
                 style: const TextStyle(
                   fontSize: 18,
@@ -113,7 +115,7 @@ class _QuizCompletionExampleState extends State<QuizCompletionExample>
  * EXAMPLE: Schedule notifications when creating/viewing a quiz
  */
 class QuizSchedulingExample extends StatelessWidget {
-  const QuizSchedulingExample({Key? key}) : super(key: key);
+  const QuizSchedulingExample({super.key});
 
   Future<void> scheduleQuizFromData(Map<String, dynamic> quizData) async {
     // Example quiz data from your backend:
@@ -123,16 +125,16 @@ class QuizSchedulingExample extends StatelessWidget {
     //   "quiz_time": "10:00",
     //   "quiz_id": "quiz_123"
     // }
-    
+
     final quizName = quizData['quiz_name'] as String;
     final quizDateStr = quizData['quiz_date'] as String;
     final quizTimeStr = quizData['quiz_time'] as String;
     final quizId = quizData['quiz_id'] as String;
-    
+
     // Parse date and time
     final dateParts = quizDateStr.split('-');
     final timeParts = quizTimeStr.split(':');
-    
+
     final quizDateTime = DateTime(
       int.parse(dateParts[0]),
       int.parse(dateParts[1]),
@@ -140,15 +142,16 @@ class QuizSchedulingExample extends StatelessWidget {
       int.parse(timeParts[0]),
       int.parse(timeParts[1]),
     );
-    
+
     // Schedule notifications (1 day and 1 hour before)
-    await NotificationHelper.scheduleQuiz(
+    final notificationService = EnhancedNotificationService();
+    await notificationService.scheduleQuizReminders(
       quizName: quizName,
       quizTime: quizDateTime,
       quizId: quizId,
     );
-    
-    print('✅ Scheduled reminders for: $quizName');
+
+    // print('✅ Scheduled reminders for: $quizName');
   }
 
   @override
@@ -165,7 +168,7 @@ class QuizSchedulingExample extends StatelessWidget {
               'quiz_time': '10:00',
               'quiz_id': 'quiz_math_final',
             });
-            
+
             ScaffoldMessenger.of(context).showSnackBar(
               const SnackBar(content: Text('✅ Quiz reminders scheduled!')),
             );
@@ -181,47 +184,46 @@ class QuizSchedulingExample extends StatelessWidget {
  * EXAMPLE: Award XP when user reads course material
  */
 class CourseMaterialExample extends StatefulWidget {
-  const CourseMaterialExample({Key? key}) : super(key: key);
+  const CourseMaterialExample({super.key});
 
   @override
   State<CourseMaterialExample> createState() => _CourseMaterialExampleState();
 }
 
-class _CourseMaterialExampleState extends State<CourseMaterialExample> 
+class _CourseMaterialExampleState extends State<CourseMaterialExample>
     with NotificationHelpers {
-  
   final Set<String> _readMaterials = {};
 
   Future<void> markMaterialAsRead(String materialId) async {
     if (!_readMaterials.contains(materialId)) {
       _readMaterials.add(materialId);
-      
+
       // Award XP for reading material
       await awardReadMaterialXP(); // +15 XP
-      
-      if (mounted) {
-        ScaffoldMessenger.of(context).showSnackBar(
-          const SnackBar(
-            content: Text('✅ +15 XP for reading material!'),
-            duration: Duration(seconds: 2),
-          ),
-        );
-      }
+
+      // Show feedback if widget is still mounted
+      if (!mounted) return;
+      ScaffoldMessenger.of(context).showSnackBar(
+        const SnackBar(
+          content: Text('✅ +15 XP for reading material!'),
+          duration: Duration(seconds: 2),
+        ),
+      );
     }
   }
 
   Future<void> markVideoAsWatched(String videoId) async {
     // Award XP for watching video
     await awardWatchVideoXP(); // +20 XP
-    
-    if (mounted) {
-      ScaffoldMessenger.of(context).showSnackBar(
-        const SnackBar(
-          content: Text('✅ +20 XP for watching video!'),
-          duration: Duration(seconds: 2),
-        ),
-      );
-    }
+
+    // Show feedback if widget is still mounted
+    if (!mounted) return;
+    ScaffoldMessenger.of(context).showSnackBar(
+      const SnackBar(
+        content: Text('✅ +20 XP for watching video!'),
+        duration: Duration(seconds: 2),
+      ),
+    );
   }
 
   @override
@@ -276,27 +278,29 @@ class _CourseMaterialExampleState extends State<CourseMaterialExample>
 class DailyLoginExample {
   static Future<void> checkDailyLogin() async {
     // This should be called once per day when user opens the app
-    
+
     final now = DateTime.now();
     final today = DateTime(now.year, now.month, now.day);
-    
+
     // Check last login date from Hive
     final userBox = Hive.box('userBox');
     final lastLoginStr = userBox.get('lastLoginDate');
-    
+
     if (lastLoginStr == null) {
       // First login
       await NotificationHelper.awardDailyLoginXP();
       await userBox.put('lastLoginDate', today.toIso8601String());
       return;
     }
-    
+
     final lastLogin = DateTime.parse(lastLoginStr);
-    final lastLoginDay = DateTime(lastLogin.year, lastLogin.month, lastLogin.day);
-    
+    final lastLoginDay =
+        DateTime(lastLogin.year, lastLogin.month, lastLogin.day);
+
     if (today.isAfter(lastLoginDay)) {
       // New day - award XP
-      await NotificationHelper.awardDailyLoginXP();
+      // Daily login XP should be awarded using XPTracker in your actual implementation
+      // For example: await XPTracker().addXP(XPTracker.xpDailyLogin, reason: 'Daily Login');
       await userBox.put('lastLoginDate', today.toIso8601String());
     }
   }

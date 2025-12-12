@@ -6,7 +6,6 @@ import 'package:http/http.dart' as http; // For HTTP requests
 import 'package:hive_flutter/hive_flutter.dart'; // For Hive storage
 import 'package:hive/hive.dart';
 import 'Quiz.dart'; // Import the Quiz screen
-import 'package:studymate/theme/app_constants.dart';
 
 class QuizOptions extends StatefulWidget {
   const QuizOptions({super.key});
@@ -15,14 +14,14 @@ class QuizOptions extends StatefulWidget {
   State<QuizOptions> createState() => _QuizOptionsState();
 }
 
-class _QuizOptionsState extends State<QuizOptions> {
+class _QuizOptionsState extends State<QuizOptions>
+    with SingleTickerProviderStateMixin {
   // Define your branding colors
-  final Color blue1 = Color(0xFF1c74bb);
-  final Color blue2 = Color(0xFF165d96);
-  final Color cyan1 = Color(0xFF18bebc);
-  final Color cyan2 = Color(0xFF139896);
-  final Color black = Color(0xFF000000);
-  final Color white = Color(0xFFFFFFFF);
+  final Color primaryColor = const Color(0xFF1c74bb);
+  final Color secondaryColor = const Color(0xFF165d96);
+  final Color accentColor = const Color(0xFF18bebc);
+  final Color backgroundColor = const Color(0xFFF5F7FA);
+  final Color white = const Color(0xFFFFFFFF);
 
   String? selectedCourse;
   String? selectedCourseId;
@@ -37,14 +36,35 @@ class _QuizOptionsState extends State<QuizOptions> {
   Set<int> selectedLectures = {}; // Selected lecture indices (0-based)
   bool isLoading = true; // To handle loading state
   bool isGenerating = false; // For the generating state
-  
+
+  late AnimationController _animationController;
+  late Animation<double> _fadeAnimation;
+
   // Consistent font size for all input fields
   final double inputFontSize = 16.0;
 
   @override
   void initState() {
     super.initState();
+    _animationController = AnimationController(
+      duration: const Duration(milliseconds: 800),
+      vsync: this,
+    );
+    _fadeAnimation = CurvedAnimation(
+      parent: _animationController,
+      curve: Curves.easeOut,
+    );
+    _animationController.forward();
     takecourses(); // Fetch courses when the widget initializes
+  }
+
+  @override
+  void dispose() {
+    _animationController.dispose();
+    questionsController.dispose();
+    mcqController.dispose();
+    tfController.dispose();
+    super.dispose();
   }
 
   Future<void> takecourses() async {
@@ -260,7 +280,8 @@ class _QuizOptionsState extends State<QuizOptions> {
     });
 
     // Convert selected lectures to sorted list (1-based for server)
-    List<int> selectedLecturesList = selectedLectures.map((i) => i + 1).toList()..sort();
+    List<int> selectedLecturesList = selectedLectures.map((i) => i + 1).toList()
+      ..sort();
     int lectureStart = selectedLecturesList.first;
     int lectureEnd = selectedLecturesList.last;
 
@@ -386,298 +407,756 @@ class _QuizOptionsState extends State<QuizOptions> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      backgroundColor: Theme.of(context)
-          .scaffoldBackgroundColor, // Set background color to white
-      appBar: AppConstants.buildAppBar(
-        title: 'Make Your Quiz!',
-      ),
+      backgroundColor: backgroundColor,
       body: isLoading || isGenerating
-          ? AppConstants.buildLoadingIndicator()
-          : SingleChildScrollView(
-              padding: const EdgeInsets.symmetric(horizontal: 20, vertical: 30),
+          ? Center(
               child: Column(
-                crossAxisAlignment: CrossAxisAlignment.start,
+                mainAxisAlignment: MainAxisAlignment.center,
                 children: [
-                  // Section: Select Your Course
+                  Container(
+                    padding: const EdgeInsets.all(20),
+                    decoration: BoxDecoration(
+                      gradient: LinearGradient(
+                        colors: [
+                          primaryColor.withOpacity(0.1),
+                          accentColor.withOpacity(0.1),
+                        ],
+                      ),
+                      shape: BoxShape.circle,
+                    ),
+                    child: CircularProgressIndicator(
+                      valueColor: AlwaysStoppedAnimation<Color>(primaryColor),
+                      strokeWidth: 4,
+                    ),
+                  ),
+                  const SizedBox(height: 24),
                   Text(
-                    'Select Your Course',
-                    style: AppConstants.cardTitle.copyWith(
-                      color: Theme.of(context).colorScheme.onSurface,
-                    ),
-                  ),
-                  const SizedBox(height: 15),
-                  DropdownButtonFormField<String>(
-                    value: selectedCourse,
-                    isExpanded: true, // Ensures the dropdown fills the width
-                    hint: Align(
-                      alignment: Alignment.centerLeft,
-                      child: Text(
-                        'Choose Course',
-                        style: TextStyle(
-                          color: blue2, // Set the placeholder text color to blue
-                          fontSize: inputFontSize,
-                          fontFamily: 'League Spartan',
-                        ),
-                      ),
-                    ),
-                    decoration: InputDecoration(
-                      contentPadding:
-                          EdgeInsets.symmetric(vertical: 15, horizontal: 17),
-                      filled: true,
-                      fillColor: Colors.grey[200],
-                      border: OutlineInputBorder(
-                        borderRadius: BorderRadius.circular(15),
-                        borderSide: BorderSide.none,
-                      ),
-                    ),
-                    icon: const Icon(Icons.arrow_drop_down, color: Colors.grey),
-                    items: courses.map((value) {
-                      return DropdownMenuItem<String>(
-                        value: value,
-                        child: Text(
-                          value,
-                          style: TextStyle(
-                            color: blue2, // Changed from light blue to normal blue
-                            fontSize: inputFontSize,
-                            fontFamily: 'League Spartan',
-                          ),
-                        ),
-                      );
-                    }).toList(),
-                    onChanged: (newValue) {
-                      setState(() {
-                        selectedCourse = newValue;
-                        int index = courses.indexOf(newValue!);
-                        selectedCourseId = coursesIndex[index];
-                        lectures = []; // Clear previous lectures
-                        selectedLectures.clear(); // Clear selected lectures
-                      });
-                      // Fetch lectures for the selected course
-                      getLectures(selectedCourseId!);
-                    },
-                  ),
-                  const SizedBox(height: 30),
-                  // Display Lectures
-                  if (lectures.isNotEmpty) ...[
-                    Row(
-                      mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                      children: [
-                        Text(
-                          'Select Lectures',
-                          style: TextStyle(
-                            fontSize: 24,
-                            fontWeight: FontWeight.bold,
-                            fontFamily: 'League Spartan',
-                            color: Theme.of(context).colorScheme.onSurface,
-                          ),
-                        ),
-                        // Select All / Deselect All button
-                        TextButton(
-                          onPressed: () {
-                            setState(() {
-                              if (selectedLectures.length == lectures.length) {
-                                selectedLectures.clear();
-                              } else {
-                                selectedLectures = Set.from(List.generate(lectures.length, (i) => i));
-                              }
-                            });
-                          },
-                          child: Text(
-                            selectedLectures.length == lectures.length ? 'Deselect All' : 'Select All',
-                            style: TextStyle(
-                              fontSize: inputFontSize,
-                              fontFamily: 'League Spartan',
-                              color: blue2,
-                            ),
-                          ),
-                        ),
-                      ],
-                    ),
-                    const SizedBox(height: 10),
-                    // Chip-based lecture selection
-                    Container(
-                      width: double.infinity,
-                      padding: EdgeInsets.all(12),
-                      decoration: BoxDecoration(
-                        color: Colors.grey[200],
-                        borderRadius: BorderRadius.circular(15),
-                      ),
-                      child: Wrap(
-                        spacing: 8,
-                        runSpacing: 8,
-                        children: List.generate(lectures.length, (index) {
-                          bool isSelected = selectedLectures.contains(index);
-                          return FilterChip(
-                            label: Text(
-                              'Lecture ${index + 1}',
-                              style: TextStyle(
-                                fontSize: inputFontSize,
-                                fontFamily: 'League Spartan',
-                                color: isSelected ? white : blue2,
-                              ),
-                            ),
-                            selected: isSelected,
-                            onSelected: (selected) {
-                              setState(() {
-                                if (selected) {
-                                  selectedLectures.add(index);
-                                } else {
-                                  selectedLectures.remove(index);
-                                }
-                              });
-                            },
-                            selectedColor: blue2,
-                            backgroundColor: white,
-                            checkmarkColor: white,
-                            shape: RoundedRectangleBorder(
-                              borderRadius: BorderRadius.circular(20),
-                              side: BorderSide(color: blue2),
-                            ),
-                          );
-                        }),
-                      ),
-                    ),
-                    const SizedBox(height: 8),
-                    // Selected count indicator
-                    Text(
-                      '${selectedLectures.length} of ${lectures.length} lectures selected',
-                      style: TextStyle(
-                        fontSize: 14,
-                        fontFamily: 'League Spartan',
-                        color: Colors.grey[600],
-                      ),
-                    ),
-                    const SizedBox(height: 30),
-                  ],
-                  // Section: Questions Number
-                  Text(
-                    'Questions Number',
-                    style: AppConstants.cardTitle.copyWith(
-                      color: Theme.of(context).colorScheme.onSurface,
-                    ),
-                  ),
-                  const SizedBox(height: 15),
-                  TextField(
-                    controller: questionsController,
-                    keyboardType: TextInputType.number,
-                    decoration: InputDecoration(
-                      labelText:
-                          'Total Questions', // Changed from hintText to labelText
-                      labelStyle: TextStyle(
-                        color: blue2, // Set the label text color to blue
-                        fontSize: inputFontSize,
-                        fontFamily: 'League Spartan',
-                      ),
-                      contentPadding:
-                          EdgeInsets.symmetric(vertical: 15, horizontal: 20),
-                      filled: true,
-                      fillColor: Colors.grey[200],
-                      border: OutlineInputBorder(
-                        borderRadius: BorderRadius.circular(15),
-                        borderSide: BorderSide.none,
-                      ),
-                    ),
+                    isGenerating ? 'Generating Quiz...' : 'Loading...',
                     style: TextStyle(
-                      fontSize: inputFontSize,
-                      fontWeight: FontWeight.bold,
-                      color: AppConstants.textPrimary,
-                    ),
-                  ),
-                  const SizedBox(height: 30),
-                  // Section: Questions Type
-                  Text(
-                    'Questions Type',
-                    style: AppConstants.cardTitle.copyWith(
-                      color: Theme.of(context).colorScheme.onSurface,
-                    ),
-                  ),
-                  const SizedBox(height: 15),
-                  Row(
-                    children: [
-                      Expanded(
-                        child: TextField(
-                          controller: mcqController,
-                          keyboardType: TextInputType.number,
-                          decoration: InputDecoration(
-                            labelText: 'MCQ',
-                            labelStyle: TextStyle(
-                              color: blue2,
-                              fontSize: inputFontSize,
-                              fontFamily: 'League Spartan',
-                            ),
-                            contentPadding: EdgeInsets.symmetric(
-                                vertical: 15, horizontal: 20),
-                            filled: true,
-                            fillColor: Colors.grey[200],
-                            border: OutlineInputBorder(
-                              borderRadius: BorderRadius.circular(15),
-                              borderSide: BorderSide.none,
-                            ),
-                          ),
-                          style: TextStyle(
-                            fontSize: inputFontSize,
-                            fontWeight: FontWeight.bold,
-                            fontFamily: 'League Spartan',
-                            color: Colors.black,
-                          ),
-                        ),
-                      ),
-                      const SizedBox(width: 20),
-                      Expanded(
-                        child: TextField(
-                          controller: tfController,
-                          keyboardType: TextInputType.number,
-                          decoration: InputDecoration(
-                            labelText: 'T/F',
-                            labelStyle: TextStyle(
-                              color: blue2,
-                              fontSize: inputFontSize,
-                              fontFamily: 'League Spartan',
-                            ),
-                            contentPadding: EdgeInsets.symmetric(
-                                vertical: 15, horizontal: 20),
-                            filled: true,
-                            fillColor: Colors.grey[200],
-                            border: OutlineInputBorder(
-                              borderRadius: BorderRadius.circular(15),
-                              borderSide: BorderSide.none,
-                            ),
-                          ),
-                          style: TextStyle(
-                            fontSize: inputFontSize,
-                            fontWeight: FontWeight.bold,
-                            fontFamily: 'League Spartan',
-                            color: Colors.black,
-                          ),
-                        ),
-                      ),
-                    ],
-                  ),
-                  const SizedBox(height: 40),
-                  // Generate Quiz Button
-                  Center(
-                    child: ElevatedButton(
-                      onPressed: validateQuestions,
-                      style: ElevatedButton.styleFrom(
-                        backgroundColor: AppConstants.primaryBlueDark,
-                        padding: const EdgeInsets.symmetric(
-                            horizontal: 50, vertical: 15),
-                        shape: RoundedRectangleBorder(
-                          borderRadius: BorderRadius.circular(30),
-                        ),
-                        elevation: 5,
-                      ),
-                      child: Text(
-                        'Generate Quiz',
-                        style: AppConstants.subtitle.copyWith(
-                          fontSize: 22,
-                          color: AppConstants.textOnPrimary,
-                        ),
-                      ),
+                      fontSize: 18,
+                      fontWeight: FontWeight.w600,
+                      color: primaryColor,
                     ),
                   ),
                 ],
               ),
+            )
+          : CustomScrollView(
+              slivers: [
+                // Modern Gradient AppBar
+                SliverAppBar(
+                  expandedHeight: 160,
+                  floating: false,
+                  pinned: true,
+                  elevation: 0,
+                  backgroundColor: primaryColor,
+                  leading: IconButton(
+                    icon: Container(
+                      padding: const EdgeInsets.all(8),
+                      decoration: BoxDecoration(
+                        color: Colors.white.withOpacity(0.2),
+                        borderRadius: BorderRadius.circular(12),
+                      ),
+                      child: const Icon(
+                        Icons.arrow_back_ios_new_rounded,
+                        color: Colors.white,
+                        size: 20,
+                      ),
+                    ),
+                    onPressed: () => Navigator.pop(context),
+                  ),
+                  flexibleSpace: FlexibleSpaceBar(
+                    background: Container(
+                      decoration: BoxDecoration(
+                        gradient: LinearGradient(
+                          begin: Alignment.topLeft,
+                          end: Alignment.bottomRight,
+                          colors: [primaryColor, secondaryColor, accentColor],
+                        ),
+                      ),
+                      child: SafeArea(
+                        child: Padding(
+                          padding: const EdgeInsets.fromLTRB(20, 60, 20, 20),
+                          child: Row(
+                            children: [
+                              Container(
+                                padding: const EdgeInsets.all(16),
+                                decoration: BoxDecoration(
+                                  color: Colors.white.withOpacity(0.2),
+                                  borderRadius: BorderRadius.circular(20),
+                                  border: Border.all(
+                                    color: Colors.white.withOpacity(0.3),
+                                    width: 2,
+                                  ),
+                                ),
+                                child: const Icon(
+                                  Icons.settings_rounded,
+                                  color: Colors.white,
+                                  size: 32,
+                                ),
+                              ),
+                              const SizedBox(width: 16),
+                              const Expanded(
+                                child: Column(
+                                  crossAxisAlignment: CrossAxisAlignment.start,
+                                  mainAxisSize: MainAxisSize.min,
+                                  children: [
+                                    Text(
+                                      'Quiz Options',
+                                      style: TextStyle(
+                                        color: Colors.white,
+                                        fontSize: 24,
+                                        fontWeight: FontWeight.bold,
+                                      ),
+                                    ),
+                                    SizedBox(height: 4),
+                                    Text(
+                                      'Customize your quiz',
+                                      style: TextStyle(
+                                        color: Colors.white70,
+                                        fontSize: 14,
+                                      ),
+                                    ),
+                                  ],
+                                ),
+                              ),
+                            ],
+                          ),
+                        ),
+                      ),
+                    ),
+                  ),
+                ),
+
+                // Content
+                SliverToBoxAdapter(
+                  child: FadeTransition(
+                    opacity: _fadeAnimation,
+                    child: Padding(
+                      padding: const EdgeInsets.all(20),
+                      child: Column(
+                        crossAxisAlignment: CrossAxisAlignment.start,
+                        children: [
+                          const SizedBox(height: 10),
+
+                          // Course Selection Card
+                          Container(
+                            decoration: BoxDecoration(
+                              color: Colors.white,
+                              borderRadius: BorderRadius.circular(20),
+                              boxShadow: [
+                                BoxShadow(
+                                  color: Colors.black.withOpacity(0.05),
+                                  blurRadius: 20,
+                                  offset: const Offset(0, 4),
+                                ),
+                              ],
+                            ),
+                            child: Column(
+                              children: [
+                                Container(
+                                  padding: const EdgeInsets.all(20),
+                                  decoration: BoxDecoration(
+                                    gradient: LinearGradient(
+                                      colors: [
+                                        primaryColor.withOpacity(0.1),
+                                        accentColor.withOpacity(0.05),
+                                      ],
+                                    ),
+                                    borderRadius: const BorderRadius.only(
+                                      topLeft: Radius.circular(20),
+                                      topRight: Radius.circular(20),
+                                    ),
+                                  ),
+                                  child: Row(
+                                    children: [
+                                      Container(
+                                        padding: const EdgeInsets.all(10),
+                                        decoration: BoxDecoration(
+                                          color: primaryColor.withOpacity(0.2),
+                                          borderRadius:
+                                              BorderRadius.circular(12),
+                                        ),
+                                        child: Icon(
+                                          Icons.school_rounded,
+                                          color: primaryColor,
+                                          size: 24,
+                                        ),
+                                      ),
+                                      const SizedBox(width: 12),
+                                      Text(
+                                        'Select Your Course',
+                                        style: TextStyle(
+                                          fontSize: 18,
+                                          fontWeight: FontWeight.bold,
+                                          color: primaryColor,
+                                        ),
+                                      ),
+                                    ],
+                                  ),
+                                ),
+                                Padding(
+                                  padding: const EdgeInsets.all(20),
+                                  child: DropdownButtonFormField<String>(
+                                    value: selectedCourse,
+                                    isExpanded: true,
+                                    decoration: InputDecoration(
+                                      labelText: 'Choose Course',
+                                      labelStyle: TextStyle(
+                                        color: Colors.grey.shade600,
+                                        fontWeight: FontWeight.w500,
+                                      ),
+                                      floatingLabelStyle: TextStyle(
+                                        color: primaryColor,
+                                        fontWeight: FontWeight.w600,
+                                      ),
+                                      prefixIcon: Icon(
+                                        Icons.book_rounded,
+                                        color: primaryColor,
+                                      ),
+                                      filled: true,
+                                      fillColor: primaryColor.withOpacity(0.05),
+                                      border: OutlineInputBorder(
+                                        borderRadius: BorderRadius.circular(16),
+                                        borderSide: BorderSide.none,
+                                      ),
+                                      enabledBorder: OutlineInputBorder(
+                                        borderRadius: BorderRadius.circular(16),
+                                        borderSide: BorderSide(
+                                          color: primaryColor.withOpacity(0.2),
+                                        ),
+                                      ),
+                                      focusedBorder: OutlineInputBorder(
+                                        borderRadius: BorderRadius.circular(16),
+                                        borderSide: BorderSide(
+                                          color: primaryColor,
+                                          width: 2,
+                                        ),
+                                      ),
+                                      contentPadding:
+                                          const EdgeInsets.symmetric(
+                                        horizontal: 16,
+                                        vertical: 16,
+                                      ),
+                                    ),
+                                    items: courses.map((value) {
+                                      return DropdownMenuItem<String>(
+                                        value: value,
+                                        child: SizedBox(
+                                          width: double.infinity,
+                                          child: Text(
+                                            value,
+                                            overflow: TextOverflow.ellipsis,
+                                            maxLines: 1,
+                                            style:
+                                                const TextStyle(fontSize: 14),
+                                          ),
+                                        ),
+                                      );
+                                    }).toList(),
+                                    onChanged: (newValue) {
+                                      setState(() {
+                                        selectedCourse = newValue;
+                                        int index = courses.indexOf(newValue!);
+                                        selectedCourseId = coursesIndex[index];
+                                        lectures = [];
+                                        selectedLectures.clear();
+                                      });
+                                      getLectures(selectedCourseId!);
+                                    },
+                                    icon: Icon(
+                                      Icons.arrow_drop_down_rounded,
+                                      color: primaryColor,
+                                    ),
+                                    dropdownColor: Colors.white,
+                                  ),
+                                ),
+                              ],
+                            ),
+                          ),
+
+                          const SizedBox(height: 20),
+                          // Lectures Section
+                          if (lectures.isNotEmpty) ...[
+                            Container(
+                              decoration: BoxDecoration(
+                                color: Colors.white,
+                                borderRadius: BorderRadius.circular(20),
+                                boxShadow: [
+                                  BoxShadow(
+                                    color: Colors.black.withOpacity(0.05),
+                                    blurRadius: 20,
+                                    offset: const Offset(0, 4),
+                                  ),
+                                ],
+                              ),
+                              child: Column(
+                                children: [
+                                  Container(
+                                    padding: const EdgeInsets.all(20),
+                                    decoration: BoxDecoration(
+                                      gradient: LinearGradient(
+                                        colors: [
+                                          accentColor.withOpacity(0.1),
+                                          accentColor.withOpacity(0.05),
+                                        ],
+                                      ),
+                                      borderRadius: const BorderRadius.only(
+                                        topLeft: Radius.circular(20),
+                                        topRight: Radius.circular(20),
+                                      ),
+                                    ),
+                                    child: Row(
+                                      mainAxisAlignment:
+                                          MainAxisAlignment.spaceBetween,
+                                      children: [
+                                        Row(
+                                          children: [
+                                            Container(
+                                              padding: const EdgeInsets.all(10),
+                                              decoration: BoxDecoration(
+                                                color: accentColor
+                                                    .withOpacity(0.2),
+                                                borderRadius:
+                                                    BorderRadius.circular(12),
+                                              ),
+                                              child: Icon(
+                                                Icons.list_alt_rounded,
+                                                color: accentColor,
+                                                size: 24,
+                                              ),
+                                            ),
+                                            const SizedBox(width: 12),
+                                            Text(
+                                              'Select Lectures',
+                                              style: TextStyle(
+                                                fontSize: 18,
+                                                fontWeight: FontWeight.bold,
+                                                color: accentColor,
+                                              ),
+                                            ),
+                                          ],
+                                        ),
+                                        TextButton(
+                                          onPressed: () {
+                                            setState(() {
+                                              if (selectedLectures.length ==
+                                                  lectures.length) {
+                                                selectedLectures.clear();
+                                              } else {
+                                                selectedLectures = Set.from(
+                                                    List.generate(
+                                                        lectures.length,
+                                                        (i) => i));
+                                              }
+                                            });
+                                          },
+                                          child: Text(
+                                            selectedLectures.length ==
+                                                    lectures.length
+                                                ? 'Deselect All'
+                                                : 'Select All',
+                                            style: TextStyle(
+                                              fontSize: 14,
+                                              fontWeight: FontWeight.w600,
+                                              color: accentColor,
+                                            ),
+                                          ),
+                                        ),
+                                      ],
+                                    ),
+                                  ),
+                                  Padding(
+                                    padding: const EdgeInsets.all(20),
+                                    child: Column(
+                                      children: [
+                                        Container(
+                                          width: double.infinity,
+                                          padding: const EdgeInsets.all(16),
+                                          decoration: BoxDecoration(
+                                            color:
+                                                accentColor.withOpacity(0.05),
+                                            borderRadius:
+                                                BorderRadius.circular(16),
+                                            border: Border.all(
+                                              color:
+                                                  accentColor.withOpacity(0.2),
+                                            ),
+                                          ),
+                                          child: Wrap(
+                                            spacing: 10,
+                                            runSpacing: 10,
+                                            children: List.generate(
+                                                lectures.length, (index) {
+                                              bool isSelected = selectedLectures
+                                                  .contains(index);
+                                              return FilterChip(
+                                                label: Text(
+                                                  'Lecture ${index + 1}',
+                                                  style: TextStyle(
+                                                    fontSize: 14,
+                                                    fontWeight: FontWeight.w600,
+                                                    color: isSelected
+                                                        ? white
+                                                        : accentColor,
+                                                  ),
+                                                ),
+                                                selected: isSelected,
+                                                onSelected: (selected) {
+                                                  setState(() {
+                                                    if (selected) {
+                                                      selectedLectures
+                                                          .add(index);
+                                                    } else {
+                                                      selectedLectures
+                                                          .remove(index);
+                                                    }
+                                                  });
+                                                },
+                                                selectedColor: accentColor,
+                                                backgroundColor: white,
+                                                checkmarkColor: white,
+                                                shape: RoundedRectangleBorder(
+                                                  borderRadius:
+                                                      BorderRadius.circular(12),
+                                                  side: BorderSide(
+                                                    color: isSelected
+                                                        ? accentColor
+                                                        : accentColor
+                                                            .withOpacity(0.3),
+                                                    width: 2,
+                                                  ),
+                                                ),
+                                              );
+                                            }),
+                                          ),
+                                        ),
+                                        const SizedBox(height: 12),
+                                        Row(
+                                          children: [
+                                            Icon(
+                                              Icons.info_outline_rounded,
+                                              size: 18,
+                                              color: Colors.grey.shade600,
+                                            ),
+                                            const SizedBox(width: 8),
+                                            Text(
+                                              '${selectedLectures.length} of ${lectures.length} lectures selected',
+                                              style: TextStyle(
+                                                fontSize: 14,
+                                                color: Colors.grey.shade600,
+                                              ),
+                                            ),
+                                          ],
+                                        ),
+                                      ],
+                                    ),
+                                  ),
+                                ],
+                              ),
+                            ),
+                            const SizedBox(height: 20),
+                          ],
+                          // Questions Configuration Card
+                          Container(
+                            decoration: BoxDecoration(
+                              color: Colors.white,
+                              borderRadius: BorderRadius.circular(20),
+                              boxShadow: [
+                                BoxShadow(
+                                  color: Colors.black.withOpacity(0.05),
+                                  blurRadius: 20,
+                                  offset: const Offset(0, 4),
+                                ),
+                              ],
+                            ),
+                            child: Column(
+                              children: [
+                                Container(
+                                  padding: const EdgeInsets.all(20),
+                                  decoration: BoxDecoration(
+                                    gradient: LinearGradient(
+                                      colors: [
+                                        secondaryColor.withOpacity(0.1),
+                                        secondaryColor.withOpacity(0.05),
+                                      ],
+                                    ),
+                                    borderRadius: const BorderRadius.only(
+                                      topLeft: Radius.circular(20),
+                                      topRight: Radius.circular(20),
+                                    ),
+                                  ),
+                                  child: Row(
+                                    children: [
+                                      Container(
+                                        padding: const EdgeInsets.all(10),
+                                        decoration: BoxDecoration(
+                                          color:
+                                              secondaryColor.withOpacity(0.2),
+                                          borderRadius:
+                                              BorderRadius.circular(12),
+                                        ),
+                                        child: Icon(
+                                          Icons.format_list_numbered_rounded,
+                                          color: secondaryColor,
+                                          size: 24,
+                                        ),
+                                      ),
+                                      const SizedBox(width: 12),
+                                      Text(
+                                        'Configure Questions',
+                                        style: TextStyle(
+                                          fontSize: 18,
+                                          fontWeight: FontWeight.bold,
+                                          color: secondaryColor,
+                                        ),
+                                      ),
+                                    ],
+                                  ),
+                                ),
+                                Padding(
+                                  padding: const EdgeInsets.all(20),
+                                  child: Column(
+                                    children: [
+                                      // Total Questions
+                                      TextField(
+                                        controller: questionsController,
+                                        keyboardType: TextInputType.number,
+                                        decoration: InputDecoration(
+                                          labelText: 'Total Questions',
+                                          labelStyle: TextStyle(
+                                            color: Colors.grey.shade600,
+                                            fontWeight: FontWeight.w500,
+                                          ),
+                                          floatingLabelStyle: TextStyle(
+                                            color: secondaryColor,
+                                            fontWeight: FontWeight.w600,
+                                          ),
+                                          prefixIcon: Icon(
+                                            Icons.numbers_rounded,
+                                            color: secondaryColor,
+                                          ),
+                                          filled: true,
+                                          fillColor:
+                                              secondaryColor.withOpacity(0.05),
+                                          border: OutlineInputBorder(
+                                            borderRadius:
+                                                BorderRadius.circular(16),
+                                            borderSide: BorderSide.none,
+                                          ),
+                                          enabledBorder: OutlineInputBorder(
+                                            borderRadius:
+                                                BorderRadius.circular(16),
+                                            borderSide: BorderSide(
+                                              color: secondaryColor
+                                                  .withOpacity(0.2),
+                                            ),
+                                          ),
+                                          focusedBorder: OutlineInputBorder(
+                                            borderRadius:
+                                                BorderRadius.circular(16),
+                                            borderSide: BorderSide(
+                                              color: secondaryColor,
+                                              width: 2,
+                                            ),
+                                          ),
+                                          contentPadding:
+                                              const EdgeInsets.symmetric(
+                                            horizontal: 16,
+                                            vertical: 16,
+                                          ),
+                                        ),
+                                        style: const TextStyle(
+                                          fontSize: 16,
+                                          fontWeight: FontWeight.w600,
+                                        ),
+                                      ),
+                                      const SizedBox(height: 20),
+                                      // MCQ and T/F
+                                      Row(
+                                        children: [
+                                          Expanded(
+                                            child: TextField(
+                                              controller: mcqController,
+                                              keyboardType:
+                                                  TextInputType.number,
+                                              decoration: InputDecoration(
+                                                labelText: 'MCQ',
+                                                labelStyle: TextStyle(
+                                                  color: Colors.grey.shade600,
+                                                  fontWeight: FontWeight.w500,
+                                                ),
+                                                floatingLabelStyle: TextStyle(
+                                                  color: primaryColor,
+                                                  fontWeight: FontWeight.w600,
+                                                ),
+                                                prefixIcon: Icon(
+                                                  Icons
+                                                      .check_circle_outline_rounded,
+                                                  color: primaryColor,
+                                                ),
+                                                filled: true,
+                                                fillColor: primaryColor
+                                                    .withOpacity(0.05),
+                                                border: OutlineInputBorder(
+                                                  borderRadius:
+                                                      BorderRadius.circular(16),
+                                                  borderSide: BorderSide.none,
+                                                ),
+                                                enabledBorder:
+                                                    OutlineInputBorder(
+                                                  borderRadius:
+                                                      BorderRadius.circular(16),
+                                                  borderSide: BorderSide(
+                                                    color: primaryColor
+                                                        .withOpacity(0.2),
+                                                  ),
+                                                ),
+                                                focusedBorder:
+                                                    OutlineInputBorder(
+                                                  borderRadius:
+                                                      BorderRadius.circular(16),
+                                                  borderSide: BorderSide(
+                                                    color: primaryColor,
+                                                    width: 2,
+                                                  ),
+                                                ),
+                                                contentPadding:
+                                                    const EdgeInsets.symmetric(
+                                                  horizontal: 16,
+                                                  vertical: 16,
+                                                ),
+                                              ),
+                                              style: const TextStyle(
+                                                fontSize: 16,
+                                                fontWeight: FontWeight.w600,
+                                              ),
+                                            ),
+                                          ),
+                                          const SizedBox(width: 16),
+                                          Expanded(
+                                            child: TextField(
+                                              controller: tfController,
+                                              keyboardType:
+                                                  TextInputType.number,
+                                              decoration: InputDecoration(
+                                                labelText: 'T/F',
+                                                labelStyle: TextStyle(
+                                                  color: Colors.grey.shade600,
+                                                  fontWeight: FontWeight.w500,
+                                                ),
+                                                floatingLabelStyle: TextStyle(
+                                                  color: accentColor,
+                                                  fontWeight: FontWeight.w600,
+                                                ),
+                                                prefixIcon: Icon(
+                                                  Icons.toggle_on_rounded,
+                                                  color: accentColor,
+                                                ),
+                                                filled: true,
+                                                fillColor: accentColor
+                                                    .withOpacity(0.05),
+                                                border: OutlineInputBorder(
+                                                  borderRadius:
+                                                      BorderRadius.circular(16),
+                                                  borderSide: BorderSide.none,
+                                                ),
+                                                enabledBorder:
+                                                    OutlineInputBorder(
+                                                  borderRadius:
+                                                      BorderRadius.circular(16),
+                                                  borderSide: BorderSide(
+                                                    color: accentColor
+                                                        .withOpacity(0.2),
+                                                  ),
+                                                ),
+                                                focusedBorder:
+                                                    OutlineInputBorder(
+                                                  borderRadius:
+                                                      BorderRadius.circular(16),
+                                                  borderSide: BorderSide(
+                                                    color: accentColor,
+                                                    width: 2,
+                                                  ),
+                                                ),
+                                                contentPadding:
+                                                    const EdgeInsets.symmetric(
+                                                  horizontal: 16,
+                                                  vertical: 16,
+                                                ),
+                                              ),
+                                              style: const TextStyle(
+                                                fontSize: 16,
+                                                fontWeight: FontWeight.w600,
+                                              ),
+                                            ),
+                                          ),
+                                        ],
+                                      ),
+                                    ],
+                                  ),
+                                ),
+                              ],
+                            ),
+                          ),
+
+                          const SizedBox(height: 30),
+                          // Generate Button
+                          Container(
+                            width: double.infinity,
+                            height: 65,
+                            decoration: BoxDecoration(
+                              gradient: LinearGradient(
+                                colors: [primaryColor, accentColor],
+                              ),
+                              borderRadius: BorderRadius.circular(20),
+                              boxShadow: [
+                                BoxShadow(
+                                  color: primaryColor.withOpacity(0.4),
+                                  blurRadius: 20,
+                                  offset: const Offset(0, 10),
+                                ),
+                              ],
+                            ),
+                            child: ElevatedButton(
+                              onPressed: validateQuestions,
+                              style: ElevatedButton.styleFrom(
+                                backgroundColor: Colors.transparent,
+                                shadowColor: Colors.transparent,
+                                shape: RoundedRectangleBorder(
+                                  borderRadius: BorderRadius.circular(20),
+                                ),
+                              ),
+                              child: const Row(
+                                mainAxisAlignment: MainAxisAlignment.center,
+                                children: [
+                                  Icon(
+                                    Icons.auto_awesome_rounded,
+                                    color: Colors.white,
+                                    size: 28,
+                                  ),
+                                  SizedBox(width: 12),
+                                  Text(
+                                    'Generate Quiz',
+                                    style: TextStyle(
+                                      color: Colors.white,
+                                      fontSize: 20,
+                                      fontWeight: FontWeight.bold,
+                                      letterSpacing: 0.5,
+                                    ),
+                                  ),
+                                ],
+                              ),
+                            ),
+                          ),
+
+                          const SizedBox(height: 30),
+                        ],
+                      ),
+                    ),
+                  ),
+                ),
+              ],
             ),
     );
   }
