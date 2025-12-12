@@ -196,34 +196,41 @@ class EnhancedNotificationService {
 
   /// Initialize Firebase Messaging
   Future<void> _initializeFirebaseMessaging() async {
-    // Get FCM token
-    _fcmToken = await _firebaseMessaging.getToken();
-    print('📱 FCM Token: $_fcmToken');
+    try {
+      // Get FCM token
+      _fcmToken = await _firebaseMessaging.getToken();
+      print('📱 FCM Token: $_fcmToken');
 
-    // Save token to backend
-    if (_fcmToken != null) {
-      await _saveFCMTokenToBackend(_fcmToken!);
-    }
+      // Save token to backend
+      if (_fcmToken != null) {
+        await _saveFCMTokenToBackend(_fcmToken!);
+      }
 
-    // Listen for token refresh
-    _firebaseMessaging.onTokenRefresh.listen((newToken) {
-      _fcmToken = newToken;
-      _saveFCMTokenToBackend(newToken);
-    });
+      // Listen for token refresh
+      _firebaseMessaging.onTokenRefresh.listen((newToken) {
+        _fcmToken = newToken;
+        _saveFCMTokenToBackend(newToken);
+      });
 
-    // Handle foreground messages
-    FirebaseMessaging.onMessage.listen(_handleForegroundMessage);
+      // Handle foreground messages
+      FirebaseMessaging.onMessage.listen(_handleForegroundMessage);
 
-    // Handle message opened from background/terminated state
-    FirebaseMessaging.onMessageOpenedApp.listen(_handleMessageOpenedApp);
+      // Handle message opened from background/terminated state
+      FirebaseMessaging.onMessageOpenedApp.listen(_handleMessageOpenedApp);
 
-    // iOS foreground notification presentation
-    if (Platform.isIOS) {
-      await _firebaseMessaging.setForegroundNotificationPresentationOptions(
-        alert: true,
-        badge: true,
-        sound: true,
-      );
+      // iOS foreground notification presentation
+      if (Platform.isIOS) {
+        await _firebaseMessaging.setForegroundNotificationPresentationOptions(
+          alert: true,
+          badge: true,
+          sound: true,
+        );
+      }
+    } catch (e) {
+      print('⚠️ Firebase Messaging initialization error: $e');
+      print(
+          '📱 App will continue without FCM. Local notifications will still work.');
+      // Don't throw - allow app to continue without FCM
     }
   }
 
@@ -279,7 +286,6 @@ class EnhancedNotificationService {
     required String body,
     required String channelId,
     String? payload,
-    String? largeIcon,
   }) async {
     final AndroidNotificationDetails androidDetails =
         AndroidNotificationDetails(

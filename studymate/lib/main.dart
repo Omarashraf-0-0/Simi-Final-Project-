@@ -45,23 +45,44 @@ void main() async {
   tz.initializeTimeZones();
 
   // Initialize NotificationService (old)
-  await NotificationService().init();
+  try {
+    await NotificationService().init();
+  } catch (e) {
+    print('⚠️ NotificationService initialization error: $e');
+  }
 
   // Initialize Enhanced Notification Service (new comprehensive system)
-  await EnhancedNotificationService().initialize();
+  try {
+    await EnhancedNotificationService().initialize();
+  } catch (e) {
+    print('⚠️ EnhancedNotificationService initialization error: $e');
+  }
 
   // Initialize MessagingService
-  await MessagingService.initialize((payload) {
-    print("User tapped notification with payload: $payload");
-    // Navigation will be handled in _MyAppState
-  });
+  try {
+    await MessagingService.initialize((payload) {
+      print("User tapped notification with payload: $payload");
+      // Navigation will be handled in _MyAppState
+    });
+  } catch (e) {
+    print('⚠️ MessagingService initialization error: $e');
+    print('📱 App will continue without Firebase Messaging');
+  }
 
   // Sync all schedule, quiz, and assignment notifications
-  final scheduleSync = ScheduleNotificationSync();
-  await scheduleSync.syncAllNotifications();
+  try {
+    final scheduleSync = ScheduleNotificationSync();
+    await scheduleSync.syncAllNotifications();
+  } catch (e) {
+    print('⚠️ Schedule sync error: $e');
+  }
 
   // Setup background message handler
-  FirebaseMessaging.onBackgroundMessage(firebaseMessagingBackgroundHandler);
+  try {
+    FirebaseMessaging.onBackgroundMessage(firebaseMessagingBackgroundHandler);
+  } catch (e) {
+    print('⚠️ Background message handler setup error: $e');
+  }
 
   runApp(MyApp());
 }
@@ -116,9 +137,11 @@ class _MyAppState extends State<MyApp> {
         handleNotificationNavigation(message.data);
       }
     });
-    
+
     // Handle notification tap from terminated state
-    FirebaseMessaging.instance.getInitialMessage().then((RemoteMessage? message) {
+    FirebaseMessaging.instance
+        .getInitialMessage()
+        .then((RemoteMessage? message) {
       if (message != null && message.data.isNotEmpty) {
         // Delay navigation to ensure app is fully initialized
         Future.delayed(const Duration(milliseconds: 500), () {
