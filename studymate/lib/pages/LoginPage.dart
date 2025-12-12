@@ -4,14 +4,12 @@ import 'dart:convert';
 import 'package:flutter/material.dart';
 import 'package:hive/hive.dart';
 import 'package:http/http.dart' as http;
-import 'package:studymate/Pop-ups/PopUps_Failed.dart';
-import 'package:studymate/Pop-ups/PopUps_Warning.dart';
-import 'package:studymate/pages/XPChangePopup.dart';
 import '../Classes/User.dart';
-import '../Pop-ups/SuccesPopUp.dart';
+import '../Pop-ups/StylishPopup.dart';
 import '../util/semantics_keys.dart';
 import 'package:go_router/go_router.dart';
 import '../router/app_router.dart';
+import '../services/xp_tracker.dart';
 
 class LoginPage extends StatefulWidget {
   const LoginPage({super.key});
@@ -30,79 +28,13 @@ class _LoginPageState extends State<LoginPage> {
   // Add a boolean to manage the password visibility
   bool isPasswordVisible = false;
 
-  void showXPChangePopup(BuildContext context, int xpChange, String message) {
-    showDialog(
+  Future<void> awardDailyLoginXP() async {
+    final xpTracker = XPTracker();
+    await xpTracker.addXP(
+      XPTracker.xpDailyLogin,
+      reason: 'Daily Login Bonus! 🎉',
       context: context,
-      barrierDismissible: false, // Prevent closing the popup by tapping outside
-      builder: (BuildContext context) {
-        return XPChangePopup(
-          xpChange: xpChange,
-          message: message,
-        );
-      },
     );
-  }
-
-  Future<void> updateXpAndTitle(int currentXp) async {
-    const xpUrl = 'https://alyibrahim.pythonanywhere.com/set_xp';
-    const titleUrl = 'https://alyibrahim.pythonanywhere.com/set_title';
-    final username = Hive.box('userBox').get('username');
-
-    int newXp = currentXp + 10; // Add 10 XP for daily login
-
-    // Update XP on the server
-    final xpResponse = await http.post(
-      Uri.parse(xpUrl),
-      headers: {'Content-Type': 'application/json'},
-      body: jsonEncode({'username': username, 'xp': newXp}),
-    );
-
-    if (xpResponse.statusCode == 200) {
-      // Update XP locally
-      Hive.box('userBox').put('xp', newXp);
-      print("XP updated successfully to $newXp");
-
-      // Determine new title based on XP
-      String newTitle;
-      if (newXp >= 3500) {
-        newTitle = 'El Batal';
-      } else if (newXp >= 2500) {
-        newTitle = 'Legend';
-      } else if (newXp >= 1700) {
-        newTitle = 'Mentor';
-      } else if (newXp >= 1100) {
-        newTitle = 'Expert';
-      } else if (newXp >= 650) {
-        newTitle = 'Challenger';
-      } else if (newXp >= 350) {
-        newTitle = 'Achiever';
-      } else if (newXp >= 150) {
-        newTitle = 'Explorer';
-      } else {
-        newTitle = 'NewComer';
-      }
-
-      // Check if the title has changed
-      String currentTitle = Hive.box('userBox').get('title');
-      if (currentTitle != newTitle) {
-        // Update title on the server
-        final titleResponse = await http.post(
-          Uri.parse(titleUrl),
-          headers: {'Content-Type': 'application/json'},
-          body: jsonEncode({'username': username, 'title': newTitle}),
-        );
-
-        if (titleResponse.statusCode == 200) {
-          // Update title locally
-          Hive.box('userBox').put('title', newTitle);
-          print("Title updated successfully to $newTitle");
-        } else {
-          print("Failed to update title: ${titleResponse.reasonPhrase}");
-        }
-      }
-    } else {
-      print("Failed to update XP: ${xpResponse.reasonPhrase}");
-    }
   }
 
   Future<bool> fetchAndSaveProfileImage() async {
@@ -171,10 +103,10 @@ class _LoginPageState extends State<LoginPage> {
     try {
       // Ensure the username and password are not empty
       if (username.isEmpty || password.isEmpty) {
-        showWarningPopup(
-          context,
-          'Error',
-          'Username and password can\'t be empty',
+        await StylishPopup.warning(
+          context: context,
+          title: 'Missing Information',
+          message: 'Username and password can\'t be empty',
         );
         return;
       }
@@ -233,12 +165,8 @@ class _LoginPageState extends State<LoginPage> {
             Hive.box('userBox').put('isLoggedIn', false);
           }
           if (jsonResponse['get_xp'] == true) {
-            // Get current XP and update the title
-            int currentXp =
-                jsonResponse['xp'] ?? 0; // Get current XP, default to 0 if null
-            await updateXpAndTitle(currentXp);
-            showXPChangePopup(
-                context, 10, 'Welcome back! You earned 10 XP for daily login!');
+            // Award daily login XP using XPTracker
+            await awardDailyLoginXP();
           }
 
           // User? user = User(
@@ -285,42 +213,41 @@ class _LoginPageState extends State<LoginPage> {
           student.birthDate = jsonResponse['birthDate'];
 
           // Show success dialog
-          showDialog(
+          await StylishPopup.success(
             context: context,
-            barrierDismissible: false,
-            builder: (dialogContext) => DonePopUp(
-              user: student,
-              title: 'Woo Hoo!',
-              description: 'Welcome back, ${jsonResponse['name']}!',
-              color: const Color(0xff3BBD5E),
-              textColor: Theme.of(context).colorScheme.secondary,
-              routeName: AppRoutes.home,
-            ),
+            title: 'Woo Hoo! 🎉',
+            message:
+                'Welcome back, ${jsonResponse['name']}!\nReady to continue learning?',
+            confirmText: 'Let\'s Go!',
+            onConfirm: () {
+              Navigator.of(context).pop();
+              context.go(AppRoutes.home);
+            },
           );
         } else {
           // Failed login, show error message
-          showWarningPopup(
-            context,
-            'Error',
-            jsonResponse['message'],
+          await StylishPopup.error(
+            context: context,
+            title: 'Login Failed',
+            message: jsonResponse['message'],
           );
         }
       } else {
         // Server error
-        showFailedPopup(
-          context,
-          'Error',
-          response.reasonPhrase == 'UNAUTHORIZED'
+        await StylishPopup.error(
+          context: context,
+          title: 'Error',
+          message: response.reasonPhrase == 'UNAUTHORIZED'
               ? 'Wrong Username Or Password'
               : '${response.reasonPhrase}',
         );
       }
     } catch (error) {
       // Handle network or server unreachable errors
-      showWarningPopup(
-        context,
-        'Network Error',
-        '$error',
+      await StylishPopup.error(
+        context: context,
+        title: 'Network Error',
+        message: 'Failed to connect to server\n$error',
       );
     }
   }

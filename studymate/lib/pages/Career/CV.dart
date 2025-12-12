@@ -7,8 +7,10 @@ import 'package:intl/intl.dart';
 import 'package:google_fonts/google_fonts.dart';
 import 'package:http/http.dart' as http;
 import 'package:path_provider/path_provider.dart';
+import '../../Pop-ups/StylishPopup.dart';
 
 import 'PDFViewerPage.dart';
+import '../../Pop-ups/ModernPopup.dart';
 
 class CV extends StatefulWidget {
   const CV({super.key});
@@ -135,10 +137,9 @@ class _CVState extends State<CV> {
     const url = 'https://alyibrahim.pythonanywhere.com/create_cv';
 
     // Show a loading indicator while generating the CV
-    showDialog(
+    ModernPopup.showLoading(
       context: context,
-      barrierDismissible: false,
-      builder: (context) => Center(child: CircularProgressIndicator()),
+      message: 'Generating your CV...',
     );
 
     try {
@@ -174,8 +175,10 @@ class _CVState extends State<CV> {
         print("Failed to generate CV: ${response.body}");
 
         // Show an error message to the user
-        ScaffoldMessenger.of(context).showSnackBar(
-          SnackBar(content: Text('Failed to generate CV')),
+        ModernPopup.showError(
+          context: context,
+          title: 'Generation Failed',
+          message: 'Failed to generate CV. Please try again.',
         );
       }
     } catch (e) {
@@ -185,8 +188,11 @@ class _CVState extends State<CV> {
       print('Error during making CV: $e');
 
       // Show an error message to the user
-      ScaffoldMessenger.of(context).showSnackBar(
-        SnackBar(content: Text('Error generating CV')),
+      ModernPopup.showError(
+        context: context,
+        title: 'Error',
+        message:
+            'An error occurred while generating your CV. Please try again.',
       );
     }
   }
@@ -1122,26 +1128,15 @@ class _CVState extends State<CV> {
       // ثم الانتقال إلى صفحة عرض السيرة الذاتية أو أي إجراء آخر
 
       // مثال بسيط:
-      showDialog(
+      StylishPopup.info(
         context: context,
-        builder: (context) => AlertDialog(
-          title: Text('CV Data'),
-          content: SingleChildScrollView(
-            child: Text('Name: $name\n'
-                'Birthdate: ${birthdate != null ? DateFormat('yyyy-MM-dd').format(birthdate!) : ''}\n'
-                'Phone: $phoneNumber\n'
-                'Email: $email\n'
-                'Objective: $objective\n'
-                // يمكنك إضافة بقية البيانات هنا
-                ),
-          ),
-          actions: [
-            TextButton(
-              onPressed: () => Navigator.pop(context),
-              child: Text('OK'),
-            ),
-          ],
-        ),
+        title: 'CV Data',
+        message: 'Name: $name\n'
+            'Birthdate: ${birthdate != null ? DateFormat('yyyy-MM-dd').format(birthdate!) : ''}\n'
+            'Phone: $phoneNumber\n'
+            'Email: $email\n'
+            'Objective: $objective\n',
+        confirmText: 'OK',
       );
     }
   }

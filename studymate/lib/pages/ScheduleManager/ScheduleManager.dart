@@ -5,9 +5,7 @@ import 'package:google_fonts/google_fonts.dart';
 import 'package:hive/hive.dart';
 import 'package:http/http.dart' as http;
 import 'package:intl/intl.dart';
-import 'package:studymate/Pop-ups/PopUps_Failed.dart';
-import 'package:studymate/Pop-ups/PopUps_Success.dart';
-import 'package:studymate/Pop-ups/PopUps_Warning.dart';
+import '../../Pop-ups/StylishPopup.dart';
 import 'package:studymate/util/TextField.dart';
 import 'package:timezone/data/latest.dart' as tz;
 import 'package:timezone/timezone.dart' as tz;
@@ -1020,66 +1018,75 @@ class _ScheduleViewState extends State<ScheduleView> {
                                       borderRadius: BorderRadius.circular(15),
                                     ),
                                   ),
-                                  onPressed: () {
+                                  onPressed: () async {
                                     // Save the event details
                                     if (titleController.text.isEmpty) {
-                                      showWarningPopup(
-                                        context,
-                                        "Error",
-                                        "Please enter a title for the event",
+                                      await StylishPopup.warning(
+                                        context: context,
+                                        title: "Error",
+                                        message:
+                                            "Please enter a title for the event",
                                       );
                                     } else if (dateController.text.isEmpty) {
-                                      showWarningPopup(
-                                        context,
-                                        "Error",
-                                        "Please enter a date for the event",
+                                      await StylishPopup.warning(
+                                        context: context,
+                                        title: "Error",
+                                        message:
+                                            "Please enter a date for the event",
                                       );
                                     } else if (StartTimeController
                                         .text.isEmpty) {
-                                      showWarningPopup(
-                                        context,
-                                        "Error",
-                                        "Please enter a start time for the event",
+                                      await StylishPopup.warning(
+                                        context: context,
+                                        title: "Error",
+                                        message:
+                                            "Please enter a start time for the event",
                                       );
                                     } else if (EndTimeController.text.isEmpty) {
-                                      showWarningPopup(
-                                        context,
-                                        "Error",
-                                        "Please enter an end time for the event",
+                                      await StylishPopup.warning(
+                                        context: context,
+                                        title: "Error",
+                                        message:
+                                            "Please enter an end time for the event",
                                       );
                                     } else if (_selectedCategory.isEmpty) {
-                                      showWarningPopup(
-                                        context,
-                                        "Error",
-                                        "Please select a category for the event",
+                                      await StylishPopup.warning(
+                                        context: context,
+                                        title: "Error",
+                                        message:
+                                            "Please select a category for the event",
                                       );
                                     } else if (locationController
                                         .text.isEmpty) {
-                                      showWarningPopup(
-                                        context,
-                                        "Error",
-                                        "Please enter a location for the event",
+                                      await StylishPopup.warning(
+                                        context: context,
+                                        title: "Error",
+                                        message:
+                                            "Please enter a location for the event",
                                       );
                                     } else if (reminderTimeController
                                         .text.isEmpty) {
-                                      showWarningPopup(
-                                        context,
-                                        "Error",
-                                        "Please enter a reminder time for the event",
+                                      await StylishPopup.warning(
+                                        context: context,
+                                        title: "Error",
+                                        message:
+                                            "Please enter a reminder time for the event",
                                       );
                                     } else if (_selectedRepeat != "None" &&
                                         repeatUntilController.text.isEmpty) {
-                                      showWarningPopup(
-                                        context,
-                                        "Error",
-                                        "Please enter a repeat until date for the event",
+                                      await StylishPopup.warning(
+                                        context: context,
+                                        title: "Error",
+                                        message:
+                                            "Please enter a repeat until date for the event",
                                       );
                                     } else if (descriptionController
                                         .text.isEmpty) {
-                                      showWarningPopup(
-                                        context,
-                                        "Error",
-                                        "Please enter a description for the event",
+                                      await StylishPopup.warning(
+                                        context: context,
+                                        title: "Error",
+                                        message:
+                                            "Please enter a description for the event",
                                       );
                                     } else {
                                       try {
@@ -1124,31 +1131,35 @@ class _ScheduleViewState extends State<ScheduleView> {
 
                                         // Validation checks
                                         if (startTime.isAfter(endTime)) {
-                                          showWarningPopup(
-                                            context,
-                                            "Error",
-                                            "The start time cannot be after the end time.",
+                                          await StylishPopup.warning(
+                                            context: context,
+                                            title: "Error",
+                                            message:
+                                                "The start time cannot be after the end time.",
                                           );
                                         } else if (reminderTime
                                             .isAfter(startTime)) {
-                                          showWarningPopup(
-                                            context,
-                                            "Error",
-                                            "The reminder time cannot be after the start time.",
+                                          await StylishPopup.warning(
+                                            context: context,
+                                            title: "Error",
+                                            message:
+                                                "The reminder time cannot be after the start time.",
                                           );
                                         } else if (reminderTime
                                             .isBefore(DateTime.now())) {
-                                          showWarningPopup(
-                                            context,
-                                            "Error",
-                                            "The reminder time cannot be in the past.",
+                                          await StylishPopup.warning(
+                                            context: context,
+                                            title: "Error",
+                                            message:
+                                                "The reminder time cannot be in the past.",
                                           );
                                         } else if (_selectedRepeat != "None" &&
                                             repeatUntil.isBefore(eventDate)) {
-                                          showWarningPopup(
-                                            context,
-                                            "Error",
-                                            "The repeat until date cannot be before the event date.",
+                                          await StylishPopup.warning(
+                                            context: context,
+                                            title: "Error",
+                                            message:
+                                                "The repeat until date cannot be before the event date.",
                                           );
                                         } else {
                                           DateFormat outputFormat =
@@ -1171,10 +1182,11 @@ class _ScheduleViewState extends State<ScheduleView> {
                                       } catch (e) {
                                         // Handle parsing errors
                                         // print("Error: $e");
-                                        showWarningPopup(
-                                          context,
-                                          "Error",
-                                          "Invalid date or time format. Please check the values entered.",
+                                        await StylishPopup.warning(
+                                          context: context,
+                                          title: "Error",
+                                          message:
+                                              "Invalid date or time format. Please check the values entered.",
                                         );
                                       }
                                     }
@@ -1267,20 +1279,20 @@ class _ScheduleViewState extends State<ScheduleView> {
       // );
 
       // Show success popup
-      showSuccessPopup(
-        context,
-        "Success",
-        "Event added successfully",
+      await StylishPopup.success(
+        context: context,
+        title: "Success",
+        message: "Event added successfully",
       );
 
       // Close the add event popup
       _toggleAddEventPopup();
     } else {
-      showFailedPopup(
-        context,
-        "Error",
-        "Failed to add the event. ${response.statusCode} ${response.reasonPhrase}",
-        "Retry",
+      await StylishPopup.error(
+        context: context,
+        title: "Error",
+        message:
+            "Failed to add the event. ${response.statusCode} ${response.reasonPhrase}",
       );
     }
   }

@@ -67,71 +67,122 @@ class CircularWidget extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return Container(
+      constraints: BoxConstraints(maxWidth: 420),
       decoration: BoxDecoration(
         color: Theme.of(context).scaffoldBackgroundColor,
-        borderRadius: BorderRadius.circular(20),
+        borderRadius: BorderRadius.circular(24),
+        boxShadow: [
+          BoxShadow(
+            color: color.withOpacity(0.2),
+            blurRadius: 30,
+            offset: Offset(0, 10),
+          ),
+        ],
       ),
-      padding: EdgeInsets.all(20),
       child: Column(
         mainAxisSize: MainAxisSize.min,
-        mainAxisAlignment: MainAxisAlignment.center,
         children: [
-          // Lottie animation
-          Lottie.asset(
-            'assets/animations/SuccesAnimation.json',
-            height: 200,
-            width: 200,
-            fit: BoxFit.fill,
-          ),
-          SizedBox(height: 20),
-          // Dynamic title text
-          Text(
-            title,
-            style: Theme.of(context).textTheme.displaySmall?.copyWith(
-                  fontSize: 28,
-                  fontWeight: FontWeight.bold,
-                ),
-            textAlign: TextAlign.center,
-          ),
-          SizedBox(height: 15),
-          // Dynamic description text
-          Text(
-            description,
-            style: Theme.of(context).textTheme.bodyLarge?.copyWith(
-                  fontSize: 16,
-                ),
-            textAlign: TextAlign.center,
-          ),
-          SizedBox(height: 25),
-          // Elevated Button for "Done"
-          ElevatedButton(
-            onPressed: () {
-              // Close dialog first
-              Navigator.of(context).pop();
-              // Navigate using GoRouter
-              if (routeName == "/HomePage" || routeName == "/home") {
-                context.go(AppRoutes.home);
-              } else if (routeName == "/login") {
-                context.go(AppRoutes.login);
-              } else {
-                // Default to home if unknown route
-                context.go(AppRoutes.home);
-              }
-            },
-            style: ElevatedButton.styleFrom(
-              backgroundColor: color,
-              minimumSize: Size(280, 50),
-              shape: RoundedRectangleBorder(
-                borderRadius: BorderRadius.circular(15),
+          // Header with gradient
+          Container(
+            height: 160,
+            decoration: BoxDecoration(
+              gradient: LinearGradient(
+                begin: Alignment.topLeft,
+                end: Alignment.bottomRight,
+                colors: [
+                  color,
+                  color.withOpacity(0.8),
+                ],
+              ),
+              borderRadius: BorderRadius.only(
+                topLeft: Radius.circular(24),
+                topRight: Radius.circular(24),
               ),
             ),
-            child: Text(
-              "Done",
-              style: TextStyle(
-                color: Colors.white,
-                fontSize: 20,
-                fontWeight: FontWeight.w800,
+            child: Center(
+              child: Lottie.asset(
+                'assets/animations/SuccesAnimation.json',
+                height: 120,
+                width: 120,
+                fit: BoxFit.contain,
               ),
+            ),
+          ),
+
+          // Content
+          Padding(
+            padding: EdgeInsets.all(28),
+            child: Column(
+              children: [
+                // Dynamic title text
+                Text(
+                  title,
+                  style: Theme.of(context).textTheme.displaySmall?.copyWith(
+                        fontSize: 26,
+                        fontWeight: FontWeight.bold,
+                      ),
+                  textAlign: TextAlign.center,
+                ),
+                SizedBox(height: 14),
+                // Dynamic description text
+                Text(
+                  description,
+                  style: Theme.of(context).textTheme.bodyLarge?.copyWith(
+                        fontSize: 16,
+                        height: 1.5,
+                      ),
+                  textAlign: TextAlign.center,
+                ),
+                SizedBox(height: 28),
+                // Modern gradient button
+                Container(
+                  width: double.infinity,
+                  height: 54,
+                  decoration: BoxDecoration(
+                    gradient: LinearGradient(
+                      colors: [color, color.withOpacity(0.8)],
+                    ),
+                    borderRadius: BorderRadius.circular(14),
+                    boxShadow: [
+                      BoxShadow(
+                        color: color.withOpacity(0.4),
+                        blurRadius: 15,
+                        offset: Offset(0, 8),
+                      ),
+                    ],
+                  ),
+                  child: Material(
+                    color: Colors.transparent,
+                    child: InkWell(
+                      borderRadius: BorderRadius.circular(14),
+                      onTap: () {
+                        // Close dialog first
+                        Navigator.of(context).pop();
+                        // Navigate using GoRouter
+                        if (routeName == "/HomePage" || routeName == "/home") {
+                          context.go(AppRoutes.home);
+                        } else if (routeName == "/login") {
+                          context.go(AppRoutes.login);
+                        } else {
+                          // Default to home if unknown route
+                          context.go(AppRoutes.home);
+                        }
+                      },
+                      child: Center(
+                        child: Text(
+                          "Done",
+                          style: TextStyle(
+                            color: Colors.white,
+                            fontSize: 19,
+                            fontWeight: FontWeight.w800,
+                            letterSpacing: 0.5,
+                          ),
+                        ),
+                      ),
+                    ),
+                  ),
+                ),
+              ],
             ),
           ),
         ],

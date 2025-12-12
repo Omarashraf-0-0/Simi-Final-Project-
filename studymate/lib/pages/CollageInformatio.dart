@@ -2,8 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:studymate/Classes/User.dart';
 import 'package:studymate/pages/LoginPage.dart';
 import 'package:studymate/pages/OTP.dart';
-import '../Pop-ups/PopUps_Failed.dart';
-import '../Pop-ups/PopUps_Warning.dart';
+import '../Pop-ups/StylishPopup.dart';
 import 'package:http/http.dart' as http;
 import 'dart:convert';
 
@@ -149,34 +148,31 @@ class _CollageInformationState extends State<CollageInformation> {
         );
       } else {
         final responseData = json.decode(response.body);
-        showFailedPopup(
-          context,
-          'Failed',
-          responseData['message'],
-          'Continue',
+        await StylishPopup.error(
+          context: context,
+          title: 'Failed',
+          message: responseData['message'],
         );
       }
     } catch (error) {
       print(error);
-      showFailedPopup(
-        context,
-        'Failed',
-        'Failed to register college info: $error',
-        'Continue',
+      await StylishPopup.error(
+        context: context,
+        title: 'Failed',
+        message: 'Failed to register college info: $error',
       );
     }
   }
 
-  void validateAndRegister() {
+  void validateAndRegister() async {
     if (_formKey.currentState!.validate()) {
       if (selectedUniversity == null ||
           selectedCollege == null ||
           selectedMajor == null) {
-        showWarningPopup(
-          context,
-          'Warning',
-          'Please select all dropdown fields.',
-          'OK',
+        await StylishPopup.warning(
+          context: context,
+          title: 'Warning',
+          message: 'Please select all dropdown fields.',
         );
       } else {
         Student user = createStudent();

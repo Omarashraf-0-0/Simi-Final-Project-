@@ -33,7 +33,7 @@ class _HomebodyState extends State<Homebody>
   bool _isLoading = true;
   bool _isLoadingQuizzes = true;
   bool _isLoadingCourses = true;
-  
+
   // Cache management
   static const String _coursesCacheKey = 'recent_courses_cache';
   static const String _coursesCacheTimeKey = 'recent_courses_cache_time';
@@ -190,19 +190,19 @@ class _HomebodyState extends State<Homebody>
       print('Error loading data: $e');
     }
   }
-  
+
   // Clear cache and refresh data
   Future<void> _refreshData() async {
     final userBox = Hive.box('userBox');
     await userBox.delete(_coursesCacheKey);
     await userBox.delete(_coursesCacheTimeKey);
-    
+
     setState(() {
       _isLoadingCourses = true;
       _isLoadingQuizzes = true;
       _isLoading = true;
     });
-    
+
     await _loadData();
   }
 
@@ -216,80 +216,80 @@ class _HomebodyState extends State<Homebody>
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
-          // Hero Section with Gradient Background
-          _buildHeroSection(),
+            // Hero Section with Gradient Background
+            _buildHeroSection(),
 
-          // Stats Cards Row with proper spacing
-          const SizedBox(height: 20),
-          Padding(
-            padding: const EdgeInsets.symmetric(horizontal: 20.0),
-            child: _buildStatsCards(),
-          ),
-          const SizedBox(height: 25),
+            // Stats Cards Row with proper spacing
+            const SizedBox(height: 20),
+            Padding(
+              padding: const EdgeInsets.symmetric(horizontal: 20.0),
+              child: _buildStatsCards(),
+            ),
+            const SizedBox(height: 25),
 
-          // Schedule section
-          Padding(
-            padding: const EdgeInsets.symmetric(horizontal: 16.0),
-            child: _buildSectionHeader('Today\'s Schedule',
-                icon: Icons.calendar_today_rounded,
-                onViewAll: () => Navigator.push(context,
-                    MaterialPageRoute(builder: (_) => ScheduleView()))),
-          ),
-          const SizedBox(height: 15),
-          SizedBox(
-            height: 140,
-            child: _isLoading
-                ? ListView.builder(
-                    scrollDirection: Axis.horizontal,
-                    padding: const EdgeInsets.symmetric(horizontal: 16.0),
-                    itemCount: 3,
-                    itemBuilder: (_, __) => _buildScheduleLoaderCard(),
-                  )
-                : _buildScheduleSection(),
-          ),
-          const SizedBox(height: 30),
+            // Schedule section
+            Padding(
+              padding: const EdgeInsets.symmetric(horizontal: 16.0),
+              child: _buildSectionHeader('Today\'s Schedule',
+                  icon: Icons.calendar_today_rounded,
+                  onViewAll: () => Navigator.push(context,
+                      MaterialPageRoute(builder: (_) => ScheduleView()))),
+            ),
+            const SizedBox(height: 15),
+            SizedBox(
+              height: 140,
+              child: _isLoading
+                  ? ListView.builder(
+                      scrollDirection: Axis.horizontal,
+                      padding: const EdgeInsets.symmetric(horizontal: 16.0),
+                      itemCount: 3,
+                      itemBuilder: (_, __) => _buildScheduleLoaderCard(),
+                    )
+                  : _buildScheduleSection(),
+            ),
+            const SizedBox(height: 30),
 
-          // Courses section
-          Padding(
-            padding: const EdgeInsets.symmetric(horizontal: 16.0),
-            child: _buildSectionHeader('Recent Courses',
-                icon: Icons.book_rounded,
-                onViewAll: () => Navigator.push(
-                    context, MaterialPageRoute(builder: (_) => Resources()))),
-          ),
-          const SizedBox(height: 15),
-          SizedBox(
-            height: 200,
-            child: _isLoadingCourses
-                ? ListView.builder(
-                    scrollDirection: Axis.horizontal,
-                    padding: const EdgeInsets.symmetric(horizontal: 16.0),
-                    itemCount: 3,
-                    itemBuilder: (_, __) => _buildCoursesLoaderCard(),
-                  )
-                : _buildCoursesSection(),
-          ),
-          const SizedBox(height: 30),
+            // Courses section
+            Padding(
+              padding: const EdgeInsets.symmetric(horizontal: 16.0),
+              child: _buildSectionHeader('Recent Courses',
+                  icon: Icons.book_rounded,
+                  onViewAll: () => Navigator.push(
+                      context, MaterialPageRoute(builder: (_) => Resources()))),
+            ),
+            const SizedBox(height: 15),
+            SizedBox(
+              height: 200,
+              child: _isLoadingCourses
+                  ? ListView.builder(
+                      scrollDirection: Axis.horizontal,
+                      padding: const EdgeInsets.symmetric(horizontal: 16.0),
+                      itemCount: 3,
+                      itemBuilder: (_, __) => _buildCoursesLoaderCard(),
+                    )
+                  : _buildCoursesSection(),
+            ),
+            const SizedBox(height: 30),
 
-          // Quizzes section
-          Padding(
-            padding: const EdgeInsets.symmetric(horizontal: 16.0),
-            child:
-                _buildSectionHeader('Recent Quizzes', icon: Icons.quiz_rounded),
-          ),
-          const SizedBox(height: 15),
-          Padding(
-            padding: const EdgeInsets.symmetric(horizontal: 16.0),
-            child: _isLoadingQuizzes
-                ? Column(
-                    children:
-                        List.generate(3, (_) => _buildQuizzesLoaderCard()),
-                  )
-                : _buildQuizzesSection(),
-          ),
-          const SizedBox(height: 100),
-        ],
-      ),
+            // Quizzes section
+            Padding(
+              padding: const EdgeInsets.symmetric(horizontal: 16.0),
+              child: _buildSectionHeader('Recent Quizzes',
+                  icon: Icons.quiz_rounded),
+            ),
+            const SizedBox(height: 15),
+            Padding(
+              padding: const EdgeInsets.symmetric(horizontal: 16.0),
+              child: _isLoadingQuizzes
+                  ? Column(
+                      children:
+                          List.generate(3, (_) => _buildQuizzesLoaderCard()),
+                    )
+                  : _buildQuizzesSection(),
+            ),
+            const SizedBox(height: 100),
+          ],
+        ),
       ),
     );
   }
@@ -492,7 +492,7 @@ class _HomebodyState extends State<Homebody>
   // Stats Cards (XP, Streak, etc.)
   Widget _buildStatsCards() {
     final xp = Hive.box('userBox').get('xp') ?? 0;
-    final dayStreak = Hive.box('userBox').get('Day_Streak') ?? 0;
+    final dayStreak = Hive.box('userBox').get('day_streak') ?? 0;
 
     return FadeTransition(
       opacity: _fadeAnimation,
@@ -949,7 +949,7 @@ class _HomebodyState extends State<Homebody>
       itemBuilder: (context, index) {
         final gradient = _getCourseGradient(index);
         final icon = _getCourseIcon(index);
-        
+
         return GestureDetector(
           onTap: () {
             Hive.box('userBox').put('COId', coursesIndex[index]);
@@ -1273,11 +1273,11 @@ class _HomebodyState extends State<Homebody>
     try {
       final userBox = Hive.box('userBox');
       final username = userBox.get('username');
-      
+
       // Check cache first
       final cachedTime = userBox.get(_coursesCacheTimeKey);
       final cachedData = userBox.get(_coursesCacheKey);
-      
+
       if (cachedTime != null && cachedData != null) {
         final cacheAge = DateTime.now().difference(DateTime.parse(cachedTime));
         if (cacheAge < _cacheDuration) {
@@ -1295,21 +1295,24 @@ class _HomebodyState extends State<Homebody>
           return;
         }
       }
-      
+
       // Fetch from API with timeout
-      final response = await http.post(
-        Uri.parse('https://alyibrahim.pythonanywhere.com/recentCourses'),
-        headers: {'Content-Type': 'application/json'},
-        body: jsonEncode({'username': username, 'limit': 5}),
-      ).timeout(const Duration(seconds: 10));
+      final response = await http
+          .post(
+            Uri.parse('https://alyibrahim.pythonanywhere.com/recentCourses'),
+            headers: {'Content-Type': 'application/json'},
+            body: jsonEncode({'username': username, 'limit': 5}),
+          )
+          .timeout(const Duration(seconds: 10));
 
       if (response.statusCode == 200) {
         final data = jsonDecode(response.body);
-        
+
         // Cache the response
         await userBox.put(_coursesCacheKey, response.body);
-        await userBox.put(_coursesCacheTimeKey, DateTime.now().toIso8601String());
-        
+        await userBox.put(
+            _coursesCacheTimeKey, DateTime.now().toIso8601String());
+
         if (mounted) {
           setState(() {
             courses = List<String>.from(data['courses']);
@@ -1326,7 +1329,7 @@ class _HomebodyState extends State<Homebody>
       // Fallback to stale cache if available
       final userBox = Hive.box('userBox');
       final cachedData = userBox.get(_coursesCacheKey);
-      
+
       if (cachedData != null && mounted) {
         try {
           final data = jsonDecode(cachedData);
@@ -1351,7 +1354,7 @@ class _HomebodyState extends State<Homebody>
           // Cache is corrupted, continue to error state
         }
       }
-      
+
       if (mounted) {
         setState(() {
           _isLoadingCourses = false;

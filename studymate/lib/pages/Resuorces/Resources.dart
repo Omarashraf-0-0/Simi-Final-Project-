@@ -5,6 +5,7 @@ import 'package:http/http.dart' as http;
 import 'package:shimmer/shimmer.dart';
 import 'package:studymate/pages/Resuorces/CourseContent.dart';
 import 'package:studymate/pages/Resuorces/Courses.dart';
+import '../../Pop-ups/StylishPopup.dart';
 
 class Resources extends StatefulWidget {
   const Resources({super.key});
@@ -225,61 +226,22 @@ class _ResourcesState extends State<Resources>
     // Check if the widget is still mounted before showing the dialog
     if (!mounted) return;
 
-    showDialog(
+    StylishPopup.show(
       context: context,
-      builder: (context) {
-        return AlertDialog(
-          shape:
-              RoundedRectangleBorder(borderRadius: BorderRadius.circular(20)),
-          title: Row(
-            children: [
-              Icon(Icons.error_outline, color: Colors.red[400], size: 28),
-              const SizedBox(width: 12),
-              const Text(
-                "Error",
-                style: TextStyle(
-                  fontSize: 20,
-                  fontWeight: FontWeight.bold,
-                ),
-              ),
-            ],
-          ),
-          content: Text(
-            message,
-            style: const TextStyle(fontSize: 16),
-          ),
-          actions: [
-            TextButton(
-              onPressed: () {
-                if (mounted) {
-                  Navigator.of(context).pop();
-                  fetchCourses(); // Retry fetching courses
-                }
-              },
-              child: Text(
-                "Retry",
-                style: TextStyle(
-                  color: primaryColor,
-                  fontWeight: FontWeight.bold,
-                ),
-              ),
-            ),
-            TextButton(
-              onPressed: () {
-                if (mounted) {
-                  Navigator.of(context).pop();
-                }
-              },
-              child: Text(
-                "Cancel",
-                style: TextStyle(
-                  color: Colors.grey[600],
-                  fontWeight: FontWeight.bold,
-                ),
-              ),
-            ),
-          ],
-        );
+      title: 'Error',
+      message: message,
+      type: PopupType.error,
+      confirmText: 'Retry',
+      cancelText: 'Cancel',
+      showCancel: true,
+      onConfirm: () {
+        Navigator.of(context).pop();
+        if (mounted) {
+          fetchCourses(); // Retry fetching courses
+        }
+      },
+      onCancel: () {
+        Navigator.of(context).pop();
       },
     );
   }

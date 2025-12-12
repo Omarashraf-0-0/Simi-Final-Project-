@@ -1,4 +1,4 @@
-// ignore_for_file: prefer_const_constructors
+// ignore_for_file: prefer_const_constructors, unused_import
 import 'dart:convert'; // Added for jsonEncode
 import 'package:flutter/material.dart';
 import 'package:timezone/data/latest_all.dart' as tz;
@@ -13,6 +13,8 @@ import 'package:studymate/pages/Notifications/NotificationClass.dart';
 import 'package:studymate/pages/Notifications/InAppMessagingNotification.dart';
 import 'package:studymate/services/enhanced_notification_service.dart';
 import 'package:studymate/services/schedule_notification_sync.dart';
+import 'package:studymate/services/xp_tracker.dart';
+import 'package:studymate/pages/XPChangePopup.dart';
 import 'package:studymate/router/app_router.dart';
 import 'package:go_router/go_router.dart';
 
@@ -126,6 +128,23 @@ class _MyAppState extends State<MyApp> {
     super.initState();
     themeManager.addListener(themeListner);
     _setupMessagingListeners();
+    _setupXPPopupCallback();
+  }
+
+  void _setupXPPopupCallback() {
+    // Setup callback for showing XP popup
+    XPTracker.onXPChanged = (context, xpChange, message) {
+      showDialog(
+        context: context,
+        barrierDismissible: true,
+        builder: (BuildContext context) {
+          return XPChangePopup(
+            xpChange: xpChange,
+            message: message,
+          );
+        },
+      );
+    };
   }
 
   void _setupMessagingListeners() {

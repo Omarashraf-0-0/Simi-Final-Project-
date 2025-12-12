@@ -8,6 +8,7 @@ import 'package:studymate/pages/HomePage/Homebody.dart';
 import 'package:studymate/pages/ProfilePage.dart';
 import 'package:studymate/pages/Settings/Settings.dart';
 import 'package:studymate/pages/AboLayla/AboLayla.dart';
+import '../../Pop-ups/StylishPopup.dart';
 import 'package:studymate/pages/ScheduleManager/ScheduleManager.dart';
 import 'package:studymate/pages/QuizGenerator/QuizHome.dart';
 import 'package:studymate/pages/Game/GameHome.dart';
@@ -52,11 +53,22 @@ class _HomepageState extends State<Homepage> {
   ];
 
   Future<void> Logout() async {
-    Box userBox = Hive.box('userBox');
-    await userBox.clear(); // Clear all user data
-    // navigate to the login page
-    if (mounted) {
-      context.go(AppRoutes.login);
+    final confirm = await StylishPopup.question(
+      context: context,
+      title: 'Logout?',
+      message:
+          'Are you sure you want to logout?\nYou\'ll need to login again to access your account.',
+      confirmText: 'Yes, Logout',
+      cancelText: 'Cancel',
+    );
+
+    if (confirm == true) {
+      Box userBox = Hive.box('userBox');
+      await userBox.clear(); // Clear all user data
+      // navigate to the login page
+      if (mounted) {
+        context.go(AppRoutes.login);
+      }
     }
   }
 
@@ -233,7 +245,8 @@ class _HomepageState extends State<Homepage> {
                                 ),
                                 onTap: () async {
                                   // Show notification details popup
-                                  Navigator.pop(context); // Close notification list first
+                                  Navigator.pop(
+                                      context); // Close notification list first
                                   _showNotificationDetailPopup(
                                     title: notification['title'] ?? '',
                                     body: notification['body'] ?? '',
@@ -795,6 +808,17 @@ class _HomepageState extends State<Homepage> {
                   },
                 ),
                 _buildDrawerItem(
+                  icon: Icons.book_rounded,
+                  text: 'Resources',
+                  color: Colors.blue,
+                  onTap: () {
+                    Navigator.push(
+                      context,
+                      MaterialPageRoute(builder: (context) => Resources()),
+                    );
+                  },
+                ),
+                _buildDrawerItem(
                   icon: Icons.chat_bubble_rounded,
                   text: 'Abo Layla',
                   color: accentColor,
@@ -877,12 +901,6 @@ class _HomepageState extends State<Homepage> {
                       MaterialPageRoute(builder: (context) => Settings()),
                     );
                   },
-                ),
-                _buildDrawerItem(
-                  icon: Icons.help_rounded,
-                  text: 'Help',
-                  color: Colors.teal,
-                  onTap: () => context.push(AppRoutes.otp),
                 ),
                 _buildDrawerItem(
                   icon: Icons.dark_mode_rounded,
@@ -1047,12 +1065,12 @@ class _HomepageState extends State<Homepage> {
   }
 
   Future<void> fetchNotifications() async {
-    const url =
-        'https://alyibrahim.pythonanywhere.com/getNotification';
+    const url = 'https://alyibrahim.pythonanywhere.com/getNotification';
     final userId = Hive.box('userBox').get('id');
     print("User ID: $userId");
     final Map<String, dynamic> requestBody = {
-      'username': userId,  // Backend expects 'username' parameter (even though it's user_id value)
+      'username':
+          userId, // Backend expects 'username' parameter (even though it's user_id value)
     };
     final response = await http.post(
       Uri.parse(url),
@@ -1078,14 +1096,15 @@ class _HomepageState extends State<Homepage> {
         });
       }
     } else {
-      print('Request failed with status: ${response.statusCode} - ${response.body}');
+      print(
+          'Request failed with status: ${response.statusCode} - ${response.body}');
     }
   }
 
   // Mark notification as read and remove it
   Future<void> markNotificationAsRead(String notificationId) async {
     const url = 'https://alyibrahim.pythonanywhere.com/deleteNotification';
-    
+
     try {
       final response = await http.post(
         Uri.parse(url),
@@ -1230,14 +1249,15 @@ class _HomepageState extends State<Homepage> {
                             // Mark as read and close dialog
                             await markNotificationAsRead(notificationId);
                             Navigator.of(dialogContext).pop();
-                            
+
                             // Show confirmation
                             if (mounted) {
                               ScaffoldMessenger.of(context).showSnackBar(
                                 SnackBar(
                                   content: Row(
                                     children: [
-                                      Icon(Icons.check_circle, color: Colors.white, size: 20),
+                                      Icon(Icons.check_circle,
+                                          color: Colors.white, size: 20),
                                       SizedBox(width: 8),
                                       Text('Marked as read'),
                                     ],

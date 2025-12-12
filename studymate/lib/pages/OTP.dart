@@ -5,8 +5,7 @@ import 'dart:async'; // Import for Timer
 import 'dart:convert'; // Import for JSON decoding if needed
 import 'package:go_router/go_router.dart';
 import '../Classes/User.dart';
-import '../Pop-ups/PopUps_Failed.dart';
-import '../Pop-ups/PopUps_Success.dart';
+import '../Pop-ups/StylishPopup.dart';
 import '../theme/app_constants.dart';
 import '../router/app_router.dart';
 
@@ -113,11 +112,10 @@ class _OTPState extends State<OTP> {
 
       if (response.statusCode == 200) {
         // Show success popup
-        showSuccessPopup(
-          context,
-          'Registration Successful',
-          'Your account has been created successfully!',
-          'Continue',
+        await StylishPopup.success(
+          context: context,
+          title: 'Registration Successful',
+          message: 'Your account has been created successfully!',
         );
 
         // Navigate to login using GoRouter after delay
@@ -128,20 +126,18 @@ class _OTPState extends State<OTP> {
         });
       } else {
         final responseData = json.decode(response.body);
-        showFailedPopup(
-          context,
-          'Registration Failed',
-          responseData['message'],
-          'Continue',
+        await StylishPopup.error(
+          context: context,
+          title: 'Registration Failed',
+          message: responseData['message'],
         );
       }
     } catch (error) {
       print(error);
-      showFailedPopup(
-        context,
-        'Registration Failed',
-        'Failed to register: $error',
-        'Continue',
+      await StylishPopup.error(
+        context: context,
+        title: 'Registration Failed',
+        message: 'Failed to register: $error',
       );
     }
   }

@@ -6,6 +6,7 @@ import 'package:http/http.dart' as http; // For HTTP requests
 import 'package:hive_flutter/hive_flutter.dart'; // For Hive storage
 import 'package:hive/hive.dart';
 import 'Quiz.dart'; // Import the Quiz screen
+import '../../Pop-ups/StylishPopup.dart';
 
 class QuizOptions extends StatefulWidget {
   const QuizOptions({super.key});
@@ -141,134 +142,65 @@ class _QuizOptionsState extends State<QuizOptions>
 
     // Check if a course is selected
     if (selectedCourse == null) {
-      showDialog(
+      StylishPopup.error(
         context: context,
-        builder: (BuildContext dialogContext) {
-          return AlertDialog(
-            title: const Text("Error"),
-            content: const Text("Please select a course."),
-            actions: [
-              TextButton(
-                onPressed: () {
-                  Navigator.of(dialogContext).pop();
-                },
-                child: const Text("OK"),
-              ),
-            ],
-          );
-        },
+        title: 'Error',
+        message: 'Please select a course.',
+        confirmText: 'OK',
       );
       return;
     }
 
     // Check if lectures are available
     if (lectures.isEmpty) {
-      showDialog(
+      StylishPopup.error(
         context: context,
-        builder: (BuildContext dialogContext) {
-          return AlertDialog(
-            title: const Text("Error"),
-            content:
-                const Text("No lectures available for the selected course."),
-            actions: [
-              TextButton(
-                onPressed: () {
-                  Navigator.of(dialogContext).pop();
-                },
-                child: const Text("OK"),
-              ),
-            ],
-          );
-        },
+        title: 'Error',
+        message: 'No lectures available for the selected course.',
+        confirmText: 'OK',
       );
       return;
     }
 
     // Validate that at least one lecture is selected
     if (selectedLectures.isEmpty) {
-      showDialog(
+      StylishPopup.error(
         context: context,
-        builder: (BuildContext dialogContext) {
-          return AlertDialog(
-            title: const Text("Error"),
-            content: const Text("Please select at least one lecture."),
-            actions: [
-              TextButton(
-                onPressed: () {
-                  Navigator.of(dialogContext).pop();
-                },
-                child: const Text("OK"),
-              ),
-            ],
-          );
-        },
+        title: 'Error',
+        message: 'Please select at least one lecture.',
+        confirmText: 'OK',
       );
       return;
     }
 
     // Validate question numbers
     if (totalQuestions <= 0) {
-      showDialog(
+      StylishPopup.error(
         context: context,
-        builder: (BuildContext dialogContext) {
-          return AlertDialog(
-            title: const Text("Error"),
-            content: const Text(
-                "Total number of questions must be a positive integer."),
-            actions: [
-              TextButton(
-                onPressed: () {
-                  Navigator.of(dialogContext).pop();
-                },
-                child: const Text("OK"),
-              ),
-            ],
-          );
-        },
+        title: 'Error',
+        message: 'Total number of questions must be a positive integer.',
+        confirmText: 'OK',
       );
       return;
     }
 
     if (mcqCount < 0 || tfCount < 0) {
-      showDialog(
+      StylishPopup.error(
         context: context,
-        builder: (BuildContext dialogContext) {
-          return AlertDialog(
-            title: const Text("Error"),
-            content: const Text(
-                "Number of MCQ and T/F questions cannot be negative."),
-            actions: [
-              TextButton(
-                onPressed: () {
-                  Navigator.of(dialogContext).pop();
-                },
-                child: const Text("OK"),
-              ),
-            ],
-          );
-        },
+        title: 'Error',
+        message: 'Number of MCQ and T/F questions cannot be negative.',
+        confirmText: 'OK',
       );
       return;
     }
 
     if (mcqCount + tfCount != totalQuestions) {
-      showDialog(
+      StylishPopup.error(
         context: context,
-        builder: (BuildContext dialogContext) {
-          return AlertDialog(
-            title: const Text("Error"),
-            content: const Text(
-                "The total number of MCQs and T/F questions must equal the number of questions."),
-            actions: [
-              TextButton(
-                onPressed: () {
-                  Navigator.of(dialogContext).pop();
-                },
-                child: const Text("OK"),
-              ),
-            ],
-          );
-        },
+        title: 'Error',
+        message:
+            'The total number of MCQs and T/F questions must equal the number of questions.',
+        confirmText: 'OK',
       );
       return;
     }
@@ -332,22 +264,11 @@ class _QuizOptionsState extends State<QuizOptions>
           print('isGenerating set to false');
         });
         var jsonResponse = jsonDecode(response.body);
-        showDialog(
+        StylishPopup.error(
           context: context,
-          builder: (BuildContext dialogContext) {
-            return AlertDialog(
-              title: const Text("Error"),
-              content: Text(jsonResponse['error'] ?? 'Unknown error occurred.'),
-              actions: [
-                TextButton(
-                  onPressed: () {
-                    Navigator.of(dialogContext).pop();
-                  },
-                  child: const Text("OK"),
-                ),
-              ],
-            );
-          },
+          title: 'Error',
+          message: jsonResponse['error'] ?? 'Unknown error occurred.',
+          confirmText: 'OK',
         );
       } else {
         setState(() {
@@ -357,23 +278,12 @@ class _QuizOptionsState extends State<QuizOptions>
         print('Server error: ${response.statusCode}');
         print('Response body: ${response.body}');
         // Show error message
-        showDialog(
+        StylishPopup.error(
           context: context,
-          builder: (BuildContext dialogContext) {
-            return AlertDialog(
-              title: const Text("Error"),
-              content: Text(
-                  'An unexpected server error occurred. Please try again later.'),
-              actions: [
-                TextButton(
-                  onPressed: () {
-                    Navigator.of(dialogContext).pop();
-                  },
-                  child: const Text("OK"),
-                ),
-              ],
-            );
-          },
+          title: 'Error',
+          message:
+              'An unexpected server error occurred. Please try again later.',
+          confirmText: 'OK',
         );
       }
     } catch (e) {
@@ -383,23 +293,12 @@ class _QuizOptionsState extends State<QuizOptions>
       });
       print('Error: $e');
       // Show error message
-      showDialog(
+      StylishPopup.error(
         context: context,
-        builder: (BuildContext dialogContext) {
-          return AlertDialog(
-            title: const Text("Error"),
-            content: Text(
-                'An error occurred while generating the quiz: $e. Please try again.'),
-            actions: [
-              TextButton(
-                onPressed: () {
-                  Navigator.of(dialogContext).pop();
-                },
-                child: const Text("OK"),
-              ),
-            ],
-          );
-        },
+        title: 'Error',
+        message:
+            'An error occurred while generating the quiz: $e. Please try again.',
+        confirmText: 'OK',
       );
     }
   }

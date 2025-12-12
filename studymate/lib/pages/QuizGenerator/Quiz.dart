@@ -235,32 +235,19 @@ class _QuizState extends State<Quiz> with SingleTickerProviderStateMixin {
       int xpChange = 0;
       int totalQuestions = widget.totalQuestions;
       double scorePercentage = (correctAnswers / totalQuestions) * 100;
-      bool isPassed =
-          scorePercentage >= 50; // Assuming 50% is the passing score
+      bool isPassed = scorePercentage >= 50; // 50% is the passing score
 
-      String message = ''; // Initialize message variable
+      String message = '';
 
       if (isPassed) {
-        // User passed the quiz - XP based on performance level
-        if (scorePercentage == 100) {
-          // Perfect score: 2 XP per question + 10 bonus
-          xpChange = (correctAnswers * 2) + 10;
-          message =
-              'Perfect! You earned $xpChange XP (${correctAnswers * 2} + 10 bonus)!';
-        } else if (scorePercentage >= 80) {
-          // Excellent: 1.5 XP per correct answer (rounded)
-          xpChange = (correctAnswers * 1.5).round();
-          message =
-              'Excellent! You earned $xpChange XP for scoring ${scorePercentage.toInt()}%!';
-        } else {
-          // Good: 1 XP per correct answer
-          xpChange = correctAnswers;
-          message = 'Good job! You earned $xpChange XP.';
-        }
+        // Passed: 10 XP base + 2 XP per correct answer
+        xpChange = 10 + (correctAnswers * 2);
+        message =
+            'Passed! +$xpChange XP (10 base + ${correctAnswers * 2} for correct answers) 🎉';
       } else {
-        // User failed the quiz - reduced penalty
-        xpChange = -3; // Deduct 3 XP (reduced from 5)
-        message = 'Keep trying! You lost 3 XP. Practice makes perfect!';
+        // Failed: -5 XP penalty
+        xpChange = -5;
+        message = 'Failed! -5 XP. Keep practicing! 💪';
       }
 
       // Update XP on the server

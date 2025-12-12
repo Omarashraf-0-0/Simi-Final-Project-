@@ -2,7 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:studymate/pages/LoginPage.dart';
 import 'package:studymate/pages/Login%20&%20Register/RegisterPage.dart';
 import '../../Classes/User.dart';
-import '../../Pop-ups/PopUps_Warning.dart';
+import '../../Pop-ups/StylishPopup.dart';
 import 'dart:convert';
 import 'package:http/http.dart' as http;
 
@@ -39,14 +39,20 @@ class _RegisterLoginState extends State<RegisterLogin> {
   Future<void> validateAndProceed() async {
     if (_formKey.currentState!.validate()) {
       if (gender == null) {
-        showWarningPopup(context, 'Error', 'Please select your gender.', 'OK');
+        await StylishPopup.warning(
+            context: context,
+            title: 'Error',
+            message: 'Please select your gender.');
         return;
       }
       bool isEmailAlreadyUsed =
           await is_email_already_used(emailController.text);
       if (isEmailAlreadyUsed == true) {
-        showWarningPopup(context, 'Email already used',
-            "The email address \"${emailController.text}\" is already associated with an account. Please use a different email.");
+        await StylishPopup.warning(
+            context: context,
+            title: 'Email already used',
+            message:
+                "The email address \"${emailController.text}\" is already associated with an account. Please use a different email.");
         return;
       }
       // Create a new User object with the entered data

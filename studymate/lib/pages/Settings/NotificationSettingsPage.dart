@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:hive/hive.dart';
 import '../../services/enhanced_notification_service.dart';
+import '../../Pop-ups/ModernPopup.dart';
 
 /// Notification Settings Page
 /// Allows users to customize notification preferences
@@ -8,11 +9,13 @@ class NotificationSettingsPage extends StatefulWidget {
   const NotificationSettingsPage({Key? key}) : super(key: key);
 
   @override
-  State<NotificationSettingsPage> createState() => _NotificationSettingsPageState();
+  State<NotificationSettingsPage> createState() =>
+      _NotificationSettingsPageState();
 }
 
 class _NotificationSettingsPageState extends State<NotificationSettingsPage> {
-  final EnhancedNotificationService _notificationService = EnhancedNotificationService();
+  final EnhancedNotificationService _notificationService =
+      EnhancedNotificationService();
   late Box settingsBox;
 
   // Notification toggles
@@ -35,16 +38,21 @@ class _NotificationSettingsPageState extends State<NotificationSettingsPage> {
 
   Future<void> _loadSettings() async {
     settingsBox = await Hive.openBox('notificationSettings');
-    
+
     setState(() {
-      _scheduleNotifications = settingsBox.get('scheduleNotifications', defaultValue: true);
+      _scheduleNotifications =
+          settingsBox.get('scheduleNotifications', defaultValue: true);
       _quizReminders = settingsBox.get('quizReminders', defaultValue: true);
-      _assignmentReminders = settingsBox.get('assignmentReminders', defaultValue: true);
-      _rankNotifications = settingsBox.get('rankNotifications', defaultValue: true);
+      _assignmentReminders =
+          settingsBox.get('assignmentReminders', defaultValue: true);
+      _rankNotifications =
+          settingsBox.get('rankNotifications', defaultValue: true);
       _dailyReminder = settingsBox.get('dailyReminder', defaultValue: false);
-      _streakNotifications = settingsBox.get('streakNotifications', defaultValue: true);
-      _milestoneNotifications = settingsBox.get('milestoneNotifications', defaultValue: true);
-      
+      _streakNotifications =
+          settingsBox.get('streakNotifications', defaultValue: true);
+      _milestoneNotifications =
+          settingsBox.get('milestoneNotifications', defaultValue: true);
+
       final hour = settingsBox.get('dailyReminderHour', defaultValue: 20);
       final minute = settingsBox.get('dailyReminderMinute', defaultValue: 0);
       _dailyReminderTime = TimeOfDay(hour: hour, minute: minute);
@@ -76,15 +84,15 @@ class _NotificationSettingsPageState extends State<NotificationSettingsPage> {
       setState(() {
         _dailyReminderTime = picked;
       });
-      
+
       await settingsBox.put('dailyReminderHour', picked.hour);
       await settingsBox.put('dailyReminderMinute', picked.minute);
-      
+
       // Update the scheduled notification if daily reminder is enabled
       if (_dailyReminder) {
         await _notificationService.cancelNotification(999999);
         await _notificationService.scheduleDailyStudyReminder(time: picked);
-        
+
         if (mounted) {
           WidgetsBinding.instance.addPostFrameCallback((_) {
             ScaffoldMessenger.of(context).showSnackBar(
@@ -120,7 +128,7 @@ class _NotificationSettingsPageState extends State<NotificationSettingsPage> {
               await _saveSetting('scheduleNotifications', value);
             },
           ),
-          
+
           const Divider(height: 32),
           _buildSectionHeader('📝 Quizzes & Assignments'),
           _buildSettingTile(
@@ -143,7 +151,7 @@ class _NotificationSettingsPageState extends State<NotificationSettingsPage> {
               await _saveSetting('assignmentReminders', value);
             },
           ),
-          
+
           const Divider(height: 32),
           _buildSectionHeader('🎯 Achievements & Progress'),
           _buildSettingTile(
@@ -176,20 +184,20 @@ class _NotificationSettingsPageState extends State<NotificationSettingsPage> {
               await _saveSetting('milestoneNotifications', value);
             },
           ),
-          
+
           const Divider(height: 32),
           _buildSectionHeader('⏰ Daily Reminders'),
           _buildSettingTile(
             icon: Icons.notifications_active,
             title: 'Daily Study Reminder',
-            subtitle: _dailyReminder 
+            subtitle: _dailyReminder
                 ? 'Remind me at ${_dailyReminderTime.format(context)}'
                 : 'Get a daily reminder to study',
             value: _dailyReminder,
             onChanged: (value) async {
               setState(() => _dailyReminder = value);
               await _saveSetting('dailyReminder', value);
-              
+
               if (value) {
                 await _notificationService.scheduleDailyStudyReminder(
                   time: _dailyReminderTime,
@@ -198,7 +206,8 @@ class _NotificationSettingsPageState extends State<NotificationSettingsPage> {
                   WidgetsBinding.instance.addPostFrameCallback((_) {
                     ScaffoldMessenger.of(context).showSnackBar(
                       SnackBar(
-                        content: Text('✅ Daily reminder set for ${_dailyReminderTime.format(context)}'),
+                        content: Text(
+                            '✅ Daily reminder set for ${_dailyReminderTime.format(context)}'),
                         duration: const Duration(seconds: 2),
                       ),
                     );
@@ -209,7 +218,7 @@ class _NotificationSettingsPageState extends State<NotificationSettingsPage> {
               }
             },
           ),
-          
+
           if (_dailyReminder)
             ListTile(
               leading: const SizedBox(width: 40),
@@ -218,9 +227,9 @@ class _NotificationSettingsPageState extends State<NotificationSettingsPage> {
               trailing: const Icon(Icons.access_time),
               onTap: _selectDailyReminderTime,
             ),
-          
+
           const SizedBox(height: 32),
-          
+
           // Test notification button
           Center(
             child: ElevatedButton.icon(
@@ -228,13 +237,14 @@ class _NotificationSettingsPageState extends State<NotificationSettingsPage> {
               icon: const Icon(Icons.send),
               label: const Text('Send Test Notification'),
               style: ElevatedButton.styleFrom(
-                padding: const EdgeInsets.symmetric(horizontal: 24, vertical: 12),
+                padding:
+                    const EdgeInsets.symmetric(horizontal: 24, vertical: 12),
               ),
             ),
           ),
-          
+
           const SizedBox(height: 16),
-          
+
           // Clear all notifications button
           Center(
             child: TextButton.icon(
@@ -294,7 +304,7 @@ class _NotificationSettingsPageState extends State<NotificationSettingsPage> {
       scheduledDate: now.add(const Duration(seconds: 3)),
       channelId: 'general_notifications',
     );
-    
+
     if (mounted) {
       WidgetsBinding.instance.addPostFrameCallback((_) {
         ScaffoldMessenger.of(context).showSnackBar(
@@ -308,31 +318,19 @@ class _NotificationSettingsPageState extends State<NotificationSettingsPage> {
   }
 
   Future<void> _clearAllNotifications() async {
-    final confirm = await showDialog<bool>(
+    final confirm = await ModernPopup.showConfirmation(
       context: context,
-      useRootNavigator: false,
-      builder: (context) => AlertDialog(
-        title: const Text('Clear All Notifications?'),
-        content: const Text(
+      title: 'Clear All Notifications?',
+      message:
           'This will cancel all scheduled notifications. You can re-sync them from your schedule.',
-        ),
-        actions: [
-          TextButton(
-            onPressed: () => Navigator.pop(context, false),
-            child: const Text('Cancel'),
-          ),
-          ElevatedButton(
-            onPressed: () => Navigator.pop(context, true),
-            style: ElevatedButton.styleFrom(backgroundColor: Colors.red),
-            child: const Text('Clear All'),
-          ),
-        ],
-      ),
+      confirmText: 'Clear All',
+      cancelText: 'Cancel',
+      isDangerous: true,
     );
-    
+
     if (confirm == true) {
       await _notificationService.cancelAllNotifications();
-      
+
       if (mounted) {
         WidgetsBinding.instance.addPostFrameCallback((_) {
           ScaffoldMessenger.of(context).showSnackBar(

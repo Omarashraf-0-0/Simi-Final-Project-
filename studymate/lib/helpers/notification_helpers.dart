@@ -5,45 +5,39 @@ import '../services/schedule_notification_sync.dart';
 
 /// Mixin to easily add notification and XP functionality to any page
 mixin NotificationHelpers<T extends StatefulWidget> on State<T> {
-  final EnhancedNotificationService _notificationService = EnhancedNotificationService();
+  final EnhancedNotificationService _notificationService =
+      EnhancedNotificationService();
   final XPTracker _xpTracker = XPTracker();
   final ScheduleNotificationSync _scheduleSync = ScheduleNotificationSync();
 
-  /// Award XP for completing a quiz
-  Future<void> awardQuizXP(int score, int maxScore) async {
-    int xp = XPTracker.xpQuizCompleted;
-    
-    // Bonus for perfect score
-    if (score == maxScore) {
-      xp = XPTracker.xpQuizPerfectScore;
-    }
-    
-    await _xpTracker.addXP(xp, reason: 'Quiz Completed');
+  /// Award XP for quiz (handled directly in Quiz.dart with dynamic calculation)
+  /// Pass: 10 + (2 × correct), Fail: -5
+  Future<void> awardQuizXP(int xpAmount, String reason) async {
+    await _xpTracker.addXP(xpAmount, reason: reason, context: context);
   }
 
   /// Award XP for completing an assignment
   Future<void> awardAssignmentXP() async {
-    await _xpTracker.addXP(XPTracker.xpAssignmentCompleted, reason: 'Assignment Completed');
+    await _xpTracker.addXP(XPTracker.xpAssignmentCompleted,
+        reason: 'Assignment Completed! 📝', context: context);
   }
 
   /// Award XP for completing a course
   Future<void> awardCourseCompletionXP() async {
-    await _xpTracker.addXP(XPTracker.xpCourseCompleted, reason: 'Course Completed');
+    await _xpTracker.addXP(XPTracker.xpCourseCompleted,
+        reason: 'Course Completed! 🎓', context: context);
   }
 
-  /// Award daily login XP
+  /// Award XP for daily login
   Future<void> awardDailyLoginXP() async {
-    await _xpTracker.addXP(XPTracker.xpDailyLogin, reason: 'Daily Login');
-  }
-
-  /// Award XP for reading course material
-  Future<void> awardReadMaterialXP() async {
-    await _xpTracker.addXP(XPTracker.xpReadMaterial, reason: 'Read Material');
+    await _xpTracker.addXP(XPTracker.xpDailyLogin,
+        reason: 'Welcome Back! 👋', context: context);
   }
 
   /// Award XP for watching a video
   Future<void> awardWatchVideoXP() async {
-    await _xpTracker.addXP(XPTracker.xpWatchVideo, reason: 'Watched Video');
+    await _xpTracker.addXP(XPTracker.xpWatchVideo,
+        reason: 'Watched Video! 🎬', context: context);
   }
 
   /// Schedule a class notification
@@ -110,37 +104,33 @@ mixin NotificationHelpers<T extends StatefulWidget> on State<T> {
 
 /// Standalone helper class for use outside widgets
 class NotificationHelper {
-  static final EnhancedNotificationService _notificationService = EnhancedNotificationService();
+  static final EnhancedNotificationService _notificationService =
+      EnhancedNotificationService();
   static final XPTracker _xpTracker = XPTracker();
-  static final ScheduleNotificationSync _scheduleSync = ScheduleNotificationSync();
+  static final ScheduleNotificationSync _scheduleSync =
+      ScheduleNotificationSync();
 
-  /// Award XP for quiz completion
-  static Future<void> awardQuizXP(int score, int maxScore) async {
-    int xp = XPTracker.xpQuizCompleted;
-    if (score == maxScore) {
-      xp = XPTracker.xpQuizPerfectScore;
-    }
-    await _xpTracker.addXP(xp, reason: 'Quiz Completed');
+  /// Award XP for quiz (handled directly in Quiz.dart with dynamic calculation)
+  /// Pass: 10 + (2 × correct), Fail: -5
+  static Future<void> awardQuizXP(int xpAmount, String reason) async {
+    await _xpTracker.addXP(xpAmount, reason: reason);
   }
 
   /// Award XP for assignment completion
   static Future<void> awardAssignmentXP() async {
-    await _xpTracker.addXP(XPTracker.xpAssignmentCompleted, reason: 'Assignment Completed');
+    await _xpTracker.addXP(XPTracker.xpAssignmentCompleted,
+        reason: 'Assignment Completed');
   }
 
   /// Award XP for course completion
   static Future<void> awardCourseCompletionXP() async {
-    await _xpTracker.addXP(XPTracker.xpCourseCompleted, reason: 'Course Completed');
+    await _xpTracker.addXP(XPTracker.xpCourseCompleted,
+        reason: 'Course Completed');
   }
 
   /// Award daily login XP
   static Future<void> awardDailyLoginXP() async {
     await _xpTracker.addXP(XPTracker.xpDailyLogin, reason: 'Daily Login');
-  }
-
-  /// Award reading material XP
-  static Future<void> awardReadMaterialXP() async {
-    await _xpTracker.addXP(XPTracker.xpReadMaterial, reason: 'Read Material');
   }
 
   /// Award video watching XP
@@ -188,7 +178,8 @@ class NotificationHelper {
   }
 
   /// Setup daily study reminder
-  static Future<void> setupDailyReminder(TimeOfDay time, {String? message}) async {
+  static Future<void> setupDailyReminder(TimeOfDay time,
+      {String? message}) async {
     await _notificationService.scheduleDailyStudyReminder(
       time: time,
       customMessage: message,
@@ -201,7 +192,8 @@ class NotificationHelper {
   }
 
   /// Show milestone notification
-  static Future<void> showMilestone(String milestone, String description) async {
+  static Future<void> showMilestone(
+      String milestone, String description) async {
     await _notificationService.showMilestoneNotification(
       milestone: milestone,
       description: description,

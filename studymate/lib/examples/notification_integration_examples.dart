@@ -25,33 +25,48 @@ class _QuizCompletionExampleState extends State<QuizCompletionExample>
   final int _maxScore = 10;
 
   /// Call this when user completes a quiz
-  Future<void> handleQuizCompletion(int score, int maxScore) async {
-    // Award XP based on quiz performance
-    await awardQuizXP(score, maxScore);
+  Future<void> handleQuizCompletion(
+      int correctAnswers, int totalQuestions) async {
+    // Calculate XP based on pass/fail
+    // Pass (≥50%): 10 base + (2 × correct answers)
+    // Fail (<50%): -5 XP
+    double scorePercentage = (correctAnswers / totalQuestions) * 100;
+    bool isPassed = scorePercentage >= 50;
 
-    // Perfect score: 100 XP + rank check + milestone check
-    // Regular completion: 50 XP + rank check + milestone check
+    int xpAmount;
+    String reason;
+
+    if (isPassed) {
+      xpAmount = 10 + (correctAnswers * 2);
+      reason = 'Quiz Passed! 🎉';
+    } else {
+      xpAmount = -5;
+      reason = 'Quiz Failed - Keep Practicing! 💪';
+    }
+
+    // Award XP using the helper
+    await awardQuizXP(xpAmount, reason);
 
     // Show success dialog
     if (mounted) {
       showDialog(
         context: context,
         builder: (context) => AlertDialog(
-          title: Text(
-              score == maxScore ? '🎉 Perfect Score!' : '✅ Quiz Completed'),
+          title: Text(isPassed ? '🎉 Passed!' : '❌ Failed'),
           content: Column(
             mainAxisSize: MainAxisSize.min,
             children: [
-              Text('Score: $score/$maxScore'),
+              Text(
+                  'Score: $correctAnswers/$totalQuestions (${scorePercentage.toStringAsFixed(0)}%)'),
               const SizedBox(height: 16),
               Text(
-                score == maxScore
-                    ? '+100 XP for perfect score!'
-                    : '+50 XP for completion!',
-                style: const TextStyle(
+                isPassed
+                    ? '+$xpAmount XP (10 base + ${correctAnswers * 2} for correct answers)'
+                    : '-5 XP',
+                style: TextStyle(
                   fontSize: 18,
                   fontWeight: FontWeight.bold,
-                  color: Colors.green,
+                  color: isPassed ? Colors.green : Colors.red,
                 ),
               ),
               const SizedBox(height: 8),
@@ -198,14 +213,11 @@ class _CourseMaterialExampleState extends State<CourseMaterialExample>
     if (!_readMaterials.contains(materialId)) {
       _readMaterials.add(materialId);
 
-      // Award XP for reading material
-      await awardReadMaterialXP(); // +15 XP
-
       // Show feedback if widget is still mounted
       if (!mounted) return;
       ScaffoldMessenger.of(context).showSnackBar(
         const SnackBar(
-          content: Text('✅ +15 XP for reading material!'),
+          content: Text('✅ Material read!'),
           duration: Duration(seconds: 2),
         ),
       );
@@ -214,13 +226,13 @@ class _CourseMaterialExampleState extends State<CourseMaterialExample>
 
   Future<void> markVideoAsWatched(String videoId) async {
     // Award XP for watching video
-    await awardWatchVideoXP(); // +20 XP
+    await awardWatchVideoXP();
 
     // Show feedback if widget is still mounted
     if (!mounted) return;
     ScaffoldMessenger.of(context).showSnackBar(
       const SnackBar(
-        content: Text('✅ +20 XP for watching video!'),
+        content: Text('✅ +12 XP for watching video!'),
         duration: Duration(seconds: 2),
       ),
     );

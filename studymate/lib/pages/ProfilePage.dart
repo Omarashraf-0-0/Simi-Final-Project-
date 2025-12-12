@@ -8,6 +8,7 @@ import 'package:shimmer/shimmer.dart';
 import 'package:go_router/go_router.dart';
 import '../router/app_router.dart';
 import '../theme/app_constants.dart';
+import '../Pop-ups/StylishPopup.dart';
 
 class Profilepage extends StatefulWidget {
   const Profilepage({super.key});
@@ -56,50 +57,25 @@ class _ProfilepageState extends State<Profilepage> {
     final username = Hive.box('userBox').get('username');
 
     // Show confirmation dialog
-    final confirm = await showDialog<bool>(
+    final confirm = await StylishPopup.question(
       context: context,
-      builder: (context) => AlertDialog(
-        shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(20)),
-        title: Row(
-          children: [
-            Icon(Icons.warning_rounded, color: Colors.orange, size: 28),
-            SizedBox(width: 12),
-            Text('Remove Course?'),
-          ],
-        ),
-        content: Text(
+      title: 'Remove Course?',
+      message:
           'Are you sure you want to remove "$courseName" from your courses?',
-          style: TextStyle(fontSize: 16),
-        ),
-        actions: [
-          TextButton(
-            onPressed: () => Navigator.pop(context, false),
-            child: Text('Cancel', style: TextStyle(color: Colors.grey[600])),
-          ),
-          ElevatedButton(
-            onPressed: () => Navigator.pop(context, true),
-            style: ElevatedButton.styleFrom(
-              backgroundColor: Colors.red,
-              shape: RoundedRectangleBorder(
-                borderRadius: BorderRadius.circular(10),
-              ),
-            ),
-            child: Text('Remove', style: TextStyle(color: Colors.white)),
-          ),
-        ],
-      ),
+      confirmText: 'Remove',
+      cancelText: 'Cancel',
     );
 
     if (confirm != true) return;
 
     try {
       const url = 'https://alyibrahim.pythonanywhere.com/removeCourse';
-      
+
       print('🗑️ Removing course...');
       print('Username: $username');
       print('Course ID: $courseId');
       print('Course Name: $courseName');
-      
+
       final response = await http.post(
         Uri.parse(url),
         headers: {'Content-Type': 'application/json'},
@@ -114,7 +90,8 @@ class _ProfilepageState extends State<Profilepage> {
 
       if (response.statusCode == 200) {
         final jsonResponse = jsonDecode(response.body);
-        if (jsonResponse['success'] != null || jsonResponse['message'] != null) {
+        if (jsonResponse['success'] != null ||
+            jsonResponse['message'] != null) {
           if (mounted) {
             setState(() {
               _courses.removeAt(index);
@@ -230,34 +207,22 @@ class _ProfilepageState extends State<Profilepage> {
   void _showErrorDialog(String message) {
     if (!mounted) return; // Ensure the widget is still mounted
 
-    showDialog(
+    StylishPopup.show(
       context: context,
-      builder: (context) {
-        return AlertDialog(
-          title: Text("Error", style: AppConstants.subtitle),
-          content: Text(message, style: AppConstants.bodyText),
-          actions: [
-            TextButton(
-              onPressed: () {
-                if (mounted) {
-                  Navigator.of(context).pop();
-                  fetchCourses(); // Retry fetching courses
-                }
-              },
-              child: Text("Retry",
-                  style: TextStyle(color: AppConstants.primaryBlueDark)),
-            ),
-            TextButton(
-              onPressed: () {
-                if (mounted) {
-                  Navigator.of(context).pop();
-                }
-              },
-              child: Text("Cancel",
-                  style: TextStyle(color: AppConstants.primaryBlueDark)),
-            ),
-          ],
-        );
+      title: 'Error',
+      message: message,
+      type: PopupType.error,
+      confirmText: 'Retry',
+      cancelText: 'Cancel',
+      showCancel: true,
+      onConfirm: () {
+        Navigator.of(context).pop();
+        if (mounted) {
+          fetchCourses(); // Retry fetching courses
+        }
+      },
+      onCancel: () {
+        Navigator.of(context).pop();
       },
     );
   }

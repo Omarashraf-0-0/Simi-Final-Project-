@@ -3,6 +3,7 @@ import 'package:http/http.dart' as http;
 import 'dart:convert';
 import 'package:go_router/go_router.dart';
 import '../../router/app_router.dart';
+import '../../Pop-ups/StylishPopup.dart';
 
 class NotificationPage extends StatefulWidget {
   final List<Map<String, String>> notifications;
@@ -25,8 +26,7 @@ class _NotificationPageState extends State<NotificationPage> {
   }
 
   Future<void> deleteNotification(String notificationId) async {
-    const url =
-        'https://alyibrahim.pythonanywhere.com/deleteNotification';
+    const url = 'https://alyibrahim.pythonanywhere.com/deleteNotification';
 
     final Map<String, dynamic> requestBody = {
       'notificationId': notificationId,
@@ -52,8 +52,7 @@ class _NotificationPageState extends State<NotificationPage> {
       isDeletingAll = true;
     });
 
-    const url =
-        'https://alyibrahim.pythonanywhere.com/deleteAllNotifications';
+    const url = 'https://alyibrahim.pythonanywhere.com/deleteAllNotifications';
 
     try {
       final response = await http.post(
@@ -90,65 +89,27 @@ class _NotificationPageState extends State<NotificationPage> {
     }
   }
 
-  void _showDeleteAllConfirmationDialog() {
-    showDialog(
+  void _showDeleteAllConfirmationDialog() async {
+    final result = await StylishPopup.question(
       context: context,
-      builder: (BuildContext dialogContext) {
-        return AlertDialog(
-          title: Text('Delete All Notifications'),
-          content:
-              Text('Are you sure you want to delete all notifications?'),
-          actions: [
-            TextButton(
-              onPressed: () {
-                Navigator.of(dialogContext).pop(); // Dismiss the dialog
-              },
-              child: Text('Cancel'),
-            ),
-            TextButton(
-              onPressed: () {
-                Navigator.of(dialogContext).pop(); // Dismiss the dialog
-                deleteAllNotifications();
-              },
-              child: Text(
-                'Delete',
-                style: TextStyle(color: Colors.red),
-              ),
-            ),
-          ],
-        );
-      },
+      title: 'Delete All Notifications',
+      message: 'Are you sure you want to delete all notifications?',
+      confirmText: 'Delete',
+      cancelText: 'Cancel',
     );
+    if (result == true) {
+      deleteAllNotifications();
+    }
   }
 
   // Function to show confirmation dialog when deleting a single notification
   Future<bool> _showDeleteConfirmationDialog() async {
-    return await showDialog(
+    return await StylishPopup.question(
           context: context,
-          builder: (BuildContext dialogContext) {
-            return AlertDialog(
-              title: Text('Delete Notification'),
-              content: Text(
-                  'Are you sure you want to delete this notification?'),
-              actions: [
-                TextButton(
-                  onPressed: () {
-                    Navigator.of(dialogContext).pop(false); // Return false
-                  },
-                  child: Text('Cancel'),
-                ),
-                TextButton(
-                  onPressed: () {
-                    Navigator.of(dialogContext).pop(true); // Return true
-                  },
-                  child: Text(
-                    'Delete',
-                    style: TextStyle(color: Colors.red),
-                  ),
-                ),
-              ],
-            );
-          },
+          title: 'Delete Notification',
+          message: 'Are you sure you want to delete this notification?',
+          confirmText: 'Delete',
+          cancelText: 'Cancel',
         ) ??
         false; // Return false if dialog is dismissed without selection
   }
@@ -157,7 +118,7 @@ class _NotificationPageState extends State<NotificationPage> {
   Widget build(BuildContext context) {
     final Color primaryColor = Color(0xFF1c74bb);
     final Color accentColor = Color(0xFF18bebc);
-    
+
     return Scaffold(
       backgroundColor: Colors.grey[50],
       appBar: AppBar(
@@ -198,7 +159,10 @@ class _NotificationPageState extends State<NotificationPage> {
                 gradient: LinearGradient(
                   begin: Alignment.topLeft,
                   end: Alignment.bottomRight,
-                  colors: [primaryColor.withOpacity(0.1), accentColor.withOpacity(0.1)],
+                  colors: [
+                    primaryColor.withOpacity(0.1),
+                    accentColor.withOpacity(0.1)
+                  ],
                 ),
                 borderRadius: BorderRadius.circular(15),
                 border: Border.all(color: primaryColor.withOpacity(0.2)),
@@ -265,7 +229,8 @@ class _NotificationPageState extends State<NotificationPage> {
                           child: Column(
                             mainAxisAlignment: MainAxisAlignment.center,
                             children: [
-                              Icon(Icons.delete_rounded, color: Colors.white, size: 32),
+                              Icon(Icons.delete_rounded,
+                                  color: Colors.white, size: 32),
                               SizedBox(height: 4),
                               Text(
                                 'Delete',
@@ -286,12 +251,13 @@ class _NotificationPageState extends State<NotificationPage> {
                             notifications.removeAt(index);
                           });
                           await deleteNotification(notificationId);
-                          
+
                           ScaffoldMessenger.of(context).showSnackBar(
                             SnackBar(
                               content: Row(
                                 children: [
-                                  Icon(Icons.check_circle, color: Colors.white, size: 20),
+                                  Icon(Icons.check_circle,
+                                      color: Colors.white, size: 20),
                                   SizedBox(width: 8),
                                   Text('Notification deleted'),
                                 ],
@@ -310,7 +276,8 @@ class _NotificationPageState extends State<NotificationPage> {
                           title: notification['title']!,
                           body: notification['body']!,
                           onDelete: () async {
-                            bool confirm = await _showDeleteConfirmationDialog();
+                            bool confirm =
+                                await _showDeleteConfirmationDialog();
                             if (confirm) {
                               setState(() {
                                 notifications.removeAt(index);
@@ -383,9 +350,10 @@ class NotificationTile extends StatelessWidget {
   Widget build(BuildContext context) {
     final Color primaryColor = Color(0xFF1c74bb);
     final Color accentColor = Color(0xFF18bebc);
-    
+
     // Limit the message to show only the first 100 characters
-    String previewBody = body.length > 100 ? '${body.substring(0, 100)}...' : body;
+    String previewBody =
+        body.length > 100 ? '${body.substring(0, 100)}...' : body;
 
     return Container(
       margin: EdgeInsets.only(bottom: 12),
@@ -585,13 +553,14 @@ class NotificationTile extends StatelessWidget {
                             // Delete notification
                             Navigator.of(dialogContext).pop();
                             onDelete();
-                            
+
                             // Show confirmation
                             ScaffoldMessenger.of(context).showSnackBar(
                               SnackBar(
                                 content: Row(
                                   children: [
-                                    Icon(Icons.check_circle, color: Colors.white, size: 20),
+                                    Icon(Icons.check_circle,
+                                        color: Colors.white, size: 20),
                                     SizedBox(width: 8),
                                     Text('Marked as read'),
                                   ],

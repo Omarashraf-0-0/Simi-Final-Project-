@@ -26,7 +26,7 @@ class ConfirmationPopUp extends StatelessWidget {
       child: Container(
         padding: const EdgeInsets.all(24),
         decoration: BoxDecoration(
-          color: Colors.white,
+          color: Theme.of(context).scaffoldBackgroundColor,
           borderRadius: BorderRadius.circular(28),
           boxShadow: [
             BoxShadow(
@@ -94,7 +94,11 @@ class ConfirmationPopUp extends StatelessWidget {
               'Are you sure you want to submit the quiz?\nYou won\'t be able to change your answers.',
               style: TextStyle(
                 fontSize: 15,
-                color: Colors.grey.shade700,
+                color: Theme.of(context)
+                    .textTheme
+                    .bodyMedium
+                    ?.color
+                    ?.withOpacity(0.7),
                 height: 1.5,
               ),
               textAlign: TextAlign.center,

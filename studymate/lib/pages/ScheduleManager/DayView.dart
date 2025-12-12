@@ -2,10 +2,9 @@ import 'package:flutter/material.dart';
 import 'package:intl/intl.dart';
 import 'package:hive/hive.dart';
 import 'package:http/http.dart' as http;
-import 'package:studymate/Pop-ups/PopUps_Failed.dart';
-import 'package:studymate/Pop-ups/PopUps_Success.dart';
 import 'package:google_fonts/google_fonts.dart';
 import 'dart:convert';
+import '../../Pop-ups/StylishPopup.dart';
 
 class DayView extends StatefulWidget {
   const DayView({super.key});
@@ -177,25 +176,12 @@ class _DayViewState extends State<DayView> {
               key: ValueKey(event['Sid']),
               direction: DismissDirection.endToStart,
               confirmDismiss: (DismissDirection direction) async {
-                return await showDialog(
+                return await StylishPopup.question(
                   context: context,
-                  builder: (BuildContext context) {
-                    return AlertDialog(
-                      title: const Text("Confirm Delete"),
-                      content: const Text(
-                          "Are you sure you want to delete this task?"),
-                      actions: [
-                        TextButton(
-                          onPressed: () => Navigator.of(context).pop(false),
-                          child: const Text("Cancel"),
-                        ),
-                        TextButton(
-                          onPressed: () => Navigator.of(context).pop(true),
-                          child: const Text("Delete"),
-                        ),
-                      ],
-                    );
-                  },
+                  title: 'Confirm Delete',
+                  message: 'Are you sure you want to delete this task?',
+                  confirmText: 'Delete',
+                  cancelText: 'Cancel',
                 );
               },
               onDismissed: (direction) {
@@ -425,26 +411,26 @@ class _DayViewState extends State<DayView> {
 
       if (response.statusCode == 200) {
         // Task deleted successfully
-        showSuccessPopup(
-          context,
-          'Task Deleted',
-          'Task has been deleted successfully.',
+        await StylishPopup.success(
+          context: context,
+          title: 'Task Deleted',
+          message: 'Task has been deleted successfully.',
         );
       } else {
         // Handle error
         print('Failed to delete task: ${response.statusCode}');
-        showFailedPopup(
-          context,
-          'Failed to Delete Task',
-          'Failed to delete task. Please try again later.',
+        await StylishPopup.error(
+          context: context,
+          title: 'Failed to Delete Task',
+          message: 'Failed to delete task. Please try again later.',
         );
       }
     } catch (e) {
       print('Error deleting task: $e');
-      showFailedPopup(
-        context,
-        'Failed to Delete Task',
-        'Failed to delete task. Please try again later.',
+      await StylishPopup.error(
+        context: context,
+        title: 'Failed to Delete Task',
+        message: 'Failed to delete task. Please try again later.',
       );
     }
   }
